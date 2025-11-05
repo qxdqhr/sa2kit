@@ -1,6 +1,6 @@
 {
-  "name": "@qhr123/react-utils-kit",
-  "version": "0.1.0",
+  "name": "@qhr123/sa2kit",
+  "version": "0.1.1",
   "description": "A modern, type-safe React utility library with cross-platform support",
   "keywords": [
     "react",
@@ -11,15 +11,15 @@
     "hooks",
     "cross-platform"
   ],
-  "author": "",
+  "author": "qxdqhr",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/react-utils-kit"
+    "url": "https://github.com/qxdqhr/sa2kit"
   },
-  "homepage": "https://github.com/your-org/react-utils-kit#readme",
+  "homepage": "https://github.com/qxdqhr/sa2kit#readme",
   "bugs": {
-    "url": "https://github.com/your-org/react-utils-kit/issues"
+    "url": "https://github.com/qxdqhr/sa2kit/issues"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
