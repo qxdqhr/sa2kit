@@ -1,0 +1,53 @@
+# Source files
+src/
+tests/
+__tests__/
+
+# Config files
+tsconfig.json
+tsconfig.*.json
+tsup.config.ts
+vitest.config.ts
+.eslintrc.*
+eslint.config.*
+.prettierrc
+.prettierrc.*
+.prettierignore
+
+# Development files
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+.github/
+examples/
+docs/
+
+# Build artifacts
+*.tsbuildinfo
+.turbo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.travis.yml
+.gitlab-ci.yml
+azure-pipelines.yml
+
+# Misc
+*.md
+!README.md
+!LICENSE.md
+.DS_Store
+.env*
+coverage/
+
