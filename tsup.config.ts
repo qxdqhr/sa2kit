@@ -19,6 +19,8 @@ export default defineConfig({
     'auth/routes/index': 'src/auth/routes/index.ts',
     'auth/middleware/index': 'src/auth/middleware/index.ts',
     'auth/hooks/index': 'src/auth/hooks/index.ts',
+    'auth/client/index': 'src/auth/client/index.ts',
+    'auth/components/index': 'src/auth/components/index.ts',
     'config/index': 'src/config/index.ts',
   },
 

@@ -82,5 +82,11 @@ export {
 // Hooks
 export { useAuth, useAuthForm } from './hooks';
 
+// Client
+export { BaseApiClient, API_ROUTES, STORAGE_KEYS } from './client';
+
+// Components (export separately to avoid dependency issues)
+export type { LoginFormState, RegisterFormState } from './components/types';
+
 // Types
 export * from './types';
