@@ -8,6 +8,10 @@ export default defineConfig({
     'utils/index': 'src/utils/index.ts',
     'hooks/index': 'src/hooks/index.ts',
     'storage/index': 'src/storage/index.ts',
+    'universalFile/index': 'src/universalFile/index.ts',
+    'universalExport/index': 'src/universalExport/index.ts',
+    'i18n/index': 'src/i18n/index.ts',
+    'analytics/index': 'src/analytics/index.ts',
   },
 
   // Output formats: ESM and CJS

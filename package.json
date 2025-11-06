@@ -1,7 +1,7 @@
 {
   "name": "@qhr123/sa2kit",
-  "version": "0.1.1",
-  "description": "A modern, type-safe React utility library with cross-platform support",
+  "version": "0.4.1",
+  "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
     "typescript",
@@ -9,7 +9,16 @@
     "logger",
     "storage",
     "hooks",
-    "cross-platform"
+    "i18n",
+    "analytics",
+    "internationalization",
+    "tracking",
+    "cross-platform",
+    "adapters",
+    "web",
+    "mobile",
+    "miniapp",
+    "electron"
   ],
   "author": "qxdqhr",
   "license": "MIT",
@@ -49,6 +58,26 @@
       "types": "./dist/storage/index.d.ts",
       "import": "./dist/storage/index.mjs",
       "require": "./dist/storage/index.js"
+    },
+    "./universalFile": {
+      "types": "./dist/universalFile/index.d.ts",
+      "import": "./dist/universalFile/index.mjs",
+      "require": "./dist/universalFile/index.js"
+    },
+    "./universalExport": {
+      "types": "./dist/universalExport/index.d.ts",
+      "import": "./dist/universalExport/index.mjs",
+      "require": "./dist/universalExport/index.js"
+    },
+    "./i18n": {
+      "types": "./dist/i18n/index.d.ts",
+      "import": "./dist/i18n/index.mjs",
+      "require": "./dist/i18n/index.js"
+    },
+    "./analytics": {
+      "types": "./dist/analytics/index.d.ts",
+      "import": "./dist/analytics/index.mjs",
+      "require": "./dist/analytics/index.js"
     }
   },
   "files": [
