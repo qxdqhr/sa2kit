@@ -14,14 +14,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - extractKanji - 提取文本中的汉字
   - extractKana - 提取文本中的假名
   - cleanText - 清理文本，移除特殊字符但保留日语字符
+- **i18n UI 组件**: 导出 `LanguageSwitcher` 组件
+  - 支持三种样式：按钮组、下拉菜单、图标按钮
+  - 完整的 TypeScript 类型支持
+  - 使用 Tailwind CSS 样式
 
 ### Fixed
 - 清理了 utils 目录中的重复文件，移除了 8 个 `*copy.ts` 文件
 - 更新了 utils/index.ts，添加了 japaneseUtils 的正确导出
+- 修复了 LanguageSwitcher 组件的循环依赖问题
+- 修复了 TypeScript DTS 构建错误（添加 rootDir 配置）
+- 修复了 useEffect 返回值类型问题
 
 ### Improved
 - 代码库更加整洁，没有重复文件
 - 更好的文件组织结构
+- 组件使用相对路径导入，避免循环依赖
 
 ## [0.4.0] - 2025-11-06
 

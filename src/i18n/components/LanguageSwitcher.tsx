@@ -7,8 +7,8 @@
  */
 
 import React from 'react';
-import { useTranslation } from '@qhr123/sa2kit/i18n';
-import type { Locale } from '@qhr123/sa2kit/i18n';
+import { useTranslation } from '../hooks';
+import type { Locale } from '../types';
 
 // ==================== 类型定义 ====================
 
@@ -148,6 +148,7 @@ export function LanguageSwitcherIcon({ className = '', onLanguageChange }: Langu
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
+    return undefined;
   }, [isOpen]);
 
   return (

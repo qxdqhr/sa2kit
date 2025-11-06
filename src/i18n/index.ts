@@ -1,10 +1,7 @@
 /**
  * i18n 国际化模块
  *
- * 提供完整的国际化解决方案，支持多语言切换、动态加载、React Hooks 等
- *
- * 注意：此模块不包含平台特定的适配器和 UI 组件
- * 如需使用平台适配器，请在项目中自行实现
+ * 提供完整的国际化解决方案，支持多语言切换、动态加载、React Hooks 和 UI 组件
  */
 
 // 核心功能
@@ -33,3 +30,6 @@ export { default as enUS } from './locales/en-US';
 // 平台适配器
 export * from './adapters';
 
+// UI 组件
+export { LanguageSwitcher } from './components/LanguageSwitcher';
+export type { LanguageSwitcherProps, LanguageOption } from './components/LanguageSwitcher';
