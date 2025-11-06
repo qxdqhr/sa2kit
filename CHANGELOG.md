@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2025-11-06
+
+### Added
+- **i18n UI 组件**: 导出 `LanguageSwitcher` 组件
+  - 支持三种样式：按钮组、下拉菜单、图标按钮
+  - 完整的 TypeScript 类型支持
+  - 使用 Tailwind CSS 样式
+
+### Fixed
+- 修复了 LanguageSwitcher 组件的循环依赖问题
+- 修复了 TypeScript DTS 构建错误（添加 rootDir 配置）
+- 修复了 useEffect 返回值类型问题
+- 组件使用相对路径导入，避免循环依赖
+
 ## [0.4.1] - 2025-11-06
 
 ### Added
