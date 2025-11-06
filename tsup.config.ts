@@ -14,6 +14,11 @@ export default defineConfig({
     'analytics/index': 'src/analytics/index.ts',
     'analytics/server/index': 'src/analytics/server/index.ts',
     'auth/index': 'src/auth/index.ts',
+    'auth/schema/index': 'src/auth/schema/index.ts',
+    'auth/services/index': 'src/auth/services/index.ts',
+    'auth/routes/index': 'src/auth/routes/index.ts',
+    'auth/middleware/index': 'src/auth/middleware/index.ts',
+    'auth/hooks/index': 'src/auth/hooks/index.ts',
     'config/index': 'src/config/index.ts',
   },
 
