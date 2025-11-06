@@ -4,7 +4,7 @@
  */
 
 import { useStorage } from './useStorage';
-import { WebStorageAdapter } from '../web-adapter';
+import { WebStorageAdapter } from '../adapters/web-adapter';
 
 // 创建单例适配器
 const webStorage = new WebStorageAdapter();

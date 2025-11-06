@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2025-11-06
+
+### Added
+- **Analytics Server 模块** (`@qhr123/sa2kit/analytics/server`)
+  - `createAnalyticsService` - 创建埋点服务实例（基于 Drizzle ORM）
+  - `createAnalyticsHandlers` - 创建 API 路由处理器（支持 Next.js 等框架）
+  - `analyticsEvents` - Drizzle ORM PostgreSQL Schema
+  - 服务端类型：`AnalyticsEvent`, `AnalyticsQueryParams`, `AnalyticsStats`, 等
+  - ✅ 批量插入事件
+  - ✅ 事件查询和过滤
+  - ✅ 统计分析（总览、用户行为、会话分析）
+  - ✅ 漏斗分析
+  - ✅ 完整的类型安全
+
+### Changed
+- Analytics 模块现在包含完整的服务端实现
+- 服务端模块独立导出，避免客户端打包服务端依赖
+
+### Documentation
+- 新增 Analytics Server 使用文档
+
 ## [0.7.2] - 2025-11-06
 
 ### Added

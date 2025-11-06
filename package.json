@@ -1,6 +1,6 @@
 {
   "name": "@qhr123/sa2kit",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -78,6 +78,11 @@
       "import": "./dist/analytics/index.mjs",
       "require": "./dist/analytics/index.js"
     },
+    "./analytics/server": {
+      "types": "./dist/analytics/server/index.d.ts",
+      "import": "./dist/analytics/server/index.mjs",
+      "require": "./dist/analytics/server/index.js"
+    },
     "./request": {
       "types": "./dist/request/index.d.ts",
       "import": "./dist/request/index.mjs",
@@ -135,12 +140,13 @@
     }
   },
   "devDependencies": {
+    "@testing-library/react": "^14.0.0",
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
     "@vitest/ui": "^1.2.0",
-    "@testing-library/react": "^14.0.0",
+    "drizzle-orm": "^0.44.7",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.33.2",
@@ -156,4 +162,3 @@
   },
   "packageManager": "pnpm@9.15.2"
 }
-

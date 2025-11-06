@@ -12,6 +12,7 @@ export default defineConfig({
     'universalExport/index': 'src/universalExport/index.ts',
     'i18n/index': 'src/i18n/index.ts',
     'analytics/index': 'src/analytics/index.ts',
+    'analytics/server/index': 'src/analytics/server/index.ts',
     'auth/index': 'src/auth/index.ts',
     'config/index': 'src/config/index.ts',
   },
@@ -38,7 +39,7 @@ export default defineConfig({
   target: 'es2020',
 
   // External dependencies (not bundled)
-  external: ['react', 'react-dom', 'swr'],
+  external: ['react', 'react-dom', 'swr', 'drizzle-orm'],
 
   // Skip node_modules
   skipNodeModulesBundle: true,

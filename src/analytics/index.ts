@@ -44,6 +44,10 @@ export type {
   ChartDataPoint,
 } from './components';
 
+// 服务端模块（Server-side）
+// 注意：server 模块需要单独导入，避免在客户端打包时引入服务端依赖
+// import { createAnalyticsService } from '@qhr123/sa2kit/analytics/server';
+
 // 版本信息
 export const ANALYTICS_VERSION = '1.0.0';
 

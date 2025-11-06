@@ -2,7 +2,7 @@
  * Web 平台存储适配器 (localStorage)
  */
 
-import type { StorageAdapter } from './types';
+import type { StorageAdapter } from '../types';
 
 /**
  * 检查是否在浏览器环境中
