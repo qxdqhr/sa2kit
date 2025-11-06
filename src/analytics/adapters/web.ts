@@ -11,20 +11,24 @@ import type {
   AnalyticsEvent,
   UploadResponse,
 } from '../types';
+import { WebStorageAdapter } from '../../storage/adapters/web-adapter';
 
 /**
- * Web 存储适配器（使用 localStorage）
+ * Web 事件存储适配器
+ * 基于通用 WebStorageAdapter 实现
+ * 
+ * 注意：此适配器专门用于 Analytics 埋点事件的存储
+ * 与通用存储适配器 (storage/adapters/web-adapter) 不同
  */
-export class WebStorageAdapter implements AnalyticsStorageAdapter {
+export class WebEventStorageAdapter implements AnalyticsStorageAdapter {
+  private storage = new WebStorageAdapter();
   private EVENTS_KEY = 'analytics:events';
   private DEVICE_INFO_KEY = 'analytics:device_info';
   private SESSION_ID_KEY = 'analytics:session_id';
 
   async saveEvents(events: AnalyticsEvent[]): Promise<void> {
     try {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(this.EVENTS_KEY, JSON.stringify(events));
-      }
+      await this.storage.setItem(this.EVENTS_KEY, JSON.stringify(events));
     } catch (error) {
       console.error('Failed to save events:', error);
     }
@@ -32,11 +36,8 @@ export class WebStorageAdapter implements AnalyticsStorageAdapter {
 
   async getEvents(): Promise<AnalyticsEvent[]> {
     try {
-      if (typeof window !== 'undefined') {
-        const data = localStorage.getItem(this.EVENTS_KEY);
-        return data ? JSON.parse(data) : [];
-      }
-      return [];
+      const data = await this.storage.getItem(this.EVENTS_KEY);
+      return data ? JSON.parse(data) : [];
     } catch (error) {
       console.error('Failed to get events:', error);
       return [];
@@ -45,9 +46,7 @@ export class WebStorageAdapter implements AnalyticsStorageAdapter {
 
   async clearEvents(): Promise<void> {
     try {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem(this.EVENTS_KEY);
-      }
+      await this.storage.removeItem(this.EVENTS_KEY);
     } catch (error) {
       console.error('Failed to clear events:', error);
     }
@@ -55,9 +54,7 @@ export class WebStorageAdapter implements AnalyticsStorageAdapter {
 
   async saveDeviceInfo(info: DeviceInfo): Promise<void> {
     try {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(this.DEVICE_INFO_KEY, JSON.stringify(info));
-      }
+      await this.storage.setItem(this.DEVICE_INFO_KEY, JSON.stringify(info));
     } catch (error) {
       console.error('Failed to save device info:', error);
     }
@@ -65,11 +62,8 @@ export class WebStorageAdapter implements AnalyticsStorageAdapter {
 
   async getDeviceInfo(): Promise<DeviceInfo | null> {
     try {
-      if (typeof window !== 'undefined') {
-        const data = localStorage.getItem(this.DEVICE_INFO_KEY);
-        return data ? JSON.parse(data) : null;
-      }
-      return null;
+      const data = await this.storage.getItem(this.DEVICE_INFO_KEY);
+      return data ? JSON.parse(data) : null;
     } catch (error) {
       console.error('Failed to get device info:', error);
       return null;
@@ -78,7 +72,8 @@ export class WebStorageAdapter implements AnalyticsStorageAdapter {
 
   async saveSessionId(sessionId: string): Promise<void> {
     try {
-      if (typeof window !== 'undefined') {
+      // sessionStorage 需要特殊处理
+      if (typeof window !== 'undefined' && typeof sessionStorage !== 'undefined') {
         sessionStorage.setItem(this.SESSION_ID_KEY, sessionId);
       }
     } catch (error) {
@@ -88,7 +83,7 @@ export class WebStorageAdapter implements AnalyticsStorageAdapter {
 
   async getSessionId(): Promise<string | null> {
     try {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined' && typeof sessionStorage !== 'undefined') {
         return sessionStorage.getItem(this.SESSION_ID_KEY);
       }
       return null;
@@ -233,7 +228,7 @@ export class WebDeviceAdapter implements AnalyticsDeviceAdapter {
  * 统一的 Web 适配器对象
  */
 export const webAdapter = {
-  storage: new WebStorageAdapter(),
+  storage: new WebEventStorageAdapter(),
   network: new WebNetworkAdapter(),
   device: new WebDeviceAdapter(),
 };

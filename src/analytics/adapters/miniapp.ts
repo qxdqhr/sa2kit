@@ -13,9 +13,9 @@ import type {
 } from '../types';
 
 /**
- * 小程序存储适配器
+ * 小程序事件存储适配器
  */
-export class MiniappStorageAdapter implements AnalyticsStorageAdapter {
+export class MiniappEventStorageAdapter implements AnalyticsStorageAdapter {
   private EVENTS_KEY = 'analytics_events';
   private DEVICE_INFO_KEY = 'analytics_device_info';
   private SESSION_ID_KEY = 'analytics_session_id';
@@ -231,3 +231,9 @@ export class MiniappDeviceAdapter implements AnalyticsDeviceAdapter {
     };
   }
 }
+
+/**
+ * @deprecated 使用 MiniappEventStorageAdapter 替代
+ * 保留此导出以向后兼容
+ */
+export const MiniappStorageAdapter = MiniappEventStorageAdapter;

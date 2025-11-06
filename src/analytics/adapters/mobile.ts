@@ -13,10 +13,10 @@ import type {
 } from '../types';
 
 /**
- * Mobile 存储适配器
+ * Mobile 事件存储适配器
  * 需要在 mobile 项目中实现具体的 AsyncStorage 逻辑
  */
-export class MobileStorageAdapter implements AnalyticsStorageAdapter {
+export class MobileEventStorageAdapter implements AnalyticsStorageAdapter {
   private EVENTS_KEY = '@analytics:events';
   private DEVICE_INFO_KEY = '@analytics:device_info';
   private SESSION_ID_KEY = '@analytics:session_id';
@@ -208,3 +208,9 @@ export class MobileDeviceAdapter implements AnalyticsDeviceAdapter {
     };
   }
 }
+
+/**
+ * @deprecated 使用 MobileEventStorageAdapter 替代
+ * 保留此导出以向后兼容
+ */
+export const MobileStorageAdapter = MobileEventStorageAdapter;

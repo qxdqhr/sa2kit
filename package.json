@@ -1,6 +1,6 @@
 {
   "name": "@qhr123/sa2kit",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",

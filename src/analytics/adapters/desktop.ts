@@ -13,9 +13,9 @@ import type {
 } from '../types';
 
 /**
- * Desktop 存储适配器（使用 localStorage）
+ * Desktop 事件存储适配器（使用 localStorage）
  */
-export class DesktopStorageAdapter implements AnalyticsStorageAdapter {
+export class DesktopEventStorageAdapter implements AnalyticsStorageAdapter {
   private EVENTS_KEY = 'analytics:events';
   private DEVICE_INFO_KEY = 'analytics:device_info';
   private SESSION_ID_KEY = 'analytics:session_id';
@@ -203,3 +203,9 @@ export class DesktopDeviceAdapter implements AnalyticsDeviceAdapter {
     return navigator.userAgent;
   }
 }
+
+/**
+ * @deprecated 使用 DesktopEventStorageAdapter 替代
+ * 保留此导出以向后兼容
+ */
+export const DesktopStorageAdapter = DesktopEventStorageAdapter;

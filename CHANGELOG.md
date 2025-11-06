@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.1] - 2025-11-06
+
+### Changed
+- **重构适配器命名**：重命名 Analytics 适配器类以避免命名混淆
+  - `WebAnalyticsStorageAdapter` → `WebEventStorageAdapter`
+  - `DesktopStorageAdapter` → `DesktopEventStorageAdapter`
+  - `MobileStorageAdapter` → `MobileEventStorageAdapter`
+  - `MiniappStorageAdapter` → `MiniappEventStorageAdapter`
+- **代码复用优化**：`WebEventStorageAdapter` 现在复用通用的 `WebStorageAdapter`
+- **向后兼容**：保留旧类名作为别名，标记为 `@deprecated`
+
+### Fixed
+- 解决了 Storage 适配器命名混淆问题
+- 减少了代码重复，提高了可维护性
+
 ## [0.8.0] - 2025-11-06
 
 ### Added
