@@ -179,6 +179,38 @@ function MyComponent() {
 }
 ```
 
+#### UI Components (Tailwind CSS)
+
+```typescript
+import { LanguageSwitcher } from '@qhr123/sa2kit/i18n';
+
+// Button group style (default)
+<LanguageSwitcher variant="buttons" />
+
+// Dropdown style
+<LanguageSwitcher variant="dropdown" />
+
+// Icon button with dropdown
+<LanguageSwitcher variant="icon" />
+
+// With custom className and callback
+<LanguageSwitcher
+  variant="buttons"
+  className="my-custom-class"
+  onLanguageChange={(locale) => {
+    console.log('Language changed to:', locale);
+  }}
+/>
+```
+
+**Requirements:**
+- ✅ React >= 18.0.0
+- ✅ Tailwind CSS configured in your project ([Setup Guide](./docs/tailwind-setup.md))
+- ✅ Next.js App Router compatible ('use client' included)
+```
+
+**Note:** UI components use Tailwind CSS. See the [Tailwind Setup Guide](./docs/tailwind-setup.md) for configuration instructions.
+
 ### Analytics
 
 ```typescript
@@ -228,6 +260,7 @@ function MyComponent() {
 
 ## Documentation
 
+- [Tailwind CSS Setup](./docs/tailwind-setup.md) - **UI Components Configuration**
 - [Logger Documentation](./docs/logger.md)
 - [Utility Functions](./docs/utils.md)
 - [React Hooks](./docs/hooks.md)

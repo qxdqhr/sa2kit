@@ -1,6 +1,6 @@
 {
   "name": "@qhr123/sa2kit",
-  "version": "0.4.2",
+  "version": "0.7.2",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -9,6 +9,8 @@
     "logger",
     "storage",
     "hooks",
+    "auth",
+    "config",
     "i18n",
     "analytics",
     "internationalization",
@@ -18,7 +20,9 @@
     "web",
     "mobile",
     "miniapp",
-    "electron"
+    "electron",
+    "tailwindcss",
+    "ui-components"
   ],
   "author": "qxdqhr",
   "license": "MIT",
@@ -49,11 +53,6 @@
       "import": "./dist/utils/index.mjs",
       "require": "./dist/utils/index.js"
     },
-    "./hooks": {
-      "types": "./dist/hooks/index.d.ts",
-      "import": "./dist/hooks/index.mjs",
-      "require": "./dist/hooks/index.js"
-    },
     "./storage": {
       "types": "./dist/storage/index.d.ts",
       "import": "./dist/storage/index.mjs",
@@ -78,10 +77,31 @@
       "types": "./dist/analytics/index.d.ts",
       "import": "./dist/analytics/index.mjs",
       "require": "./dist/analytics/index.js"
+    },
+    "./request": {
+      "types": "./dist/request/index.d.ts",
+      "import": "./dist/request/index.mjs",
+      "require": "./dist/request/index.js"
+    },
+    "./auth/hooks": {
+      "types": "./dist/auth/index.d.ts",
+      "import": "./dist/auth/index.mjs",
+      "require": "./dist/auth/index.js"
+    },
+    "./config/hooks": {
+      "types": "./dist/config/index.d.ts",
+      "import": "./dist/config/index.mjs",
+      "require": "./dist/config/index.js"
+    },
+    "./storage/hooks": {
+      "types": "./dist/storage/index.d.ts",
+      "import": "./dist/storage/index.mjs",
+      "require": "./dist/storage/index.js"
     }
   },
   "files": [
     "dist",
+    "tailwind.animations.js",
     "README.md",
     "LICENSE"
   ],
@@ -103,10 +123,14 @@
     "publish:latest": "npm publish --access public"
   },
   "peerDependencies": {
-    "react": ">=18.0.0"
+    "react": ">=18.0.0",
+    "swr": "^2.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
+      "optional": true
+    },
+    "swr": {
       "optional": true
     }
   },

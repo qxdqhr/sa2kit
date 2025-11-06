@@ -6,12 +6,14 @@ export default defineConfig({
     index: 'src/index.ts',
     'logger/index': 'src/logger/index.ts',
     'utils/index': 'src/utils/index.ts',
-    'hooks/index': 'src/hooks/index.ts',
     'storage/index': 'src/storage/index.ts',
+    'request/index': 'src/request/index.ts',
     'universalFile/index': 'src/universalFile/index.ts',
     'universalExport/index': 'src/universalExport/index.ts',
     'i18n/index': 'src/i18n/index.ts',
     'analytics/index': 'src/analytics/index.ts',
+    'auth/index': 'src/auth/index.ts',
+    'config/index': 'src/config/index.ts',
   },
 
   // Output formats: ESM and CJS
@@ -36,7 +38,7 @@ export default defineConfig({
   target: 'es2020',
 
   // External dependencies (not bundled)
-  external: ['react', 'react-dom'],
+  external: ['react', 'react-dom', 'swr'],
 
   // Skip node_modules
   skipNodeModulesBundle: true,

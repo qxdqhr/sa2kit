@@ -30,6 +30,5 @@ export { default as enUS } from './locales/en-US';
 // 平台适配器
 export * from './adapters';
 
-// UI 组件
-export { LanguageSwitcher } from './components/LanguageSwitcher';
-export type { LanguageSwitcherProps, LanguageOption } from './components/LanguageSwitcher';
+// UI 组件（Tailwind CSS）
+export * from './components';

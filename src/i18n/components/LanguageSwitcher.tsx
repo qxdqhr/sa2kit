@@ -148,6 +148,7 @@ export function LanguageSwitcherIcon({ className = '', onLanguageChange }: Langu
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
+
     return undefined;
   }, [isOpen]);
 

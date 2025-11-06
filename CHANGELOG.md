@@ -7,6 +7,152 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.2] - 2025-11-06
+
+### Added
+- **Tailwind CSS 集成**
+  - 新增 `tailwind.animations.js` 配置预设文件
+  - 提供可选的动画配置，用户可在项目中扩展使用
+  - 新增完整的 [Tailwind 配置指南](./docs/tailwind-setup.md)
+  - 支持 Next.js、Vite 等主流框架
+
+### Fixed
+- **Analytics 模块类型冲突修复**
+  - 重命名组件类型以避免与核心类型冲突
+  - `AnalyticsEvent` (组件) → `DashboardEvent`
+  - `AnalyticsStats` (组件) → `DashboardStats`
+  - 核心 `AnalyticsEvent` 类型保持不变
+  - 完整导出 Analytics 组件和类型
+
+### Changed
+- **样式系统优化**
+  - 移除 `src/analytics/components/styles.css` 自定义样式文件
+  - 完全采用 Tailwind CSS 方案
+  - 动画类名更新：`animate-fadeIn` → `animate-fade-in`，`animate-slideUp` → `animate-slide-up`
+  - 更好的定制化支持
+
+### Improved
+- 更新 README，添加 Tailwind 配置说明
+- 优化组件导出结构
+- 提升类型安全性和一致性
+
+## [0.7.1] - 2025-11-06
+
+### Changed
+- **目录结构重构**: 将 `adapters` 拆分为独立的 `request` 和 `storage` 模块
+- **导出路径变更**:
+  - 原 `@qhr123/sa2kit/adapters` 现在分为：
+    - `@qhr123/sa2kit/request` - 请求适配器
+    - `@qhr123/sa2kit/storage` - 存储适配器（包含 hooks）
+
+### Fixed
+- 修复 TypeScript 导入路径问题
+
+## [0.7.0] - 2025-11-06
+
+### Added
+- **Request 请求适配器** (`@qhr123/sa2kit/adapters`)
+  - `WebRequestAdapter` - 基于 fetch API 的 Web 请求适配器
+  - `MiniappRequestAdapter` - 基于 Taro.request 的小程序请求适配器
+  - 类型：`RequestAdapter`, `RequestConfig`
+  - ✅ 统一的请求接口
+  - ✅ 跨平台支持（Web、Mobile、Miniapp）
+  - ✅ 自动处理查询参数
+  - ✅ Cookie 自动管理
+
+- **Analytics UI 组件** (`@qhr123/sa2kit/analytics`)
+  - `AnalyticsDashboard` - 完整的埋点数据仪表板
+  - `StatCard` - 统计卡片组件
+  - `EventList` - 事件列表组件
+  - `FilterPanel` - 过滤面板组件
+  - `Charts` - 图表组件集合
+  - ✅ 开箱即用的数据可视化
+  - ✅ 响应式设计
+  - ✅ 完整的 TypeScript 类型支持
+
+- **Adapters 统一导出** (`@qhr123/sa2kit/adapters`)
+  - 统一导出所有存储和请求适配器
+  - 简化导入路径
+
+### Changed
+- Analytics 模块现在包含 UI 组件
+- 优化了适配器模块的组织结构
+
+### Documentation
+- 新增 Request Adapters 使用文档
+- 新增 Analytics Components 使用文档
+
+## [0.6.0] - 2025-11-06
+
+### Added
+- **Auth Hooks 模块** (`@qhr123/sa2kit/auth/hooks`)
+  - `useAuth` - 完整的认证状态管理 Hook
+  - `useAuthForm` - 表单验证和管理 Hook
+  - 类型：`User`, `BaseApiClient`, `LoginFormData`, `RegisterFormData`, `AuthResult`, `UseAuthReturn`
+  - ✅ 支持登录、注册、登出、自动检查认证状态
+  - ✅ 完整的错误处理和加载状态
+  - ✅ TypeScript 类型安全
+
+- **Config Hooks 模块** (`@qhr123/sa2kit/config/hooks`)
+  - `createUseConfigs` - 创建配置管理 Hook 的工厂函数
+  - `prefetchConfigs` - 预加载配置
+  - `invalidateAllConfigs` - 全局缓存失效
+  - 类型：`ConfigItem`, `AllConfigs`, `UseConfigsOptions`
+  - ✅ 基于 SWR 实现智能缓存
+  - ✅ 自动重新验证和错误重试
+  - ✅ 乐观更新支持
+  - ✅ 支持多平台：Web、React Native、小程序
+  - ⚠️ 依赖 `swr` (peerDependency)
+
+- **Storage Hooks 模块** (`@qhr123/sa2kit/storage/hooks`)
+  - `useStorage` - 通用存储 Hook
+  - `useLocalStorage` - Web localStorage Hook
+  - `useAsyncStorage` - React Native AsyncStorage Hook
+  - `useTaroStorage` - 小程序 Taro Storage Hook
+  - `useElectronStorage` - Electron Desktop Storage Hook
+  - 完整的跨平台存储适配器：
+    - `ReactNativeStorageAdapter`
+    - `MiniAppStorageAdapter`
+    - `ElectronStorageAdapter`
+  - ✅ 统一的异步 API
+  - ✅ 自动 JSON 序列化/反序列化
+  - ✅ 类型安全
+  - ✅ 错误处理
+  - ✅ 存储变化监听（部分平台）
+
+### Changed
+- 重构模块结构，采用 `module/hooks` 子路径导出方式
+- 旧的 `./hooks` 导出已移除，现在使用 `./storage/hooks`, `./auth/hooks`, `./config/hooks`
+- 所有 storage hooks 现在统一在 `storage/hooks` 目录下
+
+### Dependencies
+- 新增 `swr` 作为可选的 peerDependency（config hooks 需要）
+
+### Documentation
+- 新增 Auth Hooks 使用文档
+- 新增 Config Hooks 使用文档
+- 更新 Storage Hooks 文档
+
+## [0.5.0] - 2025-11-06
+
+### Added
+- **i18n UI 组件 (Tailwind CSS 版本)**: 完整的 LanguageSwitcher 组件迁移到 sa2kit
+  - ✅ 使用 Tailwind CSS 样式，无需额外 CSS 文件
+  - ✅ 支持 Next.js App Router ('use client' 指令)
+  - ✅ 三种样式变体：buttons、dropdown、icon
+  - ✅ 响应式设计，移动端友好
+  - ✅ 完整的无障碍支持（ARIA attributes）
+  - ✅ 平滑动画和交互效果
+  - 导出：`LanguageSwitcher`, `LanguageSwitcherButtons`, `LanguageSwitcherDropdown`, `LanguageSwitcherIcon`
+  - 类型：`LanguageSwitcherProps`, `LanguageOption`
+
+### Changed
+- 组件现在作为 sa2kit 的核心 UI 组件，可在任何 React + Tailwind 项目中使用
+
+### Documentation
+- 新增 Tailwind CSS 使用指南
+- 更新组件使用示例
+
 ## [0.4.2] - 2025-11-06
 
 ### Added

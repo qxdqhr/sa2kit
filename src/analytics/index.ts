@@ -24,6 +24,26 @@ export * from './utils/hooks';
 // 平台适配器
 export * from './adapters';
 
+// UI 组件（已解决类型冲突：DashboardEvent vs AnalyticsEvent）
+export {
+  AnalyticsDashboard,
+  StatCard,
+  EventList,
+  FilterPanel,
+  PieChart,
+  BarChart,
+} from './components';
+export type {
+  AnalyticsDashboardProps,
+  StatCardProps,
+  EventListProps,
+  FilterPanelProps,
+  DashboardEvent,
+  DashboardStats,
+  FilterOptions,
+  ChartDataPoint,
+} from './components';
+
 // 版本信息
 export const ANALYTICS_VERSION = '1.0.0';
 
