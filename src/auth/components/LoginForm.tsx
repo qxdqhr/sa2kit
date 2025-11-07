@@ -9,7 +9,7 @@ import type { HeadlessLoginFormProps, LoginFormState } from './types';
 
 /**
  * Headless 登录表单组件
- * 
+ *
  * 提供登录逻辑但不包含任何 UI 样式，
  * 使用 render props 模式让用户完全控制 UI
  *
@@ -18,14 +18,14 @@ import type { HeadlessLoginFormProps, LoginFormState } from './types';
  * <LoginForm apiClient={apiClient}>
  *   {({ email, password, loading, error, handleEmailChange, handlePasswordChange, handleSubmit }) => (
  *     <form onSubmit={handleSubmit}>
- *       <input 
- *         value={email} 
- *         onChange={(e) => handleEmailChange(e.target.value)} 
+ *       <input
+ *         value={email}
+ *         onChange={(e) => handleEmailChange(e.target.value)}
  *       />
- *       <input 
- *         type="password" 
- *         value={password} 
- *         onChange={(e) => handlePasswordChange(e.target.value)} 
+ *       <input
+ *         type="password"
+ *         value={password}
+ *         onChange={(e) => handlePasswordChange(e.target.value)}
  *       />
  *       {error && <div>{error}</div>}
  *       <button disabled={loading}>

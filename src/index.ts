@@ -18,8 +18,10 @@ export * from './logger';
 // Utils
 export * from './utils';
 
-// Storage
-export * from './storage';
+// Storage - Only export types and hooks, not platform adapters
+// Platform adapters should be imported from '@qhr123/sa2kit/storage' subpath
+export type { StorageAdapter, StorageChangeEvent } from './storage/types';
+export * from './storage/hooks';
 
 // Note: The following modules are available as separate subpath exports
 // to avoid naming conflicts and reduce bundle size. Import them directly:

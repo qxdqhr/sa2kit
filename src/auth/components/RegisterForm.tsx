@@ -18,18 +18,18 @@ import type { HeadlessRegisterFormProps, RegisterFormState } from './types';
  * <RegisterForm apiClient={apiClient}>
  *   {({ email, password, username, loading, error, handleEmailChange, handlePasswordChange, handleUsernameChange, handleSubmit }) => (
  *     <form onSubmit={handleSubmit}>
- *       <input 
- *         value={email} 
- *         onChange={(e) => handleEmailChange(e.target.value)} 
+ *       <input
+ *         value={email}
+ *         onChange={(e) => handleEmailChange(e.target.value)}
  *       />
- *       <input 
- *         value={username} 
- *         onChange={(e) => handleUsernameChange(e.target.value)} 
+ *       <input
+ *         value={username}
+ *         onChange={(e) => handleUsernameChange(e.target.value)}
  *       />
- *       <input 
- *         type="password" 
- *         value={password} 
- *         onChange={(e) => handlePasswordChange(e.target.value)} 
+ *       <input
+ *         type="password"
+ *         value={password}
+ *         onChange={(e) => handlePasswordChange(e.target.value)}
  *       />
  *       {error && <div>{error}</div>}
  *       <button disabled={loading}>

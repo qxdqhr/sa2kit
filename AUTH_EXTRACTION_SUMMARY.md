@@ -7,7 +7,7 @@
 
 - ✅ `enums.ts` - 用户角色枚举
 - ✅ `user.ts` - 用户表
-- ✅ `session.ts` - 会话表  
+- ✅ `session.ts` - 会话表
 - ✅ `account.ts` - 第三方账号表
 - ✅ `verification.ts` - 验证码表
 - ✅ `relations.ts` - 表关系
@@ -67,7 +67,7 @@
 
 - ✅ `base-api-client.ts` - 基础 API 客户端类
   - login - 登录
-  - register - 注册  
+  - register - 注册
   - logout - 登出
   - getCurrentUser - 获取当前用户
   - get/post/put/delete - 通用请求方法
@@ -263,7 +263,7 @@ import { LoginForm } from '@qhr123/sa2kit/auth/components';
 ## 🎉 完成时间
 
 - 开始: 2025-11-06
-- 完成: 2025-11-06  
+- 完成: 2025-11-06
 - 总耗时: ~4 小时
 
 ## 👏 致谢
@@ -272,7 +272,7 @@ import { LoginForm } from '@qhr123/sa2kit/auth/components';
 
 ---
 
-**版本**: 0.9.0  
-**状态**: ✅ 已完成 (Phase 1-8)  
+**版本**: 0.9.0
+**状态**: ✅ 已完成 (Phase 1-8)
 **待办**: Phase 9-10
 

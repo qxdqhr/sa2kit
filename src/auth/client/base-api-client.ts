@@ -93,7 +93,7 @@ export class BaseApiClient {
   /**
    * 检查是否已登录
    */
-  isAuthenticated(): boolean {
+  async isAuthenticated(): Promise<boolean> {
     return !!this.token;
   }
 

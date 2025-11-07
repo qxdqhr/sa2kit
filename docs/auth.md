@@ -84,7 +84,7 @@ import { apiClient } from './api-client';
 
 function LoginPage() {
   const { login, loading, error } = useAuth(apiClient);
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const result = await login(email, password);
@@ -92,7 +92,7 @@ function LoginPage() {
       router.push('/dashboard');
     }
   };
-  
+
   return (
     <form onSubmit={handleSubmit}>
       {/* 表单内容 */}
@@ -168,7 +168,7 @@ function LoginPage() {
 ## 🔒 安全最佳实践
 
 1. **JWT Secret**: 至少 32 字符，生产环境强制检查
-2. **Cookie 设置**: 使用 `httpOnly` 和 `secure` 
+2. **Cookie 设置**: 使用 `httpOnly` 和 `secure`
 3. **密码哈希**: 使用 bcrypt，默认 12 轮加密
 4. **HTTPS**: 生产环境必须使用 HTTPS
 5. **CORS**: 正确配置跨域请求
