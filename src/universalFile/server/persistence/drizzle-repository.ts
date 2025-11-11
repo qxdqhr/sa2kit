@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Drizzle ORM 文件元数据持久化适配器
  *

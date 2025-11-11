@@ -496,7 +496,6 @@ export function measurePerformance(operation: string) {
     const method = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {
-      const _startTime = Date.now();
       const requestId = `${operation}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
       try {
