@@ -196,16 +196,14 @@ export class BaseApiClient {
   /**
    * 用户退出登录
    */
-  async logout(): Promise<ApiResponse<void>> {
-    const response = await this.sendRequest<void>({
+  async logout(): Promise<void> {
+    await this.sendRequest<void>({
       url: API_ROUTES.AUTH.LOGOUT,
       method: 'POST',
     });
 
     // 无论成功与否，都清除本地数据
     await this.clearUserData();
-
-    return response;
   }
 
   /**

@@ -63,10 +63,20 @@
       "import": "./dist/universalFile/index.mjs",
       "require": "./dist/universalFile/index.js"
     },
+    "./universalFile/server": {
+      "types": "./dist/universalFile/server/index.d.ts",
+      "import": "./dist/universalFile/server/index.mjs",
+      "require": "./dist/universalFile/server/index.js"
+    },
     "./universalExport": {
       "types": "./dist/universalExport/index.d.ts",
       "import": "./dist/universalExport/index.mjs",
       "require": "./dist/universalExport/index.js"
+    },
+    "./universalExport/server": {
+      "types": "./dist/universalExport/server/index.d.ts",
+      "import": "./dist/universalExport/server/index.mjs",
+      "require": "./dist/universalExport/server/index.js"
     },
     "./i18n": {
       "types": "./dist/i18n/index.d.ts",
@@ -180,6 +190,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.0.0",
     "@types/react": "^18.3.26",
+    "@types/uuid": "^11.0.0",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
     "@vitest/ui": "^1.2.0",
@@ -189,6 +200,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "jsdom": "^23.0.0",
+    "lru-cache": "^10.0.0",
     "pg": "^8.16.3",
     "prettier": "^3.1.1",
     "tsup": "^8.0.0",
@@ -202,6 +214,7 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "jsonwebtoken": "^9.0.2",
-    "postgres": "^3.4.7"
+    "postgres": "^3.4.7",
+    "uuid": "^13.0.0"
   }
 }

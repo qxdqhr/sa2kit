@@ -85,12 +85,60 @@ export interface UploadFileInfo {
   processingOptions?: ProcessingOptions;
 }
 
-/** 文件处理选项 */
+/** 文件处理选项基础接口 */
 export interface ProcessingOptions {
   /** 处理器类型 */
   type: ProcessorType;
   /** 处理参数 */
   params?: Record<string, any>;
+}
+
+/** 图片处理选项 */
+export interface ImageProcessingOptions extends ProcessingOptions {
+  type: 'image';
+  /** 压缩质量 0-100 */
+  quality?: number;
+  /** 目标宽度 */
+  width?: number;
+  /** 目标高度 */
+  height?: number;
+  /** 格式转换 */
+  format?: 'jpeg' | 'png' | 'webp' | 'avif';
+  /** 是否添加水印 */
+  watermark?: boolean;
+  /** 水印配置 */
+  watermarkOptions?: {
+    text?: string;
+    image?: string;
+    position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'center';
+    opacity?: number;
+  };
+}
+
+/** 音频处理选项 */
+export interface AudioProcessingOptions extends ProcessingOptions {
+  type: 'audio';
+  /** 比特率 */
+  bitrate?: number;
+  /** 格式转换 */
+  format?: 'mp3' | 'wav' | 'ogg' | 'aac';
+  /** 采样率 */
+  sampleRate?: number;
+  /** 声道数 */
+  channels?: number;
+}
+
+/** 视频处理选项 */
+export interface VideoProcessingOptions extends ProcessingOptions {
+  type: 'video';
+  /** 视频质量 */
+  quality?: number;
+  /** 格式转换 */
+  format?: 'mp4' | 'avi' | 'mov' | 'webm';
+  /** 生成缩略图 */
+  generateThumbnail?: boolean;
+  /** 缩略图时间点(秒) */
+  thumbnailTime?: number;
 }
 
 // ============= 上传相关接口 =============
