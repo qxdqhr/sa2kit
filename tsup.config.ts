@@ -8,6 +8,7 @@ export default defineConfig({
     'utils/index': 'src/utils/index.ts',
     'storage/index': 'src/storage/index.ts',
     'request/index': 'src/request/index.ts',
+    'api/index': 'src/api/index.ts',
     'universalFile/index': 'src/universalFile/index.ts',
     'universalFile/server/index': 'src/universalFile/server/index.ts',
     'universalExport/index': 'src/universalExport/index.ts',
@@ -24,6 +25,7 @@ export default defineConfig({
     'auth/client/index': 'src/auth/client/index.ts',
     'auth/components/index': 'src/auth/components/index.ts',
     'config/index': 'src/config/index.ts',
+    'config/server/index': 'src/config/server/index.ts',
   },
 
   // Output formats: ESM and CJS
@@ -48,7 +50,21 @@ export default defineConfig({
   target: 'es2020',
 
   // External dependencies (not bundled)
-  external: ['react', 'react-dom', 'swr', 'drizzle-orm'],
+  external: [
+    'react',
+    'react-dom',
+    'swr',
+    'drizzle-orm',
+    'lucide-react',
+    'postgres',
+    'bcryptjs',
+    'jsonwebtoken',
+    'uuid',
+    'xlsx',
+    '@tarojs/taro', // 小程序环境专用
+    'electron', // Electron 环境专用
+    'react-native', // React Native 环境专用
+  ],
 
   // Skip node_modules
   skipNodeModulesBundle: true,

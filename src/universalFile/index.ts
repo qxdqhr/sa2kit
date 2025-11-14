@@ -24,3 +24,5 @@ export * from './constants';
 // 导出工具函数
 export * from './utils';
 
+// 导出 UI 组件（Tailwind CSS）
+export * from './components';

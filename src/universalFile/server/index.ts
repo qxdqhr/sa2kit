@@ -97,3 +97,32 @@ export {
   type FieldMapping,
 } from './persistence/drizzle-repository';
 
+// ============= Configuration Helpers =============
+export {
+  // 配置加载
+  loadConfigFromEnv,
+  loadOSSConfigFromEnv,
+  loadCDNConfigFromEnv,
+  getDefaultLocalStorage,
+  loadOSSConfigFromService,
+  loadConfigWithFallback,
+  // 默认配置常量
+  DEFAULT_MAX_FILE_SIZE,
+  DEFAULT_ALLOWED_MIME_TYPES,
+  DEFAULT_CACHE_CONFIG,
+  DEFAULT_FILE_SERVICE_CONFIG,
+  DEFAULT_OSS_CONFIG_KEYS,
+  // 服务工厂
+  createFileServiceWithFactory,
+  type FileServiceFactoryOptions,
+  // 接口
+  type IConfigService,
+  type OSSConfigKeyMapping,
+  // 单例辅助
+  createSingleton,
+  type SingletonFactory,
+} from './config-helpers';
+
+// ============= Drizzle Schemas =============
+export * from './drizzle-schemas';
+

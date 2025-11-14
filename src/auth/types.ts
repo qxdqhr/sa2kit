@@ -1,16 +1,53 @@
 /**
  * Auth 模块类型定义
+ * Auth Module Types
  */
 
+import type { UserRole } from './schema/enums';
+
 /**
- * 用户基础信息
+ * 用户基础信息（核心字段）
+ * Base User Information
  */
-export interface User {
+export interface BaseUser {
   id: string;
   email: string;
   username: string;
-  role: string;
-  [key: string]: any;
+  role: UserRole;
+}
+
+/**
+ * 扩展用户信息（可选字段）
+ * Extended User Information
+ */
+export interface User extends BaseUser {
+  nickname?: string;
+  avatar?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  [key: string]: any; // 允许项目添加自定义字段
+}
+
+/**
+ * 登录表单数据
+ * Login Form Data
+ */
+export interface LoginForm {
+  email: string;
+  password: string;
+  rememberMe?: boolean;
+}
+
+/**
+ * 注册表单数据
+ * Register Form Data
+ */
+export interface RegisterForm {
+  email: string;
+  username: string;
+  password: string;
+  confirmPassword?: string;
+  nickname?: string;
 }
 
 /**
@@ -23,23 +60,6 @@ export interface BaseApiClient {
   register(email: string, password: string, username: string): Promise<{ success: boolean; data?: { user: User }; error?: string }>;
   logout(): Promise<void>;
   clearUserData(): Promise<void>;
-}
-
-/**
- * 登录表单数据接口
- */
-export interface LoginFormData {
-  email: string;
-  password: string;
-}
-
-/**
- * 注册表单数据接口
- */
-export interface RegisterFormData {
-  email: string;
-  password: string;
-  username: string;
 }
 
 /**
@@ -69,3 +89,5 @@ export interface UseAuthReturn {
   clearError: () => void;
 }
 
+// ==================== 重新导出枚举类型 ====================
+export type { UserRole } from './schema/enums';

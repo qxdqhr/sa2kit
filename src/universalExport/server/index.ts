@@ -32,8 +32,8 @@ export type {
   CustomProcessor,
 } from './types';
 
-// 服务类（将在后续 Phase 中迁移）
-// export { UniversalExportService } from './UniversalExportService';
+// 服务类
+export { UniversalExportService, type IExportClient } from './UniversalExportService';
 
 // 初始化辅助函数
 export {
@@ -66,4 +66,16 @@ export {
 
 // 工具函数
 export * from './utils';
+
+// ============= Drizzle Schemas =============
+export * from './drizzle-schemas';
+
+// ============= Drizzle Database Services =============
+export {
+  ExportConfigDatabaseService,
+  ExportHistoryDatabaseService,
+  createExportDatabaseServices,
+  type ExportDatabaseServiceOptions,
+  type DrizzleDb,
+} from './drizzle-database';
 
