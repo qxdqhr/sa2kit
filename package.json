@@ -22,7 +22,9 @@
     "miniapp",
     "electron",
     "tailwindcss",
-    "ui-components"
+    "ui-components",
+    "mmd",
+    "threejs"
   ],
   "author": "qxdqhr",
   "license": "MIT",
@@ -157,6 +159,11 @@
       "types": "./dist/storage/index.d.ts",
       "import": "./dist/storage/index.mjs",
       "require": "./dist/storage/index.js"
+    },
+    "./mmd": {
+      "types": "./dist/mmd/index.d.ts",
+      "import": "./dist/mmd/index.mjs",
+      "require": "./dist/mmd/index.js"
     }
   },
   "files": [
@@ -204,6 +211,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.19.24",
     "@types/react": "^18.3.26",
+    "@types/three": "^0.181.0",
     "@types/uuid": "^11.0.0",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
@@ -230,6 +238,7 @@
     "bcryptjs": "^3.0.3",
     "jsonwebtoken": "^9.0.2",
     "postgres": "^3.4.7",
+    "three": "^0.181.2",
     "uuid": "^13.0.0",
     "xlsx": "^0.18.5"
   }

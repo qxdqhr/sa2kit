@@ -26,6 +26,7 @@ export default defineConfig({
     'auth/components/index': 'src/auth/components/index.ts',
     'config/index': 'src/config/index.ts',
     'config/server/index': 'src/config/server/index.ts',
+    'mmd/index': 'src/mmd/index.ts',
   },
 
   // Output formats: ESM and CJS
@@ -64,6 +65,7 @@ export default defineConfig({
     '@tarojs/taro', // 小程序环境专用
     'electron', // Electron 环境专用
     'react-native', // React Native 环境专用
+    'three', // externalize three to prevent bundling it twice if user app has it
   ],
 
   // Skip node_modules
@@ -81,4 +83,3 @@ export default defineConfig({
   // Platform target
   platform: 'neutral', // Works in both browser and Node.js
 });
-
