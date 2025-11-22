@@ -49,6 +49,9 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   );
   
   const [showSettings, setShowSettings] = useState(false);
+  
+  // 下拉菜单展开状态
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   // 计算当前使用的资源
   const currentResources = useMemo(() => {
@@ -899,130 +902,203 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
           </div>
 
           {/* 选择区域 */}
-          <div className="max-h-[70vh] overflow-y-auto p-4 space-y-3">
+          <div className="max-h-[70vh] overflow-y-auto p-4 space-y-2">
             {/* 模型选择 */}
             {resourceOptions.models && resourceOptions.models.length > 0 && (
-              <div>
-                <label className="mb-1.5 block text-xs font-medium text-white/70">
-                  模型
-                </label>
-                <div className="space-y-1">
-                  {resourceOptions.models.map((model) => (
-                    <button
-                      key={model.id}
-                      onClick={() => handleSelectionChange('model', model.id)}
-                      className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-all ${
-                        selectedModelId === model.id
-                          ? 'bg-purple-600 text-white font-medium'
-                          : 'bg-white/5 text-white/80 hover:bg-white/10'
-                      }`}
-                    >
-                      {model.name}
-                    </button>
-                  ))}
-                </div>
+              <div className="rounded-lg bg-white/5 overflow-hidden">
+                <button
+                  onClick={() => setExpandedSection(expandedSection === 'model' ? null : 'model')}
+                  className="w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-white/10 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-white/70">模型</span>
+                    <span className="text-sm text-white font-medium">
+                      {resourceOptions.models.find(m => m.id === selectedModelId)?.name || '未选择'}
+                    </span>
+                  </div>
+                  <span className={`text-white/60 transition-transform ${expandedSection === 'model' ? 'rotate-180' : ''}`}>
+                    ▼
+                  </span>
+                </button>
+                {expandedSection === 'model' && (
+                  <div className="border-t border-white/10 p-2 space-y-1 max-h-60 overflow-y-auto">
+                    {resourceOptions.models.map((model) => (
+                      <button
+                        key={model.id}
+                        onClick={() => {
+                          handleSelectionChange('model', model.id);
+                          setExpandedSection(null);
+                        }}
+                        className={`w-full rounded px-3 py-2 text-left text-sm transition-all ${
+                          selectedModelId === model.id
+                            ? 'bg-purple-600 text-white font-medium'
+                            : 'text-white/80 hover:bg-white/10'
+                        }`}
+                      >
+                        {model.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
             {/* 动作选择 */}
             {resourceOptions.motions && resourceOptions.motions.length > 0 && (
-              <div>
-                <label className="mb-1.5 block text-xs font-medium text-white/70">
-                  动作
-                </label>
-                <div className="space-y-1">
-                  <button
-                    onClick={() => handleSelectionChange('motion', '')}
-                    className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-all ${
-                      selectedMotionId === ''
-                        ? 'bg-purple-600 text-white font-medium'
-                        : 'bg-white/5 text-white/80 hover:bg-white/10'
-                    }`}
-                  >
-                    无
-                  </button>
-                  {resourceOptions.motions.map((motion) => (
+              <div className="rounded-lg bg-white/5 overflow-hidden">
+                <button
+                  onClick={() => setExpandedSection(expandedSection === 'motion' ? null : 'motion')}
+                  className="w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-white/10 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-white/70">动作</span>
+                    <span className="text-sm text-white font-medium">
+                      {selectedMotionId ? resourceOptions.motions.find(m => m.id === selectedMotionId)?.name : '无'}
+                    </span>
+                  </div>
+                  <span className={`text-white/60 transition-transform ${expandedSection === 'motion' ? 'rotate-180' : ''}`}>
+                    ▼
+                  </span>
+                </button>
+                {expandedSection === 'motion' && (
+                  <div className="border-t border-white/10 p-2 space-y-1 max-h-60 overflow-y-auto">
                     <button
-                      key={motion.id}
-                      onClick={() => handleSelectionChange('motion', motion.id)}
-                      className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-all ${
-                        selectedMotionId === motion.id
+                      onClick={() => {
+                        handleSelectionChange('motion', '');
+                        setExpandedSection(null);
+                      }}
+                      className={`w-full rounded px-3 py-2 text-left text-sm transition-all ${
+                        selectedMotionId === ''
                           ? 'bg-purple-600 text-white font-medium'
-                          : 'bg-white/5 text-white/80 hover:bg-white/10'
+                          : 'text-white/80 hover:bg-white/10'
                       }`}
                     >
-                      {motion.name}
+                      无
                     </button>
-                  ))}
-                </div>
+                    {resourceOptions.motions.map((motion) => (
+                      <button
+                        key={motion.id}
+                        onClick={() => {
+                          handleSelectionChange('motion', motion.id);
+                          setExpandedSection(null);
+                        }}
+                        className={`w-full rounded px-3 py-2 text-left text-sm transition-all ${
+                          selectedMotionId === motion.id
+                            ? 'bg-purple-600 text-white font-medium'
+                            : 'text-white/80 hover:bg-white/10'
+                        }`}
+                      >
+                        {motion.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
             {/* 音乐选择 */}
             {resourceOptions.audios && resourceOptions.audios.length > 0 && (
-              <div>
-                <label className="mb-1.5 block text-xs font-medium text-white/70">
-                  音乐
-                </label>
-                <div className="space-y-1">
-                  <button
-                    onClick={() => handleSelectionChange('audio', '')}
-                    className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-all ${
-                      selectedAudioId === ''
-                        ? 'bg-purple-600 text-white font-medium'
-                        : 'bg-white/5 text-white/80 hover:bg-white/10'
-                    }`}
-                  >
-                    无
-                  </button>
-                  {resourceOptions.audios.map((audio) => (
+              <div className="rounded-lg bg-white/5 overflow-hidden">
+                <button
+                  onClick={() => setExpandedSection(expandedSection === 'audio' ? null : 'audio')}
+                  className="w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-white/10 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-white/70">音乐</span>
+                    <span className="text-sm text-white font-medium">
+                      {selectedAudioId ? resourceOptions.audios.find(a => a.id === selectedAudioId)?.name : '无'}
+                    </span>
+                  </div>
+                  <span className={`text-white/60 transition-transform ${expandedSection === 'audio' ? 'rotate-180' : ''}`}>
+                    ▼
+                  </span>
+                </button>
+                {expandedSection === 'audio' && (
+                  <div className="border-t border-white/10 p-2 space-y-1 max-h-60 overflow-y-auto">
                     <button
-                      key={audio.id}
-                      onClick={() => handleSelectionChange('audio', audio.id)}
-                      className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-all ${
-                        selectedAudioId === audio.id
+                      onClick={() => {
+                        handleSelectionChange('audio', '');
+                        setExpandedSection(null);
+                      }}
+                      className={`w-full rounded px-3 py-2 text-left text-sm transition-all ${
+                        selectedAudioId === ''
                           ? 'bg-purple-600 text-white font-medium'
-                          : 'bg-white/5 text-white/80 hover:bg-white/10'
+                          : 'text-white/80 hover:bg-white/10'
                       }`}
                     >
-                      {audio.name}
+                      无
                     </button>
-                  ))}
-                </div>
+                    {resourceOptions.audios.map((audio) => (
+                      <button
+                        key={audio.id}
+                        onClick={() => {
+                          handleSelectionChange('audio', audio.id);
+                          setExpandedSection(null);
+                        }}
+                        className={`w-full rounded px-3 py-2 text-left text-sm transition-all ${
+                          selectedAudioId === audio.id
+                            ? 'bg-purple-600 text-white font-medium'
+                            : 'text-white/80 hover:bg-white/10'
+                        }`}
+                      >
+                        {audio.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
             {/* 相机选择 */}
             {resourceOptions.cameras && resourceOptions.cameras.length > 0 && (
-              <div>
-                <label className="mb-1.5 block text-xs font-medium text-white/70">
-                  相机
-                </label>
-                <div className="space-y-1">
-                  <button
-                    onClick={() => handleSelectionChange('camera', '')}
-                    className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-all ${
-                      selectedCameraId === ''
-                        ? 'bg-purple-600 text-white font-medium'
-                        : 'bg-white/5 text-white/80 hover:bg-white/10'
-                    }`}
-                  >
-                    无
-                  </button>
-                  {resourceOptions.cameras.map((camera) => (
+              <div className="rounded-lg bg-white/5 overflow-hidden">
+                <button
+                  onClick={() => setExpandedSection(expandedSection === 'camera' ? null : 'camera')}
+                  className="w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-white/10 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-white/70">相机</span>
+                    <span className="text-sm text-white font-medium">
+                      {selectedCameraId ? resourceOptions.cameras.find(c => c.id === selectedCameraId)?.name : '无'}
+                    </span>
+                  </div>
+                  <span className={`text-white/60 transition-transform ${expandedSection === 'camera' ? 'rotate-180' : ''}`}>
+                    ▼
+                  </span>
+                </button>
+                {expandedSection === 'camera' && (
+                  <div className="border-t border-white/10 p-2 space-y-1 max-h-60 overflow-y-auto">
                     <button
-                      key={camera.id}
-                      onClick={() => handleSelectionChange('camera', camera.id)}
-                      className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-all ${
-                        selectedCameraId === camera.id
+                      onClick={() => {
+                        handleSelectionChange('camera', '');
+                        setExpandedSection(null);
+                      }}
+                      className={`w-full rounded px-3 py-2 text-left text-sm transition-all ${
+                        selectedCameraId === ''
                           ? 'bg-purple-600 text-white font-medium'
-                          : 'bg-white/5 text-white/80 hover:bg-white/10'
+                          : 'text-white/80 hover:bg-white/10'
                       }`}
                     >
-                      {camera.name}
+                      无
                     </button>
-                  ))}
-                </div>
+                    {resourceOptions.cameras.map((camera) => (
+                      <button
+                        key={camera.id}
+                        onClick={() => {
+                          handleSelectionChange('camera', camera.id);
+                          setExpandedSection(null);
+                        }}
+                        className={`w-full rounded px-3 py-2 text-left text-sm transition-all ${
+                          selectedCameraId === camera.id
+                            ? 'bg-purple-600 text-white font-medium'
+                            : 'text-white/80 hover:bg-white/10'
+                        }`}
+                      >
+                        {camera.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
