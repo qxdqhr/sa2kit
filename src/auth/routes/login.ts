@@ -6,15 +6,50 @@
 import type { LoginRouteConfig, ApiResponse } from './types';
 
 /**
+ * 添加 CORS 头到响应
+ */
+function addCorsHeaders(response: Response, config: LoginRouteConfig, request: Request): Response {
+  if (!config.cors?.enabled) return response;
+
+  const origin = request.headers.get('origin');
+  const allowedOrigins = config.cors.origin;
+
+  // 处理允许的源
+  if (allowedOrigins) {
+    if (typeof allowedOrigins === 'string') {
+      response.headers.set('Access-Control-Allow-Origin', allowedOrigins);
+    } else if (Array.isArray(allowedOrigins) && origin && allowedOrigins.includes(origin)) {
+      response.headers.set('Access-Control-Allow-Origin', origin);
+    }
+  } else {
+    // 默认允许所有源
+    response.headers.set('Access-Control-Allow-Origin', origin || '*');
+  }
+
+  if (config.cors.credentials) {
+    response.headers.set('Access-Control-Allow-Credentials', 'true');
+  }
+
+  const methods = config.cors.methods || ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'];
+  response.headers.set('Access-Control-Allow-Methods', methods.join(', '));
+
+  const headers = config.cors.allowedHeaders || ['Content-Type', 'Authorization'];
+  response.headers.set('Access-Control-Allow-Headers', headers.join(', '));
+
+  return response;
+}
+
+/**
  * 创建登录路由处理器
  *
  * @example
  * ```typescript
- * import { createLoginHandler } from '@qhr123/sa2kit/auth/routes';
+ * import { createLoginHandler } from 'sa2kit/auth/routes';
  *
  * export const POST = createLoginHandler({
  *   authService: myAuthService,
  *   analytics: myAnalytics,
+ *   cors: { enabled: true },
  * });
  * ```
  */
@@ -29,7 +64,7 @@ export function createLoginHandler(config: LoginRouteConfig) {
 
       // 验证必填字段
       if (!email || !password) {
-        return new Response(
+        const response = new Response(
           JSON.stringify({
             success: false,
             error: '邮箱和密码不能为空',
@@ -39,6 +74,7 @@ export function createLoginHandler(config: LoginRouteConfig) {
             headers: { 'Content-Type': 'application/json' },
           }
         );
+        return addCorsHeaders(response, config, request);
       }
 
       // 执行登录
@@ -91,7 +127,7 @@ export function createLoginHandler(config: LoginRouteConfig) {
         response.headers.set('Set-Cookie', cookieValue);
       }
 
-      return response;
+      return addCorsHeaders(response, config, request);
     } catch (error) {
       console.error('Login error:', error);
 
@@ -108,7 +144,7 @@ export function createLoginHandler(config: LoginRouteConfig) {
         }
       }
 
-      return new Response(
+      const response = new Response(
         JSON.stringify({
           success: false,
           error: (error as any).message || '登录失败，请检查邮箱和密码',
@@ -118,7 +154,25 @@ export function createLoginHandler(config: LoginRouteConfig) {
           headers: { 'Content-Type': 'application/json' },
         }
       );
+
+      return addCorsHeaders(response, config, request);
     }
+  };
+}
+
+/**
+ * 创建 CORS 预检请求处理器
+ */
+export function createLoginOptionsHandler(config: LoginRouteConfig) {
+  return async (request: Request) => {
+    const response = new Response(null, {
+      status: 204,
+      headers: {
+        'Content-Length': '0',
+      },
+    });
+
+    return addCorsHeaders(response, config, request);
   };
 }
 

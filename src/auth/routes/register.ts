@@ -6,15 +6,50 @@
 import type { RegisterRouteConfig, ApiResponse } from './types';
 
 /**
+ * 添加 CORS 头到响应
+ */
+function addCorsHeaders(response: Response, config: RegisterRouteConfig, request: Request): Response {
+  if (!config.cors?.enabled) return response;
+
+  const origin = request.headers.get('origin');
+  const allowedOrigins = config.cors.origin;
+
+  // 处理允许的源
+  if (allowedOrigins) {
+    if (typeof allowedOrigins === 'string') {
+      response.headers.set('Access-Control-Allow-Origin', allowedOrigins);
+    } else if (Array.isArray(allowedOrigins) && origin && allowedOrigins.includes(origin)) {
+      response.headers.set('Access-Control-Allow-Origin', origin);
+    }
+  } else {
+    // 默认允许所有源
+    response.headers.set('Access-Control-Allow-Origin', origin || '*');
+  }
+
+  if (config.cors.credentials) {
+    response.headers.set('Access-Control-Allow-Credentials', 'true');
+  }
+
+  const methods = config.cors.methods || ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'];
+  response.headers.set('Access-Control-Allow-Methods', methods.join(', '));
+
+  const headers = config.cors.allowedHeaders || ['Content-Type', 'Authorization'];
+  response.headers.set('Access-Control-Allow-Headers', headers.join(', '));
+
+  return response;
+}
+
+/**
  * 创建注册路由处理器
  *
  * @example
  * ```typescript
- * import { createRegisterHandler } from '@qhr123/sa2kit/auth/routes';
+ * import { createRegisterHandler } from 'sa2kit/auth/routes';
  *
  * export const POST = createRegisterHandler({
  *   authService: myAuthService,
  *   defaultRole: 'USER',
+ *   cors: { enabled: true },
  * });
  * ```
  */
@@ -26,7 +61,7 @@ export function createRegisterHandler(config: RegisterRouteConfig) {
 
       // 验证必填字段
       if (!email || !password) {
-        return new Response(
+        const response = new Response(
           JSON.stringify({
             success: false,
             error: '邮箱和密码不能为空',
@@ -36,11 +71,12 @@ export function createRegisterHandler(config: RegisterRouteConfig) {
             headers: { 'Content-Type': 'application/json' },
           }
         );
+        return addCorsHeaders(response, config, request);
       }
 
       // 密码强度验证
       if (password.length < 6) {
-        return new Response(
+        const response = new Response(
           JSON.stringify({
             success: false,
             error: '密码长度至少为 6 位',
@@ -50,6 +86,7 @@ export function createRegisterHandler(config: RegisterRouteConfig) {
             headers: { 'Content-Type': 'application/json' },
           }
         );
+        return addCorsHeaders(response, config, request);
       }
 
       // 执行注册
@@ -105,7 +142,7 @@ export function createRegisterHandler(config: RegisterRouteConfig) {
         response.headers.set('Set-Cookie', cookieValue);
       }
 
-      return response;
+      return addCorsHeaders(response, config, request);
     } catch (error) {
       console.error('Register error:', error);
 
@@ -121,7 +158,7 @@ export function createRegisterHandler(config: RegisterRouteConfig) {
         }
       }
 
-      return new Response(
+      const response = new Response(
         JSON.stringify({
           success: false,
           error: (error as any).message || '注册失败',
@@ -131,7 +168,51 @@ export function createRegisterHandler(config: RegisterRouteConfig) {
           headers: { 'Content-Type': 'application/json' },
         }
       );
+
+      return addCorsHeaders(response, config, request);
     }
+  };
+}
+
+/**
+ * 创建 CORS 预检请求处理器
+ */
+export function createRegisterOptionsHandler(config: RegisterRouteConfig) {
+  return async (request: Request) => {
+    const response = new Response(null, {
+      status: 204,
+      headers: {
+        'Content-Length': '0',
+      },
+    });
+
+    // 复用 addCorsHeaders 函数
+    if (config.cors?.enabled) {
+      const origin = request.headers.get('origin');
+      const allowedOrigins = config.cors.origin;
+
+      if (allowedOrigins) {
+        if (typeof allowedOrigins === 'string') {
+          response.headers.set('Access-Control-Allow-Origin', allowedOrigins);
+        } else if (Array.isArray(allowedOrigins) && origin && allowedOrigins.includes(origin)) {
+          response.headers.set('Access-Control-Allow-Origin', origin);
+        }
+      } else {
+        response.headers.set('Access-Control-Allow-Origin', origin || '*');
+      }
+
+      if (config.cors.credentials) {
+        response.headers.set('Access-Control-Allow-Credentials', 'true');
+      }
+
+      const methods = config.cors.methods || ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'];
+      response.headers.set('Access-Control-Allow-Methods', methods.join(', '));
+
+      const headers = config.cors.allowedHeaders || ['Content-Type', 'Authorization'];
+      response.headers.set('Access-Control-Allow-Headers', headers.join(', '));
+    }
+
+    return response;
   };
 }
 

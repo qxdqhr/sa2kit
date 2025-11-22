@@ -1,15 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-// @ts-ignore
-import { MMDLoader } from 'three/examples/jsm/loaders/MMDLoader.js';
-// @ts-ignore
-import { MMDAnimationHelper } from 'three/examples/jsm/animation/MMDAnimationHelper.js';
-// @ts-ignore
-import { OutlineEffect } from 'three/examples/jsm/effects/OutlineEffect.js';
-import { MMDPlayerProps } from '../types';
+import { MMDLoader, MMDAnimationHelper, OutlineEffect } from 'three-stdlib';
+import { MMDPlayerBaseProps } from '../types';
 import { loadAmmo } from '../utils/ammo-loader';
 
-export const MMDPlayer: React.FC<MMDPlayerProps> = ({
+export const MMDPlayer: React.FC<MMDPlayerBaseProps> = ({
   modelUrl,
   vmdUrl,
   cameraUrl,
@@ -46,7 +41,10 @@ export const MMDPlayer: React.FC<MMDPlayerProps> = ({
 
         // Load Ammo.js if physics is enabled
         if (physics) {
-          await loadAmmo();
+          await loadAmmo({
+            scriptPath: '/mikutalking/libs/ammo.wasm.js',
+            wasmBasePath: '/mikutalking/libs/',
+          });
         }
 
         const container = containerRef.current!;
@@ -97,9 +95,9 @@ export const MMDPlayer: React.FC<MMDPlayerProps> = ({
               loader.loadAnimation(
                 vmdUrl,
                 mesh,
-                (animation: THREE.AnimationClip | THREE.AnimationClip[]) => {
+                (vmdObject: any) => {
                   helper.add(mesh, {
-                    animation: animation as THREE.AnimationClip,
+                    animation: vmdObject,
                     physics: physics,
                   });
                 },
@@ -108,7 +106,7 @@ export const MMDPlayer: React.FC<MMDPlayerProps> = ({
                 },
                 (err: unknown) => {
                     console.error('Error loading animation', err);
-                    if (onError) onError(err);
+                    if (onError) onError(err as Error);
                 }
               );
             } else {
@@ -120,9 +118,9 @@ export const MMDPlayer: React.FC<MMDPlayerProps> = ({
                 loader.loadAnimation(
                     cameraUrl,
                     camera,
-                    (cameraAnimation: THREE.AnimationClip | THREE.AnimationClip[]) => {
+                    (cameraVmdObject: any) => {
                         helper.add(camera, {
-                            animation: cameraAnimation as THREE.AnimationClip,
+                            animation: cameraVmdObject,
                         });
                     },
                     undefined,
@@ -142,7 +140,7 @@ export const MMDPlayer: React.FC<MMDPlayerProps> = ({
                         camera.add(listener);
                         const audio = new THREE.Audio(listener);
                         audio.setBuffer(buffer);
-                        helper.add(audio, { delay: 0.0 });
+                        helper.add(audio as any);
                     },
                     undefined,
                     (err: unknown) => {
@@ -159,7 +157,7 @@ export const MMDPlayer: React.FC<MMDPlayerProps> = ({
           },
           (err: unknown) => {
             setError('Failed to load model');
-            if (onError) onError(err);
+            if (onError) onError(err as Error);
             setLoading(false);
           }
         );

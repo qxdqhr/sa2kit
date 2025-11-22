@@ -61,13 +61,23 @@ export {
 // Routes
 export {
   createLoginHandler,
+  createLoginOptionsHandler,
   createRegisterHandler,
+  createRegisterOptionsHandler,
   createMeHandler,
+  createMeOptionsHandler,
   createLogoutHandler,
+  createLogoutOptionsHandler,
+  createDefaultBaseConfig,
+  createDefaultLoginConfig,
+  createDefaultRegisterConfig,
+  createAnalyticsAdapter,
   type BaseRouteConfig,
   type LoginRouteConfig,
   type RegisterRouteConfig,
   type ApiResponse,
+  type AnalyticsEvent,
+  type AnalyticsService,
 } from './routes';
 
 // Middleware
