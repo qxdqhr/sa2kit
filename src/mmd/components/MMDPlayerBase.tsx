@@ -4,7 +4,7 @@ import { MMDLoader, MMDAnimationHelper, OutlineEffect } from 'three-stdlib';
 import { MMDPlayerBaseProps } from '../types';
 import { loadAmmo } from '../utils/ammo-loader';
 
-export const MMDPlayer: React.FC<MMDPlayerBaseProps> = ({
+export const MMDPlayerBase: React.FC<MMDPlayerBaseProps> = ({
   modelUrl,
   vmdUrl,
   cameraUrl,
