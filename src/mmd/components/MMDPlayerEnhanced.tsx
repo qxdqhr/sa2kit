@@ -218,8 +218,8 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
             },
             (progress: any) => {
               if (progress.total > 0) {
-                const percent = (progress.loaded / progress.total) * 40 + 20;
-                setLoadingProgress(Math.min(percent, 60));
+                const percent = (progress.loaded / progress.total) * 30 + 20;
+                setLoadingProgress(Math.min(percent, 50));
               }
             },
             (error: any) => {
@@ -234,6 +234,62 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         }
 
         sceneRef.current.add(mesh);
+
+        // 加载场景模型
+        if (resources.stageModelPath) {
+          console.log('🏰 开始加载场景模型:', resources.stageModelPath);
+          
+          const stageMesh = await new Promise<any>((resolve, reject) => {
+            loader.load(
+              resources.stageModelPath!,
+              (object: any) => {
+                console.log('✅ 场景模型加载成功');
+                resolve(object);
+              },
+              undefined,
+              (error: any) => {
+                console.error('❌ 场景模型加载失败:', error);
+                reject(error);
+              }
+            );
+          });
+
+          // 场景模型通常不需要物理计算，直接添加即可
+          // 注意：这里我们不把它加到 helper 中，除非它有动作
+          // 确保场景在人物后面（通常不需要特殊处理，深度缓冲会处理）
+          // 但我们可以调整一下渲染顺序或位置如果需要
+          sceneRef.current.add(stageMesh);
+        }
+
+        // 加载背景图片
+        if (resources.backgroundPath && sceneRef.current) {
+          console.log('🖼️ 开始加载背景图片:', resources.backgroundPath);
+          const textureLoader = new THREE.TextureLoader();
+          
+          const backgroundTexture = await new Promise<THREE.Texture>((resolve, reject) => {
+            textureLoader.load(
+              resources.backgroundPath!,
+              (texture) => resolve(texture),
+              undefined,
+              (err) => reject(err)
+            );
+          });
+
+          backgroundTexture.colorSpace = THREE.SRGBColorSpace;
+
+          if (stage?.backgroundType === 'skybox') {
+             backgroundTexture.mapping = THREE.EquirectangularReflectionMapping;
+             sceneRef.current.background = backgroundTexture;
+             sceneRef.current.environment = backgroundTexture;
+          } else if (stage?.backgroundType === 'image') {
+             sceneRef.current.background = backgroundTexture;
+             // 对于固定背景图，不一定要设为 environment
+          } else {
+             // 默认 fallback 到 color 或保持原样
+             sceneRef.current.background = backgroundTexture;
+          }
+          console.log('✅ 背景图片加载成功');
+        }
 
         // 初始化动画数据存储
         let vmd: any = null;

@@ -10,6 +10,16 @@ export interface MMDResources {
   cameraPath?: string;
   /** 音频路径 */
   audioPath?: string;
+  /** 
+   * 场景模型路径 (.pmx/.pmd)
+   * 通常是静态的 3D 场景模型，如教室、舞台等
+   */
+  stageModelPath?: string;
+  /**
+   * 背景图片路径
+   * 支持 jpg/png 等图片格式，将作为 360度背景 (Equirectangular) 或固定背景
+   */
+  backgroundPath?: string;
 }
 
 /**
@@ -18,6 +28,14 @@ export interface MMDResources {
 export interface MMDStage {
   /** 背景色 */
   backgroundColor?: string;
+  /** 
+   * 背景类型
+   * 'color': 纯色背景 (默认)
+   * 'image': 固定背景图片 (backgroundPath)
+   * 'skybox': 360度全景图 (backgroundPath)
+   * @default 'color'
+   */
+  backgroundType?: 'color' | 'image' | 'skybox';
   /** 相机初始位置 */
   cameraPosition?: { x: number; y: number; z: number };
   /** 相机目标位置 */
@@ -116,4 +134,3 @@ export interface MMDPlayerEnhancedProps {
  * MMD 播放器属性（联合类型）
  */
 export type MMDPlayerProps = MMDPlayerBaseProps | MMDPlayerEnhancedProps;
-
