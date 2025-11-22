@@ -81,8 +81,8 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
     onNodeChange?.(currentNodeIndex, currentNode);
   }, [currentNodeIndex, currentNode, onNodeChange]);
 
-  // 处理音频结束事件（用于自动切换到下一个节点）
-  const handleAudioEnded = () => {
+  // 处理播放结束事件（音频或动画结束时触发）
+  const handlePlaybackEnded = () => {
     console.log('🎵 [MMDPlaylist] 当前节点播放完成');
 
     // 如果当前节点设置了循环，则不切换
@@ -153,7 +153,8 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
         className="h-full w-full"
         onLoad={onLoad}
         onError={onError}
-        onAudioEnded={handleAudioEnded}
+        onAudioEnded={handlePlaybackEnded}
+        onAnimationEnded={handlePlaybackEnded}
       />
 
       {/* 播放列表控制按钮（位于右下角，不与播放器按钮重叠） */}

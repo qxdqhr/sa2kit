@@ -27,6 +27,7 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   onResourceChange,
   onSelectionChange,
   onAudioEnded,
+  onAnimationEnded,
 }) => {
   console.log('🎨 [MMDPlayerEnhanced] 组件初始化')
   
@@ -125,6 +126,9 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   const isLoadedRef = useRef<boolean>(false); // 标记资源是否已加载
   const shouldAutoPlayAfterReloadRef = useRef<boolean>(false); // 标记重新加载后是否自动播放
   const vmdDataRef = useRef<{ mesh: any; vmd: any; cameraVmd: any } | null>(null); // 保存动画数据用于重置
+  const animationDurationRef = useRef<number>(0); // 动画时长（秒）
+  const hasAudioRef = useRef<boolean>(false); // 是否有音频
+  const animationEndedFiredRef = useRef<boolean>(false); // 标记动画结束回调是否已触发
 
   const [loading, setLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -209,7 +213,23 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
 
       // 只在播放状态时更新动画
       if (helperRef.current && isPlayingRef.current) {
-        helperRef.current.update(clockRef.current.getDelta());
+        const delta = clockRef.current.getDelta();
+        helperRef.current.update(delta);
+
+        // 检测动画是否结束（仅在没有音频或动画时长已知时）
+        if (!hasAudioRef.current && animationDurationRef.current > 0 && !loop && !animationEndedFiredRef.current) {
+          const currentTime = clockRef.current.getElapsedTime();
+          // 动画结束判定：当前时间 >= 动画时长（留一点余量，避免浮点数误差）
+          if (currentTime >= animationDurationRef.current - 0.1) {
+            console.log('🎬 [MMDPlayerEnhanced] 动画播放结束');
+            animationEndedFiredRef.current = true;
+            isPlayingRef.current = false;
+            setIsPlaying(false);
+            
+            // 触发动画结束回调
+            onAnimationEnded?.();
+          }
+        }
       }
 
       if (controlsRef.current) {
@@ -336,6 +356,11 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
       try {
         setLoading(true);
         setLoadingProgress(0);
+
+        // 重置动画相关标记
+        animationDurationRef.current = 0;
+        hasAudioRef.current = false;
+        animationEndedFiredRef.current = false;
 
         // 如果启用物理，先加载 Ammo.js
         if (stage?.enablePhysics !== false) {
@@ -479,6 +504,12 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
             animation: vmd,
             physics: stage?.enablePhysics !== false,
           });
+
+          // 计算动画时长（从 VMD 数据中获取）
+          if (vmd && vmd.duration !== undefined) {
+            animationDurationRef.current = vmd.duration;
+            console.log('⏱️ 动画时长:', vmd.duration, '秒');
+          }
         } else {
           helper.add(mesh, { physics: stage?.enablePhysics !== false });
         }
@@ -516,6 +547,7 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
           audio.volume = 0.5;
           audio.loop = loop;
           audioRef.current = audio;
+          hasAudioRef.current = true; // 标记有音频
 
           // 监听音频结束事件
           audio.onended = () => {
@@ -627,6 +659,9 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     if (!isPlaying) {
       clockRef.current.start();
     }
+    
+    // 重置动画结束标记，允许再次触发
+    animationEndedFiredRef.current = false;
     
     isPlayingRef.current = true; // 更新 ref
     setIsPlaying(true);

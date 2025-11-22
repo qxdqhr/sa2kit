@@ -257,6 +257,8 @@ export interface MMDPlayerEnhancedProps {
   }) => void;
   /** 音频播放结束回调 */
   onAudioEnded?: () => void;
+  /** 动画播放结束回调（当没有音频或音频先结束时） */
+  onAnimationEnded?: () => void;
 }
 
 /**
