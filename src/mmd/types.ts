@@ -255,6 +255,8 @@ export interface MMDPlayerEnhancedProps {
     stageModelId?: string;
     backgroundId?: string;
   }) => void;
+  /** 音频播放结束回调 */
+  onAudioEnded?: () => void;
 }
 
 /**

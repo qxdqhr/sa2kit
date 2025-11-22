@@ -153,6 +153,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
         className="h-full w-full"
         onLoad={onLoad}
         onError={onError}
+        onAudioEnded={handleAudioEnded}
       />
 
       {/* 播放列表控制按钮（位于右下角，不与播放器按钮重叠） */}

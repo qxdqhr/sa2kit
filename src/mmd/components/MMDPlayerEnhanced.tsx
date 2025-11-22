@@ -26,6 +26,7 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   onError,
   onResourceChange,
   onSelectionChange,
+  onAudioEnded,
 }) => {
   console.log('🎨 [MMDPlayerEnhanced] 组件初始化')
   
@@ -529,6 +530,8 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
                 }
               }
             }
+            // 触发音频结束回调
+            onAudioEnded?.();
           };
 
           console.log('✅ 音频加载成功');
