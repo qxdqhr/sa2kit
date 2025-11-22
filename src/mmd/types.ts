@@ -35,6 +35,32 @@ export interface MMDResourceItem {
 }
 
 /**
+ * MMD 资源选项（用于下拉框选择）
+ */
+export interface MMDResourceOption {
+  /** 选项 ID */
+  id: string;
+  /** 选项名称 */
+  name: string;
+  /** 资源路径 */
+  path: string;
+}
+
+/**
+ * MMD 资源选项列表（用于独立选择模型、动作、音乐、相机）
+ */
+export interface MMDResourceOptions {
+  /** 模型选项列表 */
+  models?: MMDResourceOption[];
+  /** 动作选项列表 */
+  motions?: MMDResourceOption[];
+  /** 音频选项列表 */
+  audios?: MMDResourceOption[];
+  /** 相机选项列表 */
+  cameras?: MMDResourceOption[];
+}
+
+/**
  * MMD 舞台配置
  */
 export interface MMDStage {
@@ -130,6 +156,15 @@ export interface MMDPlayerEnhancedProps {
   resourcesList?: MMDResourceItem[];
   /** 默认选中的资源ID（当使用 resourcesList 时） */
   defaultResourceId?: string;
+  /** MMD资源选项列表（用于下拉框独立选择），如果提供则显示设置按钮 */
+  resourceOptions?: MMDResourceOptions;
+  /** 默认选中的资源（当使用 resourceOptions 时） */
+  defaultSelection?: {
+    modelId?: string;
+    motionId?: string;
+    audioId?: string;
+    cameraId?: string;
+  };
   /** 舞台配置 */
   stage?: MMDStage;
   /** 自动播放 */
@@ -144,8 +179,15 @@ export interface MMDPlayerEnhancedProps {
   onLoad?: () => void;
   /** 错误回调 */
   onError?: (error: Error) => void;
-  /** 资源切换回调 */
+  /** 资源切换回调（resourcesList 模式） */
   onResourceChange?: (resourceId: string) => void;
+  /** 资源选择回调（resourceOptions 模式） */
+  onSelectionChange?: (selection: {
+    modelId?: string;
+    motionId?: string;
+    audioId?: string;
+    cameraId?: string;
+  }) => void;
 }
 
 /**

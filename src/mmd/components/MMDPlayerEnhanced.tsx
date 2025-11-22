@@ -15,6 +15,8 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   resources,
   resourcesList,
   defaultResourceId,
+  resourceOptions,
+  defaultSelection,
   stage,
   autoPlay = false,
   loop = false,
@@ -23,17 +25,49 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   onLoad,
   onError,
   onResourceChange,
+  onSelectionChange,
 }) => {
   console.log('🎨 [MMDPlayerEnhanced] 组件初始化')
   
-  // 资源切换状态
+  // 资源切换状态（resourcesList 模式）
   const [selectedResourceId, setSelectedResourceId] = useState<string>(
     defaultResourceId || resourcesList?.[0]?.id || ''
   );
+  
+  // 资源选择状态（resourceOptions 模式）
+  const [selectedModelId, setSelectedModelId] = useState<string>(
+    defaultSelection?.modelId || resourceOptions?.models?.[0]?.id || ''
+  );
+  const [selectedMotionId, setSelectedMotionId] = useState<string>(
+    defaultSelection?.motionId || ''
+  );
+  const [selectedAudioId, setSelectedAudioId] = useState<string>(
+    defaultSelection?.audioId || ''
+  );
+  const [selectedCameraId, setSelectedCameraId] = useState<string>(
+    defaultSelection?.cameraId || ''
+  );
+  
   const [showSettings, setShowSettings] = useState(false);
 
   // 计算当前使用的资源
   const currentResources = useMemo(() => {
+    // 模式1: resourceOptions（下拉框独立选择）
+    if (resourceOptions) {
+      const model = resourceOptions.models?.find(m => m.id === selectedModelId);
+      const motion = resourceOptions.motions?.find(m => m.id === selectedMotionId);
+      const audio = resourceOptions.audios?.find(a => a.id === selectedAudioId);
+      const camera = resourceOptions.cameras?.find(c => c.id === selectedCameraId);
+      
+      return {
+        modelPath: model?.path || resourceOptions.models?.[0]?.path || '',
+        motionPath: motion?.path,
+        audioPath: audio?.path,
+        cameraPath: camera?.path,
+      };
+    }
+    
+    // 模式2: resourcesList（预设组合）
     if (resourcesList && resourcesList.length > 0) {
       const selected = resourcesList.find(r => r.id === selectedResourceId);
       const resourceItem = selected || resourcesList[0];
@@ -42,11 +76,22 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
       }
       return resourceItem.resources;
     }
+    
+    // 模式3: resources（单资源）
     if (!resources) {
-      throw new Error('必须提供 resources 或 resourcesList');
+      throw new Error('必须提供 resources、resourcesList 或 resourceOptions');
     }
     return resources;
-  }, [resources, resourcesList, selectedResourceId]);
+  }, [
+    resources, 
+    resourcesList, 
+    selectedResourceId,
+    resourceOptions,
+    selectedModelId,
+    selectedMotionId,
+    selectedAudioId,
+    selectedCameraId,
+  ]);
 
   console.log('📂 [MMDPlayerEnhanced] 当前资源配置:', currentResources)
   console.log('🎭 [MMDPlayerEnhanced] 舞台配置:', stage)
@@ -567,7 +612,7 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     console.log('⏹️ 停止播放并重置到初始状态，needReset = true');
   };
 
-  // 资源切换处理
+  // 资源切换处理（resourcesList 模式）
   const handleResourceChange = (resourceId: string) => {
     console.log('🔄 [MMDPlayerEnhanced] 切换资源:', resourceId);
     
@@ -593,6 +638,40 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
 
     // 关闭设置弹窗
     setShowSettings(false);
+  };
+
+  // 资源选择处理（resourceOptions 模式）
+  const handleSelectionChange = (type: 'model' | 'motion' | 'audio' | 'camera', id: string) => {
+    console.log(`🔄 [MMDPlayerEnhanced] 选择${type}:`, id);
+    
+    // 停止当前播放
+    if (isPlaying) {
+      stop();
+    }
+
+    // 更新选中的资源
+    if (type === 'model') setSelectedModelId(id);
+    if (type === 'motion') setSelectedMotionId(id);
+    if (type === 'audio') setSelectedAudioId(id);
+    if (type === 'camera') setSelectedCameraId(id);
+    
+    // 标记需要重新加载
+    setNeedReset(true);
+    isLoadedRef.current = false;
+    
+    // 触发重新加载
+    setReloadTrigger(prev => prev + 1);
+
+    // 触发回调
+    if (onSelectionChange) {
+      const newSelection = {
+        modelId: type === 'model' ? id : selectedModelId,
+        motionId: type === 'motion' ? id : selectedMotionId,
+        audioId: type === 'audio' ? id : selectedAudioId,
+        cameraId: type === 'camera' ? id : selectedCameraId,
+      };
+      onSelectionChange(newSelection);
+    }
   };
 
   // 移除了这部分代码，改为使用覆盖层
@@ -655,8 +734,8 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
           ⏹️
         </button>
 
-        {/* 设置按钮（仅在提供资源列表时显示） */}
-        {resourcesList && resourcesList.length > 1 && (
+        {/* 设置按钮（仅在提供资源列表或资源选项时显示） */}
+        {((resourcesList && resourcesList.length > 1) || resourceOptions) && (
           <button
             onClick={() => setShowSettings(true)}
             className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-500 text-xl text-white transition-colors hover:bg-purple-600"
@@ -668,7 +747,7 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
       </div>
       )}
 
-      {/* 设置弹窗 */}
+      {/* 设置弹窗 - resourcesList 模式 */}
       {showSettings && resourcesList && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="max-h-[80vh] w-full max-w-md overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black shadow-2xl">
@@ -719,6 +798,118 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
                   </div>
                 </button>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 设置弹窗 - resourceOptions 模式（下拉框选择） */}
+      {showSettings && resourceOptions && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="max-h-[80vh] w-full max-w-md overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black shadow-2xl">
+            {/* 标题栏 */}
+            <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+              <h3 className="text-xl font-bold text-white">选择资源</h3>
+              <button
+                onClick={() => setShowSettings(false)}
+                className="text-2xl text-white/60 transition-colors hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* 下拉框选择区域 */}
+            <div className="max-h-[60vh] overflow-y-auto p-6 space-y-4">
+              {/* 模型选择 */}
+              {resourceOptions.models && resourceOptions.models.length > 0 && (
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-white/80">
+                    模型
+                  </label>
+                  <select
+                    value={selectedModelId}
+                    onChange={(e) => handleSelectionChange('model', e.target.value)}
+                    className="w-full rounded-lg bg-white/10 px-4 py-3 text-white outline-none transition-all hover:bg-white/15 focus:bg-white/20 focus:ring-2 focus:ring-purple-500"
+                  >
+                    {resourceOptions.models.map((model) => (
+                      <option key={model.id} value={model.id} className="bg-gray-900">
+                        {model.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* 动作选择 */}
+              {resourceOptions.motions && resourceOptions.motions.length > 0 && (
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-white/80">
+                    动作
+                  </label>
+                  <select
+                    value={selectedMotionId}
+                    onChange={(e) => handleSelectionChange('motion', e.target.value)}
+                    className="w-full rounded-lg bg-white/10 px-4 py-3 text-white outline-none transition-all hover:bg-white/15 focus:bg-white/20 focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value="" className="bg-gray-900">无</option>
+                    {resourceOptions.motions.map((motion) => (
+                      <option key={motion.id} value={motion.id} className="bg-gray-900">
+                        {motion.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* 音乐选择 */}
+              {resourceOptions.audios && resourceOptions.audios.length > 0 && (
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-white/80">
+                    音乐
+                  </label>
+                  <select
+                    value={selectedAudioId}
+                    onChange={(e) => handleSelectionChange('audio', e.target.value)}
+                    className="w-full rounded-lg bg-white/10 px-4 py-3 text-white outline-none transition-all hover:bg-white/15 focus:bg-white/20 focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value="" className="bg-gray-900">无</option>
+                    {resourceOptions.audios.map((audio) => (
+                      <option key={audio.id} value={audio.id} className="bg-gray-900">
+                        {audio.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* 相机选择 */}
+              {resourceOptions.cameras && resourceOptions.cameras.length > 0 && (
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-white/80">
+                    相机
+                  </label>
+                  <select
+                    value={selectedCameraId}
+                    onChange={(e) => handleSelectionChange('camera', e.target.value)}
+                    className="w-full rounded-lg bg-white/10 px-4 py-3 text-white outline-none transition-all hover:bg-white/15 focus:bg-white/20 focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value="" className="bg-gray-900">无</option>
+                    {resourceOptions.cameras.map((camera) => (
+                      <option key={camera.id} value={camera.id} className="bg-gray-900">
+                        {camera.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* 确认按钮 */}
+              <button
+                onClick={() => setShowSettings(false)}
+                className="mt-4 w-full rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-3 font-semibold text-white transition-all hover:from-purple-700 hover:to-blue-700"
+              >
+                确认
+              </button>
             </div>
           </div>
         </div>
