@@ -36,12 +36,16 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   const animationIdRef = useRef<number | null>(null);
   const isPlayingRef = useRef<boolean>(false); // 用 ref 存储播放状态，避免闭包问题
   const isLoadedRef = useRef<boolean>(false); // 标记资源是否已加载
+  const shouldAutoPlayAfterReloadRef = useRef<boolean>(false); // 标记重新加载后是否自动播放
+  const vmdDataRef = useRef<{ mesh: any; vmd: any; cameraVmd: any } | null>(null); // 保存动画数据用于重置
 
   const [loading, setLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [reloadTrigger, setReloadTrigger] = useState(0); // 用于触发重新加载
+  const [needReset, setNeedReset] = useState(false); // 标记是否需要重置（改用 state）
 
   // 初始化场景
   useEffect(() => {
@@ -231,12 +235,16 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
 
         sceneRef.current.add(mesh);
 
+        // 初始化动画数据存储
+        let vmd: any = null;
+        let cameraVmd: any = null;
+
         // 加载动作
         if (resources.motionPath) {
           setLoadingProgress(60);
           console.log('💃 开始加载动作:', resources.motionPath);
 
-          const vmd = await new Promise<any>((resolve, reject) => {
+          vmd = await new Promise<any>((resolve, reject) => {
             loader.loadAnimation(
               resources.motionPath!,
               mesh,
@@ -270,7 +278,7 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
           setLoadingProgress(80);
           console.log('📷 开始加载镜头:', resources.cameraPath);
 
-          const cameraVmd = await new Promise<any>((resolve, reject) => {
+          cameraVmd = await new Promise<any>((resolve, reject) => {
             loader.loadAnimation(
               resources.cameraPath!,
               cameraRef.current!,
@@ -320,10 +328,21 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         setLoadingProgress(100);
         setLoading(false);
 
+        // 保存动画数据用于后续重置
+        vmdDataRef.current = {
+          mesh,
+          vmd,
+          cameraVmd,
+        };
+
         console.log('🎉 所有资源加载完成！');
 
-        // 如果autoPlay为true，自动播放
-        if (autoPlay) {
+        // 如果是从 stop 后重新加载，则自动播放
+        if (shouldAutoPlayAfterReloadRef.current) {
+          shouldAutoPlayAfterReloadRef.current = false;
+          setTimeout(() => play(), 500);
+        } else if (autoPlay) {
+          // 否则根据 autoPlay 配置决定是否播放
           setTimeout(() => play(), 500);
         }
 
@@ -338,13 +357,51 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     };
 
     loadMMD();
-  }, [resources, stage?.enablePhysics, autoPlay, loop, onLoad, onError]);
+  }, [resources, stage?.enablePhysics, autoPlay, loop, onLoad, onError, reloadTrigger]);
 
   // 播放控制
   const play = () => {
+    console.log('🎬 [play] 函数被调用，needReset =', needReset);
+    
     if (!helperRef.current) return;
 
-    // 播放音频（如果是从暂停恢复，不重置时间）
+    // 如果需要重置（从 stop 恢复），重新创建 helper 并重新添加现有模型和动画
+    if (needReset && vmdDataRef.current && sceneRef.current && cameraRef.current) {
+      console.log('🔄 检测到需要重置，重新初始化 helper（保留模型）');
+      
+      const { mesh, vmd, cameraVmd } = vmdDataRef.current;
+
+      // 创建新的 helper 和 clock
+      const newHelper = new MMDAnimationHelper();
+      helperRef.current = newHelper;
+      clockRef.current = new THREE.Clock();
+
+      // 重新添加模型和动画（模型已经在场景中，不需要重新添加到场景）
+      if (vmd) {
+        newHelper.add(mesh, {
+          animation: vmd,
+          physics: stage?.enablePhysics !== false,
+        });
+      } else {
+        newHelper.add(mesh, { physics: stage?.enablePhysics !== false });
+      }
+
+      // 重新添加相机动画
+      if (cameraVmd) {
+        newHelper.add(cameraRef.current, { animation: cameraVmd });
+      }
+
+      // 重置音频
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+      }
+
+      setNeedReset(false);
+      console.log('✅ Helper 重新初始化完成，准备从第一帧播放');
+    }
+
+    // 正常播放流程
+    // 播放音频
     if (audioRef.current) {
       audioRef.current.play();
     }
@@ -382,24 +439,50 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   };
 
   const stop = () => {
-    if (helperRef.current && sceneRef.current) {
-      const mesh = sceneRef.current.children.find(
-        (child) => child.type === 'SkinnedMesh'
-      );
-      if (mesh) {
-        helperRef.current.pose(mesh as any, {});
-      }
-    }
+    if (!helperRef.current || !sceneRef.current) return;
 
+    // 停止播放状态
+    isPlayingRef.current = false;
+    setIsPlaying(false);
+
+    // 重置音频到开头
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
 
+    // 停止并重置时钟 - 这会让下次播放从头开始
     clockRef.current.stop();
-    isPlayingRef.current = false; // 更新 ref
-    setIsPlaying(false);
-    console.log('⏹️ 停止播放');
+    clockRef.current = new THREE.Clock();
+
+    // 重置模型姿势到初始状态（T-pose）
+    const mesh = sceneRef.current.children.find(
+      (child) => child.type === 'SkinnedMesh' || (child as any).isSkinnedMesh
+    );
+    if (mesh && (mesh as any).skeleton) {
+      // 使用 skeleton 的 pose() 方法重置骨骼到初始姿势
+      (mesh as any).skeleton.pose();
+    }
+
+    // 重置相机到初始位置
+    if (cameraRef.current) {
+      const camPos = stage?.cameraPosition || { x: 0, y: 10, z: 30 };
+      const camTarget = stage?.cameraTarget || { x: 0, y: 10, z: 0 };
+      cameraRef.current.position.set(camPos.x, camPos.y, camPos.z);
+      
+      // 如果有 OrbitControls，也需要重置目标
+      if (controlsRef.current) {
+        controlsRef.current.target.set(camTarget.x, camTarget.y, camTarget.z);
+        controlsRef.current.update();
+      } else {
+        cameraRef.current.lookAt(camTarget.x, camTarget.y, camTarget.z);
+      }
+    }
+
+    // 标记需要在下次播放时重置动画
+    setNeedReset(true);
+
+    console.log('⏹️ 停止播放并重置到初始状态，needReset = true');
   };
 
   // 移除了这部分代码，改为使用覆盖层
