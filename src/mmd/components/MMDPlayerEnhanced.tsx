@@ -129,6 +129,8 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   const animationDurationRef = useRef<number>(0); // 动画时长（秒）
   const hasAudioRef = useRef<boolean>(false); // 是否有音频
   const animationEndedFiredRef = useRef<boolean>(false); // 标记动画结束回调是否已触发
+  const lastAnimationTimeRef = useRef<number>(0); // 上一帧的动画时间
+  const animationStoppedCountRef = useRef<number>(0); // 动画停止的帧数计数
 
   const [loading, setLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -216,18 +218,37 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         const delta = clockRef.current.getDelta();
         helperRef.current.update(delta);
 
-        // 检测动画是否结束（仅在没有音频或动画时长已知时）
-        if (!hasAudioRef.current && animationDurationRef.current > 0 && !loop && !animationEndedFiredRef.current) {
+        // 检测动画是否结束（仅在没有音频时）
+        if (!hasAudioRef.current && !loop && !animationEndedFiredRef.current) {
           const currentTime = clockRef.current.getElapsedTime();
-          // 动画结束判定：当前时间 >= 动画时长（留一点余量，避免浮点数误差）
-          if (currentTime >= animationDurationRef.current - 0.1) {
-            console.log('🎬 [MMDPlayerEnhanced] 动画播放结束');
-            animationEndedFiredRef.current = true;
-            isPlayingRef.current = false;
-            setIsPlaying(false);
-            
-            // 触发动画结束回调
-            onAnimationEnded?.();
+          
+          // 方法1: 使用动画时长判定（如果有的话）
+          if (animationDurationRef.current > 0) {
+            if (currentTime >= animationDurationRef.current - 0.1) {
+              console.log('🎬 [MMDPlayerEnhanced] 动画播放结束（时长判定）');
+              animationEndedFiredRef.current = true;
+              isPlayingRef.current = false;
+              setIsPlaying(false);
+              onAnimationEnded?.();
+            }
+          } 
+          // 方法2: 检测动画是否停止变化（备用方案）
+          else {
+            // 检查动画时间是否停止增长
+            if (Math.abs(currentTime - lastAnimationTimeRef.current) < 0.001) {
+              animationStoppedCountRef.current++;
+              // 连续30帧（约0.5秒）动画时间不变，认为动画已结束
+              if (animationStoppedCountRef.current > 30) {
+                console.log('🎬 [MMDPlayerEnhanced] 动画播放结束（停止检测）');
+                animationEndedFiredRef.current = true;
+                isPlayingRef.current = false;
+                setIsPlaying(false);
+                onAnimationEnded?.();
+              }
+            } else {
+              animationStoppedCountRef.current = 0;
+            }
+            lastAnimationTimeRef.current = currentTime;
           }
         }
       }
@@ -361,6 +382,8 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         animationDurationRef.current = 0;
         hasAudioRef.current = false;
         animationEndedFiredRef.current = false;
+        lastAnimationTimeRef.current = 0;
+        animationStoppedCountRef.current = 0;
 
         // 如果启用物理，先加载 Ammo.js
         if (stage?.enablePhysics !== false) {
@@ -506,9 +529,30 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
           });
 
           // 计算动画时长（从 VMD 数据中获取）
-          if (vmd && vmd.duration !== undefined) {
-            animationDurationRef.current = vmd.duration;
-            console.log('⏱️ 动画时长:', vmd.duration, '秒');
+          // VMD 数据结构：vmd 是一个包含多个轨道的对象
+          if (vmd) {
+            let maxDuration = 0;
+            
+            // 尝试从 duration 属性获取
+            if (vmd.duration !== undefined) {
+              maxDuration = vmd.duration;
+            } 
+            // 尝试从 animations 数组获取
+            else if (Array.isArray(vmd) && vmd.length > 0 && vmd[0].duration !== undefined) {
+              maxDuration = vmd[0].duration;
+            }
+            // 尝试从 clip 获取
+            else if (vmd.clip && vmd.clip.duration !== undefined) {
+              maxDuration = vmd.clip.duration;
+            }
+            
+            if (maxDuration > 0) {
+              animationDurationRef.current = maxDuration;
+              console.log('⏱️ 动画时长:', maxDuration, '秒');
+            } else {
+              console.warn('⚠️ 无法获取动画时长，将无法自动检测动画结束');
+              console.log('📋 VMD 数据结构:', vmd);
+            }
           }
         } else {
           helper.add(mesh, { physics: stage?.enablePhysics !== false });
@@ -662,6 +706,8 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     
     // 重置动画结束标记，允许再次触发
     animationEndedFiredRef.current = false;
+    lastAnimationTimeRef.current = 0;
+    animationStoppedCountRef.current = 0;
     
     isPlayingRef.current = true; // 更新 ref
     setIsPlaying(true);
