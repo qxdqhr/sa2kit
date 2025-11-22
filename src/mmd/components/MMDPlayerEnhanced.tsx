@@ -227,6 +227,70 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     };
   }, [stage]);
 
+  // 清除旧资源
+  const clearOldResources = () => {
+    console.log('🧹 [MMDPlayerEnhanced] 开始清除旧资源');
+    
+    if (!sceneRef.current) return;
+
+    // 停止播放
+    if (isPlayingRef.current) {
+      isPlayingRef.current = false;
+      setIsPlaying(false);
+    }
+
+    // 停止音频
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+
+    // 清除 helper 中的所有对象
+    if (helperRef.current) {
+      // MMDAnimationHelper 没有公开的清除方法，我们需要创建新的
+      helperRef.current = null;
+    }
+
+    // 清除场景中的所有 MMD 相关对象（保留灯光和网格）
+    const objectsToRemove: THREE.Object3D[] = [];
+    sceneRef.current.traverse((child) => {
+      // 移除所有 SkinnedMesh（MMD 模型）
+      if (child.type === 'SkinnedMesh' || (child as any).isSkinnedMesh) {
+        objectsToRemove.push(child);
+      }
+      // 移除所有 Mesh（场景模型）
+      if (child.type === 'Mesh' && child !== sceneRef.current) {
+        objectsToRemove.push(child);
+      }
+    });
+
+    objectsToRemove.forEach((obj) => {
+      if (obj.parent) {
+        obj.parent.remove(obj);
+      }
+      // 清理几何体和材质
+      if ((obj as any).geometry) {
+        (obj as any).geometry.dispose();
+      }
+      if ((obj as any).material) {
+        if (Array.isArray((obj as any).material)) {
+          (obj as any).material.forEach((mat: any) => mat.dispose());
+        } else {
+          (obj as any).material.dispose();
+        }
+      }
+    });
+
+    // 重置时钟
+    clockRef.current = new THREE.Clock();
+
+    // 清除 VMD 数据
+    vmdDataRef.current = null;
+
+    console.log(`✅ [MMDPlayerEnhanced] 已清除 ${objectsToRemove.length} 个旧对象`);
+  };
+
   // 加载MMD资源
   useEffect(() => {
     console.log('📦 [MMDPlayerEnhanced] 资源加载 useEffect 触发')
@@ -246,6 +310,9 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     }
 
     console.log('✅ [MMDPlayerEnhanced] 场景和相机已就绪，开始加载资源')
+    
+    // 清除旧资源
+    clearOldResources();
     
     // 标记为正在加载
     isLoadedRef.current = true;
@@ -617,16 +684,23 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     console.log('🔄 [MMDPlayerEnhanced] 切换资源:', resourceId);
     
     // 停止当前播放
-    if (isPlaying) {
-      stop();
+    if (isPlayingRef.current) {
+      isPlayingRef.current = false;
+      setIsPlaying(false);
+    }
+
+    // 停止音频
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
     }
 
     // 更新选中的资源ID
     setSelectedResourceId(resourceId);
     
-    // 标记需要重新加载
-    setNeedReset(true);
+    // 标记需要重新加载（不使用 needReset，那是给 stop 按钮用的）
     isLoadedRef.current = false;
+    setNeedReset(false); // 确保 needReset 为 false
     
     // 触发重新加载
     setReloadTrigger(prev => prev + 1);
@@ -645,8 +719,15 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     console.log(`🔄 [MMDPlayerEnhanced] 选择${type}:`, id);
     
     // 停止当前播放
-    if (isPlaying) {
-      stop();
+    if (isPlayingRef.current) {
+      isPlayingRef.current = false;
+      setIsPlaying(false);
+    }
+
+    // 停止音频
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
     }
 
     // 更新选中的资源
@@ -655,9 +736,9 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     if (type === 'audio') setSelectedAudioId(id);
     if (type === 'camera') setSelectedCameraId(id);
     
-    // 标记需要重新加载
-    setNeedReset(true);
+    // 标记需要重新加载（不使用 needReset，那是给 stop 按钮用的）
     isLoadedRef.current = false;
+    setNeedReset(false); // 确保 needReset 为 false
     
     // 触发重新加载
     setReloadTrigger(prev => prev + 1);
