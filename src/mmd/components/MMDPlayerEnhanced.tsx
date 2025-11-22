@@ -47,6 +47,12 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   const [selectedCameraId, setSelectedCameraId] = useState<string>(
     defaultSelection?.cameraId || ''
   );
+  const [selectedStageModelId, setSelectedStageModelId] = useState<string>(
+    defaultSelection?.stageModelId || ''
+  );
+  const [selectedBackgroundId, setSelectedBackgroundId] = useState<string>(
+    defaultSelection?.backgroundId || ''
+  );
   
   const [showSettings, setShowSettings] = useState(false);
   
@@ -61,12 +67,16 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
       const motion = resourceOptions.motions?.find(m => m.id === selectedMotionId);
       const audio = resourceOptions.audios?.find(a => a.id === selectedAudioId);
       const camera = resourceOptions.cameras?.find(c => c.id === selectedCameraId);
+      const stageModel = resourceOptions.stageModels?.find(s => s.id === selectedStageModelId);
+      const background = resourceOptions.backgrounds?.find(b => b.id === selectedBackgroundId);
       
       return {
         modelPath: model?.path || resourceOptions.models?.[0]?.path || '',
         motionPath: motion?.path,
         audioPath: audio?.path,
         cameraPath: camera?.path,
+        stageModelPath: stageModel?.path,
+        backgroundPath: background?.path,
       };
     }
     
@@ -94,6 +104,8 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     selectedMotionId,
     selectedAudioId,
     selectedCameraId,
+    selectedStageModelId,
+    selectedBackgroundId,
   ]);
 
   console.log('📂 [MMDPlayerEnhanced] 当前资源配置:', currentResources)
@@ -718,8 +730,11 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   };
 
   // 资源选择处理（resourceOptions 模式）
-  const handleSelectionChange = (type: 'model' | 'motion' | 'audio' | 'camera', id: string) => {
+  const handleSelectionChange = (type: 'model' | 'motion' | 'audio' | 'camera' | 'stageModel' | 'background', id: string) => {
     console.log(`🔄 [MMDPlayerEnhanced] 选择${type}:`, id);
+    
+    // 记录当前是否在播放，用于重新加载后恢复播放状态
+    const wasPlaying = isPlayingRef.current;
     
     // 停止当前播放
     if (isPlayingRef.current) {
@@ -738,10 +753,17 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     if (type === 'motion') setSelectedMotionId(id);
     if (type === 'audio') setSelectedAudioId(id);
     if (type === 'camera') setSelectedCameraId(id);
+    if (type === 'stageModel') setSelectedStageModelId(id);
+    if (type === 'background') setSelectedBackgroundId(id);
     
     // 标记需要重新加载（不使用 needReset，那是给 stop 按钮用的）
     isLoadedRef.current = false;
     setNeedReset(false); // 确保 needReset 为 false
+    
+    // 如果之前在播放，或者 autoPlay 为 true，则重新加载后自动播放
+    if (wasPlaying || autoPlay) {
+      shouldAutoPlayAfterReloadRef.current = true;
+    }
     
     // 触发重新加载
     setReloadTrigger(prev => prev + 1);
@@ -753,6 +775,8 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         motionId: type === 'motion' ? id : selectedMotionId,
         audioId: type === 'audio' ? id : selectedAudioId,
         cameraId: type === 'camera' ? id : selectedCameraId,
+        stageModelId: type === 'stageModel' ? id : selectedStageModelId,
+        backgroundId: type === 'background' ? id : selectedBackgroundId,
       };
       onSelectionChange(newSelection);
     }
@@ -1095,6 +1119,112 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
                         }`}
                       >
                         {camera.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 场景选择 */}
+            {resourceOptions.stageModels && resourceOptions.stageModels.length > 0 && (
+              <div className="rounded-lg bg-white/5 overflow-hidden">
+                <button
+                  onClick={() => setExpandedSection(expandedSection === 'stageModel' ? null : 'stageModel')}
+                  className="w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-white/10 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-white/70">场景</span>
+                    <span className="text-sm text-white font-medium">
+                      {selectedStageModelId ? resourceOptions.stageModels.find(s => s.id === selectedStageModelId)?.name : '无'}
+                    </span>
+                  </div>
+                  <span className={`text-white/60 transition-transform ${expandedSection === 'stageModel' ? 'rotate-180' : ''}`}>
+                    ▼
+                  </span>
+                </button>
+                {expandedSection === 'stageModel' && (
+                  <div className="border-t border-white/10 p-2 space-y-1 max-h-60 overflow-y-auto">
+                    <button
+                      onClick={() => {
+                        handleSelectionChange('stageModel', '');
+                        setExpandedSection(null);
+                      }}
+                      className={`w-full rounded px-3 py-2 text-left text-sm transition-all ${
+                        selectedStageModelId === ''
+                          ? 'bg-purple-600 text-white font-medium'
+                          : 'text-white/80 hover:bg-white/10'
+                      }`}
+                    >
+                      无
+                    </button>
+                    {resourceOptions.stageModels.map((stageModel) => (
+                      <button
+                        key={stageModel.id}
+                        onClick={() => {
+                          handleSelectionChange('stageModel', stageModel.id);
+                          setExpandedSection(null);
+                        }}
+                        className={`w-full rounded px-3 py-2 text-left text-sm transition-all ${
+                          selectedStageModelId === stageModel.id
+                            ? 'bg-purple-600 text-white font-medium'
+                            : 'text-white/80 hover:bg-white/10'
+                        }`}
+                      >
+                        {stageModel.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 背景选择 */}
+            {resourceOptions.backgrounds && resourceOptions.backgrounds.length > 0 && (
+              <div className="rounded-lg bg-white/5 overflow-hidden">
+                <button
+                  onClick={() => setExpandedSection(expandedSection === 'background' ? null : 'background')}
+                  className="w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-white/10 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-white/70">背景</span>
+                    <span className="text-sm text-white font-medium">
+                      {selectedBackgroundId ? resourceOptions.backgrounds.find(b => b.id === selectedBackgroundId)?.name : '无'}
+                    </span>
+                  </div>
+                  <span className={`text-white/60 transition-transform ${expandedSection === 'background' ? 'rotate-180' : ''}`}>
+                    ▼
+                  </span>
+                </button>
+                {expandedSection === 'background' && (
+                  <div className="border-t border-white/10 p-2 space-y-1 max-h-60 overflow-y-auto">
+                    <button
+                      onClick={() => {
+                        handleSelectionChange('background', '');
+                        setExpandedSection(null);
+                      }}
+                      className={`w-full rounded px-3 py-2 text-left text-sm transition-all ${
+                        selectedBackgroundId === ''
+                          ? 'bg-purple-600 text-white font-medium'
+                          : 'text-white/80 hover:bg-white/10'
+                      }`}
+                    >
+                      无
+                    </button>
+                    {resourceOptions.backgrounds.map((background) => (
+                      <button
+                        key={background.id}
+                        onClick={() => {
+                          handleSelectionChange('background', background.id);
+                          setExpandedSection(null);
+                        }}
+                        className={`w-full rounded px-3 py-2 text-left text-sm transition-all ${
+                          selectedBackgroundId === background.id
+                            ? 'bg-purple-600 text-white font-medium'
+                            : 'text-white/80 hover:bg-white/10'
+                        }`}
+                      >
+                        {background.name}
                       </button>
                     ))}
                   </div>

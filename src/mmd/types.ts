@@ -47,7 +47,42 @@ export interface MMDResourceOption {
 }
 
 /**
- * MMD 资源选项列表（用于独立选择模型、动作、音乐、相机）
+ * MMD 播放列表节点
+ * 代表一个完整的 MMD 播放配置（模型+动作+音乐+相机+场景+背景）
+ */
+export interface MMDPlaylistNode {
+  /** 节点 ID */
+  id: string;
+  /** 节点名称 */
+  name: string;
+  /** 节点描述（可选） */
+  description?: string;
+  /** 资源配置 */
+  resources: MMDResources;
+  /** 是否循环播放当前节点（默认 false） */
+  loop?: boolean;
+}
+
+/**
+ * MMD 播放列表配置
+ */
+export interface MMDPlaylistConfig {
+  /** 播放列表 ID */
+  id: string;
+  /** 播放列表名称 */
+  name: string;
+  /** 播放列表描述（可选） */
+  description?: string;
+  /** 播放节点列表 */
+  nodes: MMDPlaylistNode[];
+  /** 是否循环播放整个列表（默认 false） */
+  loop?: boolean;
+  /** 是否自动播放（默认 true） */
+  autoPlay?: boolean;
+}
+
+/**
+ * MMD 资源选项列表（用于独立选择模型、动作、音乐、相机等）
  */
 export interface MMDResourceOptions {
   /** 模型选项列表 */
@@ -58,6 +93,10 @@ export interface MMDResourceOptions {
   audios?: MMDResourceOption[];
   /** 相机选项列表 */
   cameras?: MMDResourceOption[];
+  /** 场景模型选项列表 */
+  stageModels?: MMDResourceOption[];
+  /** 背景图片选项列表 */
+  backgrounds?: MMDResourceOption[];
 }
 
 /**
@@ -147,6 +186,30 @@ export interface MMDPlayerBaseProps {
 }
 
 /**
+ * MMD 播放列表组件属性
+ */
+export interface MMDPlaylistProps {
+  /** 播放列表配置 */
+  playlist: MMDPlaylistConfig;
+  /** 舞台配置 */
+  stage?: MMDStage;
+  /** 默认播放的节点索引（默认 0） */
+  defaultNodeIndex?: number;
+  /** 自定义样式类名 */
+  className?: string;
+  /** 自定义样式 */
+  style?: React.CSSProperties;
+  /** 资源加载完成回调 */
+  onLoad?: () => void;
+  /** 资源加载错误回调 */
+  onError?: (error: any) => void;
+  /** 节点切换回调 */
+  onNodeChange?: (nodeIndex: number, node: MMDPlaylistNode) => void;
+  /** 播放列表完成回调 */
+  onPlaylistComplete?: () => void;
+}
+
+/**
  * 增强版 MMD 播放器属性（支持resources和stage配置）
  */
 export interface MMDPlayerEnhancedProps {
@@ -164,6 +227,8 @@ export interface MMDPlayerEnhancedProps {
     motionId?: string;
     audioId?: string;
     cameraId?: string;
+    stageModelId?: string;
+    backgroundId?: string;
   };
   /** 舞台配置 */
   stage?: MMDStage;
@@ -187,6 +252,8 @@ export interface MMDPlayerEnhancedProps {
     motionId?: string;
     audioId?: string;
     cameraId?: string;
+    stageModelId?: string;
+    backgroundId?: string;
   }) => void;
 }
 
