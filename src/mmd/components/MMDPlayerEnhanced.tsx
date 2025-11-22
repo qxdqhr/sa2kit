@@ -884,114 +884,147 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         </div>
       )}
 
-      {/* 设置弹窗 - resourceOptions 模式（下拉框选择） */}
+      {/* 设置弹窗 - resourceOptions 模式（自定义下拉选择） */}
       {showSettings && resourceOptions && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="max-h-[80vh] w-full max-w-md overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black shadow-2xl">
-            {/* 标题栏 */}
-            <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
-              <h3 className="text-xl font-bold text-white">选择资源</h3>
-              <button
-                onClick={() => setShowSettings(false)}
-                className="text-2xl text-white/60 transition-colors hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
+        <div className="absolute top-4 right-4 z-50 w-80 rounded-xl bg-black/90 backdrop-blur-md shadow-2xl border border-white/10">
+          {/* 标题栏 */}
+          <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+            <h3 className="text-sm font-bold text-white">资源设置</h3>
+            <button
+              onClick={() => setShowSettings(false)}
+              className="text-lg text-white/60 transition-colors hover:text-white"
+            >
+              ✕
+            </button>
+          </div>
 
-            {/* 下拉框选择区域 */}
-            <div className="max-h-[60vh] overflow-y-auto p-6 space-y-4">
-              {/* 模型选择 */}
-              {resourceOptions.models && resourceOptions.models.length > 0 && (
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-white/80">
-                    模型
-                  </label>
-                  <select
-                    value={selectedModelId}
-                    onChange={(e) => handleSelectionChange('model', e.target.value)}
-                    className="w-full rounded-lg bg-white/10 px-4 py-3 text-white outline-none transition-all hover:bg-white/15 focus:bg-white/20 focus:ring-2 focus:ring-purple-500"
-                  >
-                    {resourceOptions.models.map((model) => (
-                      <option key={model.id} value={model.id} className="bg-gray-900">
-                        {model.name}
-                      </option>
-                    ))}
-                  </select>
+          {/* 选择区域 */}
+          <div className="max-h-[70vh] overflow-y-auto p-4 space-y-3">
+            {/* 模型选择 */}
+            {resourceOptions.models && resourceOptions.models.length > 0 && (
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-white/70">
+                  模型
+                </label>
+                <div className="space-y-1">
+                  {resourceOptions.models.map((model) => (
+                    <button
+                      key={model.id}
+                      onClick={() => handleSelectionChange('model', model.id)}
+                      className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-all ${
+                        selectedModelId === model.id
+                          ? 'bg-purple-600 text-white font-medium'
+                          : 'bg-white/5 text-white/80 hover:bg-white/10'
+                      }`}
+                    >
+                      {model.name}
+                    </button>
+                  ))}
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* 动作选择 */}
-              {resourceOptions.motions && resourceOptions.motions.length > 0 && (
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-white/80">
-                    动作
-                  </label>
-                  <select
-                    value={selectedMotionId}
-                    onChange={(e) => handleSelectionChange('motion', e.target.value)}
-                    className="w-full rounded-lg bg-white/10 px-4 py-3 text-white outline-none transition-all hover:bg-white/15 focus:bg-white/20 focus:ring-2 focus:ring-purple-500"
+            {/* 动作选择 */}
+            {resourceOptions.motions && resourceOptions.motions.length > 0 && (
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-white/70">
+                  动作
+                </label>
+                <div className="space-y-1">
+                  <button
+                    onClick={() => handleSelectionChange('motion', '')}
+                    className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-all ${
+                      selectedMotionId === ''
+                        ? 'bg-purple-600 text-white font-medium'
+                        : 'bg-white/5 text-white/80 hover:bg-white/10'
+                    }`}
                   >
-                    <option value="" className="bg-gray-900">无</option>
-                    {resourceOptions.motions.map((motion) => (
-                      <option key={motion.id} value={motion.id} className="bg-gray-900">
-                        {motion.name}
-                      </option>
-                    ))}
-                  </select>
+                    无
+                  </button>
+                  {resourceOptions.motions.map((motion) => (
+                    <button
+                      key={motion.id}
+                      onClick={() => handleSelectionChange('motion', motion.id)}
+                      className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-all ${
+                        selectedMotionId === motion.id
+                          ? 'bg-purple-600 text-white font-medium'
+                          : 'bg-white/5 text-white/80 hover:bg-white/10'
+                      }`}
+                    >
+                      {motion.name}
+                    </button>
+                  ))}
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* 音乐选择 */}
-              {resourceOptions.audios && resourceOptions.audios.length > 0 && (
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-white/80">
-                    音乐
-                  </label>
-                  <select
-                    value={selectedAudioId}
-                    onChange={(e) => handleSelectionChange('audio', e.target.value)}
-                    className="w-full rounded-lg bg-white/10 px-4 py-3 text-white outline-none transition-all hover:bg-white/15 focus:bg-white/20 focus:ring-2 focus:ring-purple-500"
+            {/* 音乐选择 */}
+            {resourceOptions.audios && resourceOptions.audios.length > 0 && (
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-white/70">
+                  音乐
+                </label>
+                <div className="space-y-1">
+                  <button
+                    onClick={() => handleSelectionChange('audio', '')}
+                    className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-all ${
+                      selectedAudioId === ''
+                        ? 'bg-purple-600 text-white font-medium'
+                        : 'bg-white/5 text-white/80 hover:bg-white/10'
+                    }`}
                   >
-                    <option value="" className="bg-gray-900">无</option>
-                    {resourceOptions.audios.map((audio) => (
-                      <option key={audio.id} value={audio.id} className="bg-gray-900">
-                        {audio.name}
-                      </option>
-                    ))}
-                  </select>
+                    无
+                  </button>
+                  {resourceOptions.audios.map((audio) => (
+                    <button
+                      key={audio.id}
+                      onClick={() => handleSelectionChange('audio', audio.id)}
+                      className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-all ${
+                        selectedAudioId === audio.id
+                          ? 'bg-purple-600 text-white font-medium'
+                          : 'bg-white/5 text-white/80 hover:bg-white/10'
+                      }`}
+                    >
+                      {audio.name}
+                    </button>
+                  ))}
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* 相机选择 */}
-              {resourceOptions.cameras && resourceOptions.cameras.length > 0 && (
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-white/80">
-                    相机
-                  </label>
-                  <select
-                    value={selectedCameraId}
-                    onChange={(e) => handleSelectionChange('camera', e.target.value)}
-                    className="w-full rounded-lg bg-white/10 px-4 py-3 text-white outline-none transition-all hover:bg-white/15 focus:bg-white/20 focus:ring-2 focus:ring-purple-500"
+            {/* 相机选择 */}
+            {resourceOptions.cameras && resourceOptions.cameras.length > 0 && (
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-white/70">
+                  相机
+                </label>
+                <div className="space-y-1">
+                  <button
+                    onClick={() => handleSelectionChange('camera', '')}
+                    className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-all ${
+                      selectedCameraId === ''
+                        ? 'bg-purple-600 text-white font-medium'
+                        : 'bg-white/5 text-white/80 hover:bg-white/10'
+                    }`}
                   >
-                    <option value="" className="bg-gray-900">无</option>
-                    {resourceOptions.cameras.map((camera) => (
-                      <option key={camera.id} value={camera.id} className="bg-gray-900">
-                        {camera.name}
-                      </option>
-                    ))}
-                  </select>
+                    无
+                  </button>
+                  {resourceOptions.cameras.map((camera) => (
+                    <button
+                      key={camera.id}
+                      onClick={() => handleSelectionChange('camera', camera.id)}
+                      className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-all ${
+                        selectedCameraId === camera.id
+                          ? 'bg-purple-600 text-white font-medium'
+                          : 'bg-white/5 text-white/80 hover:bg-white/10'
+                      }`}
+                    >
+                      {camera.name}
+                    </button>
+                  ))}
                 </div>
-              )}
-
-              {/* 确认按钮 */}
-              <button
-                onClick={() => setShowSettings(false)}
-                className="mt-4 w-full rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-3 font-semibold text-white transition-all hover:from-purple-700 hover:to-blue-700"
-              >
-                确认
-              </button>
-            </div>
+              </div>
+            )}
           </div>
         </div>
       )}
