@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import * as THREE from 'three';
 import { OrbitControls, MMDLoader, MMDAnimationHelper } from 'three-stdlib';
 import type { MMDPlayerEnhancedProps } from '../types';
@@ -13,6 +13,8 @@ import { loadAmmo } from '../utils/ammo-loader';
  */
 export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   resources,
+  resourcesList,
+  defaultResourceId,
   stage,
   autoPlay = false,
   loop = false,
@@ -20,9 +22,33 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   style,
   onLoad,
   onError,
+  onResourceChange,
 }) => {
   console.log('🎨 [MMDPlayerEnhanced] 组件初始化')
-  console.log('📂 [MMDPlayerEnhanced] 资源配置:', resources)
+  
+  // 资源切换状态
+  const [selectedResourceId, setSelectedResourceId] = useState<string>(
+    defaultResourceId || resourcesList?.[0]?.id || ''
+  );
+  const [showSettings, setShowSettings] = useState(false);
+
+  // 计算当前使用的资源
+  const currentResources = useMemo(() => {
+    if (resourcesList && resourcesList.length > 0) {
+      const selected = resourcesList.find(r => r.id === selectedResourceId);
+      const resourceItem = selected || resourcesList[0];
+      if (!resourceItem) {
+        throw new Error('无法找到有效的资源配置');
+      }
+      return resourceItem.resources;
+    }
+    if (!resources) {
+      throw new Error('必须提供 resources 或 resourcesList');
+    }
+    return resources;
+  }, [resources, resourcesList, selectedResourceId]);
+
+  console.log('📂 [MMDPlayerEnhanced] 当前资源配置:', currentResources)
   console.log('🎭 [MMDPlayerEnhanced] 舞台配置:', stage)
   
   const containerRef = useRef<HTMLDivElement>(null);
@@ -207,11 +233,11 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
 
         // 加载模型
         setLoadingProgress(20);
-        console.log('🎭 开始加载模型:', resources.modelPath);
+        console.log('🎭 开始加载模型:', currentResources.modelPath);
 
         const mesh = await new Promise<any>((resolve, reject) => {
           loader.load(
-            resources.modelPath,
+            currentResources.modelPath,
             (object: any) => {
               console.log('✅ 模型加载成功');
               resolve(object);
@@ -236,12 +262,12 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         sceneRef.current.add(mesh);
 
         // 加载场景模型
-        if (resources.stageModelPath) {
-          console.log('🏰 开始加载场景模型:', resources.stageModelPath);
+        if (currentResources.stageModelPath) {
+          console.log('🏰 开始加载场景模型:', currentResources.stageModelPath);
           
           const stageMesh = await new Promise<any>((resolve, reject) => {
             loader.load(
-              resources.stageModelPath!,
+              currentResources.stageModelPath!,
               (object: any) => {
                 console.log('✅ 场景模型加载成功');
                 resolve(object);
@@ -262,13 +288,13 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         }
 
         // 加载背景图片
-        if (resources.backgroundPath && sceneRef.current) {
-          console.log('🖼️ 开始加载背景图片:', resources.backgroundPath);
+        if (currentResources.backgroundPath && sceneRef.current) {
+          console.log('🖼️ 开始加载背景图片:', currentResources.backgroundPath);
           const textureLoader = new THREE.TextureLoader();
           
           const backgroundTexture = await new Promise<THREE.Texture>((resolve, reject) => {
             textureLoader.load(
-              resources.backgroundPath!,
+              currentResources.backgroundPath!,
               (texture) => resolve(texture),
               undefined,
               (err) => reject(err)
@@ -296,13 +322,13 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         let cameraVmd: any = null;
 
         // 加载动作
-        if (resources.motionPath) {
+        if (currentResources.motionPath) {
           setLoadingProgress(60);
-          console.log('💃 开始加载动作:', resources.motionPath);
+          console.log('💃 开始加载动作:', currentResources.motionPath);
 
           vmd = await new Promise<any>((resolve, reject) => {
             loader.loadAnimation(
-              resources.motionPath!,
+              currentResources.motionPath!,
               mesh,
               (vmdObject: any) => {
                 console.log('✅ 动作加载成功');
@@ -330,13 +356,13 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         }
 
         // 加载镜头动画
-        if (resources.cameraPath && cameraRef.current) {
+        if (currentResources.cameraPath && cameraRef.current) {
           setLoadingProgress(80);
-          console.log('📷 开始加载镜头:', resources.cameraPath);
+          console.log('📷 开始加载镜头:', currentResources.cameraPath);
 
           cameraVmd = await new Promise<any>((resolve, reject) => {
             loader.loadAnimation(
-              resources.cameraPath!,
+              currentResources.cameraPath!,
               cameraRef.current!,
               (vmdObject: any) => {
                 console.log('✅ 镜头加载成功');
@@ -354,11 +380,11 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         }
 
         // 加载音频
-        if (resources.audioPath) {
+        if (currentResources.audioPath) {
           setLoadingProgress(90);
-          console.log('🎵 开始加载音频:', resources.audioPath);
+          console.log('🎵 开始加载音频:', currentResources.audioPath);
 
-          const audio = new Audio(resources.audioPath);
+          const audio = new Audio(currentResources.audioPath);
           audio.volume = 0.5;
           audio.loop = loop;
           audioRef.current = audio;
@@ -413,7 +439,7 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     };
 
     loadMMD();
-  }, [resources, stage?.enablePhysics, autoPlay, loop, onLoad, onError, reloadTrigger]);
+  }, [currentResources, stage?.enablePhysics, autoPlay, loop, onLoad, onError, reloadTrigger]);
 
   // 播放控制
   const play = () => {
@@ -541,6 +567,34 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     console.log('⏹️ 停止播放并重置到初始状态，needReset = true');
   };
 
+  // 资源切换处理
+  const handleResourceChange = (resourceId: string) => {
+    console.log('🔄 [MMDPlayerEnhanced] 切换资源:', resourceId);
+    
+    // 停止当前播放
+    if (isPlaying) {
+      stop();
+    }
+
+    // 更新选中的资源ID
+    setSelectedResourceId(resourceId);
+    
+    // 标记需要重新加载
+    setNeedReset(true);
+    isLoadedRef.current = false;
+    
+    // 触发重新加载
+    setReloadTrigger(prev => prev + 1);
+
+    // 触发回调
+    if (onResourceChange) {
+      onResourceChange(resourceId);
+    }
+
+    // 关闭设置弹窗
+    setShowSettings(false);
+  };
+
   // 移除了这部分代码，改为使用覆盖层
 
   return (
@@ -600,7 +654,74 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         >
           ⏹️
         </button>
+
+        {/* 设置按钮（仅在提供资源列表时显示） */}
+        {resourcesList && resourcesList.length > 1 && (
+          <button
+            onClick={() => setShowSettings(true)}
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-500 text-xl text-white transition-colors hover:bg-purple-600"
+            title="设置"
+          >
+            ⚙️
+          </button>
+        )}
       </div>
+      )}
+
+      {/* 设置弹窗 */}
+      {showSettings && resourcesList && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="max-h-[80vh] w-full max-w-md overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black shadow-2xl">
+            {/* 标题栏 */}
+            <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+              <h3 className="text-xl font-bold text-white">选择资源</h3>
+              <button
+                onClick={() => setShowSettings(false)}
+                className="text-2xl text-white/60 transition-colors hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* 资源列表 */}
+            <div className="max-h-[60vh] overflow-y-auto p-4">
+              {resourcesList.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleResourceChange(item.id)}
+                  className={`mb-3 w-full rounded-xl p-4 text-left transition-all ${
+                    selectedResourceId === item.id
+                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 shadow-lg'
+                      : 'bg-white/5 hover:bg-white/10'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-white">{item.name}</h4>
+                      <div className="mt-1 flex flex-wrap gap-2 text-xs text-white/60">
+                        {item.resources.modelPath && (
+                          <span className="rounded bg-white/10 px-2 py-1">模型</span>
+                        )}
+                        {item.resources.motionPath && (
+                          <span className="rounded bg-white/10 px-2 py-1">动作</span>
+                        )}
+                        {item.resources.cameraPath && (
+                          <span className="rounded bg-white/10 px-2 py-1">相机</span>
+                        )}
+                        {item.resources.audioPath && (
+                          <span className="rounded bg-white/10 px-2 py-1">音频</span>
+                        )}
+                      </div>
+                    </div>
+                    {selectedResourceId === item.id && (
+                      <div className="ml-4 text-2xl">✓</div>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -23,6 +23,18 @@ export interface MMDResources {
 }
 
 /**
+ * MMD 资源配置项（用于动态切换）
+ */
+export interface MMDResourceItem {
+  /** 配置项 ID */
+  id: string;
+  /** 配置项名称 */
+  name: string;
+  /** 资源配置 */
+  resources: MMDResources;
+}
+
+/**
  * MMD 舞台配置
  */
 export interface MMDStage {
@@ -112,8 +124,12 @@ export interface MMDPlayerBaseProps {
  * 增强版 MMD 播放器属性（支持resources和stage配置）
  */
 export interface MMDPlayerEnhancedProps {
-  /** MMD资源配置 */
-  resources: MMDResources;
+  /** MMD资源配置（单个） */
+  resources?: MMDResources;
+  /** MMD资源配置列表（用于动态切换），如果提供则显示设置按钮 */
+  resourcesList?: MMDResourceItem[];
+  /** 默认选中的资源ID（当使用 resourcesList 时） */
+  defaultResourceId?: string;
   /** 舞台配置 */
   stage?: MMDStage;
   /** 自动播放 */
@@ -128,6 +144,8 @@ export interface MMDPlayerEnhancedProps {
   onLoad?: () => void;
   /** 错误回调 */
   onError?: (error: Error) => void;
+  /** 资源切换回调 */
+  onResourceChange?: (resourceId: string) => void;
 }
 
 /**
