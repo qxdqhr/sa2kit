@@ -60,6 +60,8 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   const currentNodeIndexRef = useRef<number>(defaultNodeIndex);
   // 标记是否是自动切换（用于控制是否自动播放）
   const isAutoSwitchRef = useRef<boolean>(false);
+  // 保存每个播放器的 ref
+  const playerRefsMap = useRef<Map<number, any>>(new Map());
 
   // 同步 currentNodeIndex 到 ref
   useEffect(() => {
@@ -84,7 +86,24 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   useEffect(() => {
     console.log(`🔄 [MMDPlaylist] 节点切换: ${currentNodeIndex} - ${currentNode.name}`);
     onNodeChange?.(currentNodeIndex, currentNode);
-  }, [currentNodeIndex, currentNode, onNodeChange]);
+    
+    // 如果预加载已完成，且是自动切换或 playlist.autoPlay 为 true，则开始播放
+    if (!isPreloading && (isAutoSwitchRef.current || playlist.autoPlay)) {
+      console.log(`▶️ [MMDPlaylist] 准备播放节点 ${currentNodeIndex}`);
+      // 延迟一帧，确保 visibility 切换完成
+      requestAnimationFrame(() => {
+        const playerElement = playerRefsMap.current.get(currentNodeIndex);
+        if (playerElement) {
+          // 查找播放按钮并点击
+          const playButton = playerElement.querySelector('button[title="播放"]');
+          if (playButton) {
+            console.log(`🎬 [MMDPlaylist] 触发节点 ${currentNodeIndex} 播放`);
+            (playButton as HTMLButtonElement).click();
+          }
+        }
+      });
+    }
+  }, [currentNodeIndex, currentNode, onNodeChange, isPreloading, playlist.autoPlay]);
 
   // 处理节点预加载完成
   const handleNodePreloaded = (nodeIndex: number) => {
@@ -174,22 +193,21 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   };
 
   // 计算是否应该自动播放
-  // 1. 如果 playlist.autoPlay 为 true，则自动播放
-  // 2. 如果是自动切换（上一个节点播放完成），则自动播放
-  const shouldAutoPlay = playlist.autoPlay || isAutoSwitchRef.current;
+  // 只在初始加载时，根据 playlist.autoPlay 决定是否自动播放第一个节点
+  const shouldAutoPlayInitial = playlist.autoPlay && currentNodeIndex === defaultNodeIndex && !isPreloading;
 
   return (
     <div className={`relative ${className || ''}`} style={style}>
       {/* 预加载所有节点（隐藏） */}
       {playlist.nodes.map((node, index) => {
-        // 为当前节点生成包含索引的唯一 key，强制重新挂载
-        const nodeKey = index === currentNodeIndex 
-          ? `player-${node.id}-${currentNodeIndex}` 
-          : `player-${node.id}`;
-        
         return (
           <div
-            key={nodeKey}
+            key={`player-${node.id}-${index}`}
+            ref={(el) => {
+              if (el) {
+                playerRefsMap.current.set(index, el);
+              }
+            }}
             className="absolute inset-0"
             style={{
               visibility: index === currentNodeIndex ? 'visible' : 'hidden',
@@ -199,15 +217,11 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
             <MMDPlayerEnhanced
               resources={node.resources}
               stage={stage}
-              autoPlay={index === currentNodeIndex && !isPreloading && shouldAutoPlay}
+              autoPlay={index === currentNodeIndex && shouldAutoPlayInitial}
               loop={node.loop || false}
               className="h-full w-full"
               onLoad={() => {
                 handleNodePreloaded(index);
-                // 只有当前节点加载完成时才触发外部的 onLoad
-                if (index === currentNodeIndex && !isPreloading) {
-                  // onLoad?.(); // 已经在 useEffect 中调用
-                }
               }}
               onError={(error) => {
                 console.error(`❌ [MMDPlaylist] 节点 ${index} 加载失败:`, error);
