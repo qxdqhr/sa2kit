@@ -403,7 +403,36 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
           console.log('✅ [MMDPlayerEnhanced] Ammo.js 加载完成');
         }
 
-        const loader = new MMDLoader();
+        // 创建 LoadingManager 来处理贴图路径
+        const manager = new THREE.LoadingManager();
+        
+        // 设置资源路径解析器
+        // 从模型 URL 中提取基础路径，用于加载相对路径的贴图
+        const modelUrl = currentResources.modelPath;
+        const basePath = modelUrl.substring(0, modelUrl.lastIndexOf('/') + 1);
+        console.log('📂 [MMDPlayerEnhanced] 模型基础路径:', basePath);
+        
+        // 配置 LoadingManager 的 URL 修改器
+        manager.setURLModifier((url: string) => {
+          // 如果是完整 URL（http/https），直接返回
+          if (url.startsWith('http://') || url.startsWith('https://')) {
+            console.log('🔗 [MMDPlayerEnhanced] 使用完整 URL:', url);
+            return url;
+          }
+          
+          // 如果是绝对路径（以 / 开头），直接返回
+          if (url.startsWith('/')) {
+            console.log('🔗 [MMDPlayerEnhanced] 使用绝对路径:', url);
+            return url;
+          }
+          
+          // 否则，拼接基础路径（相对路径）
+          const fullUrl = basePath + url;
+          console.log('🔗 [MMDPlayerEnhanced] 相对路径转换:', url, '->', fullUrl);
+          return fullUrl;
+        });
+
+        const loader = new MMDLoader(manager);
         const helper = new MMDAnimationHelper();
         helperRef.current = helper;
 
