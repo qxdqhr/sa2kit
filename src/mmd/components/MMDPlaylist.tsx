@@ -90,6 +90,13 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
     // 如果预加载已完成，且是自动切换或 playlist.autoPlay 为 true，则开始播放
     if (!isPreloading && (isAutoSwitchRef.current || playlist.autoPlay)) {
       console.log(`▶️ [MMDPlaylist] 准备播放节点 ${currentNodeIndex}`);
+      
+      // 确保节点已经预加载完成再触发播放
+      if (!preloadedNodes.has(currentNodeIndex)) {
+        console.warn(`⚠️ [MMDPlaylist] 节点 ${currentNodeIndex} 尚未预加载完成，等待...`);
+        return;
+      }
+      
       // 延迟一帧，确保 visibility 切换完成
       requestAnimationFrame(() => {
         const playerElement = playerRefsMap.current.get(currentNodeIndex);
@@ -99,11 +106,15 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
           if (playButton) {
             console.log(`🎬 [MMDPlaylist] 触发节点 ${currentNodeIndex} 播放`);
             (playButton as HTMLButtonElement).click();
+          } else {
+            console.warn(`⚠️ [MMDPlaylist] 未找到节点 ${currentNodeIndex} 的播放按钮`);
           }
+        } else {
+          console.warn(`⚠️ [MMDPlaylist] 未找到节点 ${currentNodeIndex} 的 DOM 元素`);
         }
       });
     }
-  }, [currentNodeIndex, currentNode, onNodeChange, isPreloading, playlist.autoPlay]);
+  }, [currentNodeIndex, currentNode, onNodeChange, isPreloading, playlist.autoPlay, preloadedNodes]);
 
   // 处理节点预加载完成
   const handleNodePreloaded = (nodeIndex: number) => {

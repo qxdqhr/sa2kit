@@ -665,18 +665,31 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
       clockRef.current = new THREE.Clock();
 
       // 重新添加模型和动画（模型已经在场景中，不需要重新添加到场景）
-      if (vmd) {
-        newHelper.add(mesh, {
-          animation: vmd,
-          physics: stage?.enablePhysics !== false,
-        });
+      if (vmd && typeof vmd === 'object') {
+        console.log('📦 重新添加模型动画，vmd:', vmd);
+        try {
+          newHelper.add(mesh, {
+            animation: vmd,
+            physics: stage?.enablePhysics !== false,
+          });
+        } catch (error) {
+          console.error('❌ 重新添加模型动画失败:', error);
+          console.log('📋 vmd 数据:', vmd);
+          // 如果添加动画失败，至少添加模型和物理
+          newHelper.add(mesh, { physics: stage?.enablePhysics !== false });
+        }
       } else {
         newHelper.add(mesh, { physics: stage?.enablePhysics !== false });
       }
 
       // 重新添加相机动画
-      if (cameraVmd) {
-        newHelper.add(cameraRef.current, { animation: cameraVmd });
+      if (cameraVmd && typeof cameraVmd === 'object') {
+        console.log('📷 重新添加相机动画');
+        try {
+          newHelper.add(cameraRef.current, { animation: cameraVmd });
+        } catch (error) {
+          console.error('❌ 重新添加相机动画失败:', error);
+        }
       }
 
       // 重置音频
