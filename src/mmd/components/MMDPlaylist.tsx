@@ -336,7 +336,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
 
       {/* 播放列表控制按钮（位于右下角，不与播放器按钮重叠） */}
       {!isPreloading && (
-        <div className="absolute bottom-4 right-4 flex gap-2">
+        <div className="absolute bottom-4 right-4 z-10 flex gap-2">
           {/* 上一个按钮 */}
           {editableNodes.length > 1 && (
             <button
@@ -372,7 +372,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
 
       {/* 当前节点信息提示（左上角） */}
       {!isPreloading && (
-        <div className="absolute left-4 top-4 rounded-lg bg-black/50 px-4 py-2 backdrop-blur-md">
+        <div className="absolute left-4 top-4 z-10 rounded-lg bg-black/50 px-4 py-2 backdrop-blur-md">
           <div className="flex items-center gap-2">
             <span className="text-sm font-bold text-white/60">
               {currentNodeIndex + 1}/{editableNodes.length}
