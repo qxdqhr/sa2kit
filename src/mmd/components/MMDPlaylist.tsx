@@ -387,16 +387,14 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
 
       {/* 配置弹窗 - 小型右上角弹窗 */}
       {showSettings && (
-        <>
-          {/* 背景遮罩（可点击关闭） */}
-          <div 
-            className="absolute inset-0 z-50 bg-black/40" 
-            onClick={() => setShowSettings(false)}
-          />
-          
+        <div 
+          className="absolute inset-0 z-[100] flex items-start justify-end bg-black/40" 
+          onClick={() => setShowSettings(false)}
+        >
           {/* 弹窗内容 */}
           <div 
-            className="absolute right-4 top-4 z-50 flex w-96 max-h-[80vh] flex-col overflow-hidden rounded-xl bg-gradient-to-br from-gray-900 to-black shadow-2xl border border-white/20"
+            className="relative m-4 flex w-full max-w-md flex-col overflow-hidden rounded-xl bg-gradient-to-br from-gray-900 to-black shadow-2xl border border-white/20"
+            style={{ maxHeight: 'calc(100vh - 2rem)' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* 标题栏 - 固定在顶部 */}
@@ -536,7 +534,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
