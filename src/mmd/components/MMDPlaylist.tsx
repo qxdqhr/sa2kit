@@ -387,12 +387,18 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
 
       {/* 配置弹窗 */}
       {showSettings && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowSettings(false)}>
-          <div className="max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            {/* 标题栏 */}
-            <div className="flex items-center justify-between border-b border-white/10 px-6 py-4 bg-gradient-to-r from-purple-900/50 to-blue-900/50">
+        <div 
+          className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md" 
+          onClick={() => setShowSettings(false)}
+        >
+          <div 
+            className="flex h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black shadow-2xl border border-white/20" 
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 标题栏 - 固定在顶部 */}
+            <div className="flex items-center justify-between border-b border-white/10 bg-gradient-to-r from-purple-900/50 to-blue-900/50 px-6 py-4 flex-shrink-0">
               <div>
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <h3 className="flex items-center gap-2 text-xl font-bold text-white">
                   ⚙️ 播放列表配置
                 </h3>
                 <p className="mt-1 text-sm text-white/60">
@@ -407,7 +413,8 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
               </button>
             </div>
 
-            <div className="max-h-[calc(85vh-80px)] overflow-y-auto p-6">
+            {/* 可滚动内容区域 */}
+            <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/20 hover:scrollbar-thumb-white/30">
               {/* 播放列表信息卡片 */}
               <div className="mb-6 rounded-xl bg-gradient-to-br from-indigo-900/30 to-purple-900/30 p-4 border border-white/10">
                 <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
@@ -483,11 +490,11 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
               </div>
 
               {/* 节点列表 */}
-              <div className="rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 p-4 border border-white/10">
-                <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+              <div className="rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-white/10 p-4">
+                <h4 className="mb-3 flex items-center gap-2 text-lg font-semibold text-white">
                   📝 节点管理
                 </h4>
-                <div className="space-y-2">
+                <div className="max-h-[400px] space-y-2 overflow-y-auto pr-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20">
                   {editableNodes.map((node, index) => (
                     <div
                       key={`${node.id}-${index}`}
