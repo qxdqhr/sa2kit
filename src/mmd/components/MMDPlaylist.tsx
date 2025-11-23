@@ -49,12 +49,15 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
 
   // 当前播放的节点索引
   const [currentNodeIndex, setCurrentNodeIndex] = useState<number>(defaultNodeIndex);
-  // 是否显示播放列表弹窗
-  const [showPlaylist, setShowPlaylist] = useState(false);
+  // 是否显示配置弹窗（不是播放列表弹窗）
+  const [showSettings, setShowSettings] = useState(false);
   // 预加载状态
   const [preloadedNodes, setPreloadedNodes] = useState<Set<number>>(new Set());
   const [isPreloading, setIsPreloading] = useState(true);
   const [preloadProgress, setPreloadProgress] = useState(0);
+  
+  // 播放列表节点管理（本地状态）
+  const [editableNodes, setEditableNodes] = useState<MMDPlaylistNode[]>(playlist.nodes);
   
   // 使用 ref 保存当前节点索引，避免闭包问题
   const currentNodeIndexRef = useRef<number>(defaultNodeIndex);
@@ -68,8 +71,8 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
     currentNodeIndexRef.current = currentNodeIndex;
   }, [currentNodeIndex]);
 
-  // 获取当前节点
-  const currentNode = playlist.nodes[currentNodeIndex];
+  // 获取当前节点（使用可编辑的节点列表）
+  const currentNode = editableNodes[currentNodeIndex];
 
   if (!currentNode) {
     console.error('❌ [MMDPlaylist] 无效的节点索引:', currentNodeIndex);
@@ -128,15 +131,15 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
 
   // 检查所有节点是否都已预加载
   useEffect(() => {
-    if (preloadedNodes.size === playlist.nodes.length) {
+    if (preloadedNodes.size === editableNodes.length) {
       console.log('🎉 [MMDPlaylist] 所有节点预加载完成');
       setIsPreloading(false);
       onLoad?.();
     } else {
-      const progress = Math.round((preloadedNodes.size / playlist.nodes.length) * 100);
+      const progress = Math.round((preloadedNodes.size / editableNodes.length) * 100);
       setPreloadProgress(progress);
     }
-  }, [preloadedNodes, playlist.nodes.length, onLoad]);
+  }, [preloadedNodes, editableNodes.length, onLoad]);
 
   // 处理播放结束事件（音频或动画结束时触发）
   // 使用 useCallback 并为每个节点创建独立的回调
@@ -149,7 +152,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
       return;
     }
 
-    const node = playlist.nodes[nodeIndex];
+    const node = editableNodes[nodeIndex];
     if (!node) return;
 
     // 如果当前节点设置了循环，则不切换
@@ -158,7 +161,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
       return;
     }
 
-    const isLastNode = nodeIndex === playlist.nodes.length - 1;
+    const isLastNode = nodeIndex === editableNodes.length - 1;
 
     // 如果不是最后一个节点，切换到下一个
     if (!isLastNode) {
@@ -183,24 +186,85 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
 
   // 播放列表控制函数
   const playlistPrevious = () => {
-    const newIndex = currentNodeIndex > 0 ? currentNodeIndex - 1 : playlist.nodes.length - 1;
+    const newIndex = currentNodeIndex > 0 ? currentNodeIndex - 1 : editableNodes.length - 1;
     console.log(`⬅️ [MMDPlaylist] 上一个节点: ${newIndex}`);
     isAutoSwitchRef.current = false; // 手动切换
     setCurrentNodeIndex(newIndex);
   };
 
   const playlistNext = () => {
-    const newIndex = currentNodeIndex < playlist.nodes.length - 1 ? currentNodeIndex + 1 : 0;
+    const newIndex = currentNodeIndex < editableNodes.length - 1 ? currentNodeIndex + 1 : 0;
     console.log(`➡️ [MMDPlaylist] 下一个节点: ${newIndex}`);
     isAutoSwitchRef.current = false; // 手动切换
     setCurrentNodeIndex(newIndex);
   };
 
   const playlistJumpTo = (index: number) => {
-    if (index < 0 || index >= playlist.nodes.length) return;
+    if (index < 0 || index >= editableNodes.length) return;
     console.log(`🎯 [MMDPlaylist] 跳转到节点: ${index}`);
     isAutoSwitchRef.current = false; // 手动切换
     setCurrentNodeIndex(index);
+  };
+
+  // 节点管理函数
+  const handleDeleteNode = (index: number) => {
+    if (editableNodes.length <= 1) {
+      alert('播放列表至少需要保留一个节点');
+      return;
+    }
+
+    const newNodes = editableNodes.filter((_, i) => i !== index);
+    setEditableNodes(newNodes);
+    
+    // 如果删除的是当前节点之前的节点，需要调整当前索引
+    if (index < currentNodeIndex) {
+      setCurrentNodeIndex(currentNodeIndex - 1);
+    }
+    // 如果删除的是当前节点，跳转到前一个节点（或第一个节点）
+    else if (index === currentNodeIndex) {
+      const newIndex = Math.max(0, currentNodeIndex - 1);
+      setCurrentNodeIndex(newIndex);
+    }
+    
+    console.log(`🗑️ [MMDPlaylist] 删除节点 ${index}`);
+  };
+
+  const handleMoveNodeUp = (index: number) => {
+    if (index === 0) return;
+    
+    const newNodes = [...editableNodes];
+    const temp = newNodes[index - 1]!;
+    newNodes[index - 1] = newNodes[index]!;
+    newNodes[index] = temp;
+    setEditableNodes(newNodes);
+    
+    // 更新当前索引
+    if (currentNodeIndex === index) {
+      setCurrentNodeIndex(index - 1);
+    } else if (currentNodeIndex === index - 1) {
+      setCurrentNodeIndex(index);
+    }
+    
+    console.log(`⬆️ [MMDPlaylist] 节点 ${index} 上移`);
+  };
+
+  const handleMoveNodeDown = (index: number) => {
+    if (index === editableNodes.length - 1) return;
+    
+    const newNodes = [...editableNodes];
+    const temp = newNodes[index]!;
+    newNodes[index] = newNodes[index + 1]!;
+    newNodes[index + 1] = temp;
+    setEditableNodes(newNodes);
+    
+    // 更新当前索引
+    if (currentNodeIndex === index) {
+      setCurrentNodeIndex(index + 1);
+    } else if (currentNodeIndex === index + 1) {
+      setCurrentNodeIndex(index);
+    }
+    
+    console.log(`⬇️ [MMDPlaylist] 节点 ${index} 下移`);
   };
 
   // 计算是否应该自动播放
@@ -210,7 +274,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   return (
     <div className={`relative ${className || ''}`} style={style}>
       {/* 预加载所有节点（隐藏） */}
-      {playlist.nodes.map((node, index) => {
+      {editableNodes.map((node, index) => {
         return (
           <div
             key={`player-${node.id}-${index}`}
@@ -255,7 +319,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
               正在预加载播放列表
             </div>
             <div className="mb-2 text-lg text-white/80">
-              {preloadedNodes.size} / {playlist.nodes.length} 节点
+              {preloadedNodes.size} / {editableNodes.length} 节点
             </div>
             <div className="h-2 w-64 overflow-hidden rounded-full bg-white/20">
               <div
@@ -274,7 +338,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
       {!isPreloading && (
         <div className="absolute bottom-4 right-4 flex gap-2">
           {/* 上一个按钮 */}
-          {playlist.nodes.length > 1 && (
+          {editableNodes.length > 1 && (
             <button
               onClick={playlistPrevious}
               className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/90 text-xl text-white shadow-lg backdrop-blur-md transition-all hover:bg-blue-600 hover:scale-110"
@@ -284,17 +348,17 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
             </button>
           )}
 
-          {/* 播放列表按钮 */}
+          {/* 设置按钮（原播放列表按钮） */}
           <button
-            onClick={() => setShowPlaylist(true)}
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500/90 text-xl text-white shadow-lg backdrop-blur-md transition-all hover:bg-indigo-600 hover:scale-110"
-            title="播放列表"
+            onClick={() => setShowSettings(true)}
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/90 text-xl text-white shadow-lg backdrop-blur-md transition-all hover:bg-purple-600 hover:scale-110"
+            title="播放列表设置"
           >
-            📋
+            ⚙️
           </button>
 
           {/* 下一个按钮 */}
-          {playlist.nodes.length > 1 && (
+          {editableNodes.length > 1 && (
             <button
               onClick={playlistNext}
               className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/90 text-xl text-white shadow-lg backdrop-blur-md transition-all hover:bg-blue-600 hover:scale-110"
@@ -311,7 +375,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
         <div className="absolute left-4 top-4 rounded-lg bg-black/50 px-4 py-2 backdrop-blur-md">
           <div className="flex items-center gap-2">
             <span className="text-sm font-bold text-white/60">
-              {currentNodeIndex + 1}/{playlist.nodes.length}
+              {currentNodeIndex + 1}/{editableNodes.length}
             </span>
             <span className="text-sm font-medium text-white">{currentNode.name}</span>
             {currentNode.loop && (
@@ -321,93 +385,190 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
         </div>
       )}
 
-      {/* 播放列表弹窗 */}
-      {showPlaylist && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="max-h-[80vh] w-full max-w-2xl overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black shadow-2xl">
+      {/* 配置弹窗 */}
+      {showSettings && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowSettings(false)}>
+          <div className="max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black shadow-2xl" onClick={(e) => e.stopPropagation()}>
             {/* 标题栏 */}
-            <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+            <div className="flex items-center justify-between border-b border-white/10 px-6 py-4 bg-gradient-to-r from-purple-900/50 to-blue-900/50">
               <div>
-                <h3 className="text-xl font-bold text-white">{playlist.name}</h3>
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  ⚙️ 播放列表配置
+                </h3>
                 <p className="mt-1 text-sm text-white/60">
-                  {currentNodeIndex + 1} / {playlist.nodes.length}
-                  {playlist.loop && ' • 循环播放'}
+                  管理播放节点和列表设置
                 </p>
-                {playlist.description && (
-                  <p className="mt-1 text-sm text-white/50">{playlist.description}</p>
-                )}
               </div>
               <button
-                onClick={() => setShowPlaylist(false)}
+                onClick={() => setShowSettings(false)}
                 className="text-2xl text-white/60 transition-colors hover:text-white"
               >
                 ✕
               </button>
             </div>
 
-            {/* 播放列表 */}
-            <div className="max-h-[60vh] overflow-y-auto p-4">
-              {playlist.nodes.map((node, index) => (
-                <button
-                  key={node.id}
-                  onClick={() => {
-                    playlistJumpTo(index);
-                    setShowPlaylist(false);
-                  }}
-                  className={`mb-3 w-full rounded-xl p-4 text-left transition-all ${
-                    currentNodeIndex === index
-                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 shadow-lg'
-                      : 'bg-white/5 hover:bg-white/10'
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-white/40">#{index + 1}</span>
-                        <h4 className="font-semibold text-white">{node.name}</h4>
-                        {node.loop && (
-                          <span className="rounded bg-white/20 px-2 py-0.5 text-xs text-white">
-                            🔁 循环
-                          </span>
-                        )}
-                        {preloadedNodes.has(index) && (
-                          <span className="rounded bg-green-500/30 px-2 py-0.5 text-xs text-green-300">
-                            ✓ 已加载
-                          </span>
-                        )}
-                      </div>
-                      {node.description && (
-                        <p className="mt-1 text-sm text-white/60">{node.description}</p>
-                      )}
-                      <div className="mt-2 flex flex-wrap gap-2 text-xs text-white/60">
-                        {node.resources.modelPath && (
-                          <span className="rounded bg-white/10 px-2 py-1">👤 模型</span>
-                        )}
-                        {node.resources.motionPath && (
-                          <span className="rounded bg-white/10 px-2 py-1">💃 动作</span>
-                        )}
-                        {node.resources.audioPath && (
-                          <span className="rounded bg-white/10 px-2 py-1">🎵 音乐</span>
-                        )}
-                        {node.resources.cameraPath && (
-                          <span className="rounded bg-white/10 px-2 py-1">📷 相机</span>
-                        )}
-                        {node.resources.stageModelPath && (
-                          <span className="rounded bg-white/10 px-2 py-1">🏛️ 场景</span>
-                        )}
-                        {node.resources.backgroundPath && (
-                          <span className="rounded bg-white/10 px-2 py-1">🖼️ 背景</span>
-                        )}
-                      </div>
+            <div className="max-h-[calc(85vh-80px)] overflow-y-auto p-6">
+              {/* 播放列表信息卡片 */}
+              <div className="mb-6 rounded-xl bg-gradient-to-br from-indigo-900/30 to-purple-900/30 p-4 border border-white/10">
+                <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                  📋 播放列表信息
+                </h4>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-white/60">名称：</span>
+                    <span className="text-white font-medium">{playlist.name}</span>
+                  </div>
+                  <div>
+                    <span className="text-white/60">节点数：</span>
+                    <span className="text-white font-medium">{editableNodes.length}</span>
+                  </div>
+                  <div>
+                    <span className="text-white/60">循环播放：</span>
+                    <span className="text-white font-medium">{playlist.loop ? '是' : '否'}</span>
+                  </div>
+                  <div>
+                    <span className="text-white/60">自动播放：</span>
+                    <span className="text-white font-medium">{playlist.autoPlay ? '是' : '否'}</span>
+                  </div>
+                  {playlist.description && (
+                    <div className="col-span-2">
+                      <span className="text-white/60">描述：</span>
+                      <span className="text-white font-medium">{playlist.description}</span>
                     </div>
-                    {currentNodeIndex === index && (
-                      <div className="ml-4 flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
-                        <span className="text-lg">▶️</span>
-                      </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 当前节点信息卡片 */}
+              <div className="mb-6 rounded-xl bg-gradient-to-br from-blue-900/30 to-cyan-900/30 p-4 border border-white/10">
+                <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                  🎯 当前播放节点
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="text-white/60">节点名称：</span>
+                    <span className="text-white font-medium">{currentNode.name}</span>
+                    {currentNode.loop && (
+                      <span className="ml-2 rounded bg-white/20 px-2 py-0.5 text-xs text-white">🔁 循环</span>
                     )}
                   </div>
-                </button>
-              ))}
+                  <div>
+                    <span className="text-white/60">节点位置：</span>
+                    <span className="text-white font-medium">{currentNodeIndex + 1} / {editableNodes.length}</span>
+                  </div>
+                  {currentNode.description && (
+                    <div>
+                      <span className="text-white/60">描述：</span>
+                      <span className="text-white font-medium">{currentNode.description}</span>
+                    </div>
+                  )}
+                  <div>
+                    <span className="text-white/60">资源：</span>
+                    <div className="ml-4 mt-1 space-y-1">
+                      {currentNode.resources.modelPath && (
+                        <div className="text-white/80">👤 模型: {currentNode.resources.modelPath.split('/').pop()}</div>
+                      )}
+                      {currentNode.resources.motionPath && (
+                        <div className="text-white/80">💃 动作: {currentNode.resources.motionPath.split('/').pop()}</div>
+                      )}
+                      {currentNode.resources.audioPath && (
+                        <div className="text-white/80">🎵 音乐: {currentNode.resources.audioPath.split('/').pop()}</div>
+                      )}
+                      {currentNode.resources.cameraPath && (
+                        <div className="text-white/80">📷 相机: {currentNode.resources.cameraPath.split('/').pop()}</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 节点列表 */}
+              <div className="rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 p-4 border border-white/10">
+                <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                  📝 节点管理
+                </h4>
+                <div className="space-y-2">
+                  {editableNodes.map((node, index) => (
+                    <div
+                      key={`${node.id}-${index}`}
+                      className={`rounded-lg p-3 transition-all ${
+                        currentNodeIndex === index
+                          ? 'bg-gradient-to-r from-purple-600/50 to-blue-600/50 border-2 border-purple-400/50'
+                          : 'bg-white/5 hover:bg-white/10 border border-white/10'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-sm font-bold text-white/40">#{index + 1}</span>
+                            <h5 className="font-semibold text-white truncate">{node.name}</h5>
+                            {node.loop && (
+                              <span className="rounded bg-white/20 px-2 py-0.5 text-xs text-white flex-shrink-0">🔁</span>
+                            )}
+                            {currentNodeIndex === index && (
+                              <span className="rounded bg-green-500/30 px-2 py-0.5 text-xs text-green-300 flex-shrink-0">
+                                ▶️ 播放中
+                              </span>
+                            )}
+                            {preloadedNodes.has(index) && (
+                              <span className="rounded bg-blue-500/30 px-2 py-0.5 text-xs text-blue-300 flex-shrink-0">
+                                ✓ 已加载
+                              </span>
+                            )}
+                          </div>
+                          {node.description && (
+                            <p className="text-xs text-white/60 mb-2">{node.description}</p>
+                          )}
+                          <div className="flex flex-wrap gap-1 text-xs text-white/60">
+                            {node.resources.modelPath && <span className="rounded bg-white/10 px-2 py-0.5">👤</span>}
+                            {node.resources.motionPath && <span className="rounded bg-white/10 px-2 py-0.5">💃</span>}
+                            {node.resources.audioPath && <span className="rounded bg-white/10 px-2 py-0.5">🎵</span>}
+                            {node.resources.cameraPath && <span className="rounded bg-white/10 px-2 py-0.5">📷</span>}
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-1 flex-shrink-0">
+                          {index > 0 && (
+                            <button
+                              onClick={() => handleMoveNodeUp(index)}
+                              className="p-1.5 rounded bg-white/10 hover:bg-white/20 text-white text-xs transition-colors"
+                              title="上移"
+                            >
+                              ⬆️
+                            </button>
+                          )}
+                          {index < editableNodes.length - 1 && (
+                            <button
+                              onClick={() => handleMoveNodeDown(index)}
+                              className="p-1.5 rounded bg-white/10 hover:bg-white/20 text-white text-xs transition-colors"
+                              title="下移"
+                            >
+                              ⬇️
+                            </button>
+                          )}
+                          <button
+                            onClick={() => playlistJumpTo(index)}
+                            className="p-1.5 rounded bg-blue-500/30 hover:bg-blue-500/50 text-white text-xs transition-colors"
+                            title="跳转播放"
+                          >
+                            ▶️
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (confirm(`确定要删除节点 "${node.name}" 吗？`)) {
+                                handleDeleteNode(index);
+                              }
+                            }}
+                            className="p-1.5 rounded bg-red-500/30 hover:bg-red-500/50 text-white text-xs transition-colors"
+                            title="删除"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
