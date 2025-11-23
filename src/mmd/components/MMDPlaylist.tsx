@@ -385,159 +385,117 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
         </div>
       )}
 
-      {/* 配置弹窗 */}
+      {/* 配置弹窗 - 小型右上角弹窗 */}
       {showSettings && (
-        <div 
-          className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md" 
-          onClick={() => setShowSettings(false)}
-        >
+        <>
+          {/* 背景遮罩（可点击关闭） */}
           <div 
-            className="flex h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black shadow-2xl border border-white/20" 
+            className="absolute inset-0 z-50 bg-black/40" 
+            onClick={() => setShowSettings(false)}
+          />
+          
+          {/* 弹窗内容 */}
+          <div 
+            className="absolute right-4 top-4 z-50 flex w-96 max-h-[80vh] flex-col overflow-hidden rounded-xl bg-gradient-to-br from-gray-900 to-black shadow-2xl border border-white/20"
             onClick={(e) => e.stopPropagation()}
           >
             {/* 标题栏 - 固定在顶部 */}
-            <div className="flex items-center justify-between border-b border-white/10 bg-gradient-to-r from-purple-900/50 to-blue-900/50 px-6 py-4 flex-shrink-0">
-              <div>
-                <h3 className="flex items-center gap-2 text-xl font-bold text-white">
-                  ⚙️ 播放列表配置
-                </h3>
-                <p className="mt-1 text-sm text-white/60">
-                  管理播放节点和列表设置
-                </p>
-              </div>
+            <div className="flex items-center justify-between border-b border-white/10 bg-gradient-to-r from-purple-900/50 to-blue-900/50 px-4 py-3 flex-shrink-0">
+              <h3 className="flex items-center gap-2 text-base font-bold text-white">
+                ⚙️ 播放列表配置
+              </h3>
               <button
                 onClick={() => setShowSettings(false)}
-                className="text-2xl text-white/60 transition-colors hover:text-white"
+                className="text-xl text-white/60 transition-colors hover:text-white"
               >
                 ✕
               </button>
             </div>
 
             {/* 可滚动内容区域 */}
-            <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/20 hover:scrollbar-thumb-white/30">
+            <div className="flex-1 overflow-y-auto p-4" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
               {/* 播放列表信息卡片 */}
-              <div className="mb-6 rounded-xl bg-gradient-to-br from-indigo-900/30 to-purple-900/30 p-4 border border-white/10">
-                <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                  📋 播放列表信息
+              <div className="mb-3 rounded-lg bg-gradient-to-br from-indigo-900/30 to-purple-900/30 p-3 border border-white/10">
+                <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+                  📋 播放列表
                 </h4>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
+                <div className="space-y-1 text-xs">
+                  <div className="flex justify-between">
                     <span className="text-white/60">名称：</span>
                     <span className="text-white font-medium">{playlist.name}</span>
                   </div>
-                  <div>
+                  <div className="flex justify-between">
                     <span className="text-white/60">节点数：</span>
                     <span className="text-white font-medium">{editableNodes.length}</span>
                   </div>
-                  <div>
-                    <span className="text-white/60">循环播放：</span>
+                  <div className="flex justify-between">
+                    <span className="text-white/60">循环：</span>
                     <span className="text-white font-medium">{playlist.loop ? '是' : '否'}</span>
                   </div>
-                  <div>
-                    <span className="text-white/60">自动播放：</span>
-                    <span className="text-white font-medium">{playlist.autoPlay ? '是' : '否'}</span>
-                  </div>
-                  {playlist.description && (
-                    <div className="col-span-2">
-                      <span className="text-white/60">描述：</span>
-                      <span className="text-white font-medium">{playlist.description}</span>
-                    </div>
-                  )}
                 </div>
               </div>
 
               {/* 当前节点信息卡片 */}
-              <div className="mb-6 rounded-xl bg-gradient-to-br from-blue-900/30 to-cyan-900/30 p-4 border border-white/10">
-                <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                  🎯 当前播放节点
+              <div className="mb-3 rounded-lg bg-gradient-to-br from-blue-900/30 to-cyan-900/30 p-3 border border-white/10">
+                <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+                  🎯 当前节点
                 </h4>
-                <div className="space-y-2 text-sm">
-                  <div>
-                    <span className="text-white/60">节点名称：</span>
-                    <span className="text-white font-medium">{currentNode.name}</span>
-                    {currentNode.loop && (
-                      <span className="ml-2 rounded bg-white/20 px-2 py-0.5 text-xs text-white">🔁 循环</span>
-                    )}
+                <div className="space-y-1 text-xs">
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/60">名称：</span>
+                    <span className="text-white font-medium truncate ml-2">{currentNode.name}</span>
                   </div>
-                  <div>
-                    <span className="text-white/60">节点位置：</span>
+                  <div className="flex justify-between">
+                    <span className="text-white/60">位置：</span>
                     <span className="text-white font-medium">{currentNodeIndex + 1} / {editableNodes.length}</span>
                   </div>
-                  {currentNode.description && (
-                    <div>
-                      <span className="text-white/60">描述：</span>
-                      <span className="text-white font-medium">{currentNode.description}</span>
-                    </div>
+                  {currentNode.resources.audioPath && (
+                    <div className="text-white/80 mt-1">🎵 有音乐</div>
                   )}
-                  <div>
-                    <span className="text-white/60">资源：</span>
-                    <div className="ml-4 mt-1 space-y-1">
-                      {currentNode.resources.modelPath && (
-                        <div className="text-white/80">👤 模型: {currentNode.resources.modelPath.split('/').pop()}</div>
-                      )}
-                      {currentNode.resources.motionPath && (
-                        <div className="text-white/80">💃 动作: {currentNode.resources.motionPath.split('/').pop()}</div>
-                      )}
-                      {currentNode.resources.audioPath && (
-                        <div className="text-white/80">🎵 音乐: {currentNode.resources.audioPath.split('/').pop()}</div>
-                      )}
-                      {currentNode.resources.cameraPath && (
-                        <div className="text-white/80">📷 相机: {currentNode.resources.cameraPath.split('/').pop()}</div>
-                      )}
-                    </div>
-                  </div>
+                  {currentNode.resources.cameraPath && (
+                    <div className="text-white/80">📷 有相机</div>
+                  )}
                 </div>
               </div>
 
               {/* 节点列表 */}
-              <div className="rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-white/10 p-4">
-                <h4 className="mb-3 flex items-center gap-2 text-lg font-semibold text-white">
+              <div className="rounded-lg bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-white/10 p-3">
+                <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold text-white">
                   📝 节点管理
                 </h4>
-                <div className="max-h-[400px] space-y-2 overflow-y-auto pr-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20">
+                <div className="max-h-64 space-y-2 overflow-y-auto pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
                   {editableNodes.map((node, index) => (
                     <div
                       key={`${node.id}-${index}`}
-                      className={`rounded-lg p-3 transition-all ${
+                      className={`rounded-md p-2 transition-all text-xs ${
                         currentNodeIndex === index
-                          ? 'bg-gradient-to-r from-purple-600/50 to-blue-600/50 border-2 border-purple-400/50'
+                          ? 'bg-gradient-to-r from-purple-600/50 to-blue-600/50 border border-purple-400/50'
                           : 'bg-white/5 hover:bg-white/10 border border-white/10'
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-bold text-white/40">#{index + 1}</span>
-                            <h5 className="font-semibold text-white truncate">{node.name}</h5>
-                            {node.loop && (
-                              <span className="rounded bg-white/20 px-2 py-0.5 text-xs text-white flex-shrink-0">🔁</span>
-                            )}
+                          <div className="flex items-center gap-1 mb-1">
+                            <span className="text-xs font-bold text-white/40">#{index + 1}</span>
+                            <h5 className="font-semibold text-white text-xs truncate">{node.name}</h5>
                             {currentNodeIndex === index && (
-                              <span className="rounded bg-green-500/30 px-2 py-0.5 text-xs text-green-300 flex-shrink-0">
-                                ▶️ 播放中
-                              </span>
-                            )}
-                            {preloadedNodes.has(index) && (
-                              <span className="rounded bg-blue-500/30 px-2 py-0.5 text-xs text-blue-300 flex-shrink-0">
-                                ✓ 已加载
+                              <span className="rounded bg-green-500/30 px-1 py-0.5 text-[10px] text-green-300 flex-shrink-0">
+                                ▶️
                               </span>
                             )}
                           </div>
-                          {node.description && (
-                            <p className="text-xs text-white/60 mb-2">{node.description}</p>
-                          )}
-                          <div className="flex flex-wrap gap-1 text-xs text-white/60">
-                            {node.resources.modelPath && <span className="rounded bg-white/10 px-2 py-0.5">👤</span>}
-                            {node.resources.motionPath && <span className="rounded bg-white/10 px-2 py-0.5">💃</span>}
-                            {node.resources.audioPath && <span className="rounded bg-white/10 px-2 py-0.5">🎵</span>}
-                            {node.resources.cameraPath && <span className="rounded bg-white/10 px-2 py-0.5">📷</span>}
+                          <div className="flex flex-wrap gap-1 text-[10px] text-white/60">
+                            {node.resources.modelPath && <span>👤</span>}
+                            {node.resources.motionPath && <span>💃</span>}
+                            {node.resources.audioPath && <span>🎵</span>}
+                            {node.resources.cameraPath && <span>📷</span>}
                           </div>
                         </div>
-                        <div className="flex flex-col gap-1 flex-shrink-0">
+                        <div className="flex flex-col gap-0.5 flex-shrink-0">
                           {index > 0 && (
                             <button
                               onClick={() => handleMoveNodeUp(index)}
-                              className="p-1.5 rounded bg-white/10 hover:bg-white/20 text-white text-xs transition-colors"
+                              className="p-0.5 rounded bg-white/10 hover:bg-white/20 text-white text-[10px] transition-colors"
                               title="上移"
                             >
                               ⬆️
@@ -546,7 +504,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
                           {index < editableNodes.length - 1 && (
                             <button
                               onClick={() => handleMoveNodeDown(index)}
-                              className="p-1.5 rounded bg-white/10 hover:bg-white/20 text-white text-xs transition-colors"
+                              className="p-0.5 rounded bg-white/10 hover:bg-white/20 text-white text-[10px] transition-colors"
                               title="下移"
                             >
                               ⬇️
@@ -554,18 +512,18 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
                           )}
                           <button
                             onClick={() => playlistJumpTo(index)}
-                            className="p-1.5 rounded bg-blue-500/30 hover:bg-blue-500/50 text-white text-xs transition-colors"
-                            title="跳转播放"
+                            className="p-0.5 rounded bg-blue-500/30 hover:bg-blue-500/50 text-white text-[10px] transition-colors"
+                            title="跳转"
                           >
                             ▶️
                           </button>
                           <button
                             onClick={() => {
-                              if (confirm(`确定要删除节点 "${node.name}" 吗？`)) {
+                              if (confirm(`确定删除 "${node.name}"？`)) {
                                 handleDeleteNode(index);
                               }
                             }}
-                            className="p-1.5 rounded bg-red-500/30 hover:bg-red-500/50 text-white text-xs transition-colors"
+                            className="p-0.5 rounded bg-red-500/30 hover:bg-red-500/50 text-white text-[10px] transition-colors"
                             title="删除"
                           >
                             🗑️
@@ -578,7 +536,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
