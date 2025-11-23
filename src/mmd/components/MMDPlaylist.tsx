@@ -55,11 +55,15 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   const [preloadedNodes, setPreloadedNodes] = useState<Set<number>>(new Set());
   const [isPreloading, setIsPreloading] = useState(true);
   const [preloadProgress, setPreloadProgress] = useState(0);
+  // 触发节点播放的计数器（用于强制重新触发 autoPlay）
+  const [playTrigger, setPlayTrigger] = useState(0);
   
   // 使用 ref 保存当前节点索引，避免闭包问题
   const currentNodeIndexRef = useRef<number>(defaultNodeIndex);
   // 标记是否是自动切换（用于控制是否自动播放）
   const isAutoSwitchRef = useRef<boolean>(false);
+  // 保存每个节点的播放器实例引用（用于手动控制播放）
+  const playerRefsRef = useRef<Map<number, any>>(new Map());
 
   // 同步 currentNodeIndex 到 ref
   useEffect(() => {
@@ -84,7 +88,15 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   useEffect(() => {
     console.log(`🔄 [MMDPlaylist] 节点切换: ${currentNodeIndex} - ${currentNode.name}`);
     onNodeChange?.(currentNodeIndex, currentNode);
-  }, [currentNodeIndex, currentNode, onNodeChange]);
+    
+    // 如果是自动切换或非首次加载，触发播放
+    if (isAutoSwitchRef.current || currentNodeIndex !== defaultNodeIndex) {
+      // 延迟一帧，确保 DOM 更新完成
+      setTimeout(() => {
+        setPlayTrigger(prev => prev + 1);
+      }, 100);
+    }
+  }, [currentNodeIndex, currentNode, onNodeChange, defaultNodeIndex]);
 
   // 处理节点预加载完成
   const handleNodePreloaded = (nodeIndex: number) => {
@@ -183,7 +195,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
       {/* 预加载所有节点（隐藏） */}
       {playlist.nodes.map((node, index) => (
         <div
-          key={`preload-${node.id}`}
+          key={`preload-${node.id}-${index === currentNodeIndex ? playTrigger : 0}`}
           className="absolute inset-0"
           style={{
             visibility: index === currentNodeIndex ? 'visible' : 'hidden',
