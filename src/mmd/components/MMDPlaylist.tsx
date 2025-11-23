@@ -109,22 +109,32 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   }, [preloadedNodes, playlist.nodes.length, onLoad]);
 
   // 处理播放结束事件（音频或动画结束时触发）
-  const handlePlaybackEnded = () => {
-    console.log('🎵 [MMDPlaylist] 当前节点播放完成');
+  // 使用 useCallback 并为每个节点创建独立的回调
+  const handlePlaybackEnded = (nodeIndex: number) => {
+    console.log(`🎵 [MMDPlaylist] 节点 ${nodeIndex} 播放完成`);
+    
+    // 只处理当前正在播放的节点
+    if (nodeIndex !== currentNodeIndexRef.current) {
+      console.log(`⚠️ [MMDPlaylist] 忽略非当前节点 ${nodeIndex} 的播放结束事件（当前: ${currentNodeIndexRef.current}）`);
+      return;
+    }
+
+    const node = playlist.nodes[nodeIndex];
+    if (!node) return;
 
     // 如果当前节点设置了循环，则不切换
-    if (currentNode.loop) {
+    if (node.loop) {
       console.log('🔁 [MMDPlaylist] 当前节点循环播放');
       return;
     }
 
-    const isLastNode = currentNodeIndex === playlist.nodes.length - 1;
+    const isLastNode = nodeIndex === playlist.nodes.length - 1;
 
     // 如果不是最后一个节点，切换到下一个
     if (!isLastNode) {
-      console.log(`➡️ [MMDPlaylist] 切换到下一个节点: ${currentNodeIndex + 1}`);
+      console.log(`➡️ [MMDPlaylist] 切换到下一个节点: ${nodeIndex + 1}`);
       isAutoSwitchRef.current = true; // 标记为自动切换
-      setCurrentNodeIndex(currentNodeIndex + 1);
+      setCurrentNodeIndex(nodeIndex + 1);
       return;
     }
 
@@ -199,8 +209,8 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
                 onError?.(error);
               }
             }}
-            onAudioEnded={index === currentNodeIndex ? handlePlaybackEnded : undefined}
-            onAnimationEnded={index === currentNodeIndex ? handlePlaybackEnded : undefined}
+            onAudioEnded={() => handlePlaybackEnded(index)}
+            onAnimationEnded={() => handlePlaybackEnded(index)}
           />
         </div>
       ))}
