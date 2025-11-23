@@ -5,9 +5,9 @@ import { MMDPlayerEnhanced } from './MMDPlayerEnhanced'
 import type { MMDPlaylistProps, MMDPlaylistNode } from '../types'
 
 /**
- * MMD 播放列表组件
+ * MMD 播放列表组件（预加载版本）
  * 
- * 基于 MMDPlayerEnhanced 封装，支持多个资源配置的连续播放
+ * 在初始化时预加载所有节点的资源，切换时无需加载页面，实现无缝切换
  * 
  * @example
  * ```tsx
@@ -51,6 +51,11 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   const [currentNodeIndex, setCurrentNodeIndex] = useState<number>(defaultNodeIndex);
   // 是否显示播放列表弹窗
   const [showPlaylist, setShowPlaylist] = useState(false);
+  // 预加载状态
+  const [preloadedNodes, setPreloadedNodes] = useState<Set<number>>(new Set());
+  const [isPreloading, setIsPreloading] = useState(true);
+  const [preloadProgress, setPreloadProgress] = useState(0);
+  
   // 使用 ref 保存当前节点索引，避免闭包问题
   const currentNodeIndexRef = useRef<number>(defaultNodeIndex);
   // 标记是否是自动切换（用于控制是否自动播放）
@@ -80,6 +85,28 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
     console.log(`🔄 [MMDPlaylist] 节点切换: ${currentNodeIndex} - ${currentNode.name}`);
     onNodeChange?.(currentNodeIndex, currentNode);
   }, [currentNodeIndex, currentNode, onNodeChange]);
+
+  // 处理节点预加载完成
+  const handleNodePreloaded = (nodeIndex: number) => {
+    console.log(`✅ [MMDPlaylist] 节点 ${nodeIndex} 预加载完成`);
+    setPreloadedNodes(prev => {
+      const newSet = new Set(prev);
+      newSet.add(nodeIndex);
+      return newSet;
+    });
+  };
+
+  // 检查所有节点是否都已预加载
+  useEffect(() => {
+    if (preloadedNodes.size === playlist.nodes.length) {
+      console.log('🎉 [MMDPlaylist] 所有节点预加载完成');
+      setIsPreloading(false);
+      onLoad?.();
+    } else {
+      const progress = Math.round((preloadedNodes.size / playlist.nodes.length) * 100);
+      setPreloadProgress(progress);
+    }
+  }, [preloadedNodes, playlist.nodes.length, onLoad]);
 
   // 处理播放结束事件（音频或动画结束时触发）
   const handlePlaybackEnded = () => {
@@ -143,66 +170,114 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
 
   return (
     <div className={`relative ${className || ''}`} style={style}>
-      {/* MMD 播放器 */}
-      <MMDPlayerEnhanced
-        key={`node-${currentNodeIndex}`} // 使用 key 强制重新挂载，确保资源完全重新加载
-        resources={currentNode.resources}
-        stage={stage}
-        autoPlay={shouldAutoPlay}
-        loop={currentNode.loop || false}
-        className="h-full w-full"
-        onLoad={onLoad}
-        onError={onError}
-        onAudioEnded={handlePlaybackEnded}
-        onAnimationEnded={handlePlaybackEnded}
-      />
+      {/* 预加载所有节点（隐藏） */}
+      {playlist.nodes.map((node, index) => (
+        <div
+          key={`preload-${node.id}`}
+          className="absolute inset-0"
+          style={{
+            visibility: index === currentNodeIndex ? 'visible' : 'hidden',
+            zIndex: index === currentNodeIndex ? 1 : 0,
+          }}
+        >
+          <MMDPlayerEnhanced
+            resources={node.resources}
+            stage={stage}
+            autoPlay={index === currentNodeIndex ? shouldAutoPlay : false}
+            loop={node.loop || false}
+            className="h-full w-full"
+            onLoad={() => {
+              handleNodePreloaded(index);
+              // 只有当前节点加载完成时才触发外部的 onLoad
+              if (index === currentNodeIndex && !isPreloading) {
+                // onLoad?.(); // 已经在 useEffect 中调用
+              }
+            }}
+            onError={(error) => {
+              console.error(`❌ [MMDPlaylist] 节点 ${index} 加载失败:`, error);
+              if (index === currentNodeIndex) {
+                onError?.(error);
+              }
+            }}
+            onAudioEnded={index === currentNodeIndex ? handlePlaybackEnded : undefined}
+            onAnimationEnded={index === currentNodeIndex ? handlePlaybackEnded : undefined}
+          />
+        </div>
+      ))}
+
+      {/* 预加载进度提示 */}
+      {isPreloading && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="text-center">
+            <div className="mb-4 text-2xl font-bold text-white">
+              正在预加载播放列表
+            </div>
+            <div className="mb-2 text-lg text-white/80">
+              {preloadedNodes.size} / {playlist.nodes.length} 节点
+            </div>
+            <div className="h-2 w-64 overflow-hidden rounded-full bg-white/20">
+              <div
+                className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300"
+                style={{ width: `${preloadProgress}%` }}
+              />
+            </div>
+            <div className="mt-4 text-sm text-white/60">
+              预加载所有资源后，切换节点将无需等待
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 播放列表控制按钮（位于右下角，不与播放器按钮重叠） */}
-      <div className="absolute bottom-4 right-4 flex gap-2">
-        {/* 上一个按钮 */}
-        {playlist.nodes.length > 1 && (
+      {!isPreloading && (
+        <div className="absolute bottom-4 right-4 flex gap-2">
+          {/* 上一个按钮 */}
+          {playlist.nodes.length > 1 && (
+            <button
+              onClick={playlistPrevious}
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/90 text-xl text-white shadow-lg backdrop-blur-md transition-all hover:bg-blue-600 hover:scale-110"
+              title="上一个节点"
+            >
+              ⏮️
+            </button>
+          )}
+
+          {/* 播放列表按钮 */}
           <button
-            onClick={playlistPrevious}
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/90 text-xl text-white shadow-lg backdrop-blur-md transition-all hover:bg-blue-600 hover:scale-110"
-            title="上一个节点"
+            onClick={() => setShowPlaylist(true)}
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500/90 text-xl text-white shadow-lg backdrop-blur-md transition-all hover:bg-indigo-600 hover:scale-110"
+            title="播放列表"
           >
-            ⏮️
+            📋
           </button>
-        )}
 
-        {/* 播放列表按钮 */}
-        <button
-          onClick={() => setShowPlaylist(true)}
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500/90 text-xl text-white shadow-lg backdrop-blur-md transition-all hover:bg-indigo-600 hover:scale-110"
-          title="播放列表"
-        >
-          📋
-        </button>
-
-        {/* 下一个按钮 */}
-        {playlist.nodes.length > 1 && (
-          <button
-            onClick={playlistNext}
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/90 text-xl text-white shadow-lg backdrop-blur-md transition-all hover:bg-blue-600 hover:scale-110"
-            title="下一个节点"
-          >
-            ⏭️
-          </button>
-        )}
-      </div>
-
-      {/* 当前节点信息提示（左上角） */}
-      <div className="absolute left-4 top-4 rounded-lg bg-black/50 px-4 py-2 backdrop-blur-md">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-white/60">
-            {currentNodeIndex + 1}/{playlist.nodes.length}
-          </span>
-          <span className="text-sm font-medium text-white">{currentNode.name}</span>
-          {currentNode.loop && (
-            <span className="rounded bg-white/20 px-2 py-0.5 text-xs text-white">🔁</span>
+          {/* 下一个按钮 */}
+          {playlist.nodes.length > 1 && (
+            <button
+              onClick={playlistNext}
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/90 text-xl text-white shadow-lg backdrop-blur-md transition-all hover:bg-blue-600 hover:scale-110"
+              title="下一个节点"
+            >
+              ⏭️
+            </button>
           )}
         </div>
-      </div>
+      )}
+
+      {/* 当前节点信息提示（左上角） */}
+      {!isPreloading && (
+        <div className="absolute left-4 top-4 rounded-lg bg-black/50 px-4 py-2 backdrop-blur-md">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-white/60">
+              {currentNodeIndex + 1}/{playlist.nodes.length}
+            </span>
+            <span className="text-sm font-medium text-white">{currentNode.name}</span>
+            {currentNode.loop && (
+              <span className="rounded bg-white/20 px-2 py-0.5 text-xs text-white">🔁</span>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* 播放列表弹窗 */}
       {showPlaylist && (
@@ -253,40 +328,33 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
                             🔁 循环
                           </span>
                         )}
+                        {preloadedNodes.has(index) && (
+                          <span className="rounded bg-green-500/30 px-2 py-0.5 text-xs text-green-300">
+                            ✓ 已加载
+                          </span>
+                        )}
                       </div>
                       {node.description && (
                         <p className="mt-1 text-sm text-white/60">{node.description}</p>
                       )}
                       <div className="mt-2 flex flex-wrap gap-2 text-xs text-white/60">
                         {node.resources.modelPath && (
-                          <span className="rounded bg-white/10 px-2 py-1">
-                            👤 模型
-                          </span>
+                          <span className="rounded bg-white/10 px-2 py-1">👤 模型</span>
                         )}
                         {node.resources.motionPath && (
-                          <span className="rounded bg-white/10 px-2 py-1">
-                            💃 动作
-                          </span>
+                          <span className="rounded bg-white/10 px-2 py-1">💃 动作</span>
                         )}
                         {node.resources.audioPath && (
-                          <span className="rounded bg-white/10 px-2 py-1">
-                            🎵 音乐
-                          </span>
+                          <span className="rounded bg-white/10 px-2 py-1">🎵 音乐</span>
                         )}
                         {node.resources.cameraPath && (
-                          <span className="rounded bg-white/10 px-2 py-1">
-                            📷 相机
-                          </span>
+                          <span className="rounded bg-white/10 px-2 py-1">📷 相机</span>
                         )}
                         {node.resources.stageModelPath && (
-                          <span className="rounded bg-white/10 px-2 py-1">
-                            🏛️ 场景
-                          </span>
+                          <span className="rounded bg-white/10 px-2 py-1">🏛️ 场景</span>
                         )}
                         {node.resources.backgroundPath && (
-                          <span className="rounded bg-white/10 px-2 py-1">
-                            🖼️ 背景
-                          </span>
+                          <span className="rounded bg-white/10 px-2 py-1">🖼️ 背景</span>
                         )}
                       </div>
                     </div>
@@ -305,4 +373,3 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
     </div>
   );
 };
-
