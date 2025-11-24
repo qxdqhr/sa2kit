@@ -85,9 +85,47 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
 
   console.log('🎯 [MMDPlaylist] 当前节点:', currentNode.name, '索引:', currentNodeIndex);
 
+  // 停止指定节点的播放
+  const stopNode = (nodeIndex: number) => {
+    const playerElement = playerRefsMap.current.get(nodeIndex);
+    if (!playerElement) return;
+
+    console.log(`⏹️ [MMDPlaylist] 停止节点 ${nodeIndex}`);
+
+    // 1. 停止音频
+    const audioElement = playerElement.querySelector('audio');
+    if (audioElement) {
+      audioElement.pause();
+      audioElement.currentTime = 0;
+      console.log(`  🔇 停止音频`);
+    }
+
+    // 2. 点击停止按钮（如果存在）
+    const stopButton = playerElement.querySelector('button[title="停止"]');
+    if (stopButton) {
+      (stopButton as HTMLButtonElement).click();
+      console.log(`  ⏹️ 点击停止按钮`);
+    } else {
+      // 如果没有停止按钮，尝试点击暂停按钮
+      const pauseButton = playerElement.querySelector('button[title="暂停"]');
+      if (pauseButton) {
+        (pauseButton as HTMLButtonElement).click();
+        console.log(`  ⏸️ 点击暂停按钮`);
+      }
+    }
+  };
+
   // 节点切换处理
   useEffect(() => {
     console.log(`🔄 [MMDPlaylist] 节点切换: ${currentNodeIndex} - ${currentNode.name}`);
+    
+    // 停止所有其他节点的播放
+    editableNodes.forEach((_, index) => {
+      if (index !== currentNodeIndex) {
+        stopNode(index);
+      }
+    });
+
     onNodeChange?.(currentNodeIndex, currentNode);
     
     // 如果预加载已完成，且是自动切换或 playlist.autoPlay 为 true，则开始播放
@@ -100,7 +138,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
         return;
       }
       
-      // 延迟一帧，确保 visibility 切换完成
+      // 延迟一帧，确保 visibility 切换完成和停止操作完成
       requestAnimationFrame(() => {
         const playerElement = playerRefsMap.current.get(currentNodeIndex);
         if (playerElement) {
@@ -117,7 +155,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
         }
       });
     }
-  }, [currentNodeIndex, currentNode, onNodeChange, isPreloading, playlist.autoPlay, preloadedNodes]);
+  }, [currentNodeIndex, currentNode, onNodeChange, isPreloading, playlist.autoPlay, preloadedNodes, editableNodes]);
 
   // 处理节点预加载完成
   const handleNodePreloaded = (nodeIndex: number) => {
