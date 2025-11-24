@@ -304,22 +304,62 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
       audioRef.current = null;
     }
 
-    // ⚠️ 关键修复：完全清除 helper 中的所有对象
+    // ⚠️ 关键修复：完全清除 helper 中的所有对象和物理系统
     if (helperRef.current) {
-      // 尝试移除所有已添加的对象（清空内部 objects 数组）
+      console.log('🧹 开始清理 MMDAnimationHelper');
+      
+      // 1. 停用所有系统（动画、IK、物理等）
       try {
-        // 访问 helper 内部的 objects 数组
+        helperRef.current.enable('animation', false);
+        helperRef.current.enable('ik', false);
+        helperRef.current.enable('grant', false);
+        helperRef.current.enable('physics', false);
+        console.log('✅ 已停用所有 helper 系统');
+      } catch (error) {
+        console.warn('⚠️ 停用 helper 系统失败:', error);
+      }
+
+      // 2. 清理物理系统（这是 OOM 的根源！）
+      try {
         const helperObjects = (helperRef.current as any).objects;
         if (helperObjects && Array.isArray(helperObjects)) {
-          console.log(`🧹 清除 helper 中的 ${helperObjects.length} 个对象`);
-          // 清空数组（直接修改内部状态）
+          console.log(`🧹 清除 helper 中的 ${helperObjects.length} 个对象（包括物理系统）`);
+          
+          // 遍历每个对象，清理其物理系统
+          helperObjects.forEach((obj: any) => {
+            if (obj.physics) {
+              console.log('🔧 清理物理系统:', obj.mesh?.name || 'unnamed');
+              try {
+                // 调用物理系统的清理方法
+                if (obj.physics.reset) {
+                  obj.physics.reset();
+                }
+                // 清空物理世界中的刚体
+                if (obj.physics.world) {
+                  const world = obj.physics.world;
+                  // 移除所有刚体和约束
+                  while (world.getNumCollisionObjects() > 0) {
+                    const body = world.getCollisionObjectArray().at(0);
+                    world.removeCollisionObject(body);
+                  }
+                }
+                obj.physics = null;
+              } catch (physicsError) {
+                console.warn('⚠️ 清理物理系统失败:', physicsError);
+              }
+            }
+          });
+          
+          // 清空数组
           helperObjects.length = 0;
         }
       } catch (error) {
-        console.warn('⚠️ 无法访问 helper.objects，创建新的 helper:', error);
+        console.warn('⚠️ 无法访问 helper.objects:', error);
       }
-      // 创建新的 helper 以确保完全重置
+      
+      // 3. 重置 helper
       helperRef.current = null;
+      console.log('✅ MMDAnimationHelper 清理完成');
     }
 
     // 清除场景背景（避免贴图内存泄漏）
