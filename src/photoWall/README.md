@@ -45,7 +45,7 @@ src/photoWall/
 
 ### Frontend Component
 
-#### Direct Image Array (No Backend Required)
+#### Direct Image Array (Required)
 ```tsx
 import PhotoWall from '@qhr123/sa2kit/photoWall';
 
@@ -62,17 +62,13 @@ const imageUrls = [
 />
 ```
 
-#### API Integration (Optional Backend)
+#### Basic Usage
 ```tsx
 import PhotoWall from '@qhr123/sa2kit/photoWall';
 
-// With backend API (requires API setup)
-<PhotoWall
-  source="gallery1"
-  type="public"
-  initialLayout="masonry"
-  onSelectionChange={(selected) => console.log(selected)}
-/>
+const images = ['image1.jpg', 'image2.png', 'image3.webp'];
+
+<PhotoWall images={images} />
 ```
 
 #### Advanced Configuration
@@ -80,11 +76,9 @@ import PhotoWall from '@qhr123/sa2kit/photoWall';
 import { PhotoWall, PhotoWallProps } from '@qhr123/sa2kit/photoWall';
 
 const props: PhotoWallProps = {
-  images: [/* image URLs */], // Direct array OR
-  source: 'gallery',           // API source (optional)
-  type: 'public',
-  initialLayout: 'masonry',
-  onSelectionChange: (selected) => console.log(selected)
+  images: ['img1.jpg', 'img2.png', 'img3.webp'],
+  initialLayout: 'grid',
+  onSelectionChange: (selected) => console.log('Selected:', selected)
 };
 
 <PhotoWall {...props} />

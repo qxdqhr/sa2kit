@@ -46,7 +46,7 @@ export type { PhotoWallLayout, PhotoWallProps };
 
 // Main PhotoWall component
 
-export function PhotoWall({ source, type = 'public', initialLayout = 'masonry', onSelectionChange, images: propImages }: PhotoWallProps) {
+export function PhotoWall({ initialLayout = 'masonry', onSelectionChange, images: propImages }: PhotoWallProps) {
   const [images, setImages] = useState<string[]>(propImages || [])
   const [loading, setLoading] = useState(true)
   const [layout, setLayout] = useState<PhotoWallLayout>(initialLayout)
@@ -69,7 +69,6 @@ export function PhotoWall({ source, type = 'public', initialLayout = 'masonry', 
 
   // load images
   useEffect(() => {
-    // If images are provided directly via props, use them
     if (propImages) {
       setImages(propImages)
       setLoading(false)
@@ -79,31 +78,12 @@ export function PhotoWall({ source, type = 'public', initialLayout = 'masonry', 
         if (!next.All || next.All.length === 0) next.All = propImages
         return next
       })
-      return
+    } else {
+      // No images provided, set empty array and stop loading
+      setImages([])
+      setLoading(false)
     }
-
-    // Otherwise, try to fetch from API if source is provided
-    if (source) {
-      setLoading(true)
-      fetch(`/api/images?dir=${source}&type=${type}`)
-        .then((r) => r.json())
-        .then((data) => {
-          const imgs: string[] = data.data?.images || data.images || []
-          setImages(imgs)
-          setLoading(false)
-          // merge into albums All if empty
-          setAlbums((prev) => {
-            const next = { ...prev }
-            if (!next.All || next.All.length === 0) next.All = imgs
-            return next
-          })
-        })
-        .catch((error) => {
-          console.warn('Failed to fetch images from API:', error)
-          setLoading(false)
-        })
-    }
-  }, [source, type, propImages])
+  }, [propImages])
 
   // persist albums/ordering to localStorage
   useEffect(() => {
