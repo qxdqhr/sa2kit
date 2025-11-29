@@ -1,10 +1,11 @@
 export type PhotoWallLayout = 'masonry' | 'grid' | 'columns' | 'list' | 'timeline';
 
 export interface PhotoWallProps {
-  source: string;
+  source?: string; // Optional when images are provided directly
   type?: 'oss' | 'public';
   initialLayout?: PhotoWallLayout;
   onSelectionChange?: (selected: string[]) => void;
+  images?: string[]; // Direct image array (alternative to API call)
 }
 
 export interface LightboxProps {

@@ -46,8 +46,8 @@ export type { PhotoWallLayout, PhotoWallProps };
 
 // Main PhotoWall component
 
-export function PhotoWall({ source, type = 'public', initialLayout = 'masonry', onSelectionChange }: PhotoWallProps) {
-  const [images, setImages] = useState<string[]>([])
+export function PhotoWall({ source, type = 'public', initialLayout = 'masonry', onSelectionChange, images: propImages }: PhotoWallProps) {
+  const [images, setImages] = useState<string[]>(propImages || [])
   const [loading, setLoading] = useState(true)
   const [layout, setLayout] = useState<PhotoWallLayout>(initialLayout)
   const [preview, setPreview] = useState('')
@@ -69,22 +69,41 @@ export function PhotoWall({ source, type = 'public', initialLayout = 'masonry', 
 
   // load images
   useEffect(() => {
-    setLoading(true)
-    fetch(`/api/images?dir=${source}&type=${type}`)
-      .then((r) => r.json())
-      .then((data) => {
-        const imgs: string[] = data.images || []
-        setImages(imgs)
-        setLoading(false)
-        // merge into albums All if empty
-        setAlbums((prev) => {
-          const next = { ...prev }
-          if (!next.All || next.All.length === 0) next.All = imgs
-          // keep existing albums otherwise
-          return next
-        })
+    // If images are provided directly via props, use them
+    if (propImages) {
+      setImages(propImages)
+      setLoading(false)
+      // merge into albums All if empty
+      setAlbums((prev) => {
+        const next = { ...prev }
+        if (!next.All || next.All.length === 0) next.All = propImages
+        return next
       })
-  }, [source, type])
+      return
+    }
+
+    // Otherwise, try to fetch from API if source is provided
+    if (source) {
+      setLoading(true)
+      fetch(`/api/images?dir=${source}&type=${type}`)
+        .then((r) => r.json())
+        .then((data) => {
+          const imgs: string[] = data.data?.images || data.images || []
+          setImages(imgs)
+          setLoading(false)
+          // merge into albums All if empty
+          setAlbums((prev) => {
+            const next = { ...prev }
+            if (!next.All || next.All.length === 0) next.All = imgs
+            return next
+          })
+        })
+        .catch((error) => {
+          console.warn('Failed to fetch images from API:', error)
+          setLoading(false)
+        })
+    }
+  }, [source, type, propImages])
 
   // persist albums/ordering to localStorage
   useEffect(() => {

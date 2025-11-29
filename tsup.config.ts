@@ -28,7 +28,6 @@ export default defineConfig({
     'config/server/index': 'src/config/server/index.ts',
     'mmd/index': 'src/mmd/index.ts',
     'photoWall/index': 'src/photoWall/index.ts',
-    'photoWall/backend/index': 'src/photoWall/backend/index.ts',
   },
 
   // Output formats: ESM and CJS

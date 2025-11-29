@@ -45,31 +45,49 @@ src/photoWall/
 
 ### Frontend Component
 
-#### Default Import (Recommended)
+#### Direct Image Array (No Backend Required)
 ```tsx
-import PhotoWall, { PhotoWallProps } from '@qhr123/sa2kit/photoWall';
+import PhotoWall from '@qhr123/sa2kit/photoWall';
+
+const imageUrls = [
+  'https://example.com/image1.jpg',
+  'https://example.com/image2.png',
+  '/images/local-image.jpg'
+];
+
+<PhotoWall
+  images={imageUrls}
+  initialLayout="masonry"
+  onSelectionChange={(selected) => console.log(selected)}
+/>
+```
+
+#### API Integration (Optional Backend)
+```tsx
+import PhotoWall from '@qhr123/sa2kit/photoWall';
+
+// With backend API (requires API setup)
+<PhotoWall
+  source="gallery1"
+  type="public"
+  initialLayout="masonry"
+  onSelectionChange={(selected) => console.log(selected)}
+/>
+```
+
+#### Advanced Configuration
+```tsx
+import { PhotoWall, PhotoWallProps } from '@qhr123/sa2kit/photoWall';
 
 const props: PhotoWallProps = {
-  source: 'images',
+  images: [/* image URLs */], // Direct array OR
+  source: 'gallery',           // API source (optional)
   type: 'public',
   initialLayout: 'masonry',
   onSelectionChange: (selected) => console.log(selected)
 };
 
 <PhotoWall {...props} />
-```
-
-#### Named Import
-```tsx
-import { PhotoWall, PhotoWallProps, createPhotoWallConfig } from '@qhr123/sa2kit/photoWall';
-
-const config = createPhotoWallConfig({
-  source: 'images',
-  type: 'public',
-  initialLayout: 'masonry'
-});
-
-<PhotoWall {...config} />
 ```
 
 ### Backend API
@@ -122,6 +140,40 @@ const config: ImagesApiConfig = {
     baseUrl: '/images',
   },
 };
+```
+
+#### File Structure Setup
+For the file system provider, organize your images like this:
+```
+public/
+├── images/
+│   ├── gallery1/
+│   │   ├── image1.jpg
+│   │   ├── image2.png
+│   │   └── image3.webp
+│   ├── gallery2/
+│   │   ├── photo1.jpg
+│   │   └── photo2.jpg
+│   └── portfolio/
+│       ├── work1.jpg
+│       └── work2.jpg
+```
+
+#### API Response
+```typescript
+// GET /api/images?dir=gallery1&type=public
+{
+  "success": true,
+  "data": {
+    "images": [
+      "/images/gallery1/image1.jpg",
+      "/images/gallery1/image2.png",
+      "/images/gallery1/image3.webp"
+    ],
+    "total": 3,
+    "hasMore": false
+  }
+}
 ```
 
 ## Architecture Benefits
