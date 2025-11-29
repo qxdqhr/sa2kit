@@ -43,8 +43,9 @@ src/photoWall/
 
 ## Usage
 
+### Default Import (Recommended)
 ```tsx
-import PhotoWall, { PhotoWallProps } from './photoWall';
+import PhotoWall, { PhotoWallProps } from '@qhr123/sa2kit/photoWall';
 
 const props: PhotoWallProps = {
   source: 'images',
@@ -54,6 +55,19 @@ const props: PhotoWallProps = {
 };
 
 <PhotoWall {...props} />
+```
+
+### Named Import
+```tsx
+import { PhotoWall, PhotoWallProps, createPhotoWallConfig } from '@qhr123/sa2kit/photoWall';
+
+const config = createPhotoWallConfig({
+  source: 'images',
+  type: 'public',
+  initialLayout: 'masonry'
+});
+
+<PhotoWall {...config} />
 ```
 
 ## Architecture Benefits
