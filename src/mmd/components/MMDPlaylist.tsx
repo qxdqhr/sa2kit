@@ -65,6 +65,10 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   const isAutoSwitchRef = useRef<boolean>(false);
   // 保存每个播放器的 ref
   const playerRefsMap = useRef<Map<number, any>>(new Map());
+  // 保存每个播放器组件的 ref
+  const playerComponentRefs = useRef<Map<number, any>>(new Map());
+  // 内存使用监控
+  const [memoryUsage, setMemoryUsage] = useState(0);
 
   // 同步 currentNodeIndex 到 ref
   useEffect(() => {
@@ -87,30 +91,86 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
 
   // 停止指定节点的播放
   const stopNode = (nodeIndex: number) => {
-    const playerElement = playerRefsMap.current.get(nodeIndex);
-    if (!playerElement) return;
+    const playerComponent = playerComponentRefs.current.get(nodeIndex);
+    if (playerComponent && playerComponent.stopCompletely) {
+      console.log(`⏹️ [MMDPlaylist] 停止节点 ${nodeIndex}`);
+      playerComponent.stopCompletely();
+    } else {
+      // 降级到DOM操作方式
+      const playerElement = playerRefsMap.current.get(nodeIndex);
+      if (!playerElement) return;
 
-    console.log(`⏹️ [MMDPlaylist] 停止节点 ${nodeIndex}`);
+      console.log(`⏹️ [MMDPlaylist] 停止节点 ${nodeIndex} (DOM方式)`);
 
-    // 1. 停止音频
-    const audioElement = playerElement.querySelector('audio');
-    if (audioElement) {
-      audioElement.pause();
-      audioElement.currentTime = 0;
-      console.log(`  🔇 停止音频`);
+      // 1. 停止音频
+      const audioElement = playerElement.querySelector('audio');
+      if (audioElement) {
+        audioElement.pause();
+        audioElement.currentTime = 0;
+        console.log(`  🔇 停止音频`);
+      }
+
+      // 2. 发送停止事件
+      const stopEvent = new CustomEvent('stopCompletely');
+      playerElement.dispatchEvent(stopEvent);
+      console.log(`  📡 发送停止事件`);
+    }
+  };
+
+  // 清理指定节点的资源（用于内存管理）
+  const clearNodeResources = (nodeIndex: number, excludeCurrent: boolean = true) => {
+    if (excludeCurrent && nodeIndex === currentNodeIndex) {
+      console.log(`⚠️ [MMDPlaylist] 跳过清理当前播放节点 ${nodeIndex}`);
+      return;
     }
 
-    // 2. 点击停止按钮（如果存在）
-    const stopButton = playerElement.querySelector('button[title="停止"]');
-    if (stopButton) {
-      (stopButton as HTMLButtonElement).click();
-      console.log(`  ⏹️ 点击停止按钮`);
+    const playerComponent = playerComponentRefs.current.get(nodeIndex);
+    if (playerComponent && playerComponent.clearResources) {
+      console.log(`🧹 [MMDPlaylist] 清理节点 ${nodeIndex} 资源`);
+      playerComponent.clearResources();
     } else {
-      // 如果没有停止按钮，尝试点击暂停按钮
-      const pauseButton = playerElement.querySelector('button[title="暂停"]');
-      if (pauseButton) {
-        (pauseButton as HTMLButtonElement).click();
-        console.log(`  ⏸️ 点击暂停按钮`);
+      // 降级到DOM事件方式
+      const playerElement = playerRefsMap.current.get(nodeIndex);
+      if (playerElement) {
+        const cleanupEvent = new CustomEvent('cleanupResources');
+        playerElement.dispatchEvent(cleanupEvent);
+      }
+    }
+  };
+
+  // 紧急内存清理（只在极端情况下使用）
+  const emergencyMemoryCleanup = () => {
+    if ((window as any).performance?.memory) {
+      const memInfo = (window as any).performance.memory;
+      const usage = memInfo.usedJSHeapSize / memInfo.totalJSHeapSize;
+
+      // 只有在内存使用超过90%时才进行紧急清理
+      if (usage > 0.9) {
+        console.error(`🚨 [MMDPlaylist] 内存使用严重过高 (${(usage * 100).toFixed(1)}%)，紧急清理`);
+
+        // 只清理距离当前节点最远的节点
+        const nodesToClean = editableNodes
+          .map((_, index) => ({
+            index,
+            distance: Math.abs(index - currentNodeIndex)
+          }))
+          .filter(node => node.distance > 2) // 只清理距离超过2的节点
+          .sort((a, b) => b.distance - a.distance) // 按距离降序排序
+          .slice(0, 2); // 最多清理2个节点
+
+        nodesToClean.forEach(({ index }) => {
+          console.warn(`🧹 [MMDPlaylist] 紧急清理节点 ${index}`);
+          clearNodeResources(index, false);
+        });
+
+        // 强制垃圾回收
+        if ((window as any).gc) {
+          try {
+            (window as any).gc();
+          } catch (e) {
+            // gc() 可能不可用
+          }
+        }
       }
     }
   };
@@ -118,7 +178,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   // 节点切换处理
   useEffect(() => {
     console.log(`🔄 [MMDPlaylist] 节点切换: ${currentNodeIndex} - ${currentNode.name}`);
-    
+
     // 停止所有其他节点的播放
     editableNodes.forEach((_, index) => {
       if (index !== currentNodeIndex) {
@@ -126,18 +186,41 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
       }
     });
 
+    // 🎯 关键修复：在节点切换时清理其他节点的资源，防止内存泄漏
+    // 但是要智能地判断哪些节点可以清理
+    const nodesToKeep = new Set<number>();
+
+    // 始终保留当前节点
+    nodesToKeep.add(currentNodeIndex);
+
+    // 如果播放列表循环，保留前一个节点（用于循环播放）
+    if (playlist.loop && currentNodeIndex > 0) {
+      nodesToKeep.add(currentNodeIndex - 1);
+    }
+    // 如果不是最后一个节点，保留下一个节点（预加载）
+    if (currentNodeIndex < editableNodes.length - 1) {
+      nodesToKeep.add(currentNodeIndex + 1);
+    }
+
+    // 清理不在保留列表中的节点
+    editableNodes.forEach((_, index) => {
+      if (!nodesToKeep.has(index)) {
+        clearNodeResources(index, false);
+      }
+    });
+
     onNodeChange?.(currentNodeIndex, currentNode);
-    
+
     // 如果预加载已完成，且是自动切换或 playlist.autoPlay 为 true，则开始播放
     if (!isPreloading && (isAutoSwitchRef.current || playlist.autoPlay)) {
       console.log(`▶️ [MMDPlaylist] 准备播放节点 ${currentNodeIndex}`);
-      
+
       // 确保节点已经预加载完成再触发播放
       if (!preloadedNodes.has(currentNodeIndex)) {
         console.warn(`⚠️ [MMDPlaylist] 节点 ${currentNodeIndex} 尚未预加载完成，等待...`);
         return;
       }
-      
+
       // 延迟一帧，确保 visibility 切换完成和停止操作完成
       requestAnimationFrame(() => {
         const playerElement = playerRefsMap.current.get(currentNodeIndex);
@@ -155,7 +238,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
         }
       });
     }
-  }, [currentNodeIndex, currentNode, onNodeChange, isPreloading, playlist.autoPlay, preloadedNodes, editableNodes]);
+  }, [currentNodeIndex, currentNode, onNodeChange, isPreloading, playlist.autoPlay, playlist.loop, preloadedNodes, editableNodes]);
 
   // 处理节点预加载完成
   const handleNodePreloaded = (nodeIndex: number) => {
@@ -178,6 +261,25 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
       setPreloadProgress(progress);
     }
   }, [preloadedNodes, editableNodes.length, onLoad]);
+
+  // 内存监控（只监控，不主动清理）
+  useEffect(() => {
+    const checkMemory = () => {
+      if ((window as any).performance?.memory) {
+        const memInfo = (window as any).performance.memory;
+        const usage = memInfo.usedJSHeapSize / memInfo.totalJSHeapSize;
+        setMemoryUsage(usage);
+
+        // 只在极端情况下进行紧急清理（内存使用超过90%）
+        if (usage > 0.9) {
+          emergencyMemoryCleanup();
+        }
+      }
+    };
+
+    const interval = setInterval(checkMemory, 15000); // 每15秒检查一次
+    return () => clearInterval(interval);
+  }, [currentNodeIndex, editableNodes]); // 需要依赖来获取当前状态
 
   // 处理播放结束事件（音频或动画结束时触发）
   // 使用 useCallback 并为每个节点创建独立的回调
@@ -328,6 +430,11 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
             }}
           >
             <MMDPlayerEnhanced
+              ref={(componentRef) => {
+                if (componentRef) {
+                  playerComponentRefs.current.set(index, componentRef);
+                }
+              }}
               resources={node.resources}
               stage={stage}
               autoPlay={index === currentNodeIndex && shouldAutoPlayInitial}

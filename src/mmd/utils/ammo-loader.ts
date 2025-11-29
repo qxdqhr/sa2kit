@@ -48,7 +48,7 @@ export const loadAmmo = (config: AmmoConfig): Promise<void> => {
     
     // 设置 Ammo 配置，指定 WASM 文件路径
     (window as any).AMMO_PATH = config.wasmBasePath;
-    
+
     const script = document.createElement('script');
     script.src = config.scriptPath;
     script.async = true;
@@ -70,21 +70,21 @@ export const loadAmmo = (config: AmmoConfig): Promise<void> => {
           }).then((AmmoLib: any) => {
             console.log('✅ [Ammo] 初始化完成！');
             (window as any).Ammo = AmmoLib;
-            resolve();
+                resolve();
           }).catch((err: any) => {
             console.error('❌ [Ammo] 初始化失败:', err);
             reject(err);
-          });
+             });
         } else {
-          // Sometimes it might be already initialized or different structure depending on the build
-          // But standard ammo.wasm.js returns a promise-like factory
+           // Sometimes it might be already initialized or different structure depending on the build
+           // But standard ammo.wasm.js returns a promise-like factory
           if ((window as any).Ammo) {
             console.log('✅ [Ammo] 已初始化');
-            resolve();
-          } else {
+               resolve();
+           } else {
             console.log('⏳ [Ammo] 等待初始化...');
-            setTimeout(checkAmmo, 100);
-          }
+               setTimeout(checkAmmo, 100);
+           }
         }
       };
       checkAmmo();

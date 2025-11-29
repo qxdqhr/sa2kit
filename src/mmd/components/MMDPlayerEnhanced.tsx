@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useImperativeHandle, forwardRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls, MMDLoader, MMDAnimationHelper } from 'three-stdlib';
 import type { MMDPlayerEnhancedProps } from '../types';
@@ -11,7 +11,7 @@ import { loadAmmo } from '../utils/ammo-loader';
  * 支持通过 resources 和 stage 配置快速使用
  * 所有资源均从 public 目录加载，无需额外配置
  */
-export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
+export const MMDPlayerEnhanced = forwardRef<any, MMDPlayerEnhancedProps>(({
   resources,
   resourcesList,
   defaultResourceId,
@@ -28,7 +28,7 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   onSelectionChange,
   onAudioEnded,
   onAnimationEnded,
-}) => {
+}, ref) => {
   console.log('🎨 [MMDPlayerEnhanced] 组件初始化')
   
   // 资源切换状态（resourcesList 模式）
@@ -140,6 +140,74 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   const [reloadTrigger, setReloadTrigger] = useState(0); // 用于触发重新加载
   const [needReset, setNeedReset] = useState(false); // 标记是否需要重置（改用 state）
 
+  // 暴露清理方法给父组件调用
+  useImperativeHandle(ref, () => ({
+    clearResources: () => {
+      console.log('🧹 [MMDPlayerEnhanced] 外部触发资源清理');
+      clearOldResources();
+    },
+    getIsPlaying: () => isPlayingRef.current,
+    getIsLoaded: () => isLoadedRef.current,
+    stopCompletely: () => {
+      console.log('⏹️ [MMDPlayerEnhanced] 完全停止');
+      stopCompletely();
+    },
+  }));
+
+  // 完全停止方法（不清理资源，只停止运行）
+  const stopCompletely = () => {
+    // 1. 停止播放状态
+    isPlayingRef.current = false;
+    setIsPlaying(false);
+
+    // 2. 停止音频
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+
+    // 3. 停止物理引擎更新（关键）
+    if (helperRef.current) {
+      helperRef.current.enable('physics', false);
+    }
+
+    // 4. 重置动画状态
+    animationEndedFiredRef.current = false;
+    lastAnimationTimeRef.current = 0;
+    animationStoppedCountRef.current = 0;
+
+    console.log('✅ [MMDPlayerEnhanced] 完全停止完成');
+  };
+
+  // 监听来自父组件的清理和停止事件
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleCleanupResources = () => {
+      console.log('🧹 [MMDPlayerEnhanced] 收到清理资源事件');
+      // 只在非播放状态时清理资源
+      if (!isPlayingRef.current) {
+        clearOldResources();
+      } else {
+        console.warn('⚠️ [MMDPlayerEnhanced] 播放中，跳过资源清理');
+      }
+    };
+
+    const handleStopCompletely = () => {
+      console.log('⏹️ [MMDPlayerEnhanced] 收到完全停止事件');
+      stopCompletely();
+    };
+
+    container.addEventListener('cleanupResources', handleCleanupResources);
+    container.addEventListener('stopCompletely', handleStopCompletely);
+
+    return () => {
+      container.removeEventListener('cleanupResources', handleCleanupResources);
+      container.removeEventListener('stopCompletely', handleStopCompletely);
+    };
+  }, []);
+
   // 初始化场景
   useEffect(() => {
     console.log('🏗️ [MMDPlayerEnhanced] 场景初始化 useEffect 触发')
@@ -216,7 +284,20 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
       // 只在播放状态时更新动画
       if (helperRef.current && isPlayingRef.current) {
         const delta = clockRef.current.getDelta();
-        helperRef.current.update(delta);
+        
+        // 防止物理更新时出现OOM
+        try {
+          helperRef.current.update(delta);
+        } catch (error: any) {
+          if (error.message && error.message.includes('OOM')) {
+            console.error('❌ 物理引擎内存溢出，停止播放');
+            isPlayingRef.current = false;
+            setIsPlaying(false);
+            onError?.(new Error('物理引擎内存溢出'));
+            return;
+          }
+          throw error;
+        }
 
         // 检测动画是否结束（仅在没有音频时）
         if (!hasAudioRef.current && !loop && !animationEndedFiredRef.current) {
@@ -286,8 +367,6 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
 
   // 清除旧资源（增强版：更彻底的内存清理）
   const clearOldResources = () => {
-    console.log('🧹 [MMDPlayerEnhanced] 开始清除旧资源（增强清理）');
-    
     if (!sceneRef.current) return;
 
     // 停止播放
@@ -300,120 +379,151 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
-      audioRef.current.onended = null; // 移除事件监听器
+      audioRef.current.onended = null;
+      audioRef.current.src = ''; // 释放音频资源
+      audioRef.current.load(); // 强制卸载
       audioRef.current = null;
     }
 
     // ⚠️ 关键修复：完全清除 helper 中的所有对象和物理系统
     if (helperRef.current) {
-      console.log('🧹 开始清理 MMDAnimationHelper');
-      
-      // 1. 停用所有系统（动画、IK、物理等）
       try {
+        // 1. 停用所有系统
         helperRef.current.enable('animation', false);
         helperRef.current.enable('ik', false);
         helperRef.current.enable('grant', false);
         helperRef.current.enable('physics', false);
-        console.log('✅ 已停用所有 helper 系统');
-      } catch (error) {
-        console.warn('⚠️ 停用 helper 系统失败:', error);
-      }
 
-      // 2. 清理物理系统（这是 OOM 的根源！）
-      try {
+        // 2. 深度清理物理系统（防止 OOM）
         const helperObjects = (helperRef.current as any).objects;
         if (helperObjects && Array.isArray(helperObjects)) {
-          console.log(`🧹 清除 helper 中的 ${helperObjects.length} 个对象（包括物理系统）`);
+          // 收集所有物理世界引用，用于最后销毁
+          const physicsWorldsToDestroy = new Set<any>();
           
-          // 遍历每个对象，清理其物理系统
           helperObjects.forEach((obj: any) => {
             if (obj.physics) {
-              console.log('🔧 清理物理系统:', obj.mesh?.name || 'unnamed');
               try {
-                // 调用物理系统的清理方法
-                if (obj.physics.reset) {
-                  obj.physics.reset();
+                const physics = obj.physics;
+                
+                // 记录物理世界，稍后统一销毁
+                if (physics.world) {
+                  physicsWorldsToDestroy.add(physics.world);
                 }
-                // 清空物理世界中的刚体
-                if (obj.physics.world) {
-                  const world = obj.physics.world;
-                  // 移除所有刚体和约束
-                  while (world.getNumCollisionObjects() > 0) {
-                    const body = world.getCollisionObjectArray().at(0);
-                    world.removeCollisionObject(body);
-                  }
+                
+                // 清理刚体
+                if (physics.bodies && Array.isArray(physics.bodies)) {
+                  physics.bodies.forEach((body: any) => {
+                    if (physics.world && body) {
+                      try {
+                        physics.world.removeRigidBody(body);
+                        // Ammo.js 对象需要手动销毁
+                        if ((window as any).Ammo && body.destroy) {
+                          body.destroy();
+                        }
+                      } catch (e) {}
+                    }
+                  });
+                  physics.bodies.length = 0;
+                  physics.bodies = null;
                 }
+                
+                // 清理约束
+                if (physics.constraints && Array.isArray(physics.constraints)) {
+                  physics.constraints.forEach((constraint: any) => {
+                    if (physics.world && constraint) {
+                      try {
+                        physics.world.removeConstraint(constraint);
+                        if ((window as any).Ammo && constraint.destroy) {
+                          constraint.destroy();
+                        }
+                      } catch (e) {}
+                    }
+                  });
+                  physics.constraints.length = 0;
+                  physics.constraints = null;
+                }
+                
+                // 调用 reset 并销毁
+                if (physics.reset) physics.reset();
+                physics.world = null;
                 obj.physics = null;
-              } catch (physicsError) {
-                console.warn('⚠️ 清理物理系统失败:', physicsError);
+              } catch (e) {
+                console.warn('清理物理系统失败:', e);
               }
             }
           });
           
-          // 清空数组
+          // 🔥 关键：销毁所有 Ammo.js 物理世界
+          physicsWorldsToDestroy.forEach((world) => {
+            try {
+              // 移除所有剩余的碰撞对象
+              while (world.getNumCollisionObjects() > 0) {
+                const obj = world.getCollisionObjectArray().at(0);
+                world.removeCollisionObject(obj);
+                if (obj && obj.destroy) {
+                  obj.destroy();
+                }
+              }
+              
+              // 销毁世界本身
+              if (world.destroy) {
+                world.destroy();
+              }
+            } catch (e) {
+              console.warn('销毁物理世界失败:', e);
+            }
+          });
+          
+          // 清空对象数组
           helperObjects.length = 0;
         }
       } catch (error) {
-        console.warn('⚠️ 无法访问 helper.objects:', error);
+        console.warn('清理 helper 失败:', error);
       }
       
-      // 3. 重置 helper
       helperRef.current = null;
-      console.log('✅ MMDAnimationHelper 清理完成');
     }
 
-    // 清除场景背景（避免贴图内存泄漏）
+    // 清除场景背景和环境贴图
     if (sceneRef.current.background && (sceneRef.current.background as any).isTexture) {
-      console.log('🧹 清除场景背景贴图');
       (sceneRef.current.background as THREE.Texture).dispose();
       sceneRef.current.background = null;
     }
     if (sceneRef.current.environment && (sceneRef.current.environment as any).isTexture) {
-      console.log('🧹 清除场景环境贴图');
       (sceneRef.current.environment as THREE.Texture).dispose();
       sceneRef.current.environment = null;
     }
 
-    // 清除场景中的所有 MMD 相关对象（保留灯光）
+    // 清除场景中的所有 MMD 对象
     const objectsToRemove: THREE.Object3D[] = [];
     sceneRef.current.traverse((child) => {
-      // 移除所有 SkinnedMesh（MMD 模型）
       if (child.type === 'SkinnedMesh' || (child as any).isSkinnedMesh) {
         objectsToRemove.push(child);
       }
-      // 移除所有 Mesh（场景模型）
       if (child.type === 'Mesh' && child !== sceneRef.current) {
         objectsToRemove.push(child);
       }
     });
 
     objectsToRemove.forEach((obj) => {
-      if (obj.parent) {
-        obj.parent.remove(obj);
-      }
+      if (obj.parent) obj.parent.remove(obj);
 
       // 清理 geometry
       if ((obj as any).geometry) {
         (obj as any).geometry.dispose();
       }
 
-      // 清理 material 和贴图（更彻底）
+      // 清理 material 和所有贴图
       if ((obj as any).material) {
-        const material = (obj as any).material;
         const disposeMaterial = (m: any) => {
-          // 清理所有贴图
-          if (m.map) m.map.dispose();
-          if (m.emissiveMap) m.emissiveMap.dispose();
-          if (m.normalMap) m.normalMap.dispose();
-          if (m.bumpMap) m.bumpMap.dispose();
-          if (m.specularMap) m.specularMap.dispose();
-          if (m.envMap) m.envMap.dispose();
-          if (m.lightMap) m.lightMap.dispose();
-          if (m.aoMap) m.aoMap.dispose();
-          if (m.alphaMap) m.alphaMap.dispose();
+          ['map', 'emissiveMap', 'normalMap', 'bumpMap', 'specularMap', 
+           'envMap', 'lightMap', 'aoMap', 'alphaMap'].forEach(prop => {
+            if (m[prop]) m[prop].dispose();
+          });
           m.dispose();
         };
 
+        const material = (obj as any).material;
         if (Array.isArray(material)) {
           material.forEach(disposeMaterial);
         } else {
@@ -421,44 +531,33 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         }
       }
 
-      // 如果是 SkinnedMesh，清理骨骼
+      // 清理骨骼
       if ((obj as any).skeleton) {
-        console.log('🧹 清理骨骼数据');
         (obj as any).skeleton = null;
       }
     });
 
-    // 重置时钟
+    // 重置时钟和数据
     clockRef.current = new THREE.Clock();
-
-    // 清除 VMD 数据
     vmdDataRef.current = null;
-    
-    // 重置 needReset 标记
     setNeedReset(false);
 
-    console.log(`✅ [MMDPlayerEnhanced] 已清除 ${objectsToRemove.length} 个对象（增强清理完成）`);
+    // 强制垃圾回收提示（浏览器会在合适时机执行）
+    if ((window as any).gc) {
+      try {
+        (window as any).gc();
+      } catch (e) {
+        // gc() 可能不可用
+      }
+    }
+
+    console.log(`✅ 资源清理完成 (${objectsToRemove.length} 个对象)`);
   };
 
   // 加载MMD资源
   useEffect(() => {
-    console.log('📦 [MMDPlayerEnhanced] 资源加载 useEffect 触发')
-    console.log('🔍 [MMDPlayerEnhanced] sceneRef.current:', sceneRef.current)
-    console.log('🔍 [MMDPlayerEnhanced] cameraRef.current:', cameraRef.current)
-    console.log('🔍 [MMDPlayerEnhanced] isLoadedRef.current:', isLoadedRef.current)
-    
-    if (!sceneRef.current || !cameraRef.current) {
-      console.warn('⚠️ [MMDPlayerEnhanced] 场景或相机未初始化，跳过资源加载')
-      return
-    }
-
-    // 防止重复加载 - 使用 ref 标记
-    if (isLoadedRef.current) {
-      console.log('⚠️ [MMDPlayerEnhanced] 资源已加载，跳过重复加载');
-      return;
-    }
-
-    console.log('✅ [MMDPlayerEnhanced] 场景和相机已就绪，开始加载资源')
+    if (!sceneRef.current || !cameraRef.current) return;
+    if (isLoadedRef.current) return;
     
     // 清除旧资源
     clearOldResources();
@@ -479,82 +578,45 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
 
         // 如果启用物理，先加载 Ammo.js
         if (stage?.enablePhysics !== false) {
-          const ammoScriptPath = stage?.ammoPath || '/mikutalking/libs/ammo.wasm.js';
-          const ammoWasmPath = stage?.ammoWasmPath || '/mikutalking/libs/';
-          
-          console.log('🔧 [MMDPlayerEnhanced] 检测到启用物理，开始加载 Ammo.js');
-          console.log('📂 [MMDPlayerEnhanced] Ammo 脚本路径:', ammoScriptPath);
-          console.log('📂 [MMDPlayerEnhanced] Ammo WASM 路径:', ammoWasmPath);
           setLoadingProgress(5);
-          
           await loadAmmo({
-            scriptPath: ammoScriptPath,
-            wasmBasePath: ammoWasmPath,
+            scriptPath: stage?.ammoPath || '/mikutalking/libs/ammo.wasm.js',
+            wasmBasePath: stage?.ammoWasmPath || '/mikutalking/libs/',
           });
-          
-          console.log('✅ [MMDPlayerEnhanced] Ammo.js 加载完成');
         }
 
         // 创建 LoadingManager 来处理贴图路径
         const manager = new THREE.LoadingManager();
+        const basePath = currentResources.modelPath.substring(0, currentResources.modelPath.lastIndexOf('/') + 1);
         
-        // 设置资源路径解析器
-        // 从模型 URL 中提取基础路径，用于加载相对路径的贴图
-        const modelUrl = currentResources.modelPath;
-        const basePath = modelUrl.substring(0, modelUrl.lastIndexOf('/') + 1);
-        console.log('📂 [MMDPlayerEnhanced] 模型基础路径:', basePath);
-        
-        // 配置 LoadingManager 的 URL 修改器
         manager.setURLModifier((url: string) => {
-          // 如果是完整 URL（http/https），直接返回
-          if (url.startsWith('http://') || url.startsWith('https://')) {
-            console.log('🔗 [MMDPlayerEnhanced] 使用完整 URL:', url);
-            return url;
-          }
-          
-          // 如果是绝对路径（以 / 开头），直接返回
-          if (url.startsWith('/')) {
-            console.log('🔗 [MMDPlayerEnhanced] 使用绝对路径:', url);
-            return url;
-          }
-          
-          // 否则，拼接基础路径（相对路径）
-          const fullUrl = basePath + url;
-          console.log('🔗 [MMDPlayerEnhanced] 相对路径转换:', url, '->', fullUrl);
-          return fullUrl;
+          if (url.startsWith('http://') || url.startsWith('https://')) return url;
+          if (url.startsWith('/')) return url;
+          return basePath + url;
         });
 
         const loader = new MMDLoader(manager);
         const helper = new MMDAnimationHelper();
         helperRef.current = helper;
 
-        // 加载模型（添加性能监控）
+        // 加载模型
         setLoadingProgress(20);
         const modelStartTime = performance.now();
-        console.log('🎭 开始加载模型:', currentResources.modelPath);
-        console.log('📊 [性能] 模型加载开始时间:', new Date().toISOString());
-
         const mesh = await new Promise<any>((resolve, reject) => {
           loader.load(
             currentResources.modelPath,
             (object: any) => {
-              const modelEndTime = performance.now();
-              const modelLoadTime = ((modelEndTime - modelStartTime) / 1000).toFixed(2);
-              console.log(`✅ 模型加载成功 (耗时: ${modelLoadTime}秒)`);
-              console.log(`📊 [性能] 模型大小: ${object.geometry ? (object.geometry.attributes.position.count * 3 * 4 / 1024 / 1024).toFixed(2) : 'N/A'} MB`);
+              const loadTime = ((performance.now() - modelStartTime) / 1000).toFixed(2);
+              console.log(`✅ 模型加载完成 (${loadTime}s)`);
               resolve(object);
             },
             (progress: any) => {
               if (progress.total > 0) {
-                const percent = (progress.loaded / progress.total) * 30 + 20;
-                setLoadingProgress(Math.min(percent, 50));
-                console.log(`📥 模型加载进度: ${((progress.loaded / progress.total) * 100).toFixed(1)}% (${(progress.loaded / 1024 / 1024).toFixed(2)}MB / ${(progress.total / 1024 / 1024).toFixed(2)}MB)`);
+                setLoadingProgress(Math.min((progress.loaded / progress.total) * 30 + 20, 50));
               }
             },
             (error: any) => {
-              const modelEndTime = performance.now();
-              const modelLoadTime = ((modelEndTime - modelStartTime) / 1000).toFixed(2);
-              console.error(`❌ 模型加载失败 (耗时: ${modelLoadTime}秒):`, error);
+              console.error('❌ 模型加载失败:', error);
               reject(error);
             }
           );
@@ -568,66 +630,25 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
 
         // 加载场景模型
         if (currentResources.stageModelPath) {
-          console.log('🏰 开始加载场景模型:', currentResources.stageModelPath);
-          
           const stageMesh = await new Promise<any>((resolve, reject) => {
-            loader.load(
-              currentResources.stageModelPath!,
-              (object: any) => {
-                console.log('✅ 场景模型加载成功');
-                resolve(object);
-              },
-              undefined,
-              (error: any) => {
-                console.error('❌ 场景模型加载失败:', error);
-                reject(error);
-              }
-            );
+            loader.load(currentResources.stageModelPath!, resolve, undefined, reject);
           });
-
-          // 场景模型通常不需要物理计算，直接添加即可
-          // 注意：这里我们不把它加到 helper 中，除非它有动作
-          // 确保场景在人物后面（通常不需要特殊处理，深度缓冲会处理）
-          // 但我们可以调整一下渲染顺序或位置如果需要
           sceneRef.current.add(stageMesh);
         }
 
-        // 加载背景图片（添加性能监控）
+        // 加载背景图片
         if (currentResources.backgroundPath && sceneRef.current) {
-          const bgStartTime = performance.now();
-          console.log('🖼️ 开始加载背景图片:', currentResources.backgroundPath);
           const textureLoader = new THREE.TextureLoader();
-          
           const backgroundTexture = await new Promise<THREE.Texture>((resolve, reject) => {
-            textureLoader.load(
-              currentResources.backgroundPath!,
-              (texture) => {
-                const bgEndTime = performance.now();
-                const bgLoadTime = ((bgEndTime - bgStartTime) / 1000).toFixed(2);
-                console.log(`✅ 背景图片加载成功 (耗时: ${bgLoadTime}秒, 尺寸: ${texture.image.width}x${texture.image.height})`);
-                resolve(texture);
-              },
-              undefined,
-              (err) => {
-                const bgEndTime = performance.now();
-                const bgLoadTime = ((bgEndTime - bgStartTime) / 1000).toFixed(2);
-                console.error(`❌ 背景图片加载失败 (耗时: ${bgLoadTime}秒):`, err);
-                reject(err);
-              }
-            );
+            textureLoader.load(currentResources.backgroundPath!, resolve, undefined, reject);
           });
 
           backgroundTexture.colorSpace = THREE.SRGBColorSpace;
-
           if (stage?.backgroundType === 'skybox') {
              backgroundTexture.mapping = THREE.EquirectangularReflectionMapping;
              sceneRef.current.background = backgroundTexture;
              sceneRef.current.environment = backgroundTexture;
-          } else if (stage?.backgroundType === 'image') {
-             sceneRef.current.background = backgroundTexture;
-             // 对于固定背景图，不一定要设为 environment
           } else {
-             // 默认 fallback 到 color 或保持原样
              sceneRef.current.background = backgroundTexture;
           }
         }
@@ -636,35 +657,20 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         let vmd: any = null;
         let cameraVmd: any = null;
 
-        // 加载动作（添加性能监控）
+        // 加载动作
         if (currentResources.motionPath) {
           setLoadingProgress(60);
-          const motionStartTime = performance.now();
-          console.log('💃 开始加载动作:', currentResources.motionPath);
-
           vmd = await new Promise<any>((resolve, reject) => {
             loader.loadAnimation(
               currentResources.motionPath!,
               mesh,
-              (vmdObject: any) => {
-                const motionEndTime = performance.now();
-                const motionLoadTime = ((motionEndTime - motionStartTime) / 1000).toFixed(2);
-                console.log(`✅ 动作加载成功 (耗时: ${motionLoadTime}秒)`);
-                resolve(vmdObject);
-              },
+              resolve,
               (progress: any) => {
                 if (progress.total > 0) {
-                  const percent = (progress.loaded / progress.total) * 20 + 60;
-                  setLoadingProgress(Math.min(percent, 80));
-                  console.log(`📥 动作加载进度: ${((progress.loaded / progress.total) * 100).toFixed(1)}%`);
+                  setLoadingProgress(Math.min((progress.loaded / progress.total) * 20 + 60, 80));
                 }
               },
-              (error: any) => {
-                const motionEndTime = performance.now();
-                const motionLoadTime = ((motionEndTime - motionStartTime) / 1000).toFixed(2);
-                console.error(`❌ 动作加载失败 (耗时: ${motionLoadTime}秒):`, error);
-                reject(error);
-              }
+              reject
             );
           });
 
@@ -673,30 +679,18 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
             physics: stage?.enablePhysics !== false,
           });
 
-          // 计算动画时长（从 VMD 数据中获取）
-          // VMD 数据结构：vmd 是一个包含多个轨道的对象
+          // 计算动画时长
           if (vmd) {
             let maxDuration = 0;
-            
-            // 尝试从 duration 属性获取
             if (vmd.duration !== undefined) {
               maxDuration = vmd.duration;
-            } 
-            // 尝试从 animations 数组获取
-            else if (Array.isArray(vmd) && vmd.length > 0 && vmd[0].duration !== undefined) {
+            } else if (Array.isArray(vmd) && vmd.length > 0 && vmd[0].duration !== undefined) {
               maxDuration = vmd[0].duration;
-            }
-            // 尝试从 clip 获取
-            else if (vmd.clip && vmd.clip.duration !== undefined) {
+            } else if (vmd.clip && vmd.clip.duration !== undefined) {
               maxDuration = vmd.clip.duration;
             }
-            
             if (maxDuration > 0) {
               animationDurationRef.current = maxDuration;
-              console.log('⏱️ 动画时长:', maxDuration, '秒');
-            } else {
-              console.warn('⚠️ 无法获取动画时长，将无法自动检测动画结束');
-              console.log('📋 VMD 数据结构:', vmd);
             }
           }
         } else {
@@ -706,47 +700,21 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         // 加载镜头动画
         if (currentResources.cameraPath && cameraRef.current) {
           setLoadingProgress(80);
-          console.log('📷 开始加载镜头:', currentResources.cameraPath);
-
           cameraVmd = await new Promise<any>((resolve, reject) => {
-            loader.loadAnimation(
-              currentResources.cameraPath!,
-              cameraRef.current!,
-              (vmdObject: any) => {
-                console.log('✅ 镜头加载成功');
-                resolve(vmdObject);
-              },
-              undefined,
-              (error: any) => {
-                console.error('❌ 镜头加载失败:', error);
-                reject(error);
-              }
-            );
+            loader.loadAnimation(currentResources.cameraPath!, cameraRef.current!, resolve, undefined, reject);
           });
-
           helper.add(cameraRef.current, { animation: cameraVmd });
         }
 
-        // 加载音频（添加性能监控）
+        // 加载音频
         if (currentResources.audioPath) {
           setLoadingProgress(90);
-          const audioStartTime = performance.now();
-          console.log('🎵 开始加载音频:', currentResources.audioPath);
-
           const audio = new Audio(currentResources.audioPath);
           audio.volume = 0.5;
           audio.loop = loop;
           audioRef.current = audio;
-          hasAudioRef.current = true; // 标记有音频
+          hasAudioRef.current = true;
 
-          // 监听音频加载完成
-          audio.onloadedmetadata = () => {
-            const audioEndTime = performance.now();
-            const audioLoadTime = ((audioEndTime - audioStartTime) / 1000).toFixed(2);
-            console.log(`✅ 音频加载成功 (耗时: ${audioLoadTime}秒, 时长: ${audio.duration.toFixed(2)}秒)`);
-          };
-
-          // 监听音频结束事件
           audio.onended = () => {
             if (!loop) {
               setIsPlaying(false);
@@ -759,7 +727,6 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
                 }
               }
             }
-            // 触发音频结束回调
             onAudioEnded?.();
           };
         }
@@ -768,13 +735,7 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         setLoading(false);
 
         // 保存动画数据用于后续重置
-        vmdDataRef.current = {
-          mesh,
-          vmd,
-          cameraVmd,
-        };
-
-        console.log('🎉 所有资源加载完成！');
+        vmdDataRef.current = { mesh, vmd, cameraVmd };
 
         // 如果是从 stop 后重新加载，则自动播放
         if (shouldAutoPlayAfterReloadRef.current) {
@@ -798,74 +759,51 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     loadMMD();
   }, [currentResources, stage?.enablePhysics, autoPlay, loop, onLoad, onError, reloadTrigger]);
 
-  // 播放控制（优化版：避免重复添加 mesh）
+  // 播放控制
   const play = () => {
-    console.log('🎬 [play] 函数被调用，needReset =', needReset);
-    
     if (!helperRef.current && !needReset) return;
 
-    // 如果需要重置（从 stop 恢复），重新创建 helper 并重新添加现有模型和动画
+    // 如果需要重置（从 stop 恢复）
     if (needReset && vmdDataRef.current && sceneRef.current && cameraRef.current) {
-      console.log('🔄 检测到需要重置，重新初始化 helper（保留模型）');
-      
       const { mesh, vmd, cameraVmd } = vmdDataRef.current;
 
-      // ⚠️ 关键修复：创建全新的 helper 并清理旧的
+      // 清空旧 helper
       if (helperRef.current) {
         try {
-          // 尝试清空旧 helper 的 objects 数组
           const helperObjects = (helperRef.current as any).objects;
           if (helperObjects && Array.isArray(helperObjects)) {
             helperObjects.length = 0;
-            console.log('🧹 清空了旧 helper 的 objects 数组');
           }
-        } catch (error) {
-          console.warn('⚠️ 无法清空旧 helper.objects:', error);
-        }
+        } catch (error) {}
       }
 
       const newHelper = new MMDAnimationHelper();
       helperRef.current = newHelper;
       clockRef.current = new THREE.Clock();
 
-      // 重新添加模型和动画（模型已经在场景中，不需要重新添加到场景）
+      // 重新添加模型和动画
       if (vmd && typeof vmd === 'object') {
-        console.log('📦 重新添加模型动画');
         try {
           newHelper.add(mesh, {
             animation: vmd,
             physics: stage?.enablePhysics !== false,
           });
-          console.log('✅ 模型动画添加成功');
         } catch (error) {
-          console.error('❌ 重新添加模型动画失败:', error);
-          // 如果添加动画失败，至少添加模型和物理
           try {
             newHelper.add(mesh, { physics: stage?.enablePhysics !== false });
-            console.log('✅ 仅添加模型和物理（无动画）');
-          } catch (innerError) {
-            console.error('❌ 添加模型也失败了:', innerError);
-            // 如果连添加模型都失败，说明可能已经被添加过了，跳过
-          }
+          } catch (innerError) {}
         }
       } else {
         try {
           newHelper.add(mesh, { physics: stage?.enablePhysics !== false });
-          console.log('✅ 仅添加模型和物理（无动画数据）');
-        } catch (error) {
-          console.error('❌ 添加模型失败:', error);
-        }
+        } catch (error) {}
       }
 
       // 重新添加相机动画
       if (cameraVmd && typeof cameraVmd === 'object') {
-        console.log('📷 重新添加相机动画');
         try {
           newHelper.add(cameraRef.current, { animation: cameraVmd });
-          console.log('✅ 相机动画添加成功');
-        } catch (error) {
-          console.error('❌ 重新添加相机动画失败:', error);
-        }
+        } catch (error) {}
       }
 
       // 重置音频
@@ -874,10 +812,8 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
       }
 
       setNeedReset(false);
-      console.log('✅ Helper 重新初始化完成，准备从第一帧播放');
     }
 
-    // 确保 helper 存在
     if (!helperRef.current) {
       console.error('❌ [play] helper 不存在，无法播放');
       return;
@@ -1515,5 +1451,8 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
       )}
     </div>
   );
-};
+});
+
+// 添加 displayName 以便调试
+MMDPlayerEnhanced.displayName = 'MMDPlayerEnhanced';
 
