@@ -43,7 +43,9 @@ src/photoWall/
 
 ## Usage
 
-### Default Import (Recommended)
+### Frontend Component
+
+#### Default Import (Recommended)
 ```tsx
 import PhotoWall, { PhotoWallProps } from '@qhr123/sa2kit/photoWall';
 
@@ -57,7 +59,7 @@ const props: PhotoWallProps = {
 <PhotoWall {...props} />
 ```
 
-### Named Import
+#### Named Import
 ```tsx
 import { PhotoWall, PhotoWallProps, createPhotoWallConfig } from '@qhr123/sa2kit/photoWall';
 
@@ -68,6 +70,58 @@ const config = createPhotoWallConfig({
 });
 
 <PhotoWall {...config} />
+```
+
+### Backend API
+
+The PhotoWall component requires a backend API to fetch image lists. Use the provided API route handlers:
+
+#### Next.js App Router
+```typescript
+// app/api/images/route.ts
+import { createImagesHandler, createImagesOptionsHandler } from '@qhr123/sa2kit/photoWall/backend';
+
+export const GET = createImagesHandler({
+  imageProvider: {
+    type: 'file',
+    baseUrl: '/images'
+  }
+});
+
+export const OPTIONS = createImagesOptionsHandler();
+```
+
+#### Next.js Pages Router
+```typescript
+// pages/api/images.ts
+import { createImagesApiRoutes } from '@qhr123/sa2kit/photoWall/backend';
+
+const { GET, OPTIONS } = createImagesApiRoutes({
+  imageProvider: {
+    type: 'file',
+    baseUrl: '/images'
+  }
+});
+
+export { GET, OPTIONS };
+```
+
+#### API Configuration
+```typescript
+import { createImagesHandler, ImagesApiConfig } from '@qhr123/sa2kit/photoWall/backend';
+
+const config: ImagesApiConfig = {
+  basePath: '/api/images',
+  cors: {
+    enabled: true,
+    origin: '*',
+    methods: ['GET', 'OPTIONS'],
+  },
+  imageProvider: {
+    type: 'file', // 'file' | 'oss' | 'custom'
+    baseUrl: '/images',
+  },
+};
 ```
 
 ## Architecture Benefits

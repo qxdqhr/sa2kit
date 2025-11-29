@@ -170,6 +170,11 @@
       "import": "./dist/photoWall/index.mjs",
       "require": "./dist/photoWall/index.js"
     },
+    "./photoWall/backend": {
+      "types": "./dist/photoWall/backend/index.d.ts",
+      "import": "./dist/photoWall/backend/index.mjs",
+      "require": "./dist/photoWall/backend/index.js"
+    },
     "./photowall": {
       "types": "./dist/photowall/index.d.ts",
       "import": "./dist/photowall/index.mjs",
