@@ -108,3 +108,4 @@ export function ImageEditor({ src, onClose, onSave }: ImageEditorProps) {
     </div>
   );
 }
+

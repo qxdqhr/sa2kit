@@ -164,6 +164,16 @@
       "types": "./dist/mmd/index.d.ts",
       "import": "./dist/mmd/index.mjs",
       "require": "./dist/mmd/index.js"
+    },
+    "./photoWall": {
+      "types": "./dist/photoWall/index.d.ts",
+      "import": "./dist/photoWall/index.mjs",
+      "require": "./dist/photoWall/index.js"
+    },
+    "./photowall": {
+      "types": "./dist/photowall/index.d.ts",
+      "import": "./dist/photowall/index.mjs",
+      "require": "./dist/photowall/index.js"
     }
   },
   "files": [

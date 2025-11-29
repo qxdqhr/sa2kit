@@ -36,3 +36,4 @@ export function Lightbox({ src, onClose }: LightboxProps) {
     </AnimatePresence>
   );
 }
+

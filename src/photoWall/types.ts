@@ -29,3 +29,4 @@ export interface AlbumManagerProps {
   onDeleteAlbum: (name: string) => void;
   onClose: () => void;
 }
+

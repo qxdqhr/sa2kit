@@ -30,3 +30,6 @@ export * from './storage/hooks';
 // - Internationalization: import { createI18n, useTranslation } from '@qhr123/sa2kit/i18n';
 // - Analytics: import { Analytics } from '@qhr123/sa2kit/analytics';
 
+// Photowall
+export * from './photoWall';
+

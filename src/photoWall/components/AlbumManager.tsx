@@ -54,3 +54,4 @@ export function AlbumManager({ albums, onRenameAlbum, onDeleteAlbum, onClose }: 
     </motion.div>
   );
 }
+

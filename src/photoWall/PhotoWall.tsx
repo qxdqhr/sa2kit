@@ -1,5 +1,5 @@
 // =========================================
-// Professional PhotoWall v2 - Modular Version
+// Professional PhotoWall v3 - Modular Version
 // =========================================
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -46,7 +46,7 @@ export type { PhotoWallLayout, PhotoWallProps };
 
 // Main PhotoWall component
 
-export default function PhotoWall({ source, type = 'public', initialLayout = 'masonry', onSelectionChange }: PhotoWallProps) {
+export function PhotoWall({ source, type = 'public', initialLayout = 'masonry', onSelectionChange }: PhotoWallProps) {
   const [images, setImages] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [layout, setLayout] = useState<PhotoWallLayout>(initialLayout)
