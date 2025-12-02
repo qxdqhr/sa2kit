@@ -2,24 +2,24 @@
  * MMD 资源配置
  */
 export interface MMDResources {
-  /** 模型路径 */
-  modelPath: string;
-  /** 动作路径 */
-  motionPath?: string;
-  /** 相机路径 */
-  cameraPath?: string;
-  /** 音频路径 */
-  audioPath?: string;
+  /** 模型路径或Buffer */
+  modelPath: string | ArrayBuffer;
+  /** 动作路径或Buffer */
+  motionPath?: string | ArrayBuffer;
+  /** 相机路径或Buffer */
+  cameraPath?: string | ArrayBuffer;
+  /** 音频路径或Buffer */
+  audioPath?: string | ArrayBuffer;
   /** 
-   * 场景模型路径 (.pmx/.pmd)
+   * 场景模型路径或Buffer (.pmx/.pmd)
    * 通常是静态的 3D 场景模型，如教室、舞台等
    */
-  stageModelPath?: string;
+  stageModelPath?: string | ArrayBuffer;
   /**
-   * 背景图片路径
+   * 背景图片路径或Buffer
    * 支持 jpg/png 等图片格式，将作为 360度背景 (Equirectangular) 或固定背景
    */
-  backgroundPath?: string;
+  backgroundPath?: string | ArrayBuffer;
 }
 
 /**
@@ -199,6 +199,8 @@ export interface MMDPlaylistProps {
   className?: string;
   /** 自定义样式 */
   style?: React.CSSProperties;
+  /** (可选) 用于预加载的 Web Worker 实例 */
+  worker?: Worker;
   /** 资源加载完成回调 */
   onLoad?: () => void;
   /** 资源加载错误回调 */
