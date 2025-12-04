@@ -153,6 +153,11 @@
       "import": "./dist/config/server/index.mjs",
       "require": "./dist/config/server/index.js"
     },
+    "./mmd": {
+      "types": "./dist/mmd/index.d.ts",
+      "import": "./dist/mmd/index.mjs",
+      "require": "./dist/mmd/index.js"
+    },
     "./storage/hooks": {
       "types": "./dist/storage/index.d.ts",
       "import": "./dist/storage/index.mjs",

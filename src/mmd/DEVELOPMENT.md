@@ -276,13 +276,16 @@ interface MMDPlayerBaseRef {
   - [ ] **动画与播放控制** (MMDAnimationHelper, Audio Sync, Seek)
   - [ ] **资源清理与内存管理** (Dispose Pattern)
 
-### Phase 2: 增强功能
+### Phase 2: 增强功能 (进行中)
 
-- [ ] MMDPlayerEnhanced 组件
-  - [ ] 播放控制 UI
-  - [ ] 加载进度条
-  - [ ] 资源切换面板
-  - [ ] 错误处理
+- [ ] **UI 组件开发**
+  - [ ] `ControlPanel`: 播放/暂停、进度条、音量、全屏
+  - [ ] `SettingsPanel`: 资源切换面板 (支持列表和自由组合)
+  - [ ] `LoadingOverlay`: 加载状态显示
+- [ ] **MMDPlayerEnhanced 组件**
+  - [ ] 状态管理 (Play/Pause, Fullscreen, Volume)
+  - [ ] 资源模式适配 (Single / List / Options)
+  - [ ] 错误边界 (ErrorBoundary)
   
 ### Phase 3: 高级功能
 
@@ -425,6 +428,46 @@ helper.sync(audioContext);
 *   **防止内存泄漏**:
     *   无论哪种策略，非活动节点的资源（除了预加载的目标）应被及时清理。
     *   使用 `WeakRef` 或手动引用计数来管理共享资源（如相同的模型文件）。
+
+### 7.7 常见问题与解决方案 (新增)
+
+**1. Canvas 遮挡与多重 Canvas 问题**
+*   **现象**: 画面上有不明色块遮挡，或者 DOM 中出现多个 `<canvas>` 元素。
+*   **原因**: React 18 的 Strict Mode 在开发环境下会执行 "Mount -> Unmount -> Mount" 流程。如果 cleanup 逻辑不彻底，或者异步初始化逻辑在组件卸载后仍在执行，就会导致旧的 canvas 残留。
+*   **解决**:
+    *   在 `init` 开始时清空容器 (`container.innerHTML = ''`)。
+    *   使用 `aborted` 标志位，在每个 `await` 之后检查组件是否已卸载，如果卸载则立即中断初始化。
+
+**2. 只有全屏下才显示内容**
+*   **现象**: 初始加载时画面空白，切换全屏或调整窗口大小后画面出现。
+*   **原因**: 初始化时容器 (`div`) 可能还没有高度（如果父级没有定高），导致 `renderer.setSize(0, 0)`。
+*   **解决**:
+    *   给 `width/height` 设置默认最小值。
+    *   在初始化逻辑末尾手动触发一次 `onResize()`。
+    *   确保父容器有明确的 `height` (如 `100vh` 或固定像素)。
+
+**3. 模型加载后黑屏**
+*   **现象**: UI 显示正常，控制台无报错，但画面只有背景色。
+*   **原因**: 
+    *   相机未对准模型，或模型在相机裁剪平面外 (Near/Far)。
+    *   模型尺寸过大或过小。
+    *   光照不足。
+*   **解决**:
+    *   组件内置了**自动聚焦 (Auto Focus)** 逻辑：加载模型后会自动计算 BoundingBox 并将相机对准模型中心。
+    *   检查控制台日志 `[MMDPlayerBase] Model bounds`，确认模型尺寸是否异常。
+    *   尝试调整 `stage.cameraPosition` 或手动指定 `stage.cameraTarget`。
+
+### 7.8 并发控制与 Race Condition (Token 锁)
+
+由于 MMD 资源加载是异步的，而 React 组件的生命周期是同步的，必须防止 "竞态条件" (Race Condition)。
+
+*   **问题**: 快速切换资源或 React Strict Mode 下，旧的 `init` 流程在组件卸载后依然在运行，并在新的 `init` 完成后错误地将旧的 Canvas 插入 DOM，导致容器内出现多个 Canvas 或画面遮挡。
+*   **解决方案**: **Token ID 锁机制**
+    1.  使用 `initIdRef` 存储当前的初始化 ID。
+    2.  每次 `init` 开始时，`const myId = ++initIdRef.current` 获取唯一令牌。
+    3.  定义 `checkCancelled` 函数：检查 `myId !== initIdRef.current || !containerRef.current`。
+    4.  在所有异步操作 (`await`) 之后和关键副作用 (DOM 操作) 之前，必须调用 `if (checkCancelled()) return;`。
+    5.  如果在操作 DOM 前检测到已取消，务必 `dispose` 刚刚创建的临时对象 (如 `renderer`)。
 
 ---
 

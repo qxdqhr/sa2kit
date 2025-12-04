@@ -40,16 +40,13 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   // 状态 Refs
   const isReadyRef = useRef(false);
   const isPlayingRef = useRef(false);
+  const initIdRef = useRef(0); // 初始化 ID 锁
 
   // 暴露给父组件的方法
   useImperativeHandle(ref, () => ({
     play: () => {
       if (!isReadyRef.current) return;
       isPlayingRef.current = true;
-      // 如果之前 paused，需要恢复 clock 吗？
-      // Clock 只要运行着 getDelta 就会返回时间差。
-      // 如果 paused 很久，getDelta 会很大？
-      // 可以在 pause 时 stop clock，play 时 start。
       if (!clockRef.current.running) clockRef.current.start();
       onPlay?.();
     },
@@ -62,23 +59,18 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
     stop: () => {
       isPlayingRef.current = false;
       clockRef.current.stop();
-      // 重置逻辑比较复杂，暂时先不处理物理重置
       onPause?.();
     },
     seek: (time: number) => {
-      // TODO: Implement robust seek
-      // 目前 MMDAnimationHelper 不直接支持 seek，需要 hack
       console.warn('Seek not fully implemented in MMDPlayerBase yet');
     },
     getCurrentTime: () => {
-       // 粗略返回
        return clockRef.current.elapsedTime;
     }, 
     getDuration: () => 0, // 需要从 animation clip 获取
     isPlaying: () => isPlayingRef.current,
     snapshot: () => {
       if (!rendererRef.current) return '';
-      // 强制渲染一帧以确保画面最新
       if (sceneRef.current && cameraRef.current) {
         rendererRef.current.render(sceneRef.current, cameraRef.current);
       }
@@ -91,29 +83,41 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
     if (!containerRef.current) return;
 
     const init = async () => {
+      // 1. 生成当前初始化的唯一 ID
+      const myId = ++initIdRef.current;
+      
+      // 辅助函数：检查当前初始化是否已过时或组件已卸载
+      const checkCancelled = () => {
+        return myId !== initIdRef.current || !containerRef.current;
+      };
+
+      // 2. 清空容器 (Double Check)
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+      }
+
       try {
-        // 1. 物理引擎加载
+        // 3. 物理引擎加载
         if (stage.enablePhysics !== false && !mobileOptimization.disablePhysics) {
           await loadAmmo(stage.physicsPath);
+          if (checkCancelled()) return;
         }
 
-        // 2. 场景初始化
+        // 4. 场景初始化
         const container = containerRef.current!;
-        const width = container.clientWidth;
-        const height = container.clientHeight;
+        const width = container.clientWidth || 300;
+        const height = container.clientHeight || 150;
 
         // Scene
         const scene = new THREE.Scene();
         if (stage.backgroundColor) {
           scene.background = new THREE.Color(stage.backgroundColor);
         }
-        // TODO: Support backgroundImage
         sceneRef.current = scene;
 
         // Camera
-        const camera = new THREE.PerspectiveCamera(45, width / height, 1, 2000);
+        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 2000);
         if (stage.cameraPosition) {
-           // handle Vector3 or object
            const pos = stage.cameraPosition as any;
            camera.position.set(pos.x, pos.y, pos.z);
         } else {
@@ -124,17 +128,27 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         // Renderer
         const renderer = new THREE.WebGLRenderer({ 
           antialias: !mobileOptimization.enabled, 
-          alpha: true,
-          preserveDrawingBuffer: true // for snapshot
+          alpha: true, 
+          preserveDrawingBuffer: true 
         });
         renderer.setSize(width, height);
+        renderer.setPixelRatio(mobileOptimization.enabled ? mobileOptimization.pixelRatio || 1 : window.devicePixelRatio);
         
-        // Pixel Ratio
-        const pixelRatio = mobileOptimization.enabled && mobileOptimization.pixelRatio 
-          ? mobileOptimization.pixelRatio 
-          : window.devicePixelRatio;
-        renderer.setPixelRatio(pixelRatio);
-
+        // 5. 关键检查点：在操作 DOM 之前再次检查
+        if (checkCancelled()) {
+            renderer.dispose();
+            return;
+        }
+        
+        // 再次确保容器为空，防止并行执行导致的残留
+        container.innerHTML = '';
+        
+        // 强制 Canvas 样式
+        renderer.domElement.style.display = 'block';
+        renderer.domElement.style.width = '100%';
+        renderer.domElement.style.height = '100%';
+        renderer.domElement.style.outline = 'none';
+        
         // Shadow
         if (stage.enableShadow !== false && !mobileOptimization.reduceShadowQuality) {
           renderer.shadowMap.enabled = true;
@@ -177,6 +191,8 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           const w = containerRef.current.clientWidth;
           const h = containerRef.current.clientHeight;
           
+          if (w === 0 || h === 0) return;
+
           cameraRef.current.aspect = w / h;
           cameraRef.current.updateProjectionMatrix();
           
@@ -186,18 +202,22 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         const resizeObserver = new ResizeObserver(onResize);
         resizeObserver.observe(container);
         resizeObserverRef.current = resizeObserver;
+        
+        // 立即执行一次 Resize
+        onResize();
 
-        // 3. 资源加载
+        // 6. 资源加载
+        console.log('[MMDPlayerBase] Start loading resources...', resources);
         const loader = new MMDLoader();
         const helper = new MMDAnimationHelper({
           afterglow: 2.0
         });
         helperRef.current = helper;
 
-        // 3.1 加载模型和动作
+        // 6.1 加载模型和动作
         const loadModelPromise = new Promise<{ mesh: THREE.SkinnedMesh, animation?: THREE.AnimationClip }>((resolve, reject) => {
-          // 如果有动作文件，使用 loadWithAnimation
           if (resources.motionPath) {
+            console.log('[MMDPlayerBase] Loading model with motion:', resources.motionPath);
             loader.loadWithAnimation(
               resources.modelPath,
               resources.motionPath,
@@ -213,7 +233,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
               (err) => reject(err)
             );
           } else {
-            // 仅加载模型
+            console.log('[MMDPlayerBase] Loading model only');
             loader.load(
               resources.modelPath,
               (mesh) => {
@@ -232,14 +252,34 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
 
         const { mesh, animation } = await loadModelPromise;
         
-        // 配置模型
+        // 关键检查点：资源加载耗时较长，再次检查是否已失效
+        if (checkCancelled()) return;
+        
+        console.log('[MMDPlayerBase] Model loaded:', mesh);
+
+        // 自动聚焦模型
+        const box = new THREE.Box3().setFromObject(mesh);
+        if (!box.isEmpty()) {
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            console.log('[MMDPlayerBase] Model bounds:', { center, size });
+
+            if (!stage.cameraTarget) {
+                controls.target.set(center.x, center.y + size.y * 0.5, center.z);
+                
+                if (!stage.cameraPosition) {
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    const dist = maxDim * 1.5;
+                    camera.position.set(center.x, center.y + size.y * 0.8, center.z + dist);
+                    console.log('[MMDPlayerBase] Auto camera position:', camera.position);
+                }
+                controls.update();
+            }
+        }
+        
         mesh.castShadow = true;
         mesh.receiveShadow = true;
-        
-        // 隐藏 SPH/SPA 贴图 (可选，看需求)
-        // mesh.material.forEach(m => { if(m.envMap) m.envMap = null; });
 
-        // 3.2 配置 Physics 和 Helper
         const enablePhysics = stage.enablePhysics !== false && !mobileOptimization.disablePhysics;
         
         helper.add(mesh, {
@@ -249,12 +289,13 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
 
         scene.add(mesh);
 
-        // 3.3 加载相机动画 (可选)
+        // 6.3 加载相机动画
         if (resources.cameraPath) {
           loader.loadAnimation(
             resources.cameraPath,
             camera,
             (cameraAnimation) => {
+              if (checkCancelled()) return; // Callback check
               helper.add(camera, {
                 animation: cameraAnimation as THREE.AnimationClip
               });
@@ -264,7 +305,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           );
         }
 
-        // 3.4 加载音频 (可选)
+        // 6.4 加载音频
         if (resources.audioPath) {
           const listener = new THREE.AudioListener();
           camera.add(listener);
@@ -275,6 +316,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           audioLoader.load(
             resources.audioPath,
             (buffer) => {
+              if (checkCancelled()) return; // Callback check
               sound.setBuffer(buffer);
               sound.setLoop(loop);
               sound.setVolume(volume);
@@ -282,49 +324,47 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
               helper.add(sound, { 
                 delay: 0.0, 
                 duration: buffer.duration 
-              });
-              
-              // 音频加载完成后，如果已经是播放状态，可能需要同步一下
+              } as any);
             },
-            (xhr) => {
-               // Audio progress
-            },
+            undefined,
             (err) => console.error('Failed to load audio:', err)
           );
         }
 
-        // 3.5 加载舞台模型 (可选)
+        // 6.5 加载舞台
         if (resources.stageModelPath) {
            loader.load(
              resources.stageModelPath, 
              (stageMesh) => {
+               if (checkCancelled()) return; // Callback check
                stageMesh.castShadow = true;
                stageMesh.receiveShadow = true;
                scene.add(stageMesh);
-               
-               // 如果舞台也是 SkinnedMesh 且有 physics，也可以 add 到 helper
-               // 但通常舞台是静态的 Object3D 或 Group
              },
              undefined,
              (err) => console.error('Failed to load stage:', err)
            );
         }
 
+        if (checkCancelled()) return;
+        
         isReadyRef.current = true;
         onLoad?.();
         
         if (autoPlay) {
-          // 稍微延迟一下以确保所有资源就位 (特别是音频)
           setTimeout(() => {
+             if (checkCancelled()) return;
              isPlayingRef.current = true;
+             if (!clockRef.current.running) clockRef.current.start();
              onPlay?.();
           }, 100);
         }
 
-        // 4. 开始渲染循环
+        // 7. 开始渲染循环
         animate();
 
       } catch (error) {
+        if (checkCancelled()) return; // 如果是因为取消导致的 error，忽略
         console.error('MMDPlayerBase initialization failed:', error);
         onError?.(error instanceof Error ? error : new Error(String(error)));
       }
@@ -334,47 +374,36 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
 
     return () => {
       // 清理逻辑
+      
+      // 增加 ID，立即使当前的 init 失效（如果还在跑）
+      initIdRef.current++;
+      
       if (animationIdRef.current) {
         cancelAnimationFrame(animationIdRef.current);
       }
       
-      // 停止状态
       isPlayingRef.current = false;
       isReadyRef.current = false;
       
-      // 移除 ResizeObserver
       resizeObserverRef.current?.disconnect();
       
-      // 释放 Helper (如果存在)
-      // MMDAnimationHelper 没有 dispose，但它可能引用了 Mesh
       helperRef.current = null;
       
-      // 释放 Scene 中的对象
       if (sceneRef.current) {
         sceneRef.current.traverse((object) => {
           if (object instanceof THREE.Mesh || object instanceof THREE.SkinnedMesh) {
-            if (object.geometry) {
-              object.geometry.dispose();
-            }
+            if (object.geometry) object.geometry.dispose();
             if (object.material) {
               if (Array.isArray(object.material)) {
                 object.material.forEach((m: THREE.Material) => {
                     m.dispose();
                     // @ts-ignore
                     if (m.map) m.map.dispose();
-                    // @ts-ignore
-                    if (m.emissiveMap) m.emissiveMap.dispose();
-                    // @ts-ignore
-                    if (m.gradientMap) m.gradientMap.dispose();
                 });
               } else {
                 object.material.dispose();
                 // @ts-ignore
                 if (object.material.map) object.material.map.dispose();
-                // @ts-ignore
-                if (object.material.emissiveMap) object.material.emissiveMap.dispose();
-                // @ts-ignore
-                if (object.material.gradientMap) object.material.gradientMap.dispose();
               }
             }
           }
@@ -383,23 +412,25 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         sceneRef.current = null;
       }
 
-      // 释放 Controls
       controlsRef.current?.dispose();
       controlsRef.current = null;
 
-      // 释放 Renderer
       if (rendererRef.current) {
         rendererRef.current.dispose();
-        rendererRef.current.forceContextLoss(); // 强制丢失上下文
+        rendererRef.current.forceContextLoss();
         
         if (containerRef.current && rendererRef.current.domElement) {
-            containerRef.current.removeChild(rendererRef.current.domElement);
+            // 这里要小心，不要移除新 init 添加的 domElement
+            // 但由于我们每次 init 前都清空了 container，这里主要是为了保险
+             if (containerRef.current.contains(rendererRef.current.domElement)) {
+                containerRef.current.removeChild(rendererRef.current.domElement);
+             }
         }
         rendererRef.current = null;
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // 仅在挂载时执行一次，资源变更通过另一个 useEffect 处理
+  }, [resources]); // 关键依赖：当 resources 变了（且没有 key 强制重刷时），执行这个 effect
 
   // 渲染循环
   const animate = () => {
@@ -435,4 +466,3 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
 });
 
 MMDPlayerBase.displayName = 'MMDPlayerBase';
-
