@@ -9,12 +9,14 @@
 ### 1.1 核心能力
 
 - 🎬 加载和渲染 PMX/PMD 模型
+- 支持逐个加载播放节点资源以及预加载全部播放节点(可选),并能预防内存泄露
+- 全部mmd文件的oss文件加载
 - 💃 播放 VMD 动作文件
 - 🎥 支持 VMD 相机动画
+- 🎥 支持 mmd场景文件加载
 - 🔊 音频同步播放
 - ⚡ 物理引擎模拟 (Ammo.js)
 - 📱 响应式设计，支持移动端
-
 ---
 
 ## 2. 技术栈
@@ -76,6 +78,8 @@ interface MMDResources {
   cameraPath?: string;
   /** 音频文件路径 - 可选 */
   audioPath?: string;
+  /** 舞台/场景模型路径 (.pmx/.x) - 可选 (新增) */
+  stageModelPath?: string;
   /** 附加动作文件 - 可选 */
   additionalMotions?: string[];
 }
@@ -176,6 +180,12 @@ interface MMDPlaylistConfig {
   name: string;
   nodes: MMDPlaylistNode[];
   loop?: boolean;
+  /** 预加载策略 (新增)
+   * - 'none': 不预加载 (默认)
+   * - 'next': 预加载下一个节点
+   * - 'all': 预加载所有节点
+   */
+  preload?: 'none' | 'next' | 'all';
   autoPlay?: boolean;
 }
 
@@ -256,17 +266,15 @@ interface MMDPlayerBaseRef {
 
 ## 6. 开发计划
 
-### Phase 1: 基础架构 (优先)
+### Phase 1: 基础架构 (进行中)
 
-- [ ] 类型定义文件 (`types.ts`)
-- [ ] Ammo.js 加载器 (`utils/ammo-loader.ts`)
-- [ ] MMDPlayerBase 组件
-  - [ ] 场景初始化
-  - [ ] 模型加载
-  - [ ] 动作加载
-  - [ ] 音频同步
-  - [ ] 播放控制
-  - [ ] 资源清理
+- [x] 类型定义文件 (`types.ts`)
+- [x] Ammo.js 加载器 (`utils/ammo-loader.ts`)
+- [ ] MMDPlayerBase 组件 (拆解)
+  - [ ] **核心渲染环境初始化** (Scene, Camera, Renderer, Lights, Controls)
+  - [ ] **MMD 资源加载** (Model, Motion, Audio, Camera, Stage)
+  - [ ] **动画与播放控制** (MMDAnimationHelper, Audio Sync, Seek)
+  - [ ] **资源清理与内存管理** (Dispose Pattern)
 
 ### Phase 2: 增强功能
 
@@ -384,6 +392,39 @@ const syncAudio = (audioElement: HTMLAudioElement) => {
 // 或者使用 helper 内置的音频同步
 helper.sync(audioContext);
 ```
+
+### 7.5 OSS 文件加载与安全 (新增)
+
+对于托管在 OSS (如阿里云 OSS, AWS S3) 上的 MMD 资源文件，需要特别处理：
+
+1.  **CORS 配置**：
+    *   必须在 OSS Bucket 侧配置允许跨域访问 (CORS)，允许前端域名访问。
+    *   `MMDLoader` 内部使用 `FileLoader`，需要确保服务器响应头包含 `Access-Control-Allow-Origin`。
+
+2.  **签名 URL (Signed URL)**：
+    *   如果是私有 Bucket，文件路径应为带有签名的临时访问 URL。
+    *   组件应支持动态获取 URL 的机制（例如 `resources` 属性可以接受一个异步函数）。
+
+3.  **路径重写**：
+    *   MMD 模型文件 (.pmx) 内部通常包含相对路径的贴图引用。
+    *   `three-stdlib` 的 `MMDLoader` 支持设置 `resourcePath`。如果是 OSS URL，Loader 会自动处理相对路径，前提是目录结构保持一致，或者贴图与模型在同一目录下。
+
+### 7.6 预加载与内存平衡 (新增)
+
+`MMDPlaylist` 的预加载策略 (`preload`) 需要在用户体验和内存占用之间通过权衡：
+
+*   **`preload: 'all'`**:
+    *   *优点*: 切换极快，无缝体验最好。
+    *   *缺点*: 内存占用极大，仅适用于节点少、模型简单的场景。
+    *   *实现*: 在初始化时，后台创建所有节点的 `MMDLoader` 并开始加载。
+
+*   **`preload: 'next'` (推荐)**:
+    *   *优点*: 平衡了内存和体验。
+    *   *实现*: 当节点 N 开始播放时，静默加载节点 N+1 的资源。
+
+*   **防止内存泄漏**:
+    *   无论哪种策略，非活动节点的资源（除了预加载的目标）应被及时清理。
+    *   使用 `WeakRef` 或手动引用计数来管理共享资源（如相同的模型文件）。
 
 ---
 
