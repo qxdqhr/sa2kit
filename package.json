@@ -22,9 +22,7 @@
     "miniapp",
     "electron",
     "tailwindcss",
-    "ui-components",
-    "mmd",
-    "threejs"
+    "ui-components"
   ],
   "author": "qxdqhr",
   "license": "MIT",
@@ -159,21 +157,6 @@
       "types": "./dist/storage/index.d.ts",
       "import": "./dist/storage/index.mjs",
       "require": "./dist/storage/index.js"
-    },
-    "./mmd": {
-      "types": "./dist/mmd/index.d.ts",
-      "import": "./dist/mmd/index.mjs",
-      "require": "./dist/mmd/index.js"
-    },
-    "./photoWall": {
-      "types": "./dist/photoWall/index.d.ts",
-      "import": "./dist/photoWall/index.mjs",
-      "require": "./dist/photoWall/index.js"
-    },
-    "./photowall": {
-      "types": "./dist/photowall/index.d.ts",
-      "import": "./dist/photowall/index.mjs",
-      "require": "./dist/photowall/index.js"
     }
   },
   "files": [
