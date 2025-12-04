@@ -266,40 +266,50 @@ interface MMDPlayerBaseRef {
 
 ## 6. 开发计划
 
-### Phase 1: 基础架构 (进行中)
+### Phase 1: 基础架构 ✅ (已完成)
 
 - [x] 类型定义文件 (`types.ts`)
 - [x] Ammo.js 加载器 (`utils/ammo-loader.ts`)
-- [ ] MMDPlayerBase 组件 (拆解)
-  - [ ] **核心渲染环境初始化** (Scene, Camera, Renderer, Lights, Controls)
-  - [ ] **MMD 资源加载** (Model, Motion, Audio, Camera, Stage)
-  - [ ] **动画与播放控制** (MMDAnimationHelper, Audio Sync, Seek)
-  - [ ] **资源清理与内存管理** (Dispose Pattern)
+- [x] **MMDPlayerBase 组件**
+  - [x] 核心渲染环境初始化 (Scene, Camera, Renderer, Lights, Controls)
+  - [x] MMD 资源加载 (Model, Motion, Audio, Camera, Stage)
+  - [x] 动画与播放控制 (MMDAnimationHelper, Audio Sync)
+  - [x] 资源清理与内存管理 (Dispose Pattern + Token 锁防止 Race Condition)
+  - [x] 自动聚焦模型 (Auto Focus)
+  - [x] 移动端优化配置
 
-### Phase 2: 增强功能 (进行中)
+### Phase 2: 增强功能 ✅ (已完成)
 
-- [ ] **UI 组件开发**
-  - [ ] `ControlPanel`: 播放/暂停、进度条、音量、全屏
-  - [ ] `SettingsPanel`: 资源切换面板 (支持列表和自由组合)
-  - [ ] `LoadingOverlay`: 加载状态显示
-- [ ] **MMDPlayerEnhanced 组件**
-  - [ ] 状态管理 (Play/Pause, Fullscreen, Volume)
-  - [ ] 资源模式适配 (Single / List / Options)
-  - [ ] 错误边界 (ErrorBoundary)
+- [x] **UI 组件开发**
+  - [x] `ControlPanel`: 播放/暂停、进度条、音量、全屏
+  - [x] `SettingsPanel`: 资源切换面板 (支持列表和自由组合)
+  - [x] Loading 状态显示 (集成在 Enhanced 中)
+- [x] **MMDPlayerEnhanced 组件**
+  - [x] 状态管理 (Play/Pause, Fullscreen, Volume)
+  - [x] 资源模式适配 (Single / List / Options)
+  - [x] 通过 Key 实现资源切换时的自动清理
   
-### Phase 3: 高级功能
+### Phase 3: 高级功能 (待开发)
 
-- [ ] MMDPlaylist 组件
+- [ ] **MMDPlaylist 组件**
   - [ ] 列表管理
   - [ ] 节点切换
-  - [ ] 预加载策略
+  - [ ] 预加载策略 (None / Next / All)
+  - [ ] 智能内存回收
   
-### Phase 4: 优化和扩展
+### Phase 4: 优化和扩展 (待开发)
 
-- [ ] 性能优化
-- [ ] 移动端适配
-- [ ] 单元测试
-- [ ] 文档完善
+- [ ] **性能优化**
+  - [ ] WebWorker 加载模型
+  - [ ] 纹理压缩
+- [ ] **高级功能**
+  - [ ] Seek 功能完善 (目前仅部分实现)
+  - [ ] 错误边界 (ErrorBoundary)
+  - [ ] 截图功能增强
+- [ ] **测试与文档**
+  - [ ] 单元测试
+  - [ ] 集成测试
+  - [ ] 示例 Demo 页面
 
 ---
 
@@ -597,6 +607,8 @@ const MyPage = () => {
 | 日期 | 版本 | 内容 |
 |------|------|------|
 | 2025-12-04 | v0.0.1 | 创建开发文档，开始重构规划 |
+| 2025-12-04 | v0.1.0 | 完成 Phase 1 & 2：MMDPlayerBase、MMDPlayerEnhanced、UI 组件 |
+| 2025-12-04 | v0.1.1 | 修复 Canvas 多重渲染、Race Condition (Token 锁)、自动聚焦模型 |
 
 ---
 
