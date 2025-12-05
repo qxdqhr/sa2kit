@@ -110,6 +110,9 @@ export interface MMDPlayerBaseProps {
   volume?: number; // 0-1
   muted?: boolean;
   
+  /** 调试与辅助 */
+  showAxes?: boolean; // 是否显示坐标轴
+  
   /** 事件回调 */
   onLoad?: () => void;
   onLoadProgress?: (progress: number, item: string) => void;
@@ -118,6 +121,82 @@ export interface MMDPlayerBaseProps {
   onPause?: () => void;
   onEnded?: () => void;
   onTimeUpdate?: (time: number) => void;
+  
+  /** 样式 */
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+/** 增强播放器属性 */
+export interface MMDPlayerEnhancedProps extends Omit<MMDPlayerBaseProps, 'resources'> {
+  /** 单一资源模式 */
+  resources?: MMDResources;
+  /** 列表模式资源 */
+  resourcesList?: MMDResourceItem[];
+  /** 自由组合模式选项 */
+  resourceOptions?: MMDResourceOptions;
+  
+  /** 列表模式下的默认 ID */
+  defaultResourceId?: string;
+  /** 自由组合模式下的默认选择 */
+  defaultSelection?: {
+    modelId?: string;
+    motionId?: string;
+    cameraId?: string;
+    audioId?: string;
+    stageId?: string;
+  };
+  
+  /** 是否显示调试信息面板 */
+  showDebugInfo?: boolean;
+}
+
+/** 播放列表节点 */
+export interface MMDPlaylistNode {
+  id: string;
+  name: string;
+  resources: MMDResources;
+  /** 该节点是否循环播放 */
+  loop?: boolean;
+  /** 预计时长（秒）- 用于进度计算 */
+  duration?: number;
+  /** 缩略图 */
+  thumbnail?: string;
+}
+
+/** 播放列表配置 */
+export interface MMDPlaylistConfig {
+  id: string;
+  name: string;
+  nodes: MMDPlaylistNode[];
+  /** 整个播放列表是否循环 */
+  loop?: boolean;
+  /** 预加载策略
+   * - 'none': 不预加载 (默认)
+   * - 'next': 预加载下一个节点
+   * - 'all': 预加载所有节点
+   */
+  preload?: 'none' | 'next' | 'all';
+  /** 是否自动播放 */
+  autoPlay?: boolean;
+}
+
+/** 播放列表组件属性 */
+export interface MMDPlaylistProps {
+  /** 播放列表配置 */
+  playlist: MMDPlaylistConfig;
+  /** 舞台配置 */
+  stage?: MMDStage;
+  /** 移动端优化配置 */
+  mobileOptimization?: MobileOptimization;
+  
+  /** 事件回调 */
+  onNodeChange?: (node: MMDPlaylistNode, index: number) => void;
+  onPlaylistComplete?: () => void;
+  onError?: (error: Error) => void;
+  
+  /** 是否显示调试信息面板 */
+  showDebugInfo?: boolean;
   
   /** 样式 */
   className?: string;

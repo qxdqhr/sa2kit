@@ -2,28 +2,14 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MMDPlayerBase } from './MMDPlayerBase';
 import { ControlPanel } from './ControlPanel';
 import { SettingsPanel } from './SettingsPanel';
-import { MMDPlayerBaseProps, MMDResources, MMDResourceItem, MMDResourceOptions, MMDPlayerBaseRef } from '../types';
-
-// 扩展 Props 以支持高级模式
-export type MMDPlayerEnhancedProps = Omit<MMDPlayerBaseProps, 'resources'> & {
-  /** 单一资源模式 */
-  resources?: MMDResources;
-  /** 列表模式资源 */
-  resourcesList?: MMDResourceItem[];
-  /** 自由组合模式选项 */
-  resourceOptions?: MMDResourceOptions;
-  
-  /** 列表模式下的默认 ID */
-  defaultResourceId?: string;
-  /** 自由组合模式下的默认选择 */
-  defaultSelection?: {
-    modelId?: string;
-    motionId?: string;
-    cameraId?: string;
-    audioId?: string;
-    stageId?: string;
-  };
-};
+import { MMDPlayerEnhancedDebugInfo } from './MMDPlayerEnhancedDebugInfo';
+import { 
+  MMDPlayerEnhancedProps,
+  MMDResources, 
+  MMDResourceItem, 
+  MMDResourceOptions, 
+  MMDPlayerBaseRef 
+} from '../types';
 
 export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   resources: propResources,
@@ -37,6 +23,7 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   volume: initialVolume = 1.0,
   muted: initialMuted = false,
   mobileOptimization,
+  showDebugInfo = false,
   className,
   style,
   onLoad,
@@ -55,13 +42,13 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   
   // 播放器状态
   const [isPlaying, setIsPlaying] = useState(autoPlay);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(initialVolume);
   const [isMuted, setIsMuted] = useState(initialMuted);
   const [isLoading, setIsLoading] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showAxes, setShowAxes] = useState(false); // 坐标轴显示状态
+  const [isLooping, setIsLooping] = useState(loop); // 循环状态
   
   // Refs
   const playerRef = useRef<MMDPlayerBaseRef>(null);
@@ -152,21 +139,6 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     }
     setIsPlaying(!isPlaying);
   };
-
-  const handleStop = () => {
-    playerRef.current?.stop();
-    setIsPlaying(false);
-    setCurrentTime(0);
-  };
-
-  const handleTimeUpdate = (time: number) => {
-    setCurrentTime(time);
-    // 同步 duration
-    if (playerRef.current) {
-       const d = playerRef.current.getDuration();
-       if (d > 0 && d !== duration) setDuration(d);
-    }
-  };
   
   const handleListSelect = (id: string) => {
     setCurrentId(id);
@@ -193,9 +165,11 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   return (
     <div 
       ref={containerRef}
-      className={`relative overflow-hidden bg-black group ${className}`}
+      className={`relative overflow-hidden bg-black group flex ${className}`}
       style={style}
     >
+      {/* 主播放器区域 */}
+      <div className="flex-1 relative">
       {/* 核心播放器 */}
       {/* Key 很重要：当资源变化时，通过改变 key 强制重置 BasePlayer，实现最彻底的清理和重新加载 */}
       <MMDPlayerBase
@@ -204,9 +178,10 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
         resources={currentResources}
         stage={stage}
         autoPlay={autoPlay} // 注意：这里 autoPlay 只在 mount 时生效
-        loop={loop}
+        loop={isLooping}
         volume={volume}
         muted={isMuted}
+        showAxes={showAxes}
         mobileOptimization={mobileOptimization}
         onLoad={() => {
           setIsLoading(false);
@@ -225,7 +200,6 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
           setIsPlaying(false);
           onEnded?.();
         }}
-        onTimeUpdate={handleTimeUpdate}
         {...rest}
       />
 
@@ -240,19 +214,15 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
       <div className={`transition-opacity duration-300 ${isPlaying && !showSettings ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}>
         <ControlPanel
           isPlaying={isPlaying}
-          currentTime={currentTime}
-          duration={duration}
-          volume={volume}
-          isMuted={isMuted}
           isFullscreen={isFullscreen}
+          isLooping={isLooping}
           showSettings={mode !== 'single'}
+          showAxes={showAxes}
           title={mode === 'list' ? resourcesList?.find(i => i.id === currentId)?.name : undefined}
           onPlayPause={handlePlayPause}
-          onStop={handleStop}
-          onSeek={(t) => playerRef.current?.seek(t)}
-          onVolumeChange={setVolume}
-          onToggleMute={() => setIsMuted(!isMuted)}
           onToggleFullscreen={toggleFullscreen}
+          onToggleLoop={() => setIsLooping(!isLooping)}
+          onToggleAxes={() => setShowAxes(!showAxes)}
           onOpenSettings={() => setShowSettings(true)}
         />
       </div>
@@ -269,6 +239,26 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
           onSelectOption={handleOptionSelect}
           onClose={() => setShowSettings(false)}
         />
+      )}
+      </div>
+
+      {/* 调试信息面板 */}
+      {showDebugInfo && (
+        <div className="w-96 bg-gray-900/95 border-l border-gray-700 p-4 overflow-y-auto">
+          <MMDPlayerEnhancedDebugInfo
+            isPlaying={isPlaying}
+            isLooping={isLooping}
+            isFullscreen={isFullscreen}
+            showAxes={showAxes}
+            isLoading={isLoading}
+            currentResourceId={currentId}
+            currentResourceName={
+              mode === 'list' ? resourcesList?.find(i => i.id === currentId)?.name : undefined
+            }
+            mode={mode}
+            totalResources={resourcesList?.length || 1}
+          />
+        </div>
       )}
     </div>
   );

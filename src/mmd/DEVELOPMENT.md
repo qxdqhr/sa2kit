@@ -258,9 +258,23 @@ interface MMDPlayerBaseRef {
 - 播放列表 UI (上一首/下一首/节点选择)
 
 **设计要点**:
-- 按需渲染: 仅挂载当前活动节点的 MMDPlayerEnhanced
+- 按需渲染: 仅挂载当前活动节点的 MMDPlayerBase
 - 通过 React key 变化触发组件重新挂载实现资源切换
 - 依赖组件生命周期自动清理资源
+
+**核心特性**:
+- **节点导航**: 支持上一个/下一个节点切换，支持列表循环
+- **预加载策略**: 
+  - `none`: 不预加载，最小内存占用
+  - `next`: 预加载下一个节点，平衡体验和性能
+  - `all`: 预加载所有节点，最佳体验但高内存占用
+- **播放模式**: 
+  - 单节点循环：当前节点循环播放
+  - 列表循环：播放完最后一个节点后回到第一个
+- **UI 组件**: 
+  - 播放控制栏（集成导航按钮）
+  - 弹出式播放列表面板（显示所有节点，支持点击跳转）
+  - 加载状态显示（显示当前节点序号）
 
 ---
 
@@ -288,14 +302,45 @@ interface MMDPlayerBaseRef {
   - [x] 状态管理 (Play/Pause, Fullscreen, Volume)
   - [x] 资源模式适配 (Single / List / Options)
   - [x] 通过 Key 实现资源切换时的自动清理
-  
-### Phase 3: 高级功能 (待开发)
 
-- [ ] **MMDPlaylist 组件**
-  - [ ] 列表管理
-  - [ ] 节点切换
-  - [ ] 预加载策略 (None / Next / All)
-  - [ ] 智能内存回收
+### Phase 2.5: UI 优化与交互完善 ✅ (已完成)
+
+- [x] **ControlPanel 优化**
+  - [x] 单模型时隐藏上一个/下一个按钮
+  - [x] 修复播放进度显示（从 AnimationClip 获取真实时长）
+  - [x] 修复循环播放时进度条问题（使用模除运算）
+  - [x] 添加坐标轴显示开关按钮（Grid3x3 图标）
+  - [x] 添加循环播放开关按钮（Repeat 图标）
+  - [x] 时间更新回调触发（onTimeUpdate）
+  - [x] 循环结束检测（非循环模式下自动停止）
+- [x] **相机优化**
+  - [x] 初始化时让模型正面朝向镜头（+Z 方向）
+  - [x] 优化自动聚焦算法（聚焦模型上半身，更适合人形角色）
+  - [x] 调整相机距离系数（2x maxDim）和高度（0.6 * size.y）
+
+### Phase 2.6: UI 极简化 ✅ (已完成)
+
+- [x] **ControlPanel 精简**
+  - [x] 移除进度条控件
+  - [x] 移除时间显示
+  - [x] 移除音量控制
+  - [x] 移除 Stop/Reset 按钮
+  - [x] 仅保留5个核心按钮：播放/暂停、循环播放、坐标轴、设置、全屏
+  - [x] 修复循环按钮功能：使用 ref 追踪 loop 状态，确保动态切换生效
+  
+### Phase 3: 高级功能 ✅ (已完成)
+
+- [x] **MMDPlaylist 组件**
+  - [x] 列表管理与节点切换逻辑
+  - [x] 预加载策略 (None / Next / All)
+  - [x] 智能内存回收机制
+  - [x] 播放列表 UI (上一首/下一首/节点选择面板)
+  - [x] 自动播放控制
+  - [x] 单节点循环与列表循环双重支持
+- [x] **ControlPanel 扩展**
+  - [x] 添加上一个/下一个按钮支持
+  - [x] 添加副标题显示 (如 "1 / 3")
+  - [x] 导航按钮的条件显示逻辑
   
 ### Phase 4: 优化和扩展 (待开发)
 
@@ -422,24 +467,92 @@ helper.sync(audioContext);
     *   MMD 模型文件 (.pmx) 内部通常包含相对路径的贴图引用。
     *   `three-stdlib` 的 `MMDLoader` 支持设置 `resourcePath`。如果是 OSS URL，Loader 会自动处理相对路径，前提是目录结构保持一致，或者贴图与模型在同一目录下。
 
-### 7.6 预加载与内存平衡 (新增)
+### 7.6 预加载与内存平衡
 
 `MMDPlaylist` 的预加载策略 (`preload`) 需要在用户体验和内存占用之间通过权衡：
 
 *   **`preload: 'all'`**:
     *   *优点*: 切换极快，无缝体验最好。
     *   *缺点*: 内存占用极大，仅适用于节点少、模型简单的场景。
-    *   *实现*: 在初始化时，后台创建所有节点的 `MMDLoader` 并开始加载。
+    *   *实现*: 在初始化时标记所有节点为预加载状态。
 
 *   **`preload: 'next'` (推荐)**:
     *   *优点*: 平衡了内存和体验。
-    *   *实现*: 当节点 N 开始播放时，静默加载节点 N+1 的资源。
+    *   *实现*: 当节点 N 开始播放时，标记节点 N+1 为预加载状态。
+
+*   **`preload: 'none'` (默认)**:
+    *   *优点*: 内存占用最小。
+    *   *缺点*: 切换时需要等待资源加载。
+    *   *实现*: 不进行预加载，仅加载当前播放节点。
 
 *   **防止内存泄漏**:
-    *   无论哪种策略，非活动节点的资源（除了预加载的目标）应被及时清理。
-    *   使用 `WeakRef` 或手动引用计数来管理共享资源（如相同的模型文件）。
+    *   当前实现通过 React 的 key 变化触发组件重新挂载，依赖组件生命周期自动清理资源。
+    *   对于 `next` 策略，智能清理除当前和下一个之外的预加载标记。
+    *   组件卸载时清理所有预加载标记和状态。
 
-### 7.7 常见问题与解决方案 (新增)
+### 7.7 MMDPlaylist 组件实现细节 (新增)
+
+**核心设计思路**：
+
+1. **资源切换机制**：
+   - 通过 React `key` 属性变化触发 `MMDPlayerBase` 完全重新挂载
+   - 每个节点使用唯一的 `id` 作为 key，切换时自动清理旧资源
+   - 依赖组件生命周期实现彻底的内存管理
+
+2. **预加载策略**：
+   ```typescript
+   // 'none': 不预加载 (默认) - 最小内存占用
+   // 'next': 预加载下一个节点 - 平衡体验与内存
+   // 'all': 预加载所有节点 - 最佳体验但高内存占用
+   preload?: 'none' | 'next' | 'all';
+   ```
+   - 当前实现为预加载标记系统（基础版）
+   - 未来可扩展为真正的后台资源加载
+
+3. **智能内存回收**：
+   - `preload: 'next'` 模式下，仅保留当前和下一个节点的预加载标记
+   - 自动清理距离当前节点较远的资源标记
+   - 组件卸载时清理所有预加载状态
+
+4. **播放列表 UI**：
+   - 底部滑出式面板设计
+   - 显示节点序号、名称、时长信息
+   - 当前播放节点高亮显示
+   - 点击节点即可切换并自动关闭面板
+
+5. **循环模式**：
+   - 单节点循环（`isLooping`）：当前节点重复播放
+   - 列表循环（`playlist.loop`）：播放完最后一个后回到第一个
+   - 两种模式可以独立控制
+
+**关键实现代码**：
+
+```typescript
+// 节点切换 - 通过改变 currentIndex 触发 key 变化
+const goToNode = (index: number) => {
+  setCurrentIndex(index);
+  onNodeChange?.(nodes[index], index);
+};
+
+// 节点结束时的处理
+const handleEnded = () => {
+  if (isLooping) {
+    playerRef.current?.play(); // 单节点循环
+  } else {
+    handleNext(); // 播放下一个或完成列表
+  }
+};
+
+// 核心渲染 - key 的变化触发完整的重新挂载
+<MMDPlayerBase
+  key={currentNode.id}  // 🔑 关键：id 变化 → 组件重置
+  ref={playerRef}
+  resources={currentNode.resources}
+  onEnded={handleEnded}
+/>
+```
+
+### 7.8 常见问题与解决方案
 
 **1. Canvas 遮挡与多重 Canvas 问题**
 *   **现象**: 画面上有不明色块遮挡，或者 DOM 中出现多个 `<canvas>` 元素。
@@ -467,7 +580,7 @@ helper.sync(audioContext);
     *   检查控制台日志 `[MMDPlayerBase] Model bounds`，确认模型尺寸是否异常。
     *   尝试调整 `stage.cameraPosition` 或手动指定 `stage.cameraTarget`。
 
-### 7.8 并发控制与 Race Condition (Token 锁)
+### 7.9 并发控制与 Race Condition (Token 锁)
 
 由于 MMD 资源加载是异步的，而 React 组件的生命周期是同步的，必须防止 "竞态条件" (Race Condition)。
 
@@ -481,9 +594,56 @@ helper.sync(audioContext);
 
 ---
 
-## 8. 使用示例
+## 8. 组件 API 参考
 
-### 8.1 基础用法
+### 8.1 MMDPlaylist Props
+
+```typescript
+interface MMDPlaylistProps {
+  playlist: MMDPlaylistConfig;    // 播放列表配置
+  stage?: MMDStage;               // 舞台配置
+  mobileOptimization?: MobileOptimization;
+  onNodeChange?: (node: MMDPlaylistNode, index: number) => void;
+  onPlaylistComplete?: () => void;
+  onError?: (error: Error) => void;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+interface MMDPlaylistConfig {
+  id: string;
+  name: string;
+  nodes: MMDPlaylistNode[];       // 播放节点列表
+  loop?: boolean;                 // 列表是否循环
+  preload?: 'none' | 'next' | 'all';  // 预加载策略
+  autoPlay?: boolean;             // 是否自动播放
+}
+
+interface MMDPlaylistNode {
+  id: string;                     // 唯一标识
+  name: string;                   // 节点名称
+  resources: MMDResources;        // MMD 资源
+  loop?: boolean;                 // 该节点是否循环
+  duration?: number;              // 预计时长（秒）
+  thumbnail?: string;             // 缩略图
+}
+```
+
+### 8.2 组件对比
+
+| 特性 | MMDPlayerBase | MMDPlayerEnhanced | MMDPlaylist |
+|------|--------------|-------------------|-------------|
+| 定位 | 核心渲染引擎 | 增强型单资源播放器 | 多资源列表管理器 |
+| UI 控制 | 无 | 内置控制栏 | 内置控制栏 + 播放列表 |
+| 资源切换 | 不支持 | 支持（设置面板） | 支持（列表导航） |
+| 预加载 | 不支持 | 不支持 | 支持 3 种策略 |
+| 使用场景 | 底层集成 | 单模型展示 | 多场景播放 |
+
+---
+
+## 9. 使用示例
+
+### 9.1 基础用法 - MMDPlayerEnhanced - MMDPlayerEnhanced
 
 ```tsx
 import { MMDPlayerEnhanced } from 'sa2kit/mmd';
@@ -509,7 +669,7 @@ const MyPage = () => {
 };
 ```
 
-### 8.2 资源列表切换
+### 9.2 资源列表切换 - MMDPlayerEnhanced - MMDPlayerEnhanced
 
 ```tsx
 import { MMDPlayerEnhanced } from 'sa2kit/mmd';
@@ -546,7 +706,7 @@ const MyPage = () => {
 };
 ```
 
-### 8.3 播放列表
+### 9.3 播放列表 - MMDPlaylist - MMDPlaylist
 
 ```tsx
 import { MMDPlaylist } from 'sa2kit/mmd';
@@ -555,27 +715,64 @@ const playlist = {
   id: 'my-playlist',
   name: '我的 MMD 剧场',
   nodes: [
-    { id: 'scene1', name: '开场', resources: { /* ... */ } },
-    { id: 'scene2', name: '主舞', resources: { /* ... */ } },
-    { id: 'scene3', name: '结尾', resources: { /* ... */ } },
+    { 
+      id: 'scene1', 
+      name: '开场', 
+      resources: {
+        modelPath: '/models/miku.pmx',
+        motionPath: '/motions/intro.vmd',
+        audioPath: '/audios/intro.mp3',
+      },
+      duration: 120, // 可选：预计时长（秒）
+    },
+    { 
+      id: 'scene2', 
+      name: '主舞', 
+      resources: {
+        modelPath: '/models/miku.pmx',
+        motionPath: '/motions/main.vmd',
+        audioPath: '/audios/main.mp3',
+      },
+    },
+    { 
+      id: 'scene3', 
+      name: '结尾', 
+      resources: {
+        modelPath: '/models/miku.pmx',
+        motionPath: '/motions/outro.vmd',
+        audioPath: '/audios/outro.mp3',
+      },
+    },
   ],
-  loop: false,
+  loop: false, // 列表是否循环
+  preload: 'next', // 预加载策略: 'none' | 'next' | 'all'
   autoPlay: true,
 };
 
 const MyPage = () => {
   return (
-    <MMDPlaylist
-      playlist={playlist}
-      onPlaylistComplete={() => console.log('播放完成')}
-    />
+    <div style={{ width: '100%', height: '100vh' }}>
+      <MMDPlaylist
+        playlist={playlist}
+        stage={{
+          backgroundColor: '#1a1a2e',
+          enablePhysics: true,
+        }}
+        onNodeChange={(node, index) => {
+          console.log(`切换到节点: ${node.name} (${index + 1}/${playlist.nodes.length})`);
+        }}
+        onPlaylistComplete={() => {
+          console.log('播放列表完成');
+        }}
+      />
+    </div>
   );
 };
 ```
 
 ---
 
-## 9. 待讨论事项
+## 10. 待讨论事项
 
 ### 需求确认
 
@@ -602,13 +799,18 @@ const MyPage = () => {
 
 ---
 
-## 10. 更新日志
+## 11. 更新日志
 
 | 日期 | 版本 | 内容 |
 |------|------|------|
 | 2025-12-04 | v0.0.1 | 创建开发文档，开始重构规划 |
 | 2025-12-04 | v0.1.0 | 完成 Phase 1 & 2：MMDPlayerBase、MMDPlayerEnhanced、UI 组件 |
 | 2025-12-04 | v0.1.1 | 修复 Canvas 多重渲染、Race Condition (Token 锁)、自动聚焦模型 |
+| 2025-12-04 | v0.2.0 | 完成 Phase 2.5：UI 优化、坐标轴开关、相机聚焦优化 |
+| 2025-12-04 | v0.2.1 | 修复循环播放进度条显示问题、添加循环开关按钮 |
+| 2025-12-04 | v0.3.0 | UI 极简化：移除进度条、时间显示、音量控制，仅保留5个核心按钮 |
+| 2025-12-04 | v0.3.1 | 修复循环按钮功能：使用 ref 同步 loop 状态，支持运行时动态切换 |
+| 2025-12-05 | v0.4.0 | 完成 Phase 3：MMDPlaylist 组件，支持播放列表、预加载策略、智能内存回收 |
 
 ---
 

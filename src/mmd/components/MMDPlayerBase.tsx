@@ -13,6 +13,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
     loop = true,
     volume = 1.0,
     muted = false,
+    showAxes = false,
     onLoad,
     onLoadProgress,
     onError,
@@ -33,6 +34,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
   const helperRef = useRef<any>(null); // MMDAnimationHelper
+  const axesHelperRef = useRef<THREE.AxesHelper | null>(null); // 坐标轴
   const clockRef = useRef<THREE.Clock>(new THREE.Clock());
   const animationIdRef = useRef<number | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
@@ -41,6 +43,10 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   const isReadyRef = useRef(false);
   const isPlayingRef = useRef(false);
   const initIdRef = useRef(0); // 初始化 ID 锁
+  const durationRef = useRef(0); // 动画时长（秒）
+  const animationClipRef = useRef<THREE.AnimationClip | null>(null); // 保存动画剪辑
+  const loopRef = useRef(loop); // 循环状态 ref
+  const audioRef = useRef<THREE.Audio | null>(null); // 音频对象引用
 
   // 暴露给父组件的方法
   useImperativeHandle(ref, () => ({
@@ -65,9 +71,15 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
       console.warn('Seek not fully implemented in MMDPlayerBase yet');
     },
     getCurrentTime: () => {
-       return clockRef.current.elapsedTime;
+       const elapsed = clockRef.current.elapsedTime;
+       const duration = durationRef.current;
+       // 如果是循环播放，返回模除后的时间
+       if (duration > 0 && loopRef.current) {
+         return elapsed % duration;
+       }
+       return elapsed;
     }, 
-    getDuration: () => 0, // 需要从 animation clip 获取
+    getDuration: () => durationRef.current,
     isPlaying: () => isPlayingRef.current,
     snapshot: () => {
       if (!rendererRef.current) return '';
@@ -185,6 +197,13 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         controls.update();
         controlsRef.current = controls;
 
+        // Axes Helper (坐标轴辅助)
+        if (showAxes) {
+          const axesHelper = new THREE.AxesHelper(20);
+          scene.add(axesHelper);
+          axesHelperRef.current = axesHelper;
+        }
+
         // Resize Observer
         const onResize = () => {
           if (!containerRef.current || !cameraRef.current || !rendererRef.current) return;
@@ -256,6 +275,13 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         if (checkCancelled()) return;
         
         console.log('[MMDPlayerBase] Model loaded:', mesh);
+        
+        // 保存动画时长
+        if (animation) {
+          animationClipRef.current = animation;
+          durationRef.current = animation.duration;
+          console.log('[MMDPlayerBase] Animation duration:', animation.duration);
+        }
 
         // 自动聚焦模型
         const box = new THREE.Box3().setFromObject(mesh);
@@ -265,12 +291,21 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
             console.log('[MMDPlayerBase] Model bounds:', { center, size });
 
             if (!stage.cameraTarget) {
-                controls.target.set(center.x, center.y + size.y * 0.5, center.z);
+                // 对于人形模型，聚焦在胸部/头部之间的位置（center.y + 30-40% 高度）
+                controls.target.set(center.x, center.y + size.y * 0.35, center.z);
                 
                 if (!stage.cameraPosition) {
+                    // MMD 模型通常正面朝向 -Z 轴，相机应该在 +Z 方向
+                    // 距离基于模型尺寸，确保能看到全身
                     const maxDim = Math.max(size.x, size.y, size.z);
-                    const dist = maxDim * 1.5;
-                    camera.position.set(center.x, center.y + size.y * 0.8, center.z + dist);
+                    const dist = maxDim * 2.0; // 增加距离系数
+                    
+                    // 相机位置：在模型前方（+Z），稍微抬高（俯视角度）
+                    camera.position.set(
+                        center.x,                    // X: 水平对齐
+                        center.y + size.y * 0.6,     // Y: 稍高于模型中心（眼睛平视或略俯视）
+                        center.z + dist              // Z: 在模型正前方（+Z 方向）
+                    );
                     console.log('[MMDPlayerBase] Auto camera position:', camera.position);
                 }
                 controls.update();
@@ -318,8 +353,9 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
             (buffer) => {
               if (checkCancelled()) return; // Callback check
               sound.setBuffer(buffer);
-              sound.setLoop(loop);
+              sound.setLoop(loopRef.current);
               sound.setVolume(volume);
+              audioRef.current = sound; // 保存音频引用以便后续更新循环状态
               
               helper.add(sound, { 
                 delay: 0.0, 
@@ -388,6 +424,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
       resizeObserverRef.current?.disconnect();
       
       helperRef.current = null;
+      audioRef.current = null;
       
       if (sceneRef.current) {
         sceneRef.current.traverse((object) => {
@@ -432,6 +469,31 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resources]); // 关键依赖：当 resources 变了（且没有 key 强制重刷时），执行这个 effect
 
+  // 监听 showAxes 变化，动态添加/移除坐标轴
+  useEffect(() => {
+    if (!sceneRef.current) return;
+    
+    if (showAxes && !axesHelperRef.current) {
+      const axesHelper = new THREE.AxesHelper(20);
+      sceneRef.current.add(axesHelper);
+      axesHelperRef.current = axesHelper;
+    } else if (!showAxes && axesHelperRef.current) {
+      sceneRef.current.remove(axesHelperRef.current);
+      axesHelperRef.current.dispose();
+      axesHelperRef.current = null;
+    }
+  }, [showAxes]);
+
+  // 监听 loop 变化，更新循环状态
+  useEffect(() => {
+    loopRef.current = loop;
+    
+    // 同步更新音频的循环状态
+    if (audioRef.current && audioRef.current.buffer) {
+      audioRef.current.setLoop(loop);
+    }
+  }, [loop]);
+
   // 渲染循环
   const animate = () => {
     animationIdRef.current = requestAnimationFrame(animate);
@@ -441,8 +503,18 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         const delta = clockRef.current.getDelta();
         helperRef.current.update(delta);
         
-        // 简单的结束检测 (如果使用了 Audio，Audio 结束会停止)
-        // 这里可以扩展 onTimeUpdate
+        // 触发时间更新回调（使用模除后的时间）
+        const elapsed = clockRef.current.elapsedTime;
+        const duration = durationRef.current;
+        const currentTime = duration > 0 && loopRef.current ? (elapsed % duration) : elapsed;
+        onTimeUpdate?.(currentTime);
+        
+        // 简单的结束检测（非循环模式）
+        if (!loopRef.current && duration > 0 && elapsed >= duration) {
+          isPlayingRef.current = false;
+          clockRef.current.stop();
+          onEnded?.();
+        }
       }
       
       rendererRef.current.render(sceneRef.current, cameraRef.current);

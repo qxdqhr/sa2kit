@@ -1,121 +1,105 @@
 import React from 'react';
-import { Play, Pause, Maximize, Minimize, Volume2, VolumeX, Settings, SkipBack } from 'lucide-react';
+import { Play, Pause, Maximize, Minimize, Settings, Grid3x3, Repeat, SkipBack, SkipForward } from 'lucide-react';
 
 interface ControlPanelProps {
   isPlaying: boolean;
-  currentTime: number;
-  duration: number;
-  volume: number;
-  isMuted: boolean;
   isFullscreen: boolean;
+  isLooping: boolean; // 是否循环播放
   showSettings?: boolean;
+  showAxes?: boolean; // 坐标轴是否显示
+  showPrevNext?: boolean; // 是否显示上一个/下一个按钮
   title?: string;
+  subtitle?: string; // 副标题 (如 "1 / 3")
   
   onPlayPause: () => void;
-  onStop?: () => void;
-  onSeek: (time: number) => void;
-  onVolumeChange: (volume: number) => void;
-  onToggleMute: () => void;
   onToggleFullscreen: () => void;
+  onToggleLoop: () => void; // 切换循环播放
+  onToggleAxes?: () => void; // 切换坐标轴显示
   onOpenSettings?: () => void;
+  onPrevious?: () => void; // 上一个
+  onNext?: () => void; // 下一个
 }
-
-const formatTime = (seconds: number) => {
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-};
 
 export const ControlPanel: React.FC<ControlPanelProps> = ({
   isPlaying,
-  currentTime,
-  duration,
-  volume,
-  isMuted,
   isFullscreen,
+  isLooping,
   showSettings,
+  showAxes = false,
+  showPrevNext = false,
   title,
+  subtitle,
   onPlayPause,
-  onStop,
-  onSeek,
-  onVolumeChange,
-  onToggleMute,
   onToggleFullscreen,
+  onToggleLoop,
+  onToggleAxes,
   onOpenSettings,
+  onPrevious,
+  onNext,
 }) => {
   return (
-    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-12 transition-opacity duration-300 hover:opacity-100">
-      {/* 进度条 */}
-      <div className="group relative mb-2 h-1 w-full cursor-pointer bg-white/30 hover:h-2">
-        <div 
-          className="absolute h-full bg-blue-500 transition-all" 
-          style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
-        />
-        <input
-          type="range"
-          min={0}
-          max={duration || 1}
-          step={0.1}
-          value={currentTime}
-          onChange={(e) => onSeek(parseFloat(e.target.value))}
-          className="absolute inset-0 h-full w-full opacity-0 cursor-pointer"
-        />
-      </div>
-
+    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 transition-opacity duration-300 hover:opacity-100">
       <div className="flex items-center justify-between text-white">
-        <div className="flex items-center gap-4">
-          {/* 播放控制 */}
-          <button 
-            onClick={onPlayPause}
-            className="rounded-full p-2 hover:bg-white/20 transition-colors"
-          >
-            {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-          </button>
-
-          {onStop && (
+        <div className="flex items-center gap-2">
+          {/* 上一个按钮 */}
+          {showPrevNext && onPrevious && (
             <button 
-              onClick={onStop}
+              onClick={onPrevious}
               className="rounded-full p-2 hover:bg-white/20 transition-colors"
+              title="上一个"
             >
               <SkipBack size={20} />
             </button>
           )}
 
-          {/* 时间 */}
-          <div className="text-sm font-medium">
-            <span>{formatTime(currentTime)}</span>
-            <span className="mx-1 opacity-50">/</span>
-            <span className="opacity-70">{formatTime(duration)}</span>
-          </div>
+          {/* 播放/暂停按钮 */}
+          <button 
+            onClick={onPlayPause}
+            className="rounded-full p-2 hover:bg-white/20 transition-colors"
+            title={isPlaying ? '暂停' : '播放'}
+          >
+            {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+          </button>
 
-          {/* 音量 */}
-          <div className="group flex items-center gap-2">
+          {/* 下一个按钮 */}
+          {showPrevNext && onNext && (
             <button 
-              onClick={onToggleMute}
+              onClick={onNext}
               className="rounded-full p-2 hover:bg-white/20 transition-colors"
+              title="下一个"
             >
-              {isMuted || volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
+              <SkipForward size={20} />
             </button>
-            <div className="w-0 overflow-hidden transition-all duration-300 group-hover:w-24">
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.05}
-                value={isMuted ? 0 : volume}
-                onChange={(e) => onVolumeChange(parseFloat(e.target.value))}
-                className="h-1 w-20 cursor-pointer appearance-none rounded-full bg-white/30 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
-              />
-            </div>
-          </div>
+          )}
         </div>
 
         <div className="flex items-center gap-4">
-          {/* 标题 */}
-          {title && (
+          {/* 标题和副标题 */}
+          {(title || subtitle) && (
             <div className="hidden text-sm font-medium opacity-80 md:block">
               {title}
+              {subtitle && <span className="ml-2 text-xs opacity-60">{subtitle}</span>}
             </div>
+          )}
+
+          {/* 循环播放切换 */}
+          <button 
+            onClick={onToggleLoop}
+            className={`rounded-full p-2 transition-colors ${isLooping ? 'bg-blue-500/30 hover:bg-blue-500/50' : 'hover:bg-white/20'}`}
+            title="循环播放"
+          >
+            <Repeat size={20} />
+          </button>
+
+          {/* 坐标轴切换 */}
+          {onToggleAxes && (
+            <button 
+              onClick={onToggleAxes}
+              className={`rounded-full p-2 transition-colors ${showAxes ? 'bg-blue-500/30 hover:bg-blue-500/50' : 'hover:bg-white/20'}`}
+              title="显示/隐藏坐标轴"
+            >
+              <Grid3x3 size={20} />
+            </button>
           )}
 
           {/* 设置 */}
@@ -133,6 +117,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
           <button 
             onClick={onToggleFullscreen}
             className="rounded-full p-2 hover:bg-white/20 transition-colors"
+            title={isFullscreen ? '退出全屏' : '全屏'}
           >
             {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
           </button>
