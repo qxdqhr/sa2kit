@@ -65,7 +65,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   });
   
   // 🕐 运行时间追踪 - 用于 OOM 错误报告
-  const startTimeRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number>(Date.now());
   const modelSwitchCountRef = useRef<number>(0);
 
   // 暴露给父组件的方法
@@ -128,16 +128,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         containerRef.current.innerHTML = '';
       }
       
-      // 3. 重置物理引擎组件引用（先记录旧的，稍后清理）
-      const oldComponents = {
-        configs: [...physicsComponentsRef.current.configs],
-        dispatchers: [...physicsComponentsRef.current.dispatchers],
-        caches: [...physicsComponentsRef.current.caches],
-        solvers: [...physicsComponentsRef.current.solvers],
-        worlds: [...physicsComponentsRef.current.worlds]
-      };
-      
-      // 立即重置数组，避免 Monkey Patch 继续往旧数组添加
+      // 3. 重置物理引擎组件引用
       physicsComponentsRef.current = {
         configs: [],
         dispatchers: [],
@@ -147,18 +138,19 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
       };
       
       // 🕐 记录开始时间和切换计数
-      // 记录启动时间（只在第一次）
-      if (startTimeRef.current === null) {
+      if (modelSwitchCountRef.current === 0) {
+        // 首次加载，记录开始时间
         startTimeRef.current = Date.now();
+        modelSwitchCountRef.current = 1;
         console.log('[MMDPlayerBase] 🕐 系统启动时间:', new Date(startTimeRef.current).toLocaleString());
+      } else {
+        // 模型切换
+        modelSwitchCountRef.current++;
+        const runningTime = Date.now() - startTimeRef.current;
+        const minutes = Math.floor(runningTime / 60000);
+        const seconds = Math.floor((runningTime % 60000) / 1000);
+        console.log(`[MMDPlayerBase] 🔄 模型切换 #${modelSwitchCountRef.current} (运行时间: ${minutes}分${seconds}秒)`);
       }
-      
-      // 累加模型加载次数
-      modelSwitchCountRef.current++;
-      const runningTime = Date.now() - startTimeRef.current;
-      const minutes = Math.floor(runningTime / 60000);
-      const seconds = Math.floor((runningTime % 60000) / 1000);
-      console.log(`[MMDPlayerBase] 🔄 模型加载 #${modelSwitchCountRef.current} (运行时间: ${minutes}分${seconds}秒)`);
 
       try {
         // 4. 物理引擎加载
@@ -168,94 +160,26 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           if (checkCancelled()) return;
           console.log('[MMDPlayerBase] Ammo.js loaded successfully');
           
-          // 🧹 现在 Ammo 已加载，清理旧的物理组件
-          const AmmoLib = (window as any).Ammo;
-          const totalOldCount = oldComponents.worlds.length + oldComponents.solvers.length + 
-                                oldComponents.caches.length + oldComponents.dispatchers.length + 
-                                oldComponents.configs.length;
-          
-          if (AmmoLib && AmmoLib.destroy && totalOldCount > 0) {
-            console.log('[MMDPlayerBase] ⚠️ 检测到未清理的物理组件，立即清理...');
-            console.log('[MMDPlayerBase] 📊 未清理组件数量:', {
-              worlds: oldComponents.worlds.length,
-              solvers: oldComponents.solvers.length,
-              caches: oldComponents.caches.length,
-              dispatchers: oldComponents.dispatchers.length,
-              configs: oldComponents.configs.length,
-              total: totalOldCount
-            });
-            
-            // 按正确顺序销毁：world -> solver -> cache -> dispatcher -> config
-            let destroyedCount = 0;
-            for (let i = oldComponents.worlds.length - 1; i >= 0; i--) {
-              try { 
-                AmmoLib.destroy(oldComponents.worlds[i]); 
-                destroyedCount++;
-              } catch (e) { 
-                console.warn(`[MMDPlayerBase]   ❌ 销毁world #${i+1}失败:`, e); 
-              }
-            }
-            
-            for (let i = oldComponents.solvers.length - 1; i >= 0; i--) {
-              try { 
-                AmmoLib.destroy(oldComponents.solvers[i]); 
-                destroyedCount++;
-              } catch (e) { 
-                console.warn(`[MMDPlayerBase]   ❌ 销毁solver #${i+1}失败:`, e); 
-              }
-            }
-            
-            for (let i = oldComponents.caches.length - 1; i >= 0; i--) {
-              try { 
-                AmmoLib.destroy(oldComponents.caches[i]); 
-                destroyedCount++;
-              } catch (e) { 
-                console.warn(`[MMDPlayerBase]   ❌ 销毁cache #${i+1}失败:`, e); 
-              }
-            }
-            
-            for (let i = oldComponents.dispatchers.length - 1; i >= 0; i--) {
-              try { 
-                AmmoLib.destroy(oldComponents.dispatchers[i]); 
-                destroyedCount++;
-              } catch (e) { 
-                console.warn(`[MMDPlayerBase]   ❌ 销毁dispatcher #${i+1}失败:`, e); 
-              }
-            }
-            
-            for (let i = oldComponents.configs.length - 1; i >= 0; i--) {
-              try { 
-                AmmoLib.destroy(oldComponents.configs[i]); 
-                destroyedCount++;
-              } catch (e) { 
-                console.warn(`[MMDPlayerBase]   ❌ 销毁config #${i+1}失败:`, e); 
-              }
-            }
-            
-            console.log(`[MMDPlayerBase] ✅ 已清理 ${destroyedCount}/${totalOldCount} 个物理组件`);
-          } else if (totalOldCount > 0) {
-            console.warn(`[MMDPlayerBase] ⚠️ 发现 ${totalOldCount} 个未清理组件但无法清理（Ammo.destroy=${!!AmmoLib?.destroy}）`);
-          } else {
-            console.log('[MMDPlayerBase] ℹ️ 没有需要清理的物理组件');
-          }
-          
-          // 🎯 设置 Monkey Patch（只在第一次）
+          // 🎯 关键修复：Hook MMDPhysics._createWorld 以捕获物理引擎组件
+          // 这样我们可以在清理时正确销毁它们，防止 WASM 内存泄漏
           const Ammo = (window as any).Ammo;
-          if (Ammo && !(Ammo as any).__sa2kitMonkeyPatched) {
-            console.log('[MMDPlayerBase] 🎯 Setting up physics component tracking (FIRST TIME)...');
+          if (Ammo) {
+            console.log('[MMDPlayerBase] Setting up physics component tracking...');
             
-            // 保存原始的 Ammo 构造函数
+            // 保存原始的 Ammo 构造函数，以便在 _createWorld 中使用
             const originalBtDefaultCollisionConfiguration = Ammo.btDefaultCollisionConfiguration;
             const originalBtCollisionDispatcher = Ammo.btCollisionDispatcher;
             const originalBtDbvtBroadphase = Ammo.btDbvtBroadphase;
             const originalBtSequentialImpulseConstraintSolver = Ammo.btSequentialImpulseConstraintSolver;
             const originalBtDiscreteDynamicsWorld = Ammo.btDiscreteDynamicsWorld;
             
+            // Monkey patch Ammo 构造函数来拦截创建过程
+            // ⚠️ 关键修改：使用数组来保存所有对象，而不是只保存最后一个
             const componentsRef = physicsComponentsRef.current;
             
             Ammo.btDefaultCollisionConfiguration = function(...args: any[]) {
               const obj = new originalBtDefaultCollisionConfiguration(...args);
-              componentsRef.configs.push(obj);
+              componentsRef.configs.push(obj);  // 🎯 添加到数组而不是覆盖
               console.log(`[MMDPlayerBase] 🔍 Captured btDefaultCollisionConfiguration #${componentsRef.configs.length}`);
               return obj;
             };
@@ -288,17 +212,13 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
               return obj;
             };
             
-            // 标记已设置
-            (Ammo as any).__sa2kitMonkeyPatched = true;
             console.log('[MMDPlayerBase] ✅ Physics component tracking setup complete');
-          } else if (Ammo) {
-            console.log('[MMDPlayerBase] ℹ️ Monkey Patch already setup, skipping');
           }
         } else {
           console.log('[MMDPlayerBase] Physics disabled');
         }
 
-        // 6. 场景初始化
+        // 5. 场景初始化
         const container = containerRef.current!;
         const width = container.clientWidth || 300;
         const height = container.clientHeight || 150;
@@ -590,7 +510,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (errorMessage.includes('OOM') || errorMessage.includes('out of memory')) {
           // 计算运行时间
-          const runningTime = Date.now() - (startTimeRef.current ?? Date.now());
+          const runningTime = Date.now() - startTimeRef.current;
           const hours = Math.floor(runningTime / 3600000);
           const minutes = Math.floor((runningTime % 3600000) / 60000);
           const seconds = Math.floor((runningTime % 60000) / 1000);
@@ -605,8 +525,8 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
 
 📊 系统运行统计：
 • 运行时间: ${timeString}
-• 模型加载次数: ${modelSwitchCountRef.current}
-• 启动时间: ${startTimeRef.current ? new Date(startTimeRef.current).toLocaleString() : '未知'}
+• 模型切换次数: ${modelSwitchCountRef.current}
+• 启动时间: ${new Date(startTimeRef.current).toLocaleString()}
 • 错误时间: ${new Date().toLocaleString()}
 
 ❌ 问题：物理引擎内存不足！

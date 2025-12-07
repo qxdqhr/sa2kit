@@ -60,3 +60,6 @@ export { useAudioDetection } from './hooks/useAudioDetection';
 export { AudioDetectionDisplay } from './components/AudioDetectionDisplay';
 export { PianoKeyboard } from './components/PianoKeyboard';
 
+
+
+
