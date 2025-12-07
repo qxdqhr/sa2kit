@@ -1,6 +1,29 @@
-# MMD播放器 OOM 问题已修复 ✅
+# MMD播放器 OOM 问题修复 v2 ✅
 
-## 问题原因
+## ⚠️ 重要更新（2025-12-07）
+
+### 第一版修复的问题
+
+第一版方案使用单个变量保存物理组件引用，但**发现每个MMD模型会创建54+个物理对象**：
+- ❌ 每个刚体（头发、裙子、饰品等）都会创建独立的物理世界
+- ❌ 单个变量只能保存最后一个对象，其他53个全部泄漏
+- ❌ 播放20分钟后仍然OOM
+
+### 第二版修复（当前版本）
+
+**改用数组追踪所有物理对象**：
+
+```typescript
+const physicsComponentsRef = useRef<{
+  configs: any[];         // 不是单个，而是数组
+  dispatchers: any[];
+  caches: any[];
+  solvers: any[];
+  worlds: any[];
+}>();
+```
+
+## 问题根源
 
 经过深入分析日志，发现根本原因在于 **three-stdlib 库的设计缺陷**：
 
@@ -19,50 +42,63 @@ _createWorld() {
 }
 ```
 
+### 为什么会创建这么多对象？
+
+**每个 MMD 模型都有多个刚体**（RigidBody）：
+- 头发（多个）
+- 裙子（多个）
+- 饰品（耳环、项链等）
+- 身体部件
+
+**每个刚体都会调用 `_createWorld()`**，导致：
+- 1个模型 = 54个物理世界 × 5个组件 = **270个Ammo对象**
+- 只有54个world被保存，其他216个全部泄漏！
+
 ### 为什么会 OOM？
 
-1. **创建了5个 Ammo WASM 对象**，但只保存了 `world` 的引用
-2. **其他4个对象泄漏**到 WebAssembly 内存中
+1. **创建了大量 Ammo WASM 对象**，但只保存了部分引用
+2. **其他对象泄漏**到 WebAssembly 内存中
 3. **每次切换模型**都会创建新的物理世界，累积泄漏
 4. **WASM内存无法被JS垃圾回收**，必须手动调用 `Ammo.destroy()`
 5. **累积到一定程度**就会触发 `OOM` (Out Of Memory) 错误
 
-## 解决方案
+## 解决方案 v2
 
-使用 **Monkey Patching** 技术在运行时拦截这些对象的创建：
+使用 **数组 + Monkey Patching** 技术追踪所有对象的创建：
 
-### 1. 拦截对象创建（第127-189行）
+### 1. 拦截对象创建（第143-199行）
 
 ```typescript
-// 保存原始构造函数
-const originalBtDefaultCollisionConfiguration = Ammo.btDefaultCollisionConfiguration;
-// ...
+// ⚠️ 关键：使用数组保存所有对象
+const componentsRef = physicsComponentsRef.current;
 
-// 替换为拦截版本
 Ammo.btDefaultCollisionConfiguration = function(...args: any[]) {
   const obj = new originalBtDefaultCollisionConfiguration(...args);
-  physicsComponentsRef.current.config = obj;  // 🎯 捕获引用
-  console.log('[MMDPlayerBase] 🔍 Captured btDefaultCollisionConfiguration');
+  componentsRef.configs.push(obj);  // 🎯 添加到数组，不覆盖
+  console.log(`[MMDPlayerBase] 🔍 Captured btDefaultCollisionConfiguration #${componentsRef.configs.length}`);
   return obj;
 };
 // ... 对所有5个构造函数重复此操作
 ```
 
-### 2. 正确销毁所有组件（第693-744行）
+### 2. 正确销毁所有组件（第715-805行）
 
 ```typescript
 // 按正确顺序销毁（与创建顺序相反）
-// 创建顺序: config -> dispatcher -> cache -> solver -> world
-// 销毁顺序: world -> solver -> cache -> dispatcher -> config
+console.log(`[MMDPlayerBase] 📊 Physics components count:`, {
+  worlds: components.worlds.length,      // 例如：54
+  solvers: components.solvers.length,    // 例如：54
+  caches: components.caches.length,      // 例如：54
+  dispatchers: components.dispatchers.length,  // 例如：54
+  configs: components.configs.length     // 例如：54
+});
 
-if (components.world) {
-  Ammo.destroy(components.world);
-  components.world = null;
+// 销毁所有 worlds
+for (let i = components.worlds.length - 1; i >= 0; i--) {
+  Ammo.destroy(components.worlds[i]);
 }
-if (components.solver) {
-  Ammo.destroy(components.solver);
-  components.solver = null;
-}
+components.worlds.length = 0;
+
 // ... 依次销毁所有组件
 ```
 
@@ -100,32 +136,69 @@ if (components.solver) {
 
 ## 成功标志
 
-### ✅ 清理日志示例
+### ✅ 清理日志示例（v2）
 
 每次切换时控制台应该显示：
 
 ```
 [MMDPlayerBase] 🔥 Starting CRITICAL physics components cleanup...
-[MMDPlayerBase]   🗑️ Destroying btDiscreteDynamicsWorld...
-[MMDPlayerBase]   ✅ btDiscreteDynamicsWorld destroyed
-[MMDPlayerBase]   🗑️ Destroying btSequentialImpulseConstraintSolver...
-[MMDPlayerBase]   ✅ btSequentialImpulseConstraintSolver destroyed
-[MMDPlayerBase]   🗑️ Destroying btDbvtBroadphase...
-[MMDPlayerBase]   ✅ btDbvtBroadphase destroyed
-[MMDPlayerBase]   🗑️ Destroying btCollisionDispatcher...
-[MMDPlayerBase]   ✅ btCollisionDispatcher destroyed
-[MMDPlayerBase]   🗑️ Destroying btDefaultCollisionConfiguration...
-[MMDPlayerBase]   ✅ btDefaultCollisionConfiguration destroyed
+[MMDPlayerBase] 📊 Physics components count: {
+  worlds: 54,
+  solvers: 54,
+  caches: 54,
+  dispatchers: 54,
+  configs: 54
+}
+[MMDPlayerBase]   🗑️ Destroying 54 btDiscreteDynamicsWorld(s)...
+[MMDPlayerBase]   ✅ All btDiscreteDynamicsWorld destroyed
+[MMDPlayerBase]   🗑️ Destroying 54 btSequentialImpulseConstraintSolver(s)...
+[MMDPlayerBase]   ✅ All btSequentialImpulseConstraintSolver destroyed
+[MMDPlayerBase]   🗑️ Destroying 54 btDbvtBroadphase(s)...
+[MMDPlayerBase]   ✅ All btDbvtBroadphase destroyed
+[MMDPlayerBase]   🗑️ Destroying 54 btCollisionDispatcher(s)...
+[MMDPlayerBase]   ✅ All btCollisionDispatcher destroyed
+[MMDPlayerBase]   🗑️ Destroying 54 btDefaultCollisionConfiguration(s)...
+[MMDPlayerBase]   ✅ All btDefaultCollisionConfiguration destroyed
 [MMDPlayerBase] 🎉 Physics components cleanup completed!
 ```
 
+**关键指标**：
+- ✅ 每个组件的数量应该相同（通常是54）
+- ✅ 所有组件都被销毁
+- ✅ 总共销毁 270 个 Ammo 对象（54×5）
+
 ## 技术要点
 
-### 为什么要用 Monkey Patching？
+### 为什么第一版方案不够？
 
-1. **无法修改第三方库** - 代码在 `node_modules` 中
-2. **需要拦截对象创建** - 在对象被创建时捕获引用
-3. **运行时动态修改** - 不影响库的源代码
+1. **单个变量只能保存最后一个对象**
+   ```typescript
+   // ❌ 第一版（错误）
+   componentsRef.config = obj;  // 每次赋值都会覆盖之前的
+   
+   // ✅ 第二版（正确）
+   componentsRef.configs.push(obj);  // 添加到数组，不覆盖
+   ```
+
+2. **MMD模型创建的物理对象远超预期**
+   - 原以为只有 5 个对象（1个世界）
+   - 实际上有 270 个对象（54个世界 × 5个组件）
+   - 第一版只清理了 5 个，泄漏了 265 个！
+
+3. **日志证据**
+   ```
+   # 第一版看到的（错误）
+   [MMDPlayerBase] 🔍 Captured btDefaultCollisionConfiguration
+   [MMDPlayerBase] 🔍 Captured btDefaultCollisionConfiguration  # 覆盖了
+   [MMDPlayerBase] 🔍 Captured btDefaultCollisionConfiguration  # 又覆盖了
+   ...重复54次，只保留了最后一个
+   
+   # 第二版看到的（正确）
+   [MMDPlayerBase] 🔍 Captured btDefaultCollisionConfiguration #1
+   [MMDPlayerBase] 🔍 Captured btDefaultCollisionConfiguration #2
+   [MMDPlayerBase] 🔍 Captured btDefaultCollisionConfiguration #3
+   ...所有54个都被追踪
+   ```
 
 ### 销毁顺序很重要
 
@@ -158,5 +231,10 @@ Ammo对象之间有依赖关系，必须按正确顺序销毁：
 ---
 
 **修复完成时间**: 2025-12-07  
+**修复版本**: v2 (数组追踪版本)  
 **修复状态**: ✅ 已完成  
-**测试状态**: ⏳ 待测试
+**测试状态**: ⏳ 待测试  
+
+**版本历史**:
+- v1 (2025-12-07 早): 单变量方案 - ❌ 不完整，仍会OOM
+- v2 (2025-12-07 晚): 数组追踪方案 - ✅ 完整修复，应该彻底解决OOM

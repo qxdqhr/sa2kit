@@ -49,18 +49,19 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   const audioRef = useRef<THREE.Audio | null>(null); // 音频对象引用
   
   // 🎯 新增：物理引擎组件引用 - 用于正确清理 Ammo 对象
+  // 改用数组来追踪所有创建的对象（每个模型会创建多个物理世界和刚体）
   const physicsComponentsRef = useRef<{
-    config: any | null;
-    dispatcher: any | null;
-    cache: any | null;
-    solver: any | null;
-    world: any | null;
+    configs: any[];
+    dispatchers: any[];
+    caches: any[];
+    solvers: any[];
+    worlds: any[];
   }>({
-    config: null,
-    dispatcher: null,
-    cache: null,
-    solver: null,
-    world: null
+    configs: [],
+    dispatchers: [],
+    caches: [],
+    solvers: [],
+    worlds: []
   });
 
   // 暴露给父组件的方法
@@ -125,11 +126,11 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
       
       // 3. 重置物理引擎组件引用
       physicsComponentsRef.current = {
-        config: null,
-        dispatcher: null,
-        cache: null,
-        solver: null,
-        world: null
+        configs: [],
+        dispatchers: [],
+        caches: [],
+        solvers: [],
+        worlds: []
       };
 
       try {
@@ -154,40 +155,41 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
             const originalBtDiscreteDynamicsWorld = Ammo.btDiscreteDynamicsWorld;
             
             // Monkey patch Ammo 构造函数来拦截创建过程
+            // ⚠️ 关键修改：使用数组来保存所有对象，而不是只保存最后一个
             const componentsRef = physicsComponentsRef.current;
             
             Ammo.btDefaultCollisionConfiguration = function(...args: any[]) {
               const obj = new originalBtDefaultCollisionConfiguration(...args);
-              componentsRef.config = obj;
-              console.log('[MMDPlayerBase] 🔍 Captured btDefaultCollisionConfiguration');
+              componentsRef.configs.push(obj);  // 🎯 添加到数组而不是覆盖
+              console.log(`[MMDPlayerBase] 🔍 Captured btDefaultCollisionConfiguration #${componentsRef.configs.length}`);
               return obj;
             };
             
             Ammo.btCollisionDispatcher = function(...args: any[]) {
               const obj = new originalBtCollisionDispatcher(...args);
-              componentsRef.dispatcher = obj;
-              console.log('[MMDPlayerBase] 🔍 Captured btCollisionDispatcher');
+              componentsRef.dispatchers.push(obj);
+              console.log(`[MMDPlayerBase] 🔍 Captured btCollisionDispatcher #${componentsRef.dispatchers.length}`);
               return obj;
             };
             
             Ammo.btDbvtBroadphase = function(...args: any[]) {
               const obj = new originalBtDbvtBroadphase(...args);
-              componentsRef.cache = obj;
-              console.log('[MMDPlayerBase] 🔍 Captured btDbvtBroadphase');
+              componentsRef.caches.push(obj);
+              console.log(`[MMDPlayerBase] 🔍 Captured btDbvtBroadphase #${componentsRef.caches.length}`);
               return obj;
             };
             
             Ammo.btSequentialImpulseConstraintSolver = function(...args: any[]) {
               const obj = new originalBtSequentialImpulseConstraintSolver(...args);
-              componentsRef.solver = obj;
-              console.log('[MMDPlayerBase] 🔍 Captured btSequentialImpulseConstraintSolver');
+              componentsRef.solvers.push(obj);
+              console.log(`[MMDPlayerBase] 🔍 Captured btSequentialImpulseConstraintSolver #${componentsRef.solvers.length}`);
               return obj;
             };
             
             Ammo.btDiscreteDynamicsWorld = function(...args: any[]) {
               const obj = new originalBtDiscreteDynamicsWorld(...args);
-              componentsRef.world = obj;
-              console.log('[MMDPlayerBase] 🔍 Captured btDiscreteDynamicsWorld');
+              componentsRef.worlds.push(obj);
+              console.log(`[MMDPlayerBase] 🔍 Captured btDiscreteDynamicsWorld #${componentsRef.worlds.length}`);
               return obj;
             };
             
@@ -692,63 +694,86 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           if (Ammo && Ammo.destroy) {
             const components = physicsComponentsRef.current;
             
+            console.log(`[MMDPlayerBase] 📊 Physics components count:`, {
+              worlds: components.worlds.length,
+              solvers: components.solvers.length,
+              caches: components.caches.length,
+              dispatchers: components.dispatchers.length,
+              configs: components.configs.length
+            });
+            
             // 按照正确的顺序销毁 Ammo 对象（与创建顺序相反）
             // 创建顺序：config -> dispatcher -> cache -> solver -> world
             // 销毁顺序：world -> solver -> cache -> dispatcher -> config
             
-            if (components.world) {
-              try {
-                console.log('[MMDPlayerBase]   🗑️ Destroying btDiscreteDynamicsWorld...');
-                Ammo.destroy(components.world);
-                components.world = null;
-                console.log('[MMDPlayerBase]   ✅ btDiscreteDynamicsWorld destroyed');
-              } catch (e) {
-                console.error('[MMDPlayerBase]   ❌ Error destroying world:', e);
+            // 销毁所有 worlds
+            if (components.worlds.length > 0) {
+              console.log(`[MMDPlayerBase]   🗑️ Destroying ${components.worlds.length} btDiscreteDynamicsWorld(s)...`);
+              for (let i = components.worlds.length - 1; i >= 0; i--) {
+                try {
+                  Ammo.destroy(components.worlds[i]);
+                } catch (e) {
+                  console.error(`[MMDPlayerBase]   ❌ Error destroying world #${i}:`, e);
+                }
               }
+              components.worlds.length = 0;
+              console.log('[MMDPlayerBase]   ✅ All btDiscreteDynamicsWorld destroyed');
             }
             
-            if (components.solver) {
-              try {
-                console.log('[MMDPlayerBase]   🗑️ Destroying btSequentialImpulseConstraintSolver...');
-                Ammo.destroy(components.solver);
-                components.solver = null;
-                console.log('[MMDPlayerBase]   ✅ btSequentialImpulseConstraintSolver destroyed');
-              } catch (e) {
-                console.error('[MMDPlayerBase]   ❌ Error destroying solver:', e);
+            // 销毁所有 solvers
+            if (components.solvers.length > 0) {
+              console.log(`[MMDPlayerBase]   🗑️ Destroying ${components.solvers.length} btSequentialImpulseConstraintSolver(s)...`);
+              for (let i = components.solvers.length - 1; i >= 0; i--) {
+                try {
+                  Ammo.destroy(components.solvers[i]);
+                } catch (e) {
+                  console.error(`[MMDPlayerBase]   ❌ Error destroying solver #${i}:`, e);
+                }
               }
+              components.solvers.length = 0;
+              console.log('[MMDPlayerBase]   ✅ All btSequentialImpulseConstraintSolver destroyed');
             }
             
-            if (components.cache) {
-              try {
-                console.log('[MMDPlayerBase]   🗑️ Destroying btDbvtBroadphase...');
-                Ammo.destroy(components.cache);
-                components.cache = null;
-                console.log('[MMDPlayerBase]   ✅ btDbvtBroadphase destroyed');
-              } catch (e) {
-                console.error('[MMDPlayerBase]   ❌ Error destroying cache:', e);
+            // 销毁所有 caches
+            if (components.caches.length > 0) {
+              console.log(`[MMDPlayerBase]   🗑️ Destroying ${components.caches.length} btDbvtBroadphase(s)...`);
+              for (let i = components.caches.length - 1; i >= 0; i--) {
+                try {
+                  Ammo.destroy(components.caches[i]);
+                } catch (e) {
+                  console.error(`[MMDPlayerBase]   ❌ Error destroying cache #${i}:`, e);
+                }
               }
+              components.caches.length = 0;
+              console.log('[MMDPlayerBase]   ✅ All btDbvtBroadphase destroyed');
             }
             
-            if (components.dispatcher) {
-              try {
-                console.log('[MMDPlayerBase]   🗑️ Destroying btCollisionDispatcher...');
-                Ammo.destroy(components.dispatcher);
-                components.dispatcher = null;
-                console.log('[MMDPlayerBase]   ✅ btCollisionDispatcher destroyed');
-              } catch (e) {
-                console.error('[MMDPlayerBase]   ❌ Error destroying dispatcher:', e);
+            // 销毁所有 dispatchers
+            if (components.dispatchers.length > 0) {
+              console.log(`[MMDPlayerBase]   🗑️ Destroying ${components.dispatchers.length} btCollisionDispatcher(s)...`);
+              for (let i = components.dispatchers.length - 1; i >= 0; i--) {
+                try {
+                  Ammo.destroy(components.dispatchers[i]);
+                } catch (e) {
+                  console.error(`[MMDPlayerBase]   ❌ Error destroying dispatcher #${i}:`, e);
+                }
               }
+              components.dispatchers.length = 0;
+              console.log('[MMDPlayerBase]   ✅ All btCollisionDispatcher destroyed');
             }
             
-            if (components.config) {
-              try {
-                console.log('[MMDPlayerBase]   🗑️ Destroying btDefaultCollisionConfiguration...');
-                Ammo.destroy(components.config);
-                components.config = null;
-                console.log('[MMDPlayerBase]   ✅ btDefaultCollisionConfiguration destroyed');
-              } catch (e) {
-                console.error('[MMDPlayerBase]   ❌ Error destroying config:', e);
+            // 销毁所有 configs
+            if (components.configs.length > 0) {
+              console.log(`[MMDPlayerBase]   🗑️ Destroying ${components.configs.length} btDefaultCollisionConfiguration(s)...`);
+              for (let i = components.configs.length - 1; i >= 0; i--) {
+                try {
+                  Ammo.destroy(components.configs[i]);
+                } catch (e) {
+                  console.error(`[MMDPlayerBase]   ❌ Error destroying config #${i}:`, e);
+                }
               }
+              components.configs.length = 0;
+              console.log('[MMDPlayerBase]   ✅ All btDefaultCollisionConfiguration destroyed');
             }
             
             console.log('[MMDPlayerBase] 🎉 Physics components cleanup completed!');
