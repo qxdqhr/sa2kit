@@ -210,3 +210,4 @@ MMDPlayerBase initialization failed: RuntimeError: abort(OOM)
 **关键指标**：
 - v1: 通常在 18-25 分钟，15-25 次切换后 OOM
 - v2: 理论上永不 OOM（或 > 2 小时，> 100 次切换）
+

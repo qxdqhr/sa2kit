@@ -25,7 +25,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   onNodeChange,
   onPlaylistComplete,
   onError,
-  showDebugInfo = true,
+  showDebugInfo = false,
   className,
   style,
 }) => {
@@ -49,7 +49,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   // 获取当前节点
   const currentNode = nodes[currentIndex];
 
-  // 节点切换 - 两阶段切换以确保完全清理
+  // 节点切换 - 两阶段切换，特别关注物理引擎清理
   const goToNode = useCallback(
     (index: number) => {
       if (index < 0 || index >= nodes.length) return;
@@ -64,31 +64,36 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
       const wasPlaying = isPlaying;
       setIsPlaying(false);
       
-      // 第一阶段：卸载旧播放器
+      // 第一阶段：卸载旧播放器（包括物理引擎）
       setIsTransitioning(true);
       
-      // 给足够的时间让旧组件完全卸载和清理
+      // 给物理引擎足够的时间完全清理
       requestAnimationFrame(() => {
-        setTimeout(() => {
-          // 第二阶段：挂载新播放器
-          setCurrentIndex(index);
-          setIsLoading(true);
-          onNodeChange?.(node, index);
-          
-          // 再给一点时间让新组件挂载
-          requestAnimationFrame(() => {
-            setTimeout(() => {
-              setIsTransitioning(false);
-              
-              // 切换后如果之前在播放，则自动播放新节点
-              if (wasPlaying) {
-                setIsPlaying(true);
-              }
-              
-              console.log(`[MMDPlaylist] Transition to node ${index} completed`);
-            }, 50);
-          });
-        }, 150); // 给浏览器更多时间清理
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            // 第二阶段：挂载新播放器
+            console.log(`[MMDPlaylist] Loading new node ${index}`);
+            setCurrentIndex(index);
+            setIsLoading(true);
+            onNodeChange?.(node, index);
+            
+            // 给新组件足够时间初始化
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                setTimeout(() => {
+                  setIsTransitioning(false);
+                  
+                  // 切换后如果之前在播放，则自动播放新节点
+                  if (wasPlaying) {
+                    setIsPlaying(true);
+                  }
+                  
+                  console.log(`[MMDPlaylist] Transition to node ${index} completed`);
+                }, 100);
+              });
+            });
+          }, 300); // 给物理引擎更多清理时间（300ms）
+        });
       });
     },
     [nodes, isPlaying, isTransitioning, onNodeChange]

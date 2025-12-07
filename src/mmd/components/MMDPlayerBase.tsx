@@ -128,7 +128,47 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         containerRef.current.innerHTML = '';
       }
       
-      // 3. 重置物理引擎组件引用
+      // 3. 先清理旧的物理引擎组件（如果有）
+      const oldComponents = physicsComponentsRef.current;
+      const Ammo = (window as any).Ammo;
+      
+      if (Ammo && Ammo.destroy && (
+        oldComponents.worlds.length > 0 ||
+        oldComponents.solvers.length > 0 ||
+        oldComponents.caches.length > 0 ||
+        oldComponents.dispatchers.length > 0 ||
+        oldComponents.configs.length > 0
+      )) {
+        console.log('[MMDPlayerBase] ⚠️ 检测到未清理的物理组件，立即清理...');
+        console.log('[MMDPlayerBase] 📊 未清理组件数量:', {
+          worlds: oldComponents.worlds.length,
+          solvers: oldComponents.solvers.length,
+          caches: oldComponents.caches.length,
+          dispatchers: oldComponents.dispatchers.length,
+          configs: oldComponents.configs.length
+        });
+        
+        // 按正确顺序销毁
+        for (let i = oldComponents.worlds.length - 1; i >= 0; i--) {
+          try { Ammo.destroy(oldComponents.worlds[i]); } catch (e) { console.warn('销毁world失败:', e); }
+        }
+        for (let i = oldComponents.solvers.length - 1; i >= 0; i--) {
+          try { Ammo.destroy(oldComponents.solvers[i]); } catch (e) { console.warn('销毁solver失败:', e); }
+        }
+        for (let i = oldComponents.caches.length - 1; i >= 0; i--) {
+          try { Ammo.destroy(oldComponents.caches[i]); } catch (e) { console.warn('销毁cache失败:', e); }
+        }
+        for (let i = oldComponents.dispatchers.length - 1; i >= 0; i--) {
+          try { Ammo.destroy(oldComponents.dispatchers[i]); } catch (e) { console.warn('销毁dispatcher失败:', e); }
+        }
+        for (let i = oldComponents.configs.length - 1; i >= 0; i--) {
+          try { Ammo.destroy(oldComponents.configs[i]); } catch (e) { console.warn('销毁config失败:', e); }
+        }
+        
+        console.log('[MMDPlayerBase] ✅ 未清理的物理组件已紧急清理');
+      }
+      
+      // 重置物理引擎组件引用
       physicsComponentsRef.current = {
         configs: [],
         dispatchers: [],
