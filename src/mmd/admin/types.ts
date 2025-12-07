@@ -458,3 +458,4 @@ export type PresetItemToFrontendConverter = (
 export type PresetItemToMmdResourceConverter = (
   item: MmdPresetItemWithFiles
 ) => MMDResourceItem;
+

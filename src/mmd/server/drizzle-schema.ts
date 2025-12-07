@@ -336,3 +336,4 @@ export type NewMmdResourceOption = typeof mmdResourceOptions.$inferInsert;
 
 export type MmdPresetItem = typeof mmdPresetItems.$inferSelect;
 export type NewMmdPresetItem = typeof mmdPresetItems.$inferInsert;
+

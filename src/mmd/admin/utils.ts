@@ -371,3 +371,4 @@ export function extractPathsFromMmdResources(resources: MMDResources): string[] 
   
   return paths;
 }
+
