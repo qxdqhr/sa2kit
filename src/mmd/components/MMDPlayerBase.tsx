@@ -63,6 +63,10 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
     solvers: [],
     worlds: []
   });
+  
+  // 🕐 运行时间追踪 - 用于 OOM 错误报告
+  const startTimeRef = useRef<number>(Date.now());
+  const modelSwitchCountRef = useRef<number>(0);
 
   // 暴露给父组件的方法
   useImperativeHandle(ref, () => ({
@@ -132,6 +136,21 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         solvers: [],
         worlds: []
       };
+      
+      // 🕐 记录开始时间和切换计数
+      if (modelSwitchCountRef.current === 0) {
+        // 首次加载，记录开始时间
+        startTimeRef.current = Date.now();
+        modelSwitchCountRef.current = 1;
+        console.log('[MMDPlayerBase] 🕐 系统启动时间:', new Date(startTimeRef.current).toLocaleString());
+      } else {
+        // 模型切换
+        modelSwitchCountRef.current++;
+        const runningTime = Date.now() - startTimeRef.current;
+        const minutes = Math.floor(runningTime / 60000);
+        const seconds = Math.floor((runningTime % 60000) / 1000);
+        console.log(`[MMDPlayerBase] 🔄 模型切换 #${modelSwitchCountRef.current} (运行时间: ${minutes}分${seconds}秒)`);
+      }
 
       try {
         // 4. 物理引擎加载
@@ -490,7 +509,33 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         // 检测 OOM 错误并弹出警告
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (errorMessage.includes('OOM') || errorMessage.includes('out of memory')) {
-          alert('⚠️ 内存溢出错误 (OOM)\n\n物理引擎内存不足！\n这通常意味着之前的物理世界没有正确清理。\n\n错误详情：\n' + errorMessage);
+          // 计算运行时间
+          const runningTime = Date.now() - startTimeRef.current;
+          const hours = Math.floor(runningTime / 3600000);
+          const minutes = Math.floor((runningTime % 3600000) / 60000);
+          const seconds = Math.floor((runningTime % 60000) / 1000);
+          
+          const timeString = hours > 0 
+            ? `${hours}小时${minutes}分${seconds}秒` 
+            : minutes > 0
+              ? `${minutes}分${seconds}秒`
+              : `${seconds}秒`;
+          
+          alert(`⚠️ 内存溢出错误 (OOM)
+
+📊 系统运行统计：
+• 运行时间: ${timeString}
+• 模型切换次数: ${modelSwitchCountRef.current}
+• 启动时间: ${new Date(startTimeRef.current).toLocaleString()}
+• 错误时间: ${new Date().toLocaleString()}
+
+❌ 问题：物理引擎内存不足！
+这通常意味着之前的物理世界没有正确清理。
+
+🔍 错误详情：
+${errorMessage}
+
+💡 建议：请刷新页面或联系开发者`);
         }
         
         onError?.(error instanceof Error ? error : new Error(String(error)));
