@@ -128,76 +128,16 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         containerRef.current.innerHTML = '';
       }
       
-      // 3. 先清理旧的物理引擎组件（如果有）
-      console.log('[MMDPlayerBase] 🧹 Checking for previous physics components...');
-      const oldComponents = physicsComponentsRef.current;
-      const Ammo = (window as any).Ammo;
+      // 3. 重置物理引擎组件引用（先记录旧的，稍后清理）
+      const oldComponents = {
+        configs: [...physicsComponentsRef.current.configs],
+        dispatchers: [...physicsComponentsRef.current.dispatchers],
+        caches: [...physicsComponentsRef.current.caches],
+        solvers: [...physicsComponentsRef.current.solvers],
+        worlds: [...physicsComponentsRef.current.worlds]
+      };
       
-      const totalOldCount = oldComponents.worlds.length + oldComponents.solvers.length + 
-                            oldComponents.caches.length + oldComponents.dispatchers.length + 
-                            oldComponents.configs.length;
-      
-      if (Ammo && Ammo.destroy && totalOldCount > 0) {
-        console.log('[MMDPlayerBase] ⚠️ 检测到未清理的物理组件，立即清理...');
-        console.log('[MMDPlayerBase] 📊 未清理组件数量:', {
-          worlds: oldComponents.worlds.length,
-          solvers: oldComponents.solvers.length,
-          caches: oldComponents.caches.length,
-          dispatchers: oldComponents.dispatchers.length,
-          configs: oldComponents.configs.length,
-          total: totalOldCount
-        });
-        
-        // 按正确顺序销毁：world -> solver -> cache -> dispatcher -> config
-        for (let i = oldComponents.worlds.length - 1; i >= 0; i--) {
-          try { 
-            Ammo.destroy(oldComponents.worlds[i]); 
-            console.log(`[MMDPlayerBase]   ✅ Destroyed world #${i+1}`);
-          } catch (e) { 
-            console.warn(`[MMDPlayerBase]   ❌ 销毁world #${i+1}失败:`, e); 
-          }
-        }
-        
-        for (let i = oldComponents.solvers.length - 1; i >= 0; i--) {
-          try { 
-            Ammo.destroy(oldComponents.solvers[i]); 
-          } catch (e) { 
-            console.warn(`[MMDPlayerBase]   ❌ 销毁solver #${i+1}失败:`, e); 
-          }
-        }
-        
-        for (let i = oldComponents.caches.length - 1; i >= 0; i--) {
-          try { 
-            Ammo.destroy(oldComponents.caches[i]); 
-          } catch (e) { 
-            console.warn(`[MMDPlayerBase]   ❌ 销毁cache #${i+1}失败:`, e); 
-          }
-        }
-        
-        for (let i = oldComponents.dispatchers.length - 1; i >= 0; i--) {
-          try { 
-            Ammo.destroy(oldComponents.dispatchers[i]); 
-          } catch (e) { 
-            console.warn(`[MMDPlayerBase]   ❌ 销毁dispatcher #${i+1}失败:`, e); 
-          }
-        }
-        
-        for (let i = oldComponents.configs.length - 1; i >= 0; i--) {
-          try { 
-            Ammo.destroy(oldComponents.configs[i]); 
-          } catch (e) { 
-            console.warn(`[MMDPlayerBase]   ❌ 销毁config #${i+1}失败:`, e); 
-          }
-        }
-        
-        console.log(`[MMDPlayerBase] ✅ 已清理 ${totalOldCount} 个物理组件`);
-      } else if (totalOldCount > 0) {
-        console.warn('[MMDPlayerBase] ⚠️ 发现未清理组件但Ammo.destroy不可用');
-      } else {
-        console.log('[MMDPlayerBase] ℹ️ 没有需要清理的物理组件');
-      }
-      
-      // 4. 重置物理引擎组件引用
+      // 立即重置数组，避免 Monkey Patch 继续往旧数组添加
       physicsComponentsRef.current = {
         configs: [],
         dispatchers: [],
@@ -222,15 +162,85 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
       }
 
       try {
-        // 5. 物理引擎加载
+        // 4. 物理引擎加载
         if (stage.enablePhysics !== false && !mobileOptimization.disablePhysics) {
           console.log('[MMDPlayerBase] Loading Ammo.js physics engine...');
           await loadAmmo(stage.physicsPath);
           if (checkCancelled()) return;
           console.log('[MMDPlayerBase] Ammo.js loaded successfully');
           
-          // 🎯 关键修复：Hook MMDPhysics._createWorld 以捕获物理引擎组件
-          // ⚠️ 重要：只在第一次设置Monkey Patch，避免重复替换
+          // 🧹 现在 Ammo 已加载，清理旧的物理组件
+          const AmmoLib = (window as any).Ammo;
+          const totalOldCount = oldComponents.worlds.length + oldComponents.solvers.length + 
+                                oldComponents.caches.length + oldComponents.dispatchers.length + 
+                                oldComponents.configs.length;
+          
+          if (AmmoLib && AmmoLib.destroy && totalOldCount > 0) {
+            console.log('[MMDPlayerBase] ⚠️ 检测到未清理的物理组件，立即清理...');
+            console.log('[MMDPlayerBase] 📊 未清理组件数量:', {
+              worlds: oldComponents.worlds.length,
+              solvers: oldComponents.solvers.length,
+              caches: oldComponents.caches.length,
+              dispatchers: oldComponents.dispatchers.length,
+              configs: oldComponents.configs.length,
+              total: totalOldCount
+            });
+            
+            // 按正确顺序销毁：world -> solver -> cache -> dispatcher -> config
+            let destroyedCount = 0;
+            for (let i = oldComponents.worlds.length - 1; i >= 0; i--) {
+              try { 
+                AmmoLib.destroy(oldComponents.worlds[i]); 
+                destroyedCount++;
+              } catch (e) { 
+                console.warn(`[MMDPlayerBase]   ❌ 销毁world #${i+1}失败:`, e); 
+              }
+            }
+            
+            for (let i = oldComponents.solvers.length - 1; i >= 0; i--) {
+              try { 
+                AmmoLib.destroy(oldComponents.solvers[i]); 
+                destroyedCount++;
+              } catch (e) { 
+                console.warn(`[MMDPlayerBase]   ❌ 销毁solver #${i+1}失败:`, e); 
+              }
+            }
+            
+            for (let i = oldComponents.caches.length - 1; i >= 0; i--) {
+              try { 
+                AmmoLib.destroy(oldComponents.caches[i]); 
+                destroyedCount++;
+              } catch (e) { 
+                console.warn(`[MMDPlayerBase]   ❌ 销毁cache #${i+1}失败:`, e); 
+              }
+            }
+            
+            for (let i = oldComponents.dispatchers.length - 1; i >= 0; i--) {
+              try { 
+                AmmoLib.destroy(oldComponents.dispatchers[i]); 
+                destroyedCount++;
+              } catch (e) { 
+                console.warn(`[MMDPlayerBase]   ❌ 销毁dispatcher #${i+1}失败:`, e); 
+              }
+            }
+            
+            for (let i = oldComponents.configs.length - 1; i >= 0; i--) {
+              try { 
+                AmmoLib.destroy(oldComponents.configs[i]); 
+                destroyedCount++;
+              } catch (e) { 
+                console.warn(`[MMDPlayerBase]   ❌ 销毁config #${i+1}失败:`, e); 
+              }
+            }
+            
+            console.log(`[MMDPlayerBase] ✅ 已清理 ${destroyedCount}/${totalOldCount} 个物理组件`);
+          } else if (totalOldCount > 0) {
+            console.warn(`[MMDPlayerBase] ⚠️ 发现 ${totalOldCount} 个未清理组件但无法清理（Ammo.destroy=${!!AmmoLib?.destroy}）`);
+          } else {
+            console.log('[MMDPlayerBase] ℹ️ 没有需要清理的物理组件');
+          }
+          
+          // 🎯 设置 Monkey Patch（只在第一次）
           const Ammo = (window as any).Ammo;
           if (Ammo && !(Ammo as any).__sa2kitMonkeyPatched) {
             console.log('[MMDPlayerBase] 🎯 Setting up physics component tracking (FIRST TIME)...');
