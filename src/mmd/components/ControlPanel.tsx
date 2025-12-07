@@ -1,10 +1,11 @@
 import React from 'react';
-import { Play, Pause, Maximize, Minimize, Settings, Grid3x3, Repeat, SkipBack, SkipForward } from 'lucide-react';
+import { Play, Pause, Maximize, Minimize, Settings, Grid3x3, Repeat, Repeat1, SkipBack, SkipForward } from 'lucide-react';
 
 interface ControlPanelProps {
   isPlaying: boolean;
   isFullscreen: boolean;
-  isLooping: boolean; // 是否循环播放
+  isLooping: boolean; // 是否单节点循环播放
+  isListLooping?: boolean; // 是否列表循环（播放列表专用）
   showSettings?: boolean;
   showAxes?: boolean; // 坐标轴是否显示
   showPrevNext?: boolean; // 是否显示上一个/下一个按钮
@@ -13,7 +14,8 @@ interface ControlPanelProps {
   
   onPlayPause: () => void;
   onToggleFullscreen: () => void;
-  onToggleLoop: () => void; // 切换循环播放
+  onToggleLoop: () => void; // 切换单节点循环播放
+  onToggleListLoop?: () => void; // 切换列表循环
   onToggleAxes?: () => void; // 切换坐标轴显示
   onOpenSettings?: () => void;
   onPrevious?: () => void; // 上一个
@@ -24,6 +26,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   isPlaying,
   isFullscreen,
   isLooping,
+  isListLooping,
   showSettings,
   showAxes = false,
   showPrevNext = false,
@@ -32,6 +35,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   onPlayPause,
   onToggleFullscreen,
   onToggleLoop,
+  onToggleListLoop,
   onToggleAxes,
   onOpenSettings,
   onPrevious,
@@ -82,13 +86,24 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
             </div>
           )}
 
-          {/* 循环播放切换 */}
+          {/* 列表循环切换（仅播放列表模式） */}
+          {onToggleListLoop && (
+            <button 
+              onClick={onToggleListLoop}
+              className={`rounded-full p-2 transition-colors ${isListLooping ? 'bg-green-500/30 hover:bg-green-500/50' : 'hover:bg-white/20'}`}
+              title={isListLooping ? '列表循环：开启' : '列表循环：关闭'}
+            >
+              <Repeat size={20} />
+            </button>
+          )}
+
+          {/* 单节点循环切换 */}
           <button 
             onClick={onToggleLoop}
             className={`rounded-full p-2 transition-colors ${isLooping ? 'bg-blue-500/30 hover:bg-blue-500/50' : 'hover:bg-white/20'}`}
-            title="循环播放"
+            title={isLooping ? '单曲循环：开启' : '单曲循环：关闭'}
           >
-            <Repeat size={20} />
+            <Repeat1 size={20} />
           </button>
 
           {/* 坐标轴切换 */}

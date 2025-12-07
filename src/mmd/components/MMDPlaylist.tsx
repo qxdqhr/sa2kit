@@ -38,6 +38,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showAxes, setShowAxes] = useState(false);
   const [isLooping, setIsLooping] = useState(false); // 单节点循环
+  const [isListLooping, setIsListLooping] = useState(loop); // 列表循环
   const [showPlaylist, setShowPlaylist] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false); // 切换过渡状态
 
@@ -104,18 +105,18 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
     const prevIndex = currentIndex - 1;
     if (prevIndex >= 0) {
       goToNode(prevIndex);
-    } else if (loop) {
+    } else if (isListLooping) {
       // 如果列表循环，跳到最后一个
       goToNode(nodes.length - 1);
     }
-  }, [currentIndex, loop, nodes.length, goToNode]);
+  }, [currentIndex, isListLooping, nodes.length, goToNode]);
 
   // 下一个节点
   const handleNext = useCallback(() => {
     const nextIndex = currentIndex + 1;
     if (nextIndex < nodes.length) {
       goToNode(nextIndex);
-    } else if (loop) {
+    } else if (isListLooping) {
       // 如果列表循环，跳回第一个
       goToNode(0);
     } else {
@@ -123,7 +124,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
       setIsPlaying(false);
       onPlaylistComplete?.();
     }
-  }, [currentIndex, loop, nodes.length, goToNode, onPlaylistComplete]);
+  }, [currentIndex, isListLooping, nodes.length, goToNode, onPlaylistComplete]);
 
   // 播放控制
   const handlePlayPause = useCallback(() => {
@@ -295,6 +296,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
           isPlaying={isPlaying}
           isFullscreen={isFullscreen}
           isLooping={isLooping}
+          isListLooping={isListLooping}
           showSettings={true} // 显示播放列表按钮
           showAxes={showAxes}
           showPrevNext={showPrevNext}
@@ -305,6 +307,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
           onNext={handleNext}
           onToggleFullscreen={toggleFullscreen}
           onToggleLoop={() => setIsLooping(!isLooping)}
+          onToggleListLoop={() => setIsListLooping(!isListLooping)}
           onToggleAxes={() => setShowAxes(!showAxes)}
           onOpenSettings={() => setShowPlaylist(!showPlaylist)}
         />
@@ -392,7 +395,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
             currentNode={currentNode}
             totalNodes={nodes.length}
             isPlaying={isPlaying}
-            isListLooping={loop}
+            isListLooping={isListLooping}
             isNodeLooping={isLooping}
             preloadStrategy={preload}
             isLoading={isLoading || isTransitioning}
