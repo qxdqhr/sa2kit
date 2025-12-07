@@ -25,7 +25,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   onNodeChange,
   onPlaylistComplete,
   onError,
-  showDebugInfo = false,
+  showDebugInfo = true,
   className,
   style,
 }) => {
@@ -39,6 +39,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   const [showAxes, setShowAxes] = useState(false);
   const [isLooping, setIsLooping] = useState(false); // 单节点循环
   const [showPlaylist, setShowPlaylist] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false); // 切换过渡状态
 
   // Refs
   const playerRef = useRef<MMDPlayerBaseRef>(null);
@@ -48,24 +49,49 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   // 获取当前节点
   const currentNode = nodes[currentIndex];
 
-  // 节点切换
+  // 节点切换 - 两阶段切换以确保完全清理
   const goToNode = useCallback(
     (index: number) => {
       if (index < 0 || index >= nodes.length) return;
+      if (isTransitioning) return; // 防止在过渡期间重复切换
       
       const node = nodes[index];
       if (!node) return;
       
-      setCurrentIndex(index);
-      setIsLoading(true);
-      onNodeChange?.(node, index);
+      console.log(`[MMDPlaylist] Starting transition to node ${index}`);
       
-      // 切换后如果正在播放，则自动播放新节点
-      if (isPlaying) {
-        setIsPlaying(true);
-      }
+      // 先暂停播放
+      const wasPlaying = isPlaying;
+      setIsPlaying(false);
+      
+      // 第一阶段：卸载旧播放器
+      setIsTransitioning(true);
+      
+      // 给足够的时间让旧组件完全卸载和清理
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          // 第二阶段：挂载新播放器
+          setCurrentIndex(index);
+          setIsLoading(true);
+          onNodeChange?.(node, index);
+          
+          // 再给一点时间让新组件挂载
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              setIsTransitioning(false);
+              
+              // 切换后如果之前在播放，则自动播放新节点
+              if (wasPlaying) {
+                setIsPlaying(true);
+              }
+              
+              console.log(`[MMDPlaylist] Transition to node ${index} completed`);
+            }, 50);
+          });
+        }, 150); // 给浏览器更多时间清理
+      });
     },
-    [nodes, isPlaying, onNodeChange]
+    [nodes, isPlaying, isTransitioning, onNodeChange]
   );
 
   // 上一个节点
@@ -212,41 +238,43 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative overflow-hidden bg-black group flex ${className}`}
+      className={`relative overflow-hidden bg-black group flex h-full ${className}`}
       style={style}
     >
       {/* 主播放器区域 */}
       <div className="flex-1 relative">
       {/* 核心播放器 - 通过 key 变化实现资源切换和自动清理 */}
-      <MMDPlayerBase
-        key={currentNode.id}
-        ref={playerRef}
-        resources={currentNode.resources}
-        stage={stage}
-        autoPlay={autoPlay && currentIndex === 0} // 只有第一个节点自动播放
-        loop={isLooping} // 单节点循环
-        showAxes={showAxes}
-        mobileOptimization={mobileOptimization}
-        onLoad={() => {
-          setIsLoading(false);
-          if (isPlaying && currentIndex > 0) {
-            // 切换节点后继续播放
-            playerRef.current?.play();
-          }
-        }}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-        onEnded={handleEnded}
-        onError={onError}
-      />
+      {!isTransitioning && (
+        <MMDPlayerBase
+          key={currentNode.id}
+          ref={playerRef}
+          resources={currentNode.resources}
+          stage={stage}
+          autoPlay={autoPlay && currentIndex === 0} // 只有第一个节点自动播放
+          loop={isLooping} // 单节点循环
+          showAxes={showAxes}
+          mobileOptimization={mobileOptimization}
+          onLoad={() => {
+            setIsLoading(false);
+            if (isPlaying && currentIndex > 0) {
+              // 切换节点后继续播放
+              playerRef.current?.play();
+            }
+          }}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onEnded={handleEnded}
+          onError={onError}
+        />
+      )}
 
-      {/* 加载遮罩 */}
-      {isLoading && (
+      {/* 加载/过渡遮罩 */}
+      {(isLoading || isTransitioning) && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="flex flex-col items-center gap-3">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-white/20 border-t-blue-500" />
             <div className="text-sm text-white/80">
-              正在加载 {currentIndex + 1} / {nodes.length}
+              {isTransitioning ? '切换中...' : `正在加载 ${currentIndex + 1} / ${nodes.length}`}
             </div>
           </div>
         </div>
@@ -352,7 +380,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
 
       {/* 调试信息面板 */}
       {showDebugInfo && (
-        <div className="w-96 bg-gray-900/95 border-l border-gray-700 p-4 overflow-y-auto">
+        <div className="w-96 flex-shrink-0 bg-gray-900/95 border-l border-gray-700 p-4 overflow-y-auto h-full">
           <MMDPlaylistDebugInfo
             playlistName={playlist.name}
             currentIndex={currentIndex}
@@ -362,7 +390,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
             isListLooping={loop}
             isNodeLooping={isLooping}
             preloadStrategy={preload}
-            isLoading={isLoading}
+            isLoading={isLoading || isTransitioning}
             isFullscreen={isFullscreen}
             showAxes={showAxes}
             preloadedNodes={Array.from(preloadedRef.current)}

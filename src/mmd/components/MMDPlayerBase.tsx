@@ -47,6 +47,21 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   const animationClipRef = useRef<THREE.AnimationClip | null>(null); // 保存动画剪辑
   const loopRef = useRef(loop); // 循环状态 ref
   const audioRef = useRef<THREE.Audio | null>(null); // 音频对象引用
+  
+  // 🎯 新增：物理引擎组件引用 - 用于正确清理 Ammo 对象
+  const physicsComponentsRef = useRef<{
+    config: any | null;
+    dispatcher: any | null;
+    cache: any | null;
+    solver: any | null;
+    world: any | null;
+  }>({
+    config: null,
+    dispatcher: null,
+    cache: null,
+    solver: null,
+    world: null
+  });
 
   // 暴露给父组件的方法
   useImperativeHandle(ref, () => ({
@@ -107,15 +122,82 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
       if (containerRef.current) {
         containerRef.current.innerHTML = '';
       }
+      
+      // 3. 重置物理引擎组件引用
+      physicsComponentsRef.current = {
+        config: null,
+        dispatcher: null,
+        cache: null,
+        solver: null,
+        world: null
+      };
 
       try {
-        // 3. 物理引擎加载
+        // 4. 物理引擎加载
         if (stage.enablePhysics !== false && !mobileOptimization.disablePhysics) {
+          console.log('[MMDPlayerBase] Loading Ammo.js physics engine...');
           await loadAmmo(stage.physicsPath);
           if (checkCancelled()) return;
+          console.log('[MMDPlayerBase] Ammo.js loaded successfully');
+          
+          // 🎯 关键修复：Hook MMDPhysics._createWorld 以捕获物理引擎组件
+          // 这样我们可以在清理时正确销毁它们，防止 WASM 内存泄漏
+          const Ammo = (window as any).Ammo;
+          if (Ammo) {
+            console.log('[MMDPlayerBase] Setting up physics component tracking...');
+            
+            // 保存原始的 Ammo 构造函数，以便在 _createWorld 中使用
+            const originalBtDefaultCollisionConfiguration = Ammo.btDefaultCollisionConfiguration;
+            const originalBtCollisionDispatcher = Ammo.btCollisionDispatcher;
+            const originalBtDbvtBroadphase = Ammo.btDbvtBroadphase;
+            const originalBtSequentialImpulseConstraintSolver = Ammo.btSequentialImpulseConstraintSolver;
+            const originalBtDiscreteDynamicsWorld = Ammo.btDiscreteDynamicsWorld;
+            
+            // Monkey patch Ammo 构造函数来拦截创建过程
+            const componentsRef = physicsComponentsRef.current;
+            
+            Ammo.btDefaultCollisionConfiguration = function(...args: any[]) {
+              const obj = new originalBtDefaultCollisionConfiguration(...args);
+              componentsRef.config = obj;
+              console.log('[MMDPlayerBase] 🔍 Captured btDefaultCollisionConfiguration');
+              return obj;
+            };
+            
+            Ammo.btCollisionDispatcher = function(...args: any[]) {
+              const obj = new originalBtCollisionDispatcher(...args);
+              componentsRef.dispatcher = obj;
+              console.log('[MMDPlayerBase] 🔍 Captured btCollisionDispatcher');
+              return obj;
+            };
+            
+            Ammo.btDbvtBroadphase = function(...args: any[]) {
+              const obj = new originalBtDbvtBroadphase(...args);
+              componentsRef.cache = obj;
+              console.log('[MMDPlayerBase] 🔍 Captured btDbvtBroadphase');
+              return obj;
+            };
+            
+            Ammo.btSequentialImpulseConstraintSolver = function(...args: any[]) {
+              const obj = new originalBtSequentialImpulseConstraintSolver(...args);
+              componentsRef.solver = obj;
+              console.log('[MMDPlayerBase] 🔍 Captured btSequentialImpulseConstraintSolver');
+              return obj;
+            };
+            
+            Ammo.btDiscreteDynamicsWorld = function(...args: any[]) {
+              const obj = new originalBtDiscreteDynamicsWorld(...args);
+              componentsRef.world = obj;
+              console.log('[MMDPlayerBase] 🔍 Captured btDiscreteDynamicsWorld');
+              return obj;
+            };
+            
+            console.log('[MMDPlayerBase] ✅ Physics component tracking setup complete');
+          }
+        } else {
+          console.log('[MMDPlayerBase] Physics disabled');
         }
 
-        // 4. 场景初始化
+        // 5. 场景初始化
         const container = containerRef.current!;
         const width = container.clientWidth || 300;
         const height = container.clientHeight || 150;
@@ -402,6 +484,13 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
       } catch (error) {
         if (checkCancelled()) return; // 如果是因为取消导致的 error，忽略
         console.error('MMDPlayerBase initialization failed:', error);
+        
+        // 检测 OOM 错误并弹出警告
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (errorMessage.includes('OOM') || errorMessage.includes('out of memory')) {
+          alert('⚠️ 内存溢出错误 (OOM)\n\n物理引擎内存不足！\n这通常意味着之前的物理世界没有正确清理。\n\n错误详情：\n' + errorMessage);
+        }
+        
         onError?.(error instanceof Error ? error : new Error(String(error)));
       }
     };
@@ -409,61 +498,465 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
     init();
 
     return () => {
-      // 清理逻辑
+      // 清理逻辑 - 彻底清理所有 Three.js 资源以防止内存泄漏
+      console.log('[MMDPlayerBase] Cleanup started');
       
       // 增加 ID，立即使当前的 init 失效（如果还在跑）
       initIdRef.current++;
       
+      // 停止动画循环
       if (animationIdRef.current) {
         cancelAnimationFrame(animationIdRef.current);
+        animationIdRef.current = null;
       }
       
       isPlayingRef.current = false;
       isReadyRef.current = false;
       
-      resizeObserverRef.current?.disconnect();
+      // 清理 ResizeObserver
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+        resizeObserverRef.current = null;
+      }
       
-      helperRef.current = null;
-      audioRef.current = null;
+      // 清理音频资源
+      if (audioRef.current) {
+        try {
+          if (audioRef.current.isPlaying) {
+            audioRef.current.stop();
+          }
+          if (audioRef.current.source) {
+            audioRef.current.disconnect();
+          }
+          // 清理音频缓冲区引用
+          if (audioRef.current.buffer) {
+            audioRef.current.buffer = null as any;
+          }
+          audioRef.current = null;
+        } catch (e) {
+          console.warn('[MMDPlayerBase] Error cleaning up audio:', e);
+        }
+      }
       
+      // 清理 AnimationHelper - 包含物理引擎清理  
+      if (helperRef.current) {
+        try {
+          console.log('[MMDPlayerBase] Cleaning up AnimationHelper');
+          
+          const helperObjects = (helperRef.current as any).objects;
+          const meshes = (helperRef.current as any).meshes || [];
+          
+          console.log('[MMDPlayerBase] Found meshes count:', meshes.length);
+          
+          if (meshes && Array.isArray(meshes) && meshes.length > 0) {
+            meshes.forEach((mesh: any, idx: number) => {
+              console.log(`[MMDPlayerBase] Cleaning mesh ${idx}:`, mesh.uuid);
+              
+              // 🎯 关键修复：从 WeakMap 中获取真正的 meshData
+              let meshData: any = null;
+              
+              if (helperObjects instanceof WeakMap) {
+                console.log('[MMDPlayerBase]   Accessing WeakMap with mesh as key...');
+                meshData = helperObjects.get(mesh);
+                
+                if (meshData) {
+                  const meshDataKeys = Object.keys(meshData);
+                  console.log(`[MMDPlayerBase]   ✅ Got meshData from WeakMap, keys (${meshDataKeys.length}):`, meshDataKeys);
+                  
+                  // 打印物理相关的属性
+                  const physicsRelatedKeys = meshDataKeys.filter(k => k.toLowerCase().includes('phys'));
+                  if (physicsRelatedKeys.length > 0) {
+                    console.log(`[MMDPlayerBase]   Physics-related keys:`, physicsRelatedKeys);
+                    physicsRelatedKeys.forEach(key => {
+                      const value = meshData[key];
+                      console.log(`[MMDPlayerBase]     ${key}:`, typeof value, value?.constructor?.name || value);
+                    });
+                  }
+                } else {
+                  console.log('[MMDPlayerBase]   ⚠️ No meshData found in WeakMap for this mesh');
+                }
+              }
+              
+              // 如果没有从 WeakMap 获取到，使用 mesh 本身作为 fallback
+              if (!meshData) {
+                console.log('[MMDPlayerBase]   Using mesh itself as meshData');
+                meshData = mesh;
+              }
+              
+              // 清理物理系统 - 从 meshData 中获取
+              const physics = meshData?.physics;
+              
+              if (physics) {
+                try {
+                  console.log('[MMDPlayerBase] 🎯 Starting physics cleanup for mesh', idx);
+                  console.log('[MMDPlayerBase]   Debug: physics object keys:', Object.keys(physics));
+                  
+                  // 优先使用 MMDPhysics.dispose() 方法（three-stdlib 提供的标准清理方法）
+                  if (typeof physics.dispose === 'function') {
+                    console.log('[MMDPlayerBase]   Calling MMDPhysics.dispose()...');
+                    physics.dispose();
+                    console.log('[MMDPlayerBase]   ✅ MMDPhysics.dispose() completed');
+                  } else {
+                    // 手动清理物理组件
+                    console.log('[MMDPlayerBase]   No dispose method, manually cleaning physics components...');
+                    
+                    const Ammo = (window as any).Ammo;
+                    if (!Ammo || !Ammo.destroy) {
+                      console.warn('[MMDPlayerBase]   ⚠️ Ammo.destroy not available');
+                    } else {
+                      // 清理刚体
+                      if (physics.world && Array.isArray(physics.bodies) && physics.bodies.length > 0) {
+                        console.log(`[MMDPlayerBase]   Cleaning ${physics.bodies.length} rigid bodies...`);
+                        for (let i = physics.bodies.length - 1; i >= 0; i--) {
+                          try {
+                            const body = physics.bodies[i];
+                            if (body && body.body) {
+                              physics.world.removeRigidBody(body.body);
+                            }
+                          } catch (e) {
+                            console.warn(`[MMDPlayerBase]     Error removing body ${i}:`, e);
+                          }
+                        }
+                        physics.bodies.length = 0;
+                        console.log('[MMDPlayerBase]   ✅ All rigid bodies removed');
+                      }
+                      
+                      // 清理约束
+                      if (physics.world && Array.isArray(physics.constraints) && physics.constraints.length > 0) {
+                        console.log(`[MMDPlayerBase]   Cleaning ${physics.constraints.length} constraints...`);
+                        for (let i = physics.constraints.length - 1; i >= 0; i--) {
+                          try {
+                            const constraint = physics.constraints[i];
+                            if (constraint) {
+                              physics.world.removeConstraint(constraint);
+                            }
+                          } catch (e) {
+                            console.warn(`[MMDPlayerBase]     Error removing constraint ${i}:`, e);
+                          }
+                        }
+                        physics.constraints.length = 0;
+                        console.log('[MMDPlayerBase]   ✅ All constraints removed');
+                      }
+                      
+                      // 注意：不在这里销毁 world，因为它会在后面统一清理
+                    }
+                  }
+                  
+                  // 清除引用
+                  meshData.physics = null;
+                  
+                  console.log('[MMDPlayerBase] ✅ Physics cleanup completed for mesh', idx);
+                } catch (physicsError) {
+                  console.error('[MMDPlayerBase] ❌ Error cleaning up physics:', physicsError);
+                  console.error('[MMDPlayerBase] Physics error stack:', (physicsError as Error).stack);
+                }
+              } else {
+                console.log('[MMDPlayerBase] ⚠️ No physics object found for mesh', idx);
+              }
+              
+              // 清理 AnimationMixer (从 meshData 中获取)
+              if (meshData?.mixer) {
+                meshData.mixer.stopAllAction();
+                meshData.mixer.uncacheRoot(meshData.mesh || mesh);
+                // 清理所有 clips 的引用
+                const clips = meshData.mixer._actions || [];
+                clips.forEach((action: any) => {
+                  if (action._clip) {
+                    action._clip = null;
+                  }
+                });
+                meshData.mixer = null;
+              }
+              
+              // 清理 audio 引用 (从 meshData 中获取)
+              if (meshData?.audio) {
+                if (meshData.audio.isPlaying) {
+                  meshData.audio.stop();
+                }
+                if (meshData.audio.source) {
+                  meshData.audio.disconnect();
+                }
+                if (meshData.audio.buffer) {
+                  meshData.audio.buffer = null;
+                }
+                meshData.audio = null;
+              }
+            });
+            // 清空数组
+            meshes.length = 0;
+          }
+          
+          // 🎯 核心修复：使用捕获的物理引擎组件引用进行清理
+          console.log('[MMDPlayerBase] 🔥 Starting CRITICAL physics components cleanup...');
+          const Ammo = (window as any).Ammo;
+          if (Ammo && Ammo.destroy) {
+            const components = physicsComponentsRef.current;
+            
+            // 按照正确的顺序销毁 Ammo 对象（与创建顺序相反）
+            // 创建顺序：config -> dispatcher -> cache -> solver -> world
+            // 销毁顺序：world -> solver -> cache -> dispatcher -> config
+            
+            if (components.world) {
+              try {
+                console.log('[MMDPlayerBase]   🗑️ Destroying btDiscreteDynamicsWorld...');
+                Ammo.destroy(components.world);
+                components.world = null;
+                console.log('[MMDPlayerBase]   ✅ btDiscreteDynamicsWorld destroyed');
+              } catch (e) {
+                console.error('[MMDPlayerBase]   ❌ Error destroying world:', e);
+              }
+            }
+            
+            if (components.solver) {
+              try {
+                console.log('[MMDPlayerBase]   🗑️ Destroying btSequentialImpulseConstraintSolver...');
+                Ammo.destroy(components.solver);
+                components.solver = null;
+                console.log('[MMDPlayerBase]   ✅ btSequentialImpulseConstraintSolver destroyed');
+              } catch (e) {
+                console.error('[MMDPlayerBase]   ❌ Error destroying solver:', e);
+              }
+            }
+            
+            if (components.cache) {
+              try {
+                console.log('[MMDPlayerBase]   🗑️ Destroying btDbvtBroadphase...');
+                Ammo.destroy(components.cache);
+                components.cache = null;
+                console.log('[MMDPlayerBase]   ✅ btDbvtBroadphase destroyed');
+              } catch (e) {
+                console.error('[MMDPlayerBase]   ❌ Error destroying cache:', e);
+              }
+            }
+            
+            if (components.dispatcher) {
+              try {
+                console.log('[MMDPlayerBase]   🗑️ Destroying btCollisionDispatcher...');
+                Ammo.destroy(components.dispatcher);
+                components.dispatcher = null;
+                console.log('[MMDPlayerBase]   ✅ btCollisionDispatcher destroyed');
+              } catch (e) {
+                console.error('[MMDPlayerBase]   ❌ Error destroying dispatcher:', e);
+              }
+            }
+            
+            if (components.config) {
+              try {
+                console.log('[MMDPlayerBase]   🗑️ Destroying btDefaultCollisionConfiguration...');
+                Ammo.destroy(components.config);
+                components.config = null;
+                console.log('[MMDPlayerBase]   ✅ btDefaultCollisionConfiguration destroyed');
+              } catch (e) {
+                console.error('[MMDPlayerBase]   ❌ Error destroying config:', e);
+              }
+            }
+            
+            console.log('[MMDPlayerBase] 🎉 Physics components cleanup completed!');
+          } else {
+            console.warn('[MMDPlayerBase] ⚠️ Ammo.destroy not available, skipping physics cleanup');
+          }
+          
+          // 清理 sharedPhysics 和 masterPhysics（如果存在）
+          console.log('[MMDPlayerBase] Checking helper-level physics...');
+          if ((helperRef.current as any).sharedPhysics) {
+            console.log('[MMDPlayerBase] Clearing sharedPhysics reference...');
+            (helperRef.current as any).sharedPhysics = null;
+          }
+          if ((helperRef.current as any).masterPhysics) {
+            console.log('[MMDPlayerBase] Clearing masterPhysics reference...');
+            (helperRef.current as any).masterPhysics = null;
+          }
+          
+          // 清理 helper 自身
+          if (helperRef.current.dispose) {
+            helperRef.current.dispose();
+          }
+        } catch (e) {
+          console.warn('[MMDPlayerBase] Error cleaning up AnimationHelper:', e);
+        }
+        helperRef.current = null;
+      }
+      
+      // 清理 AnimationClip
+      animationClipRef.current = null;
+      
+      // 清理坐标轴
+      if (axesHelperRef.current) {
+        if (sceneRef.current) {
+          sceneRef.current.remove(axesHelperRef.current);
+        }
+        axesHelperRef.current.dispose();
+        axesHelperRef.current = null;
+      }
+      
+      // 清理场景中的所有对象 - 增强版
       if (sceneRef.current) {
         sceneRef.current.traverse((object) => {
+          // 清理几何体和材质
           if (object instanceof THREE.Mesh || object instanceof THREE.SkinnedMesh) {
-            if (object.geometry) object.geometry.dispose();
-            if (object.material) {
-              if (Array.isArray(object.material)) {
-                object.material.forEach((m: THREE.Material) => {
-                    m.dispose();
-                    // @ts-ignore
-                    if (m.map) m.map.dispose();
-                });
-              } else {
-                object.material.dispose();
-                // @ts-ignore
-                if (object.material.map) object.material.map.dispose();
+            // 清理骨骼相关（SkinnedMesh）
+            if (object instanceof THREE.SkinnedMesh) {
+              if (object.skeleton) {
+                object.skeleton.dispose();
               }
+              // 清理绑定矩阵
+              if (object.bindMatrix) {
+                object.bindMatrix = null as any;
+              }
+              if (object.bindMatrixInverse) {
+                object.bindMatrixInverse = null as any;
+              }
+            }
+            
+            // 清理几何体
+            if (object.geometry) {
+              object.geometry.dispose();
+              object.geometry = null as any;
+            }
+            
+            // 清理材质和纹理
+            if (object.material) {
+              const disposeMaterial = (m: THREE.Material) => {
+                // 清理所有可能的纹理类型（包括 MMD 特有的）
+                const textureProps = [
+                  'map', 'lightMap', 'bumpMap', 'normalMap', 'specularMap', 
+                  'envMap', 'alphaMap', 'emissiveMap', 'displacementMap',
+                  'roughnessMap', 'metalnessMap', 'aoMap',
+                  // MMD 特有纹理
+                  'gradientMap', 'toonMap', 'sphereMap', 'matcap'
+                ];
+                
+                textureProps.forEach(prop => {
+                  // @ts-ignore
+                  if (m[prop] && m[prop].dispose) {
+                    // @ts-ignore
+                    m[prop].dispose();
+                    // @ts-ignore
+                    m[prop] = null;
+                  }
+                });
+                
+                // 清理材质本身
+                m.dispose();
+              };
+              
+              if (Array.isArray(object.material)) {
+                object.material.forEach(disposeMaterial);
+              } else {
+                disposeMaterial(object.material);
+              }
+              object.material = null as any;
+            }
+          }
+          
+          // 清理 AudioListener
+          if (object instanceof THREE.AudioListener) {
+            try {
+              // @ts-ignore
+              if (object.context && object.context.state !== 'closed') {
+                // @ts-ignore
+                object.context.close?.();
+              }
+            } catch (e) {
+              console.warn('[MMDPlayerBase] Error closing AudioContext:', e);
+            }
+          }
+          
+          // 清理灯光的阴影贴图
+          if (object instanceof THREE.Light) {
+            if (object.shadow && object.shadow.map) {
+              object.shadow.map.dispose();
+              object.shadow.map = null as any;
             }
           }
         });
+        
+        // 清空场景
         sceneRef.current.clear();
         sceneRef.current = null;
       }
 
-      controlsRef.current?.dispose();
+      // 清理 Controls
+      if (controlsRef.current) {
+        controlsRef.current.dispose();
       controlsRef.current = null;
+      }
 
+      // 清理 Renderer - 增强版
       if (rendererRef.current) {
-        rendererRef.current.dispose();
-        rendererRef.current.forceContextLoss();
-        
-        if (containerRef.current && rendererRef.current.domElement) {
-            // 这里要小心，不要移除新 init 添加的 domElement
-            // 但由于我们每次 init 前都清空了 container，这里主要是为了保险
-             if (containerRef.current.contains(rendererRef.current.domElement)) {
-                containerRef.current.removeChild(rendererRef.current.domElement);
-             }
+        try {
+          // 清理所有渲染目标
+          const renderer = rendererRef.current;
+          
+          // 清理渲染列表
+          if (renderer.renderLists) {
+            renderer.renderLists.dispose();
+          }
+          
+          // 清理渲染器信息
+          if (renderer.info && renderer.info.programs) {
+            renderer.info.programs.forEach((program: any) => {
+              if (program && program.destroy) {
+                program.destroy();
+              }
+            });
+          }
+          
+          // 清理 WebGL 程序
+          if (renderer.getContext) {
+            const gl = renderer.getContext();
+            const numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+            for (let unit = 0; unit < numTextureUnits; ++unit) {
+              gl.activeTexture(gl.TEXTURE0 + unit);
+              gl.bindTexture(gl.TEXTURE_2D, null);
+              gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+            }
+          }
+          
+          // Dispose 渲染器
+          renderer.dispose();
+          
+          // 强制失去 WebGL 上下文
+          renderer.forceContextLoss();
+          
+          // 从 DOM 中移除 canvas
+          if (containerRef.current && renderer.domElement) {
+            if (containerRef.current.contains(renderer.domElement)) {
+              containerRef.current.removeChild(renderer.domElement);
+            }
+          }
+          
+          // 清空 canvas 引用
+          if (renderer.domElement) {
+            renderer.domElement.width = 1;
+            renderer.domElement.height = 1;
+          }
+          
+        } catch (e) {
+          console.warn('[MMDPlayerBase] Error cleaning up renderer:', e);
         }
         rendererRef.current = null;
+      }
+      
+      // 重置 Camera
+      cameraRef.current = null;
+      
+      // 重置 Clock
+      clockRef.current = new THREE.Clock();
+      
+      // 重置时长
+      durationRef.current = 0;
+      
+      console.log('[MMDPlayerBase] Cleanup completed');
+      
+      // 提示浏览器可以进行垃圾回收（只在开发环境）
+      if (typeof window !== 'undefined' && 'gc' in window) {
+        try {
+          // @ts-ignore
+          window.gc();
+        } catch (e) {
+          // gc 不可用时忽略
+        }
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
