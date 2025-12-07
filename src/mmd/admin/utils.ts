@@ -126,7 +126,7 @@ export function convertPlaylistNodeToFrontend(
     stageModelUrl: node.stageModelFileId ? fileUrls[node.stageModelFileId] : undefined,
     additionalMotionUrls: node.additionalMotionFileIds
       ?.map((id) => fileUrls[id])
-      .filter(Boolean),
+      .filter((url): url is string => Boolean(url)),
   };
 }
 
@@ -211,7 +211,7 @@ export function convertPresetItemToFrontend(
     stageModelUrl: item.stageModelFileId ? fileUrls[item.stageModelFileId] : undefined,
     additionalMotionUrls: item.additionalMotionFileIds
       ?.map((id) => fileUrls[id])
-      .filter(Boolean),
+      .filter((url): url is string => Boolean(url)),
   };
 }
 

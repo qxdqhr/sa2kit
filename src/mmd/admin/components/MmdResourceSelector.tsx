@@ -25,7 +25,8 @@ import {
   X,
 } from 'lucide-react';
 
-import type { ResourceSelectorProps, MmdResourceOptionDB, MMD_RESOURCE_TYPE_CONFIGS } from '../types';
+import { MMD_RESOURCE_TYPE_CONFIGS } from '../types';
+import type { ResourceSelectorProps, MmdResourceOptionDB } from '../types';
 import type { FileMetadata } from '../../../universalFile/types';
 
 /**
@@ -50,6 +51,15 @@ export const MmdResourceSelector: React.FC<ResourceSelectorProps> = ({
   // 从配置获取资源类型信息
   const config = MMD_RESOURCE_TYPE_CONFIGS[resourceType];
 
+  // 防御性检查（理论上不会发生，因为 resourceType 为受控枚举）
+  if (!config) {
+    return (
+      <div className="p-4 bg-red-50 text-red-600 rounded-lg">
+        未找到资源类型配置：{resourceType}
+      </div>
+    );
+  }
+
   // 获取文件图标
   const getFileIcon = () => {
     switch (resourceType) {
@@ -68,7 +78,7 @@ export const MmdResourceSelector: React.FC<ResourceSelectorProps> = ({
 
   // 加载文件列表
   const loadFiles = useCallback(async () => {
-    if (!fileService) return;
+    if (!fileService || !config) return;
 
     setLoading(true);
     try {
@@ -86,7 +96,7 @@ export const MmdResourceSelector: React.FC<ResourceSelectorProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [fileService, config.moduleId]);
+  }, [fileService, config]);
 
   // 初始加载
   useEffect(() => {

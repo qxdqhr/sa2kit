@@ -107,9 +107,10 @@ export const MmdPlaylistEditor: React.FC<PlaylistEditorProps> = ({
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
     
     if (targetIndex < 0 || targetIndex >= newNodes.length) return;
+    if (!newNodes[index] || !newNodes[targetIndex]) return;
     
     // 交换位置
-    [newNodes[index], newNodes[targetIndex]] = [newNodes[targetIndex], newNodes[index]];
+    [newNodes[index], newNodes[targetIndex]] = [newNodes[targetIndex]!, newNodes[index]!];
     
     // 更新 sortOrder
     newNodes.forEach((node, i) => {
@@ -142,7 +143,8 @@ export const MmdPlaylistEditor: React.FC<PlaylistEditorProps> = ({
   // 更新节点
   const updateNode = (index: number, updates: Partial<NodeFormData>) => {
     const newNodes = [...nodes];
-    newNodes[index] = { ...newNodes[index], ...updates };
+    if (!newNodes[index]) return;
+    newNodes[index] = { ...newNodes[index]!, ...updates };
     setNodes(newNodes);
   };
 
@@ -160,7 +162,7 @@ export const MmdPlaylistEditor: React.FC<PlaylistEditorProps> = ({
     
     for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
-      if (!node.name.trim()) {
+      if (!node || !node.name?.trim()) {
         alert(`节点 ${i + 1}: 请输入节点名称`);
         return false;
       }

@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -152,6 +152,11 @@
       "types": "./dist/config/server/index.d.ts",
       "import": "./dist/config/server/index.mjs",
       "require": "./dist/config/server/index.js"
+    },
+    "./mmd/admin": {
+      "types": "./dist/mmd/admin/index.d.ts",
+      "import": "./dist/mmd/admin/index.mjs",
+      "require": "./dist/mmd/admin/index.js"
     },
     "./mmd": {
       "types": "./dist/mmd/index.d.ts",
