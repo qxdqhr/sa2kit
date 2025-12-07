@@ -201,12 +201,12 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           console.log('[MMDPlayerBase] Ammo.js loaded successfully');
           
           // 🎯 关键修复：Hook MMDPhysics._createWorld 以捕获物理引擎组件
-          // 这样我们可以在清理时正确销毁它们，防止 WASM 内存泄漏
+          // ⚠️ 重要：只在第一次设置 Monkey Patch，避免重复替换导致重复捕获
           const Ammo = (window as any).Ammo;
-          if (Ammo) {
-            console.log('[MMDPlayerBase] Setting up physics component tracking...');
+          if (Ammo && !(Ammo as any).__sa2kitMonkeyPatched) {
+            console.log('[MMDPlayerBase] 🎯 Setting up physics component tracking (FIRST TIME)...');
             
-            // 保存原始的 Ammo 构造函数，以便在 _createWorld 中使用
+            // 保存原始的 Ammo 构造函数
             const originalBtDefaultCollisionConfiguration = Ammo.btDefaultCollisionConfiguration;
             const originalBtCollisionDispatcher = Ammo.btCollisionDispatcher;
             const originalBtDbvtBroadphase = Ammo.btDbvtBroadphase;
@@ -214,12 +214,12 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
             const originalBtDiscreteDynamicsWorld = Ammo.btDiscreteDynamicsWorld;
             
             // Monkey patch Ammo 构造函数来拦截创建过程
-            // ⚠️ 关键修改：使用数组来保存所有对象，而不是只保存最后一个
+            // 使用数组来保存所有对象，而不是只保存最后一个
             const componentsRef = physicsComponentsRef.current;
             
             Ammo.btDefaultCollisionConfiguration = function(...args: any[]) {
               const obj = new originalBtDefaultCollisionConfiguration(...args);
-              componentsRef.configs.push(obj);  // 🎯 添加到数组而不是覆盖
+              componentsRef.configs.push(obj);
               console.log(`[MMDPlayerBase] 🔍 Captured btDefaultCollisionConfiguration #${componentsRef.configs.length}`);
               return obj;
             };
@@ -252,7 +252,11 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
               return obj;
             };
             
+            // 标记已设置，避免重复
+            (Ammo as any).__sa2kitMonkeyPatched = true;
             console.log('[MMDPlayerBase] ✅ Physics component tracking setup complete');
+          } else if (Ammo) {
+            console.log('[MMDPlayerBase] ℹ️ Physics component tracking already setup, skipping');
           }
         } else {
           console.log('[MMDPlayerBase] Physics disabled');
