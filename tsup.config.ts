@@ -29,7 +29,7 @@ export default defineConfig({
     'mmd/index': 'src/mmd/index.ts',
     'mmd/admin/index': 'src/mmd/admin/index.ts',
     'mmd/server/index': 'src/mmd/server/index.ts',
-    'imageCrop/index': 'src/imageCrop/index.ts',
+    // 'imageCrop/index': 'src/imageCrop/index.ts', // 暂时禁用，有类型错误需要修复
     'testYourself/index': 'src/testYourself/index.ts',
   },
 

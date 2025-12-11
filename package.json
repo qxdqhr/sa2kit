@@ -173,11 +173,6 @@
       "import": "./dist/storage/index.mjs",
       "require": "./dist/storage/index.js"
     },
-    "./imageCrop": {
-      "types": "./dist/imageCrop/index.d.ts",
-      "import": "./dist/imageCrop/index.mjs",
-      "require": "./dist/imageCrop/index.js"
-    },
     "./testYourself": {
       "types": "./dist/testYourself/index.d.ts",
       "import": "./dist/testYourself/index.mjs",
