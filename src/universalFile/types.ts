@@ -175,6 +175,19 @@ export interface UploadResult {
   error?: string;
 }
 
+/** 批量操作结果 */
+export interface BatchOperationResult {
+  /** 成功数量 */
+  successCount: number;
+  /** 失败数量 */
+  failureCount: number;
+  /** 失败详情 */
+  failures: Array<{
+    fileId: string;
+    error: string;
+  }>;
+}
+
 // ============= 查询相关接口 =============
 
 /** 文件查询选项 */

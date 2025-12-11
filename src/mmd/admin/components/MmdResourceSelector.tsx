@@ -13,7 +13,8 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import {  
+import JSZip from 'jszip';
+import {
   Upload,
   FileText,
   Image as ImageIcon,
@@ -23,6 +24,7 @@ import {
   Search,
   Loader2,
   X,
+  AlertTriangle,
 } from 'lucide-react';
 
 import { MMD_RESOURCE_TYPE_CONFIGS } from '../types';
@@ -47,6 +49,7 @@ export const MmdResourceSelector: React.FC<ResourceSelectorProps> = ({
   const [uploading, setUploading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [showUploader, setShowUploader] = useState(false);
+  const [zipValidationError, setZipValidationError] = useState<string | null>(null);
 
   // 从配置获取资源类型信息
   const config = MMD_RESOURCE_TYPE_CONFIGS[resourceType];
@@ -127,12 +130,43 @@ export const MmdResourceSelector: React.FC<ResourceSelectorProps> = ({
       .catch((error: any) => console.error('获取文件URL失败:', error));
   };
 
+  const validateZipContents = async (buffer: ArrayBuffer, type: 'model' | 'stage') => {
+    const zip = await JSZip.loadAsync(buffer);
+    const entries = Object.keys(zip.files);
+
+    if (!entries.length) {
+      throw new Error('压缩包为空，请检查文件内容');
+    }
+
+    const hasModel =
+      entries.some((name) => /\.[pP][mM][xX]$/.test(name)) ||
+      (type === 'stage' && entries.some((name) => /\.[pP][mM][dD]$/.test(name)));
+
+    const hasAssets = entries.some((name) =>
+      /\.(png|jpg|jpeg|bmp|tga|dds|spa|sph)$/i.test(name),
+    );
+
+    if (!hasModel) {
+      throw new Error(type === 'stage' ? '压缩包中未找到 PMX/PMD 舞台模型文件' : '压缩包中未找到 PMX 模型文件');
+    }
+
+    if (!hasAssets) {
+      throw new Error('压缩包中未发现贴图文件，请确认是否包含 texture 目录');
+    }
+  };
+
   // 处理文件上传
   const handleFileUpload = async (file: File) => {
     if (!fileService) return;
 
     setUploading(true);
+    setZipValidationError(null);
     try {
+      if (resourceType === 'model' || resourceType === 'stage') {
+        const arrayBuffer = await file.arrayBuffer();
+        await validateZipContents(arrayBuffer, resourceType);
+      }
+
       const fileMetadata = await fileService.uploadFile({
         file,
         moduleId: config.moduleId,
@@ -148,7 +182,9 @@ export const MmdResourceSelector: React.FC<ResourceSelectorProps> = ({
       setShowUploader(false);
     } catch (error) {
       console.error('文件上传失败:', error);
-      alert(`上传失败: ${error instanceof Error ? error.message : '未知错误'}`);
+      const message = error instanceof Error ? error.message : '未知错误';
+      setZipValidationError(message);
+      alert(`上传失败: ${message}`);
     } finally {
       setUploading(false);
     }
@@ -207,10 +243,12 @@ export const MmdResourceSelector: React.FC<ResourceSelectorProps> = ({
       {/* 文件上传区域 */}
       {showUploader && (
         <div className="p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
-          <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-            支持的文件类型: {config.acceptedTypes.join(', ')}
-            <br />
-            最大文件大小: {config.maxFileSize}MB
+          <div className="text-sm text-gray-600 dark:text-gray-400 mb-3 space-y-1">
+            <p>支持的文件类型: {config.acceptedTypes.join(', ')}</p>
+            <p>最大文件大小: {config.maxFileSize}MB</p>
+            {config.hint && (
+              <p className="text-xs text-amber-600 dark:text-amber-400">{config.hint}</p>
+            )}
           </div>
           
           <input
@@ -235,6 +273,12 @@ export const MmdResourceSelector: React.FC<ResourceSelectorProps> = ({
             <div className="mt-3 flex items-center gap-2 text-sm text-blue-600">
               <Loader2 className="w-4 h-4 animate-spin" />
               上传中...
+            </div>
+          )}
+          {zipValidationError && (
+            <div className="mt-3 flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400">
+              <AlertTriangle className="w-4 h-4" />
+              {zipValidationError}
             </div>
           )}
         </div>

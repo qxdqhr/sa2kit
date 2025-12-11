@@ -322,6 +322,8 @@ export interface MmdFileUploadConfig {
   maxFileSize: number;
   /** 文件描述 */
   description: string;
+  /** 额外提示 */
+  hint?: string;
 }
 
 /**
@@ -330,9 +332,10 @@ export interface MmdFileUploadConfig {
 export const MMD_RESOURCE_TYPE_CONFIGS: Record<string, MmdFileUploadConfig> = {
   model: {
     moduleId: 'mmd-models',
-    acceptedTypes: ['.pmx', '.pmd'],
-    maxFileSize: 50,
-    description: 'MMD模型文件',
+    acceptedTypes: ['.zip'],
+    maxFileSize: 150,
+    description: 'MMD模型压缩包 (ZIP)',
+    hint: '请上传包含 PMX/贴图等完整目录的 ZIP 压缩包，保持原始文件结构',
   },
   motion: {
     moduleId: 'mmd-motions',
@@ -354,9 +357,10 @@ export const MMD_RESOURCE_TYPE_CONFIGS: Record<string, MmdFileUploadConfig> = {
   },
   stage: {
     moduleId: 'mmd-stages',
-    acceptedTypes: ['.pmx', '.pmd', '.x'],
-    maxFileSize: 100,
-    description: 'MMD舞台/场景模型',
+    acceptedTypes: ['.zip'],
+    maxFileSize: 200,
+    description: '舞台/场景压缩包 (ZIP)',
+    hint: '需将舞台模型与依赖贴图一起打包 ZIP，并保持目录结构',
   },
   thumbnail: {
     moduleId: 'mmd-thumbnails',

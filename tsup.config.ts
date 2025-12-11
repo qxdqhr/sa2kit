@@ -28,6 +28,9 @@ export default defineConfig({
     'config/server/index': 'src/config/server/index.ts',
     'mmd/index': 'src/mmd/index.ts',
     'mmd/admin/index': 'src/mmd/admin/index.ts',
+    'mmd/server/index': 'src/mmd/server/index.ts',
+    'imageCrop/index': 'src/imageCrop/index.ts',
+    'testYourself/index': 'src/testYourself/index.ts',
   },
 
   // Output formats: ESM and CJS

@@ -92,9 +92,20 @@ export class UniversalFileClient {
     }
 
     try {
+      console.log('📤 [UniversalFileClient] 开始上传文件:', {
+        url,
+        fileName: fileInfo.file.name,
+        fileSize: fileInfo.file.size,
+        moduleId: fileInfo.moduleId,
+        businessId: fileInfo.businessId,
+      });
+
       // 创建XMLHttpRequest以支持上传进度
       return await new Promise<FileMetadata>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
+        
+        // 重要：启用 credentials 以携带 cookie
+        xhr.withCredentials = true;
 
         // 监听上传进度
         xhr.upload.addEventListener('progress', (event) => {
@@ -120,10 +131,20 @@ export class UniversalFileClient {
 
         // 监听上传完成
         xhr.addEventListener('load', () => {
+          console.log('📥 [UniversalFileClient] 上传响应:', {
+            status: xhr.status,
+            statusText: xhr.statusText,
+            responseLength: xhr.responseText?.length,
+          });
+          
           if (xhr.status >= 200 && xhr.status < 300) {
             try {
               const response = JSON.parse(xhr.responseText);
-              const fileMetadata = this.transformFileMetadataFromAPI(response.file);
+              console.log('✅ [UniversalFileClient] 解析响应成功:', response);
+              
+              // 支持多种响应格式
+              const fileData = response.file || response.data || response;
+              const fileMetadata = this.transformFileMetadataFromAPI(fileData);
 
               if (onProgress) {
                 onProgress({
@@ -139,15 +160,18 @@ export class UniversalFileClient {
 
               resolve(fileMetadata);
             } catch (error) {
+              console.error('❌ [UniversalFileClient] 解析响应失败:', error, xhr.responseText);
               reject(new Error('解析响应失败'));
             }
           } else {
+            console.error('❌ [UniversalFileClient] 上传失败:', xhr.status, xhr.statusText, xhr.responseText);
             reject(new Error(`上传失败: ${xhr.statusText}`));
           }
         });
 
         // 监听错误
-        xhr.addEventListener('error', () => {
+        xhr.addEventListener('error', (event) => {
+          console.error('❌ [UniversalFileClient] 网络错误:', event);
           if (onProgress) {
             onProgress({
               fileId: '',
@@ -160,7 +184,7 @@ export class UniversalFileClient {
               error: '网络错误',
             });
           }
-          reject(new Error('上传失败'));
+          reject(new Error('上传失败: 网络错误'));
         });
 
         // 监听超时
@@ -292,10 +316,31 @@ export class UniversalFileClient {
       });
 
       if (!response.ok) {
+        console.error('❌ [UniversalFileClient] 查询文件列表失败:', response.status, response.statusText);
         throw new Error(`查询文件列表失败: ${response.statusText}`);
       }
 
       const data = await response.json();
+      console.log('📥 [UniversalFileClient] 查询文件列表响应:', {
+        itemsCount: data.items?.length,
+        total: data.total,
+        page: data.page,
+      });
+      
+      // 防御性检查
+      if (!data.items || !Array.isArray(data.items)) {
+        console.error('❌ [UniversalFileClient] 响应格式错误: items 不是数组', data);
+        return {
+          items: [],
+          total: 0,
+          page: 1,
+          pageSize: 20,
+          totalPages: 0,
+          hasNext: false,
+          hasPrev: false,
+        };
+      }
+      
       return {
         items: data.items.map((item: any) => this.transformFileMetadataFromAPI(item)),
         total: data.total,
@@ -425,6 +470,7 @@ export class UniversalFileClient {
       const response = await fetch(url, {
         ...options,
         signal: controller.signal,
+        credentials: 'include', // 携带 cookie 用于授权
       });
       return response;
     } catch (error) {

@@ -25,6 +25,7 @@ import type {
   BatchOperationResult,
   FileEvent,
   FileEventListener,
+  UploadStatus,
 } from '../types';
 
 // Backend specific types
@@ -344,6 +345,239 @@ export class UniversalFileService extends EventEmitter {
 
 
   /**
+   * 下载文件
+   */
+  async downloadFile(fileId: string, userId?: string): Promise<Buffer> {
+    logger.info(`📥 [UniversalFileService] 开始下载文件: ${fileId}`);
+
+    try {
+      this.emitFileEvent('download:start', fileId);
+
+      // 获取文件元数据
+      const metadata = await this.getFileMetadata(fileId);
+
+      if (!metadata) {
+        throw new FileUploadError(`文件不存在: ${fileId}`);
+      }
+
+      // 检查权限
+      await this.checkFileAccess(metadata, userId);
+
+      // 获取存储提供者
+      const storageProvider = this.storageProviders.get(metadata.storageProvider);
+
+      if (!storageProvider) {
+        throw new StorageProviderError(`存储提供者不存在: ${metadata.storageProvider}`);
+      }
+
+      // 下载文件
+      const fileBuffer = await storageProvider.download(metadata.storagePath);
+
+      // 更新访问统计 (如果启用了持久化)
+      if (this.config.persistence?.enabled) {
+        await this.updateAccessStats(fileId);
+      }
+
+      logger.info(`✅ [UniversalFileService] 文件下载完成: ${fileId}`);
+      this.emitFileEvent('download:complete', fileId, { size: fileBuffer.length });
+
+      return fileBuffer;
+    } catch (error) {
+      console.error(`❌ [UniversalFileService] 文件下载失败: ${fileId}:`, error);
+      this.emitFileEvent('download:error', fileId, undefined, error instanceof Error ? error.message : '下载失败');
+      throw error;
+    }
+  }
+
+  /**
+   * 删除文件
+   */
+  async deleteFile(fileId: string, userId?: string): Promise<void> {
+    logger.info(`🗑️ [UniversalFileService] 开始删除文件: ${fileId}`);
+
+    try {
+      // 获取文件元数据
+      const metadata = await this.getFileMetadata(fileId);
+
+      if (!metadata) {
+        throw new FileUploadError(`文件不存在: ${fileId}`);
+      }
+
+      // 检查删除权限
+      await this.checkFileDeleteAccess(metadata, userId);
+
+      // 获取存储提供者
+      const storageProvider = this.storageProviders.get(metadata.storageProvider);
+
+      if (!storageProvider) {
+        throw new StorageProviderError(`存储提供者不存在: ${metadata.storageProvider}`);
+      }
+
+      // 从存储中删除文件
+      const deleteResult = await storageProvider.delete(metadata.storagePath);
+
+      if (!deleteResult.success) {
+        console.warn(`⚠️ [UniversalFileService] 存储文件删除失败: ${deleteResult.error}`);
+      }
+
+      // 从数据库中删除元数据 (通过事件触发)
+      if (this.config.persistence?.enabled) {
+        await this.deleteFileMetadata(fileId);
+      }
+
+      // 清除缓存
+      this.clearMetadataCache(fileId);
+
+      logger.info(`✅ [UniversalFileService] 文件删除完成: ${fileId}`);
+      this.emitFileEvent('delete:complete', fileId);
+      this.emit('file:deleted', fileId);
+    } catch (error) {
+      console.error(`❌ [UniversalFileService] 文件删除失败: ${fileId}:`, error);
+      this.emitFileEvent('delete:error', fileId, undefined, error instanceof Error ? error.message : '删除失败');
+      throw error;
+    }
+  }
+
+  /**
+   * 获取文件访问URL
+   */
+  async getFileUrl(fileId: string, userId?: string, expiresIn?: number): Promise<string> {
+    // 检查缓存
+    const cacheKey = `${fileId}_${userId || 'public'}_${expiresIn || 0}`;
+    const cached = this.urlCache.get(cacheKey);
+
+    if (cached && cached.expires > Date.now()) {
+      return cached.url;
+    }
+
+    // 获取文件元数据
+    const metadata = await this.getFileMetadata(fileId);
+
+    if (!metadata) {
+      throw new FileUploadError(`文件不存在: ${fileId}`);
+    }
+
+    // 检查访问权限
+    await this.checkFileAccess(metadata, userId);
+
+    let url: string;
+
+    // 优先使用CDN URL
+    if (metadata.cdnUrl) {
+      url = metadata.cdnUrl;
+    } else {
+      // 获取存储提供者访问URL
+      const storageProvider = this.storageProviders.get(metadata.storageProvider);
+
+      if (!storageProvider) {
+        throw new StorageProviderError(`存储提供者不存在: ${metadata.storageProvider}`);
+      }
+
+      url = await storageProvider.getAccessUrl(metadata.storagePath, expiresIn);
+    }
+
+    // 缓存URL
+    const cacheExpires = Date.now() + (this.config.cache?.urlTTL || 1800) * 1000;
+    this.urlCache.set(cacheKey, { url, expires: cacheExpires });
+
+    return url;
+  }
+
+  /**
+   * 获取文件元数据
+   */
+  async getFileMetadata(fileId: string): Promise<FileMetadata | null> {
+    // 检查缓存
+    const cached = this.metadataCache.get(fileId);
+    if (cached && cached.expires > Date.now()) {
+      return cached.data;
+    }
+
+    // 如果启用了持久化,从数据库查询
+    if (this.config.persistence?.enabled && this.config.persistence.repository) {
+      try {
+        const metadata = await this.config.persistence.repository.get(fileId);
+        if (metadata) {
+          // 缓存结果
+          this.cacheMetadata(metadata);
+        }
+        return metadata;
+      } catch (error) {
+        console.error('❌ [UniversalFileService] 查询文件元数据失败:', error);
+        return null;
+      }
+    }
+
+    // 如果没有启用持久化,返回 null
+    logger.warn(`⚠️ [UniversalFileService] 持久化未启用,无法查询文件元数据: ${fileId}`);
+    return null;
+  }
+
+  /**
+   * 查询文件列表
+   */
+  async queryFiles(options: FileQueryOptions): Promise<PaginatedResult<FileMetadata>> {
+    if (!this.config.persistence?.enabled || !this.config.persistence.repository) {
+      logger.warn('⚠️ [UniversalFileService] 持久化未启用,无法查询文件列表');
+      return {
+        items: [],
+        total: 0,
+        page: options.page || 1,
+        pageSize: options.pageSize || 20,
+        totalPages: 0,
+        hasNext: false,
+        hasPrev: false,
+      };
+    }
+
+    try {
+      const result = await this.config.persistence.repository.query(options);
+      // 添加 hasNext 和 hasPrev
+      const hasNext = result.page < result.totalPages;
+      const hasPrev = result.page > 1;
+      return {
+        ...result,
+        hasNext,
+        hasPrev,
+      };
+    } catch (error) {
+      console.error('❌ [UniversalFileService] 查询文件列表失败:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 批量删除文件
+   */
+  async batchDeleteFiles(fileIds: string[], userId?: string): Promise<BatchOperationResult> {
+    const result: BatchOperationResult = {
+      successCount: 0,
+      failureCount: 0,
+      failures: [],
+    };
+
+    for (const fileId of fileIds) {
+      try {
+        await this.deleteFile(fileId, userId);
+        result.successCount++;
+      } catch (error) {
+        result.failureCount++;
+        result.failures.push({
+          fileId,
+          error: error instanceof Error ? error.message : '删除失败',
+        });
+      }
+    }
+
+    // 触发批量删除事件
+    if (result.successCount > 0) {
+      this.emit('files:batch-deleted', fileIds.filter((_, i) => i < result.successCount));
+    }
+
+    return result;
+  }
+
+  /**
    * 获取上传进度
    */
   getUploadProgress(fileId: string): UploadProgress | undefined {
@@ -588,7 +822,7 @@ export class UniversalFileService extends EventEmitter {
     this.metadataCache.set(metadata.id, { data: metadata, expires });
   }
 
-  private _clearMetadataCache2(fileId: string): void {
+  private clearMetadataCache(fileId: string): void {
     this.metadataCache.delete(fileId);
   }
 
@@ -603,5 +837,85 @@ export class UniversalFileService extends EventEmitter {
 
     this.emit(type, event);
     this.emit('*', event); // 通用事件监听
+  }
+
+  // ============= 数据库操作私有方法 =============
+
+  /**
+   * 保存文件元数据到数据库 (通过持久化仓储)
+   */
+  private async saveFileMetadata(metadata: FileMetadata): Promise<void> {
+    if (!this.config.persistence?.enabled || !this.config.persistence.repository) {
+      logger.warn('⚠️ [UniversalFileService] 持久化未启用,跳过保存元数据');
+      return;
+    }
+
+    try {
+      await this.config.persistence.repository.save(metadata);
+      logger.info('💾 [UniversalFileService] 文件元数据保存成功:', metadata.id);
+    } catch (error) {
+      console.error('❌ [UniversalFileService] 保存文件元数据失败:', error);
+      throw new FileUploadError(
+        `保存文件元数据失败: ${error instanceof Error ? error.message : '未知错误'}`
+      );
+    }
+  }
+
+  /**
+   * 从数据库删除文件元数据 (通过持久化仓储)
+   */
+  private async deleteFileMetadata(fileId: string): Promise<void> {
+    if (!this.config.persistence?.enabled || !this.config.persistence.repository) {
+      return;
+    }
+
+    try {
+      await this.config.persistence.repository.delete(fileId);
+      logger.info('🗑️ [UniversalFileService] 文件元数据删除成功:', fileId);
+    } catch (error) {
+      console.error('❌ [UniversalFileService] 删除文件元数据失败:', error);
+      throw new FileUploadError(
+        `删除文件元数据失败: ${error instanceof Error ? error.message : '未知错误'}`
+      );
+    }
+  }
+
+  /**
+   * 更新访问统计
+   */
+  private async updateAccessStats(fileId: string): Promise<void> {
+    // 访问统计更新由数据库仓储实现决定
+    // 这里只记录日志
+    logger.info('📊 [UniversalFileService] 需要更新访问统计:', fileId);
+  }
+
+  /**
+   * 检查文件访问权限
+   */
+  private async checkFileAccess(metadata: FileMetadata, userId?: string): Promise<void> {
+    // 如果文件是公开的,允许访问
+    if (metadata.permission === 'public') {
+      return;
+    }
+
+    // 如果是私有文件,检查用户权限
+    if (metadata.permission === 'private' && metadata.uploaderId !== userId) {
+      throw new FileUploadError('无权限访问此文件');
+    }
+
+    // 如果是认证用户可访问,检查是否提供了 userId
+    if (metadata.permission === 'authenticated' && !userId) {
+      throw new FileUploadError('需要登录才能访问此文件');
+    }
+  }
+
+  /**
+   * 检查文件删除权限
+   */
+  private async checkFileDeleteAccess(metadata: FileMetadata, userId?: string): Promise<void> {
+    // 只有上传者可以删除文件
+    if (metadata.uploaderId !== userId) {
+      throw new FileUploadError('无权限删除此文件');
+    }
   }
 }
