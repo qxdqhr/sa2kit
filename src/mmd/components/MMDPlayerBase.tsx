@@ -247,7 +247,12 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           preserveDrawingBuffer: true 
         });
         renderer.setSize(width, height);
-        renderer.setPixelRatio(mobileOptimization.enabled ? mobileOptimization.pixelRatio || 1 : window.devicePixelRatio);
+        // 使用更高的像素比例以获得更清晰的渲染效果
+        const pixelRatio = mobileOptimization.enabled 
+          ? (mobileOptimization.pixelRatio || Math.min(window.devicePixelRatio, 2))
+          : window.devicePixelRatio;
+        renderer.setPixelRatio(pixelRatio);
+        console.log('[MMDPlayerBase] Pixel ratio set to:', pixelRatio);
         
         // 5. 关键检查点：在操作 DOM 之前再次检查
         if (checkCancelled()) {
@@ -258,11 +263,12 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         // 再次确保容器为空，防止并行执行导致的残留
         container.innerHTML = '';
         
-        // 强制 Canvas 样式
+        // 强制 Canvas 样式 - 确保 canvas 在最底层
         renderer.domElement.style.display = 'block';
         renderer.domElement.style.width = '100%';
         renderer.domElement.style.height = '100%';
         renderer.domElement.style.outline = 'none';
+        renderer.domElement.style.position = 'relative';
         
         // Shadow
         if (stage.enableShadow !== false && !mobileOptimization.reduceShadowQuality) {
@@ -1092,7 +1098,7 @@ ${errorMessage}
         width: '100%', 
         height: '100%', 
         overflow: 'hidden', 
-        position: 'relative',
+        position: 'relative', // 恢复 relative，作为 canvas 的定位容器
         backgroundColor: stage.backgroundColor || '#000',
         ...style 
       }}
