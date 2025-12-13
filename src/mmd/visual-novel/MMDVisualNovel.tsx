@@ -10,6 +10,7 @@ import { MMDPlayerBase } from '../components/MMDPlayerBase';
 import { MMDPlayerBaseRef } from '../types';
 import { DialogueBox } from './DialogueBox';
 import { HistoryPanel } from './HistoryPanel';
+import { LoadingOverlay } from './LoadingOverlay';
 import {
   MMDVisualNovelProps,
   MMDVisualNovelRef,
@@ -35,7 +36,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
       stage,
       mobileOptimization,
       dialogueTheme,
-      autoStart = true,
+      autoStart = false,
       initialNodeIndex = 0,
       initialDialogueIndex = 0,
       onNodeChange,
@@ -57,6 +58,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     const [currentNodeIndex, setCurrentNodeIndex] = useState(initialNodeIndex);
     const [currentDialogueIndex, setCurrentDialogueIndex] = useState(initialDialogueIndex);
     const [isLoading, setIsLoading] = useState(true);
+    const [isAnimationPlaying, setIsAnimationPlaying] = useState(false); // 新增：追踪动画是否已开始播放
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [isAutoMode, setIsAutoMode] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
@@ -69,6 +71,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     const containerRef = useRef<HTMLDivElement>(null);
     const autoTimerRef = useRef<NodeJS.Timeout | null>(null);
     const typingCompleteRef = useRef(false);
+    const isStartedRef = useRef(autoStart); // 用 ref 跟踪 isStarted 的当前值
 
     // 获取当前节点和对话
     const currentNode = nodes[currentNodeIndex];
@@ -100,7 +103,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
 
       const nextDialogueIndex = currentDialogueIndex + 1;
 
-      if (nextDialogueIndex < currentNode.dialogues.length) {
+      if (nextDialogueIndex < currentNode.dialogues.length && currentNode?.dialogues[nextDialogueIndex] !== undefined) {
         // 还有更多对话
         const nextDialogue = currentNode.dialogues[nextDialogueIndex];
         setCurrentDialogueIndex(nextDialogueIndex);
@@ -135,41 +138,35 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
 
         console.log(`[MMDVisualNovel] Transitioning to node ${nodeIndex}`);
 
-        // 开始过渡
+        // 🔧 立即设置加载状态，确保遮罩覆盖整个切换过程
         setIsTransitioning(true);
+        setIsLoading(true);
+        setIsAnimationPlaying(false); // 重置动画播放状态
 
-        // 给物理引擎清理时间
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            setTimeout(() => {
-              // 更新节点
-              setCurrentNodeIndex(nodeIndex);
-              setCurrentDialogueIndex(0);
-              setIsLoading(true);
-              typingCompleteRef.current = false;
+        // 给物理引擎清理时间后再更新节点
+        setTimeout(() => {
+          // 更新节点
+          setCurrentNodeIndex(nodeIndex);
+          setCurrentDialogueIndex(0);
+          typingCompleteRef.current = false;
 
-              // 添加第一条对话到历史
-              if (node.dialogues.length > 0) {
-                addToHistory(node.dialogues[0], nodeIndex, 0);
-              }
+          // 添加第一条对话到历史
+          if (node.dialogues.length > 0 && node?.dialogues[0] !== undefined) {
+            addToHistory(node.dialogues[0], nodeIndex, 0);
+          }
 
-              onNodeChange?.(node, nodeIndex);
-              if (node.dialogues.length > 0) {
-                onDialogueChange?.(node.dialogues[0], 0, nodeIndex);
-              }
+          onNodeChange?.(node, nodeIndex);
+          if (node.dialogues.length > 0 && node?.dialogues[0] !== undefined) {
+            onDialogueChange?.(node.dialogues[0], 0, nodeIndex);
+          }
 
-              // 结束过渡
-              requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                  setTimeout(() => {
-                    setIsTransitioning(false);
-                    console.log(`[MMDVisualNovel] Transition to node ${nodeIndex} completed`);
-                  }, 100);
-                });
-              });
-            }, 300);
-          });
-        });
+          // 🔧 结束过渡状态，但保持加载状态直到新模型完全加载
+          // 注意：isLoading 和 isAnimationPlaying 会在 MMDPlayerBase 的回调中更新
+          setTimeout(() => {
+            setIsTransitioning(false);
+            console.log(`[MMDVisualNovel] Transition to node ${nodeIndex} completed, waiting for model load`);
+          }, 100);
+        }, 300);
       },
       [nodes, isTransitioning, addToHistory, onNodeChange, onDialogueChange]
     );
@@ -178,10 +175,10 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     const goToDialogue = useCallback(
       (dialogueIndex: number) => {
         if (!currentNode) return;
-        if (dialogueIndex < 0 || dialogueIndex >= currentNode.dialogues.length) return;
-
-        setCurrentDialogueIndex(dialogueIndex);
         const dialogue = currentNode.dialogues[dialogueIndex];
+
+        if (dialogueIndex < 0 || dialogueIndex >= currentNode.dialogues.length || dialogue === undefined) return;
+        setCurrentDialogueIndex(dialogueIndex);
         addToHistory(dialogue, currentNodeIndex, dialogueIndex);
         onDialogueChange?.(dialogue, dialogueIndex, currentNodeIndex);
         typingCompleteRef.current = false;
@@ -254,9 +251,14 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     // 开始游戏
     const handleStart = useCallback(() => {
       setIsStarted(true);
-      if (currentNode && currentNode.dialogues.length > 0) {
-        addToHistory(currentNode.dialogues[0], currentNodeIndex, 0);
+      isStartedRef.current = true; // 同步更新 ref
+      if (currentNode && currentNode.dialogues.length > 0 && currentNode?.dialogues[0] !== undefined) {
+        addToHistory(currentNode?.dialogues[0], currentNodeIndex, 0);
       }
+      // 启动动画播放
+      setTimeout(() => {
+        playerRef.current?.play();
+      }, 100);
     }, [currentNode, currentNodeIndex, addToHistory]);
 
     // 暴露给父组件的方法
@@ -278,8 +280,8 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
 
     // 自动开始时添加第一条对话到历史
     useEffect(() => {
-      if (autoStart && currentNode && currentNode.dialogues.length > 0 && history.length === 0) {
-        addToHistory(currentNode.dialogues[0], currentNodeIndex, 0);
+      if (autoStart && currentNode && currentNode.dialogues.length > 0 && history.length === 0 && currentNode?.dialogues[0] !== undefined) {
+        addToHistory(currentNode?.dialogues[0], currentNodeIndex, 0);
       }
     }, [autoStart, currentNode, currentNodeIndex, history.length, addToHistory]);
 
@@ -308,58 +310,71 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         style={{ width: '100%', height: '100%', overflow: 'hidden', ...style }}
       >
         {/* MMD 播放器层 - 覆盖整个屏幕，明确在最底层 */}
-        {!isTransitioning && (
-          <div 
-            className="absolute inset-0 w-full h-full"
-            style={{ zIndex: 0 }}
-          >
+        <div 
+          className="absolute inset-0 w-full h-full"
+          style={{ 
+            zIndex: 0,
+            // 在加载期间隐藏，避免看到模型加载过程
+            opacity: (isLoading || isTransitioning || !isAnimationPlaying) ? 0 : 1,
+            transition: 'opacity 0.3s ease-in-out'
+          }}
+        >
+          {!isTransitioning && (
             <MMDPlayerBase
               key={currentNode.id}
               ref={playerRef}
               resources={currentNode.resources}
               stage={stage}
               autoPlay={isStarted}
-              loop={currentNode.loopAnimation !== false}
+              loop={currentNode.loopAnimation === true}
               mobileOptimization={mobileOptimization}
               onLoad={() => {
+                console.log('[MMDVisualNovel] MMDPlayerBase onLoad called');
                 setIsLoading(false);
-                playerRef.current?.play();
+                // 如果已经开始游戏，启动动画播放（使用 ref 获取最新值）
+                if (isStartedRef.current) {
+                  console.log('[MMDVisualNovel] Game already started, triggering play');
+                  setTimeout(() => {
+                    playerRef.current?.play();
+                  }, 100);
+                }
+              }}
+              onPlay={() => {
+                // 动画开始播放时才设置为 true
+                console.log('[MMDVisualNovel] MMDPlayerBase onPlay called');
+                setIsAnimationPlaying(true);
               }}
               onError={onError}
             />
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* 加载/过渡遮罩 */}
-        {(isLoading || isTransitioning) && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="flex flex-col items-center gap-3">
-              <div className="h-10 w-10 animate-spin rounded-full border-4 border-white/20 border-t-blue-500" />
-              <div className="text-sm text-white/80">
-                {isTransitioning ? '场景切换中...' : '正在加载...'}
-              </div>
-            </div>
-          </div>
-        )}
+        {/* 加载遮罩和开始界面 */}
+        <LoadingOverlay
+          isLoading={(() => {
+            const shouldShowLoading = (isLoading || isTransitioning || !isAnimationPlaying) && isStarted;
+            console.log('[MMDVisualNovel] LoadingOverlay conditions:', {
+              isLoading,
+              isTransitioning,
+              isAnimationPlaying,
+              isStarted,
+              shouldShowLoading
+            });
+            return shouldShowLoading;
+          })()}
+          showStartScreen={!isStarted}
+          scriptName={script.name}
+          loadingText="正在准备场景中..."
+          startText="点击开始"
+          onStart={handleStart}
+        />
 
-        {/* 开始界面 */}
-        {!isStarted && !isLoading && (
-          <div
-            className="absolute inset-0 z-20 flex items-center justify-center bg-black/60 backdrop-blur-sm cursor-pointer"
-            onClick={handleStart}
-          >
-            <div className="text-center">
-              <h1 className="text-3xl font-bold text-white mb-4">{script.name}</h1>
-              <p className="text-white/70 text-lg animate-pulse">点击开始</p>
-            </div>
-          </div>
-        )}
-
-        {/* 对话框 */}
+        {/* 对话框 - 仅在动画开始播放后显示 */}
         {(() => {
-          const shouldShow = isStarted && currentDialogue && !showHistory;
+          const shouldShow = isStarted && isAnimationPlaying && currentDialogue && !showHistory;
           console.log('[MMDVisualNovel] DialogueBox render condition:', {
             isStarted,
+            isAnimationPlaying,
             hasDialogue: !!currentDialogue,
             showHistory,
             shouldShow,

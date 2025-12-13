@@ -4,6 +4,122 @@ import { OrbitControls, MMDLoader, MMDAnimationHelper } from 'three-stdlib';
 import { loadAmmo } from '../utils/ammo-loader';
 import { MMDPlayerBaseProps, MMDPlayerBaseRef } from '../types';
 
+/**
+ * 等待模型的所有材质和纹理加载完成
+ * 确保渲染时不会有逐个子模型显示的效果
+ */
+async function waitForMaterialsReady(
+  object: THREE.Object3D, 
+  renderer: THREE.WebGLRenderer,
+  scene: THREE.Scene,
+  camera: THREE.Camera
+): Promise<void> {
+  const textures: THREE.Texture[] = [];
+  let meshCount = 0;
+  
+  // 遍历对象及其所有子对象，收集所有纹理和网格
+  object.traverse((obj) => {
+    if (obj instanceof THREE.Mesh || obj instanceof THREE.SkinnedMesh) {
+      meshCount++;
+      const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+      
+      materials.forEach((material) => {
+        if (material instanceof THREE.Material) {
+          // 收集所有可能的纹理属性
+          const textureProps = [
+            'map', 'lightMap', 'bumpMap', 'normalMap', 'specularMap',
+            'envMap', 'alphaMap', 'emissiveMap', 'displacementMap',
+            'roughnessMap', 'metalnessMap', 'aoMap',
+            // MMD 特有纹理
+            'gradientMap', 'toonMap', 'sphereMap', 'matcap'
+          ];
+          
+          textureProps.forEach((prop) => {
+            const texture = (material as any)[prop];
+            if (texture instanceof THREE.Texture && !textures.includes(texture)) {
+              textures.push(texture);
+            }
+          });
+        }
+      });
+    }
+  });
+  
+  console.log(`[MMDPlayerBase] Found ${meshCount} meshes and ${textures.length} unique textures`);
+  
+  // 等待所有纹理的图像数据加载完成
+  const texturePromises = textures.map((texture, index) => {
+    return new Promise<void>((resolve) => {
+      const image = texture.image;
+      
+      // 检查是否已经加载完成
+      if (!image) {
+        console.log(`[MMDPlayerBase]   Texture ${index + 1}/${textures.length}: No image`);
+        resolve();
+        return;
+      }
+      
+      if (image instanceof HTMLImageElement) {
+        if (image.complete && image.naturalWidth > 0) {
+          console.log(`[MMDPlayerBase]   Texture ${index + 1}/${textures.length}: Already loaded`);
+          resolve();
+        } else {
+          // 等待图像加载
+          const onLoad = () => {
+            console.log(`[MMDPlayerBase]   Texture ${index + 1}/${textures.length}: Loaded`);
+            image.removeEventListener('load', onLoad);
+            image.removeEventListener('error', onError);
+            resolve();
+          };
+          
+          const onError = (e: any) => {
+            console.warn(`[MMDPlayerBase]   Texture ${index + 1}/${textures.length}: Failed to load`, e);
+            image.removeEventListener('load', onLoad);
+            image.removeEventListener('error', onError);
+            resolve();
+          };
+          
+          image.addEventListener('load', onLoad);
+          image.addEventListener('error', onError);
+          
+          // 超时保护
+          setTimeout(() => {
+            image.removeEventListener('load', onLoad);
+            image.removeEventListener('error', onError);
+            console.warn(`[MMDPlayerBase]   Texture ${index + 1}/${textures.length}: Timeout`);
+            resolve();
+          }, 5000);
+        }
+      } else {
+        console.log(`[MMDPlayerBase]   Texture ${index + 1}/${textures.length}: Non-image type`);
+        resolve();
+      }
+    });
+  });
+  
+  await Promise.all(texturePromises);
+  console.log('[MMDPlayerBase] All texture images loaded');
+  
+  // 强制更新所有材质的纹理需要更新标志
+  textures.forEach((texture) => {
+    texture.needsUpdate = true;
+  });
+  
+  // 执行几次渲染循环，确保所有纹理都上传到 GPU
+  console.log('[MMDPlayerBase] Warming up renderer...');
+  for (let i = 0; i < 3; i++) {
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => {
+        renderer.render(scene, camera);
+        console.log(`[MMDPlayerBase]   Warmup render ${i + 1}/3`);
+        resolve();
+      });
+    });
+  }
+  
+  console.log('[MMDPlayerBase] All materials and textures fully ready');
+}
+
 export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((props, ref) => {
   const {
     resources,
@@ -333,6 +449,11 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         
         // 立即执行一次 Resize
         onResize();
+        
+        // 🎯 提前启动渲染循环（但不播放动画）
+        // 这样可以在加载过程中显示场景，但动画要等完全准备好才开始
+        console.log('[MMDPlayerBase] Starting render loop (animation paused)');
+        animate();
 
         // 6. 资源加载
         console.log('[MMDPlayerBase] Start loading resources...', resources);
@@ -392,7 +513,26 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           console.log('[MMDPlayerBase] Animation duration:', animation.duration);
         }
 
-        // 自动聚焦模型
+        // 设置模型基础属性
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        
+        // 🎯 关键优化：先等待所有材质和纹理加载完成，再添加到场景
+        // 这样可以避免用户看到"逐个子模型显示"的过程
+        console.log('[MMDPlayerBase] Waiting for all materials and textures to load...');
+        
+        // 创建一个临时场景来等待纹理加载（不影响主场景）
+        const tempScene = new THREE.Scene();
+        tempScene.add(mesh);
+        await waitForMaterialsReady(mesh, renderer, tempScene, camera);
+        
+        if (checkCancelled()) return;
+        console.log('[MMDPlayerBase] ✅ All materials and textures loaded');
+        
+        // 从临时场景移除
+        tempScene.remove(mesh);
+
+        // 计算模型边界并自动聚焦
         const box = new THREE.Box3().setFromObject(mesh);
         if (!box.isEmpty()) {
             const center = box.getCenter(new THREE.Vector3());
@@ -421,9 +561,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
             }
         }
         
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-
+        // 🎯 现在所有纹理都已加载完成，添加到场景和 helper
         const enablePhysics = stage.enablePhysics !== false && !mobileOptimization.disablePhysics;
         
         helper.add(mesh, {
@@ -432,6 +570,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         });
 
         scene.add(mesh);
+        console.log('[MMDPlayerBase] ✅ Model added to scene (fully loaded)');
 
         // 6.3 加载相机动画
         if (resources.cameraPath) {
@@ -477,36 +616,68 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         }
 
         // 6.5 加载舞台
+        let stageMesh: THREE.Object3D | null = null;
         if (resources.stageModelPath) {
-           loader.load(
-             resources.stageModelPath, 
-             (stageMesh) => {
-               if (checkCancelled()) return; // Callback check
-               stageMesh.castShadow = true;
-               stageMesh.receiveShadow = true;
-               scene.add(stageMesh);
-             },
-             undefined,
-             (err) => console.error('Failed to load stage:', err)
-           );
+          try {
+            stageMesh = await new Promise<THREE.Object3D>((resolve, reject) => {
+              loader.load(
+                resources.stageModelPath!,
+                (mesh) => resolve(mesh),
+                undefined,
+                (err) => reject(err)
+              );
+            });
+            
+            if (checkCancelled()) return;
+            
+            console.log('[MMDPlayerBase] Stage model loaded:', stageMesh);
+            stageMesh.castShadow = true;
+            stageMesh.receiveShadow = true;
+            
+            // 🎯 同样，先等待舞台的材质和纹理加载完成，再添加到场景
+            console.log('[MMDPlayerBase] Waiting for stage materials and textures...');
+            const tempStageScene = new THREE.Scene();
+            tempStageScene.add(stageMesh);
+            await waitForMaterialsReady(stageMesh, renderer, tempStageScene, camera);
+            tempStageScene.remove(stageMesh);
+            
+            if (checkCancelled()) return;
+            console.log('[MMDPlayerBase] ✅ Stage materials and textures loaded');
+            
+            // 现在添加到主场景
+            scene.add(stageMesh);
+            console.log('[MMDPlayerBase] ✅ Stage added to scene (fully loaded)');
+          } catch (err) {
+            console.error('Failed to load stage:', err);
+          }
         }
 
         if (checkCancelled()) return;
         
+        // 🎯 所有资源完全加载完成，模型已完全显示，现在可以触发回调并开始播放动画
         isReadyRef.current = true;
+        console.log('[MMDPlayerBase] 🎉 All resources fully loaded and ready!');
+        console.log('[MMDPlayerBase] 📊 Summary:');
+        console.log(`[MMDPlayerBase]   - Model: ✅ Fully loaded with all textures`);
+        if (resources.stageModelPath) {
+          console.log(`[MMDPlayerBase]   - Stage: ✅ Fully loaded with all textures`);
+        }
+        if (animation) {
+          console.log(`[MMDPlayerBase]   - Animation: ✅ Ready (${animation.duration.toFixed(2)}s)`);
+        }
+        console.log('[MMDPlayerBase] 🔔 Triggering onLoad callback');
         onLoad?.();
         
         if (autoPlay) {
+          // 给一点时间让渲染系统稳定，然后开始播放动画
           setTimeout(() => {
              if (checkCancelled()) return;
+             console.log('[MMDPlayerBase] 🎬 Starting animation playback (after materials fully loaded)');
              isPlayingRef.current = true;
              if (!clockRef.current.running) clockRef.current.start();
              onPlay?.();
           }, 100);
         }
-
-        // 7. 开始渲染循环
-        animate();
 
       } catch (error) {
         if (checkCancelled()) return; // 如果是因为取消导致的 error，忽略
