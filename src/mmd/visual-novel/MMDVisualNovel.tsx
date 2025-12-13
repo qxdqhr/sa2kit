@@ -229,6 +229,8 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
 
         return () => clearTimeout(timer);
       }
+      // 如果没有对话，返回空的清理函数
+      return undefined;
     }, [currentDialogue, handleTypingComplete]);
 
     // 切换自动模式
