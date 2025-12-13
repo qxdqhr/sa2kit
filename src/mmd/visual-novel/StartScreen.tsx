@@ -75,7 +75,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({
       >
         {/* 背景装饰层 - 柔和的彩虹渐变 */}
         <div
-          className="flex items-center justify-center flex-col inset-0 w-full h-full opacity-30 pointer-events-none"
+          className="flex items-center justify-center flex-col inset-0 w-full h-full pointer-events-none"
           style={{
             background: `linear-gradient(45deg, 
             rgba(255, 182, 193, 0.25) 0%, 
