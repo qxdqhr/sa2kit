@@ -143,6 +143,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
     onPause,
     onEnded,
     onTimeUpdate,
+    onCameraChange,
     className,
     style,
   } = props;
@@ -169,6 +170,12 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   const animationClipRef = useRef<THREE.AnimationClip | null>(null); // 保存动画剪辑
   const loopRef = useRef(loop); // 循环状态 ref
   const audioRef = useRef<THREE.Audio | null>(null); // 音频对象引用
+
+  // 🚀 解决回调函数在渲染循环中的闭包过时问题
+  const latestCallbacks = useRef({ onPlay, onPause, onEnded, onTimeUpdate });
+  useEffect(() => {
+    latestCallbacks.current = { onPlay, onPause, onEnded, onTimeUpdate };
+  }, [onPlay, onPause, onEnded, onTimeUpdate]);
   
   // 🎯 新增：物理引擎组件引用 - 用于正确清理 Ammo 对象
   // 改用数组来追踪所有创建的对象（每个模型会创建多个物理世界和刚体）
@@ -196,18 +203,18 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
       if (!isReadyRef.current) return;
       isPlayingRef.current = true;
       if (!clockRef.current.running) clockRef.current.start();
-      onPlay?.();
+      latestCallbacks.current.onPlay?.();
     },
     pause: () => {
       if (!isPlayingRef.current) return;
       isPlayingRef.current = false;
       clockRef.current.stop();
-      onPause?.();
+      latestCallbacks.current.onPause?.();
     },
     stop: () => {
       isPlayingRef.current = false;
       clockRef.current.stop();
-      onPause?.();
+      latestCallbacks.current.onPause?.();
     },
     seek: (time: number) => {
       console.warn('Seek not fully implemented in MMDPlayerBase yet');
@@ -229,6 +236,28 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         rendererRef.current.render(sceneRef.current, cameraRef.current);
       }
       return rendererRef.current.domElement.toDataURL('image/png');
+    },
+    resetCamera: () => {
+      if (!cameraRef.current || !controlsRef.current) return;
+      
+      const { cameraPosition, cameraTarget } = stage;
+      
+      if (cameraPosition) {
+        const pos = cameraPosition as any;
+        cameraRef.current.position.set(pos.x, pos.y, pos.z);
+      } else {
+        cameraRef.current.position.set(0, 20, 30);
+      }
+      
+      if (cameraTarget) {
+        const target = cameraTarget as any;
+        controlsRef.current.target.set(target.x, target.y, target.z);
+      } else {
+        controlsRef.current.target.set(0, 10, 0);
+      }
+      
+      controlsRef.current.update();
+      onCameraChange?.(false); // 重置后标记为非手动
     }
   }));
 
@@ -349,6 +378,11 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         const scene = new THREE.Scene();
         if (stage.backgroundColor) {
           scene.background = new THREE.Color(stage.backgroundColor);
+        } else if (stage.backgroundImage) {
+          const textureLoader = new THREE.TextureLoader();
+          textureLoader.load(stage.backgroundImage, (texture) => {
+            scene.background = texture;
+          });
         }
         sceneRef.current = scene;
 
@@ -426,6 +460,12 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           controls.target.set(0, 10, 0);
         }
         controls.update();
+
+        // 🎯 监听手动相机操作
+        controls.addEventListener('start', () => {
+          onCameraChange?.(true);
+        });
+
         controlsRef.current = controls;
 
         // Axes Helper (坐标轴辅助)
@@ -723,6 +763,28 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
             // 现在添加到主场景
             scene.add(stageMesh);
             console.log('[MMDPlayerBase] ✅ Stage added to scene (fully loaded)');
+
+            // 🎯 新增：如果舞台有配套的 VMD 动作文件，则进行绑定
+            if (resources.stageMotionPath && stageMesh) {
+              console.log('[MMDPlayerBase] Loading stage motion:', resources.stageMotionPath);
+              const anyLoader = loader as any;
+              const anyHelper = helper as any;
+              const anyStage = stageMesh as any;
+              
+              anyLoader.loadAnimation(
+                resources.stageMotionPath,
+                anyStage,
+                (stageAnimation: any) => {
+                  if (checkCancelled()) return;
+                  anyHelper.add(anyStage, {
+                    animation: stageAnimation
+                  });
+                  console.log('[MMDPlayerBase] ✅ Stage motion bound successfully');
+                },
+                undefined,
+                (err: any) => console.error('Failed to load stage motion:', err)
+              );
+            }
           } catch (err) {
             console.error('Failed to load stage:', err);
           }
@@ -1310,6 +1372,46 @@ ${errorMessage}
     }
   }, [loop]);
 
+  // 监听 stage 变化，动态更新场景属性（不触发完整重载）
+  useEffect(() => {
+    if (!isReadyRef.current) return;
+
+    // 更新背景
+    if (sceneRef.current) {
+      if (stage.backgroundColor) {
+        sceneRef.current.background = new THREE.Color(stage.backgroundColor);
+      } else if (stage.backgroundImage) {
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.load(stage.backgroundImage, (texture) => {
+          if (sceneRef.current) sceneRef.current.background = texture;
+        });
+      }
+    }
+
+    // 更新灯光强度
+    if (sceneRef.current) {
+      sceneRef.current.traverse((obj) => {
+        if (obj instanceof THREE.AmbientLight && stage.ambientLightIntensity !== undefined) {
+          obj.intensity = stage.ambientLightIntensity;
+        }
+        if (obj instanceof THREE.DirectionalLight && stage.directionalLightIntensity !== undefined) {
+          obj.intensity = stage.directionalLightIntensity;
+        }
+      });
+    }
+
+    // 更新相机和目标
+    if (cameraRef.current && stage.cameraPosition) {
+      const pos = stage.cameraPosition as any;
+      cameraRef.current.position.set(pos.x, pos.y, pos.z);
+    }
+    if (controlsRef.current && stage.cameraTarget) {
+      const target = stage.cameraTarget as any;
+      controlsRef.current.target.set(target.x, target.y, target.z);
+      controlsRef.current.update();
+    }
+  }, [stage.backgroundColor, stage.backgroundImage, stage.ambientLightIntensity, stage.directionalLightIntensity, stage.cameraPosition, stage.cameraTarget]);
+
   // 渲染循环
   const animate = () => {
     animationIdRef.current = requestAnimationFrame(animate);
@@ -1323,13 +1425,13 @@ ${errorMessage}
         const elapsed = clockRef.current.elapsedTime;
         const duration = durationRef.current;
         const currentTime = duration > 0 && loopRef.current ? (elapsed % duration) : elapsed;
-        onTimeUpdate?.(currentTime);
+        latestCallbacks.current.onTimeUpdate?.(currentTime);
         
         // 简单的结束检测（非循环模式）
         if (!loopRef.current && duration > 0 && elapsed >= duration) {
           isPlayingRef.current = false;
           clockRef.current.stop();
-          onEnded?.();
+          latestCallbacks.current.onEnded?.();
         }
       }
       

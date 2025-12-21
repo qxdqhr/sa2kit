@@ -54,6 +54,7 @@ export const MMDMusicPlayer = forwardRef<MMDMusicPlayerRef, MMDMusicPlayerProps>
     const [loopMode, setLoopMode] = useState<'list' | 'single' | 'shuffle'>(defaultLoopMode);
     const [showPlaylist, setShowPlaylist] = useState(false);
     const [isUIVisible, setIsUIVisible] = useState(true);
+    const [isCameraManual, setIsCameraManual] = useState(false);
 
     // Refs
     const playerRef = useRef<MMDPlayerBaseRef>(null);
@@ -218,7 +219,7 @@ export const MMDMusicPlayer = forwardRef<MMDMusicPlayerRef, MMDMusicPlayerProps>
               key={currentTrack.id}
               ref={playerRef}
               resources={currentTrack.resources}
-              stage={stage}
+              stage={{ ...stage, ...currentTrack.stage }}
               autoPlay={isStartedRef.current}
               loop={loopMode === 'single'}
               mobileOptimization={mobileOptimization}
@@ -237,6 +238,9 @@ export const MMDMusicPlayer = forwardRef<MMDMusicPlayerRef, MMDMusicPlayerProps>
               onPause={() => {
                 setIsPlaying(false);
                 onPlayPause?.(false);
+              }}
+              onCameraChange={(isManual) => {
+                setIsCameraManual(isManual);
               }}
               onTimeUpdate={handleTimeUpdate}
               onEnded={handleEnded}
@@ -273,10 +277,15 @@ export const MMDMusicPlayer = forwardRef<MMDMusicPlayerRef, MMDMusicPlayerProps>
               currentTime={currentTime}
               duration={duration}
               loopMode={loopMode}
+              isCameraManual={isCameraManual}
               onPlayPause={() => isPlaying ? playerRef.current?.pause() : playerRef.current?.play()}
               onNext={next}
               onPrevious={previous}
               onSeek={(time) => playerRef.current?.seek(time)}
+              onResetCamera={() => {
+                playerRef.current?.resetCamera();
+                setIsCameraManual(false);
+              }}
               onToggleLoop={() => {
                 const modes: ('list' | 'single' | 'shuffle')[] = ['list', 'single', 'shuffle'];
                 const nextMode = modes[(modes.indexOf(loopMode) + 1) % modes.length]!;

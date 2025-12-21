@@ -26,6 +26,18 @@ export interface DialogueLine {
   voicePath?: string;
 }
 
+/** 对话分支选项 */
+export interface DialogueChoice {
+  /** 选项文字 */
+  text: string;
+  /** 跳转到的节点索引 */
+  nextNodeIndex: number;
+  /** 跳转到的对话索引（可选，默认 0） */
+  nextDialogueIndex?: number;
+  /** 选项点击后的回调（可选） */
+  onSelect?: () => void;
+}
+
 /** 视觉小说播放节点 */
 export interface VisualNovelNode {
   /** 唯一标识 */
@@ -36,6 +48,10 @@ export interface VisualNovelNode {
   resources: MMDResources;
   /** 该节点的对话数组（按顺序播放） */
   dialogues: DialogueLine[];
+  /** 节点特定的舞台配置（可选，覆盖全局配置） */
+  stage?: MMDStage;
+  /** 节点结束时的分支选项（可选，若有则显示选项，不自动跳转） */
+  choices?: DialogueChoice[];
   /** 节点开始时播放的背景音乐（可选） */
   bgmPath?: string;
   /** 背景音乐音量 0-1（默认 0.5） */
@@ -136,6 +152,10 @@ export interface DialogueBoxProps {
   onOpenHistory?: () => void;
   /** 快进 */
   onSkip?: () => void;
+  /** 重置相机 */
+  onResetCamera?: () => void;
+  /** 相机是否处于手动调整状态 */
+  isCameraManual?: boolean;
   /** 是否显示控制按钮 */
   showControls?: boolean;
   /** 是否显示快进按钮 */

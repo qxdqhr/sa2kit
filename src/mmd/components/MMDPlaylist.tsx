@@ -41,6 +41,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   const [isListLooping, setIsListLooping] = useState(loop); // 列表循环
   const [showPlaylist, setShowPlaylist] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false); // 切换过渡状态
+  const [isCameraManual, setIsCameraManual] = useState(false);
 
   // Refs
   const playerRef = useRef<MMDPlayerBaseRef>(null);
@@ -255,7 +256,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
           key={currentNode.id}
           ref={playerRef}
           resources={currentNode.resources}
-          stage={stage}
+          stage={{ ...stage, ...currentNode.stage }}
           autoPlay={autoPlay && currentIndex === 0} // 只有第一个节点自动播放
           loop={isLooping} // 单节点循环
           showAxes={showAxes}
@@ -269,6 +270,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
           }}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
+          onCameraChange={(isManual) => setIsCameraManual(isManual)}
           onEnded={handleEnded}
           onError={onError}
         />
@@ -297,6 +299,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
           isFullscreen={isFullscreen}
           isLooping={isLooping}
           isListLooping={isListLooping}
+          isCameraManual={isCameraManual}
           showSettings={true} // 显示播放列表按钮
           showAxes={showAxes}
           showPrevNext={showPrevNext}
@@ -310,6 +313,10 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
           onToggleListLoop={() => setIsListLooping(!isListLooping)}
           onToggleAxes={() => setShowAxes(!showAxes)}
           onOpenSettings={() => setShowPlaylist(!showPlaylist)}
+          onResetCamera={() => {
+            playerRef.current?.resetCamera();
+            setIsCameraManual(false);
+          }}
         />
       </div>
 

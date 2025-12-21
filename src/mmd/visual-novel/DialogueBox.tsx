@@ -67,6 +67,8 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
   onToggleAuto,
   onOpenHistory,
   onSkip,
+  onResetCamera,
+  isCameraManual = false,
   showControls = true,
   showSkipButton = true,
   showAutoButton = true,
@@ -248,6 +250,22 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
                 title="历史记录"
               >
                 📜 历史
+              </button>
+            )}
+            {isCameraManual && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onResetCamera?.();
+                }}
+                className="px-4 py-2 text-xs rounded-xl text-white font-medium hover:text-white transition-all backdrop-blur-lg border border-blue-400/50 hover:border-blue-400 hover:scale-105 active:scale-95 shadow-lg animate-in zoom-in duration-300"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.2))',
+                  boxShadow: '0 4px 16px rgba(59, 130, 246, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+                }}
+                title="恢复初始视角"
+              >
+                🎥 恢复视角
               </button>
             )}
             {showAutoButton && (

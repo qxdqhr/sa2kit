@@ -1,11 +1,12 @@
 import React from 'react';
-import { Play, Pause, Maximize, Minimize, Settings, Grid3x3, Repeat, Repeat1, SkipBack, SkipForward } from 'lucide-react';
+import { Play, Pause, Maximize, Minimize, Settings, Grid3x3, Repeat, Repeat1, SkipBack, SkipForward, Camera } from 'lucide-react';
 
 interface ControlPanelProps {
   isPlaying: boolean;
   isFullscreen: boolean;
   isLooping: boolean; // 是否单节点循环播放
   isListLooping?: boolean; // 是否列表循环（播放列表专用）
+  isCameraManual?: boolean;
   showSettings?: boolean;
   showAxes?: boolean; // 坐标轴是否显示
   showPrevNext?: boolean; // 是否显示上一个/下一个按钮
@@ -20,6 +21,7 @@ interface ControlPanelProps {
   onOpenSettings?: () => void;
   onPrevious?: () => void; // 上一个
   onNext?: () => void; // 下一个
+  onResetCamera?: () => void; // 重置相机
 }
 
 export const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -27,6 +29,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   isFullscreen,
   isLooping,
   isListLooping,
+  isCameraManual = false,
   showSettings,
   showAxes = false,
   showPrevNext = false,
@@ -40,6 +43,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   onOpenSettings,
   onPrevious,
   onNext,
+  onResetCamera,
 }) => {
   return (
     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 transition-opacity duration-300 hover:opacity-100">
@@ -105,6 +109,17 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
           >
             <Repeat1 size={20} />
           </button>
+
+          {/* 相机重置按钮 */}
+          {isCameraManual && onResetCamera && (
+            <button 
+              onClick={onResetCamera}
+              className="rounded-full p-2 bg-blue-500/30 text-blue-400 hover:bg-blue-500/50 hover:text-blue-300 transition-all animate-in zoom-in duration-300"
+              title="恢复初始视角"
+            >
+              <Camera size={20} />
+            </button>
+          )}
 
           {/* 坐标轴切换 */}
           {onToggleAxes && (

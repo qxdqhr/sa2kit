@@ -12,6 +12,7 @@ import { DialogueBox } from './DialogueBox';
 import { HistoryPanel } from './HistoryPanel';
 import { LoadingOverlay } from './LoadingOverlay';
 import { SkipConfirmDialog } from './SkipConfirmDialog';
+import { ChoiceMenu } from './ChoiceMenu';
 import {
   MMDVisualNovelProps,
   MMDVisualNovelRef,
@@ -68,6 +69,8 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     const [isStarted, setIsStarted] = useState(autoStart);
     const [isVmdFinished, setIsVmdFinished] = useState(false);
     const [pendingNodeIndex, setPendingNodeIndex] = useState<number | null>(null);
+    const [showChoices, setShowChoices] = useState(false);
+    const [isCameraManual, setIsCameraManual] = useState(false);
 
     // Refs
     const playerRef = useRef<MMDPlayerBaseRef>(null);
@@ -76,6 +79,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     const typingCompleteRef = useRef(false);
     const isStartedRef = useRef(autoStart); // 用 ref 跟踪 isStarted 的当前值
     const lastAnimationTimeRef = useRef(0);
+    const isVmdFinishedRef = useRef(false);
 
     // 获取当前节点和对话
     const currentNode = nodes[currentNodeIndex];
@@ -114,8 +118,11 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         addToHistory(nextDialogue, currentNodeIndex, nextDialogueIndex);
         onDialogueChange?.(nextDialogue, nextDialogueIndex, currentNodeIndex);
         typingCompleteRef.current = false;
+      } else if (currentNode.choices && currentNode.choices.length > 0) {
+        // 当前节点有分支选项，显示选项菜单
+        setShowChoices(true);
       } else {
-        // 当前节点对话结束，切换到下一个节点
+        // 无分支，自动切换到下一个节点
         const nextNodeIndex = currentNodeIndex + 1;
 
         if (nextNodeIndex < nodes.length) {
@@ -142,7 +149,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
 
         // 如果当前节点有 VMD 动画且未播放完成，且不是强制跳转，则弹出确认框
         const currentResources = nodes[currentNodeIndex]?.resources;
-        if (!force && currentResources?.motionPath && !isVmdFinished) {
+        if (!force && currentResources?.motionPath && !isVmdFinishedRef.current) {
           console.log('[MMDVisualNovel] VMD not finished, showing confirmation');
           setPendingNodeIndex(nodeIndex);
           return;
@@ -155,7 +162,9 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         setIsLoading(true);
         setIsAnimationPlaying(false); // 重置动画播放状态
         setIsVmdFinished(false); // 重置 VMD 完成状态
+        isVmdFinishedRef.current = false; // 同步重置 ref
         setPendingNodeIndex(null); // 清除挂起的跳转
+        setShowChoices(false); // 隐藏选项菜单
         lastAnimationTimeRef.current = 0; // 重置动画时间记录
 
         // 给物理引擎清理时间后再更新节点
@@ -255,6 +264,11 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
 
     // 快进 - 跳到下一个节点
     const handleSkip = useCallback(() => {
+      if (currentNode?.choices && currentNode.choices.length > 0) {
+        setShowChoices(true);
+        return;
+      }
+      
       const nextNodeIndex = currentNodeIndex + 1;
       if (nextNodeIndex < nodes.length) {
         goToNode(nextNodeIndex);
@@ -341,7 +355,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
               key={currentNode.id}
               ref={playerRef}
               resources={currentNode.resources}
-              stage={stage}
+              stage={{ ...stage, ...currentNode.stage }}
               autoPlay={isStarted}
               loop={currentNode.loopAnimation === true}
               mobileOptimization={mobileOptimization}
@@ -362,10 +376,18 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
                 setIsAnimationPlaying(true);
               }}
               onTimeUpdate={(time) => {
-                // 如果当前时间小于上一次记录的时间，说明已经完成了一次循环
-                if (time < lastAnimationTimeRef.current && lastAnimationTimeRef.current > 0) {
-                  if (!isVmdFinished) {
-                    console.log('[MMDVisualNovel] VMD loop detected, marking as finished');
+                const duration = playerRef.current?.getDuration() || 0;
+                
+                // 判定动画完成的条件：
+                // 1. 播放进度超过 98%
+                // 2. 或者检测到时间回跳（循环发生）
+                const isNearEnd = duration > 0 && time > duration * 0.98;
+                const isLooped = time < lastAnimationTimeRef.current && lastAnimationTimeRef.current > 0;
+
+                if (isNearEnd || isLooped) {
+                  if (!isVmdFinishedRef.current) {
+                    console.log('[MMDVisualNovel] VMD finished/looped, marking as finished');
+                    isVmdFinishedRef.current = true;
                     setIsVmdFinished(true);
                   }
                 }
@@ -373,7 +395,11 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
               }}
               onEnded={() => {
                 console.log('[MMDVisualNovel] VMD ended, marking as finished');
+                isVmdFinishedRef.current = true;
                 setIsVmdFinished(true);
+              }}
+              onCameraChange={(isManual) => {
+                setIsCameraManual(isManual);
               }}
               onError={onError}
             />
@@ -402,12 +428,13 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
 
         {/* 对话框 - 仅在动画开始播放后显示 */}
         {(() => {
-          const shouldShow = isStarted && isAnimationPlaying && currentDialogue && !showHistory;
+          const shouldShow = isStarted && isAnimationPlaying && currentDialogue && !showHistory && !showChoices;
           console.log('[MMDVisualNovel] DialogueBox render condition:', {
             isStarted,
             isAnimationPlaying,
             hasDialogue: !!currentDialogue,
             showHistory,
+            showChoices,
             shouldShow,
             dialogue: currentDialogue
           });
@@ -425,6 +452,11 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
               onToggleAuto={toggleAutoMode}
               onOpenHistory={() => setShowHistory(true)}
               onSkip={handleSkip}
+              onResetCamera={() => {
+                playerRef.current?.resetCamera();
+                setIsCameraManual(false);
+              }}
+              isCameraManual={isCameraManual}
               showControls={true}
               showSkipButton={showSkipButton}
               showAutoButton={showAutoButton}
@@ -443,6 +475,25 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
             }}
             onCancel={() => {
               setPendingNodeIndex(null);
+            }}
+          />
+        )}
+
+        {/* 分支选项菜单 */}
+        {showChoices && currentNode.choices && (
+          <ChoiceMenu
+            choices={currentNode.choices}
+            theme={dialogueTheme}
+            onSelect={(choice) => {
+              choice.onSelect?.();
+              if (choice.nextNodeIndex === currentNodeIndex) {
+                // 跳转到当前节点的特定对话
+                goToDialogue(choice.nextDialogueIndex || 0);
+                setShowChoices(false);
+              } else {
+                // 跳转到其他节点
+                goToNode(choice.nextNodeIndex, true);
+              }
             }}
           />
         )}

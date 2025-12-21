@@ -12,6 +12,8 @@ export interface MusicTrack {
   coverUrl?: string;
   /** MMD 资源（模型、动作、音频等） */
   resources: MMDResources;
+  /** 曲目特定的舞台配置（可选，覆盖全局配置） */
+  stage?: MMDStage;
   /** 预计时长（秒） */
   duration?: number;
 }

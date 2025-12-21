@@ -12,6 +12,8 @@ export interface MMDResources {
   audioPath?: string;
   /** 舞台/场景模型路径 (.pmx/.x) - 可选 */
   stageModelPath?: string;
+  /** 舞台/场景动作路径 (.vmd) - 可选 */
+  stageMotionPath?: string;
   /** 附加动作文件 - 可选 */
   additionalMotions?: string[];
 }
@@ -93,6 +95,8 @@ export interface MMDPlayerBaseRef {
   isPlaying: () => boolean;
   /** 截图并返回 Base64 字符串 */
   snapshot: () => string;
+  /** 重置相机到初始位置 */
+  resetCamera: () => void;
 }
 
 /** 基础播放器属性 */
@@ -121,6 +125,7 @@ export interface MMDPlayerBaseProps {
   onPause?: () => void;
   onEnded?: () => void;
   onTimeUpdate?: (time: number) => void;
+  onCameraChange?: (isManual: boolean) => void;
   
   /** 样式 */
   className?: string;
@@ -156,6 +161,8 @@ export interface MMDPlaylistNode {
   id: string;
   name: string;
   resources: MMDResources;
+  /** 节点特定的舞台配置（可选，覆盖全局配置） */
+  stage?: MMDStage;
   /** 该节点是否循环播放 */
   loop?: boolean;
   /** 预计时长（秒）- 用于进度计算 */

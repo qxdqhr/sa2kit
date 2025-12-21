@@ -9,7 +9,8 @@ import {
   Shuffle,
   Volume2,
   VolumeX,
-  ListMusic
+  ListMusic,
+  Camera
 } from 'lucide-react';
 
 export interface MusicControlsProps {
@@ -17,12 +18,14 @@ export interface MusicControlsProps {
   currentTime: number;
   duration: number;
   loopMode: 'list' | 'single' | 'shuffle';
+  isCameraManual?: boolean;
   onPlayPause: () => void;
   onNext: () => void;
   onPrevious: () => void;
   onSeek: (time: number) => void;
   onToggleLoop: () => void;
   onTogglePlaylist: () => void;
+  onResetCamera?: () => void;
   className?: string;
 }
 
@@ -31,12 +34,14 @@ export const MusicControls: React.FC<MusicControlsProps> = ({
   currentTime,
   duration,
   loopMode,
+  isCameraManual = false,
   onPlayPause,
   onNext,
   onPrevious,
   onSeek,
   onToggleLoop,
   onTogglePlaylist,
+  onResetCamera,
   className = '',
 }) => {
   const formatTime = (seconds: number) => {
@@ -105,6 +110,16 @@ export const MusicControls: React.FC<MusicControlsProps> = ({
 
         {/* 附加功能按钮 */}
         <div className="flex items-center gap-4 w-32 justify-end">
+          {isCameraManual && (
+            <button 
+              onClick={onResetCamera}
+              className="text-blue-400 hover:text-blue-300 transition-colors animate-in zoom-in duration-300"
+              title="恢复初始视角"
+            >
+              <Camera className="w-5 h-5" />
+            </button>
+          )}
+
           <button 
             onClick={onToggleLoop}
             className="text-white/60 hover:text-white transition-colors"
