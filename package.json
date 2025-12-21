@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.4.1",
+  "version": "1.5.1",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -168,6 +168,16 @@
       "import": "./dist/mmd/server/index.mjs",
       "require": "./dist/mmd/server/index.js"
     },
+    "./audioDetection": {
+      "types": "./dist/audioDetection/index.d.ts",
+      "import": "./dist/audioDetection/index.mjs",
+      "require": "./dist/audioDetection/index.js"
+    },
+    "./imageCrop": {
+      "types": "./dist/imageCrop/index.d.ts",
+      "import": "./dist/imageCrop/index.mjs",
+      "require": "./dist/imageCrop/index.js"
+    },
     "./storage/hooks": {
       "types": "./dist/storage/index.d.ts",
       "import": "./dist/storage/index.mjs",
@@ -177,6 +187,36 @@
       "types": "./dist/testYourself/index.d.ts",
       "import": "./dist/testYourself/index.mjs",
       "require": "./dist/testYourself/index.js"
+    },
+    "./testYourself/admin": {
+      "types": "./dist/testYourself/admin/index.d.ts",
+      "import": "./dist/testYourself/admin/index.mjs",
+      "require": "./dist/testYourself/admin/index.js"
+    },
+    "./testYourself/server": {
+      "types": "./dist/testYourself/server/index.d.ts",
+      "import": "./dist/testYourself/server/index.mjs",
+      "require": "./dist/testYourself/server/index.js"
+    },
+    "./ai/ocr": {
+      "types": "./dist/ai/ocr/index.d.ts",
+      "import": "./dist/ai/ocr/index.mjs",
+      "require": "./dist/ai/ocr/index.js"
+    },
+    "./ai/background-removal": {
+      "types": "./dist/ai/background-removal/index.d.ts",
+      "import": "./dist/ai/background-removal/index.mjs",
+      "require": "./dist/ai/background-removal/index.js"
+    },
+    "./ai/sentiment-analysis": {
+      "types": "./dist/ai/sentiment-analysis/index.d.ts",
+      "import": "./dist/ai/sentiment-analysis/index.mjs",
+      "require": "./dist/ai/sentiment-analysis/index.js"
+    },
+    "./ai/text-generation": {
+      "types": "./dist/ai/text-generation/index.d.ts",
+      "import": "./dist/ai/text-generation/index.mjs",
+      "require": "./dist/ai/text-generation/index.js"
     }
   },
   "files": [
@@ -257,12 +297,16 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@imgly/background-removal": "^1.7.0",
+    "@xenova/transformers": "^2.17.2",
     "adm-zip": "^0.5.16",
     "bcryptjs": "^3.0.3",
     "framer-motion": "^12.23.24",
     "jsonwebtoken": "^9.0.2",
     "jszip": "^3.10.1",
+    "onnxruntime-web": "1.21.0",
     "postgres": "^3.4.7",
+    "tesseract.js": "^7.0.0",
     "three": "^0.181.2",
     "three-stdlib": "^2.36.0",
     "uuid": "^13.0.0",

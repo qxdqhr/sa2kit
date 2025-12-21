@@ -34,4 +34,5 @@ pnpm-debug.log*
 # Temporary files
 *.tmp
 .cache
-
+examples/
+*.md
