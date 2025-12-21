@@ -18,11 +18,12 @@ export async function loadImageFromFile(file: File): Promise<ImageInfo> {
       
       img.onload = () => {
         resolve({
-          file,
-          dataUrl,
           width: img.naturalWidth,
           height: img.naturalHeight,
+          naturalWidth: img.naturalWidth,
+          naturalHeight: img.naturalHeight,
           image: img,
+          file,
         });
       };
       
@@ -56,6 +57,10 @@ export async function cropGridCell(
     quality = 0.92,
     filenamePrefix = 'crop',
   } = options;
+
+  if (!imageInfo.image) {
+    throw new Error('图片资源未加载');
+  }
 
   // 创建离屏canvas
   const canvas = document.createElement('canvas');
@@ -102,12 +107,16 @@ export async function cropGridCell(
   });
 
   // 生成文件名
-  const extension = format.split('/')[1];
+  const extension = format.split('/')[1] || 'png';
   const filename = `${filenamePrefix}_r${cell.row}_c${cell.column}.${extension}`;
 
   return {
-    cell,
     blob,
+    dataUrl: canvas.toDataURL(format, quality),
+    index: cell.row * 1000 + cell.column, // 简单的索引生成
+    row: cell.row,
+    column: cell.column,
+    cell,
     filename,
   };
 }
@@ -161,8 +170,8 @@ export async function generateCellPreview(
   canvas.height = cellHeight * scale;
   
   const ctx = canvas.getContext('2d');
-  if (!ctx) {
-    throw new Error('Canvas context 创建失败');
+  if (!ctx || !imageInfo.image) {
+    throw new Error('Canvas context 创建失败或图片未加载');
   }
 
   ctx.drawImage(
@@ -218,6 +227,9 @@ export function constrainOffset(
     offsetY: constrainedY,
   };
 }
+
+
+
 
 
 

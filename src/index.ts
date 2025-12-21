@@ -3,18 +3,23 @@
  * A modern, type-safe React utility library with cross-platform support
  *
  * Version: 0.3.0
- * Features: Logger, Utils, Storage, Hooks, File Upload, Data Export, i18n, Analytics, Audio Detection
+ * Features: Logger, Utils, Storage, Hooks, File Upload, Data Export, i18n, Analytics
  *
  * Note: Import the following modules using subpath exports:
  * - import { ... } from '@qhr123/sa2kit/universalFile'
  * - import { ... } from '@qhr123/sa2kit/universalExport'
  * - import { ... } from '@qhr123/sa2kit/i18n'
  * - import { ... } from '@qhr123/sa2kit/analytics'
- * - import { ... } from '@qhr123/sa2kit/audioDetection'
  */
 
 // Logger
 export * from './logger';
+
+// AI
+export * from './ai/ocr';
+export * from './ai/background-removal';
+export * from './ai/sentiment-analysis';
+export * from './ai/text-generation';
 
 // Utils
 export * from './utils';
@@ -30,6 +35,5 @@ export * from './storage/hooks';
 // - Data Export: import { universalExportClient } from '@qhr123/sa2kit/universalExport';
 // - Internationalization: import { createI18n, useTranslation } from '@qhr123/sa2kit/i18n';
 // - Analytics: import { Analytics } from '@qhr123/sa2kit/analytics';
-// - Audio Detection: import { AudioDetectionDisplay, useAudioDetection } from '@qhr123/sa2kit/audioDetection';
 
 

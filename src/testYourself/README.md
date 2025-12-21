@@ -275,9 +275,212 @@ localStorage.removeItem('test-yourself-result');
 - Fetch API
 - ES6+
 
-## 🚧 未来功能（配置化接口已预留）
+## 🎯 多套配置管理（新功能）
 
-- [ ] 管理后台配置结果数据
+### 使用 Query 参数加载不同配置
+
+```tsx
+import { TestYourself } from 'sa2kit/testYourself';
+
+// 通过 configId 加载指定配置
+function App() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const configId = searchParams.get('configId');
+  
+  return <TestYourself configId={configId || undefined} />;
+}
+
+// 访问示例：
+// /test-yourself?configId=config_12345
+```
+
+### 配置管理后台
+
+模块提供了完整的配置管理后台，支持创建、编辑、删除多套配置：
+
+```tsx
+import { ConfigManager, ConfigService } from 'sa2kit/testYourself';
+
+const configService = new ConfigService();
+
+function AdminPanel() {
+  return (
+    <ConfigManager
+      configService={configService}
+      onConfigChange={(configs) => {
+        console.log('配置已更新:', configs);
+      }}
+      // 可选：提供图片上传函数
+      onImageUpload={async (file) => {
+        // 上传到你的服务器
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        const data = await response.json();
+        return data.url;
+      }}
+    />
+  );
+}
+```
+
+### 配置列表组件
+
+```tsx
+import { ConfigList, ConfigService } from 'sa2kit/testYourself';
+
+const configService = new ConfigService();
+
+function ConfigSelection() {
+  return (
+    <ConfigList
+      configService={configService}
+      onSelect={(id) => {
+        // 跳转到测试页面
+        window.location.href = `/test-yourself?configId=${id}`;
+      }}
+      showActions={true}
+      showPreviewLink={true}
+      previewBaseUrl="/test-yourself"
+    />
+  );
+}
+```
+
+### 配置服务 API
+
+```tsx
+import { ConfigService, createConfigService } from 'sa2kit/testYourself';
+
+// 创建配置服务实例
+const configService = createConfigService({
+  storageType: 'localStorage', // 或 'memory'
+  enableCache: true,
+});
+
+// 创建新配置
+const newConfig = await configService.createConfig(
+  '动物主题测试',
+  {
+    gameTitle: '测测你是什么动物',
+    gameDescription: '长按按钮，发现你的动物属性',
+    buttonText: '长按开始',
+    longPressDuration: 2000,
+    results: [
+      {
+        id: '1',
+        title: '可爱的猫咪',
+        description: '你是一只慵懒优雅的猫咪',
+        image: '🐱',
+        imageType: 'emoji',
+      },
+      // ... 更多结果
+    ],
+  },
+  '这是一个动物主题的趣味测试',
+  false // 是否设为默认配置
+);
+
+// 获取配置
+const config = await configService.getConfig('config_id');
+
+// 获取所有配置
+const allConfigs = await configService.getAllConfigs();
+
+// 获取配置列表（精简版）
+const configList = await configService.getConfigList();
+
+// 更新配置
+await configService.updateConfig('config_id', {
+  name: '新名称',
+  description: '新描述',
+});
+
+// 删除配置
+await configService.deleteConfig('config_id');
+
+// 设置默认配置
+await configService.setDefaultConfig('config_id');
+
+// 获取默认配置
+const defaultConfig = await configService.getDefaultConfig();
+
+// 导出配置
+const jsonString = await configService.exportConfig('config_id');
+
+// 导入配置
+const imported = await configService.importConfig(jsonString);
+
+// 复制配置
+const duplicated = await configService.duplicateConfig('config_id', '新名称');
+```
+
+### 自定义存储适配器
+
+如果需要将配置保存到数据库或远程服务器，可以实现自定义存储适配器：
+
+```tsx
+import { IConfigStorage, ConfigService } from 'sa2kit/testYourself';
+import type { SavedConfig } from 'sa2kit/testYourself';
+
+class CustomStorageAdapter implements IConfigStorage {
+  async saveConfig(config: SavedConfig): Promise<void> {
+    // 保存到数据库
+    await fetch('/api/configs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config),
+    });
+  }
+
+  async getConfig(id: string): Promise<SavedConfig | null> {
+    const response = await fetch(`/api/configs/${id}`);
+    if (!response.ok) return null;
+    return response.json();
+  }
+
+  async getAllConfigs(): Promise<SavedConfig[]> {
+    const response = await fetch('/api/configs');
+    return response.json();
+  }
+
+  async deleteConfig(id: string): Promise<void> {
+    await fetch(`/api/configs/${id}`, { method: 'DELETE' });
+  }
+
+  async updateConfig(id: string, config: SavedConfig): Promise<void> {
+    await fetch(`/api/configs/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config),
+    });
+  }
+
+  async setDefaultConfig(id: string): Promise<void> {
+    await fetch(`/api/configs/${id}/set-default`, { method: 'POST' });
+  }
+
+  async getDefaultConfig(): Promise<SavedConfig | null> {
+    const response = await fetch('/api/configs/default');
+    if (!response.ok) return null;
+    return response.json();
+  }
+}
+
+// 使用自定义适配器
+const configService = new ConfigService({
+  customStorage: new CustomStorageAdapter(),
+});
+```
+
+## 🚧 未来功能
+
+- [x] 管理后台配置结果数据 ✅
+- [x] 多套配置管理 ✅
+- [x] 配置导入导出 ✅
 - [ ] 自定义主题和样式
 - [ ] 结果分享功能
 - [ ] 多语言支持
@@ -290,6 +493,9 @@ MIT License
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
+
+
+
 
 
 

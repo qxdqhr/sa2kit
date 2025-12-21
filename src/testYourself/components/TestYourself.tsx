@@ -6,7 +6,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import type { TestYourselfProps, TestResult, TestStatus, DeviceFingerprint } from '../types';
+import type { TestYourselfProps, TestResult, TestStatus, DeviceFingerprint, TestConfig } from '../types';
 import { 
   getDeviceFingerprint, 
   tryGetIPAddress, 
@@ -18,10 +18,47 @@ import { DEFAULT_RESULTS } from '../data/defaultResults';
 const STORAGE_KEY = 'test-yourself-result';
 
 export const TestYourself: React.FC<TestYourselfProps> = ({
-  config,
+  config: propConfig,
+  configId,
   onResult,
   className = '',
 }) => {
+  const [loadedConfig, setLoadedConfig] = useState<TestConfig | null>(null);
+  const [configLoading, setConfigLoading] = useState(false);
+
+  // 加载配置（如果提供了 configId）
+  useEffect(() => {
+    const loadConfig = async () => {
+      if (configId) {
+        setConfigLoading(true);
+        try {
+          // 动态导入 ConfigService
+          const { getDefaultConfigService } = await import('../server/ConfigService');
+          const service = getDefaultConfigService();
+          const savedConfig = await service.getConfig(configId);
+          if (savedConfig) {
+            setLoadedConfig(savedConfig.config);
+          } else {
+            console.warn(`配置 ${configId} 不存在，使用默认配置`);
+          }
+        } catch (error) {
+          console.error('加载配置失败:', error);
+        } finally {
+          setConfigLoading(false);
+        }
+      }
+    };
+
+    loadConfig();
+  }, [configId]);
+
+  // 使用加载的配置或属性传入的配置
+  const config = loadedConfig || propConfig || {
+    gameTitle: '测测你是什么',
+    gameDescription: '长按按钮，发现你的专属属性',
+    results: DEFAULT_RESULTS,
+  };
+
   const {
     gameTitle,
     gameDescription,
@@ -46,8 +83,16 @@ export const TestYourself: React.FC<TestYourselfProps> = ({
   // 初始化：检查localStorage和获取IP
   useEffect(() => {
     const initializeTest = async () => {
+      // 等待配置加载完成
+      if (configLoading) {
+        return;
+      }
+
+      // 使用不同的 storage key（如果有 configId）
+      const storageKey = configId ? `${STORAGE_KEY}_${configId}` : STORAGE_KEY;
+      
       // 检查localStorage中是否已有结果
-      const savedResult = localStorage.getItem(STORAGE_KEY);
+      const savedResult = localStorage.getItem(storageKey);
       if (savedResult) {
         try {
           const parsed = JSON.parse(savedResult);
@@ -72,7 +117,7 @@ export const TestYourself: React.FC<TestYourselfProps> = ({
     };
 
     initializeTest();
-  }, [enableIPFetch]);
+  }, [enableIPFetch, configLoading, configId]);
 
   // 计算并保存结果
   const calculateResult = async (): Promise<TestResult> => {
@@ -105,8 +150,9 @@ export const TestYourself: React.FC<TestYourselfProps> = ({
 
       console.log('计算结果成功:', selectedResult);
 
-      // 保存到localStorage
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedResult));
+      // 保存到localStorage（使用不同的 key）
+      const storageKey = configId ? `${STORAGE_KEY}_${configId}` : STORAGE_KEY;
+      localStorage.setItem(storageKey, JSON.stringify(selectedResult));
 
       return selectedResult;
     } catch (error) {
@@ -243,7 +289,8 @@ export const TestYourself: React.FC<TestYourselfProps> = ({
 
   // 重新测试
   const handleReset = () => {
-    localStorage.removeItem(STORAGE_KEY);
+    const storageKey = configId ? `${STORAGE_KEY}_${configId}` : STORAGE_KEY;
+    localStorage.removeItem(storageKey);
     setResult(null);
     setStatus('idle');
     setPressProgress(0);

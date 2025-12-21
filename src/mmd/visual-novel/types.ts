@@ -160,7 +160,7 @@ export interface DialogueHistoryItem {
 /** 视觉小说组件 Ref 接口 */
 export interface MMDVisualNovelRef {
   /** 跳转到指定节点 */
-  goToNode: (nodeIndex: number) => void;
+  goToNode: (nodeIndex: number, force?: boolean) => void;
   /** 跳转到指定对话 */
   goToDialogue: (dialogueIndex: number) => void;
   /** 获取当前节点索引 */
@@ -174,4 +174,7 @@ export interface MMDVisualNovelRef {
   /** 跳过当前打字动画 */
   skipTyping: () => void;
 }
+
+
+
 

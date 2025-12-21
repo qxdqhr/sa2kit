@@ -97,8 +97,12 @@ export const ImageGridCropper: React.FC<ImageGridCropperProps> = ({
           id: `cell_${row}_${col}`,
           row,
           column: col,
+          x: offsetX,
+          y: offsetY,
           offsetX,
           offsetY,
+          width: cellWidth,
+          height: cellHeight,
           selected: true, // 默认全选
         });
       }
@@ -156,6 +160,8 @@ export const ImageGridCropper: React.FC<ImageGridCropperProps> = ({
 
     canvas.width = imageInfo.width * scale;
     canvas.height = imageInfo.height * scale;
+
+    if (!imageInfo.image) return;
 
     // 绘制图片
     ctx.drawImage(imageInfo.image, 0, 0, canvas.width, canvas.height);
@@ -343,7 +349,7 @@ export const ImageGridCropper: React.FC<ImageGridCropperProps> = ({
             点击选择图片或拖拽文件到这里
           </p>
           <p className="text-sm text-gray-500">支持 PNG, JPG, WEBP 等格式</p>
-          {imageInfo && (
+          {imageInfo && imageInfo.file && (
             <p className="mt-4 text-sm text-green-600 dark:text-green-400">
               ✓ 已上传: {imageInfo.file.name} ({imageInfo.width} × {imageInfo.height})
             </p>
@@ -466,6 +472,9 @@ export const ImageGridCropper: React.FC<ImageGridCropperProps> = ({
 };
 
 export default ImageGridCropper;
+
+
+
 
 
 

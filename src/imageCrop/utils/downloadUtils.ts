@@ -20,8 +20,9 @@ export async function downloadAsZip(
   const zip = new JSZip();
   
   // 添加所有裁剪结果到ZIP
-  results.forEach((result) => {
-    zip.file(result.filename, result.blob);
+  results.forEach((result, idx) => {
+    const filename = result.filename || `crop_${idx}.png`;
+    zip.file(filename, result.blob);
   });
 
   // 生成ZIP文件
@@ -67,7 +68,8 @@ export async function downloadMultipleFiles(
     const result = results[i];
     if (!result) continue;
     
-    downloadBlob(result.blob, result.filename);
+    const filename = result.filename || `crop_${i}.png`;
+    downloadBlob(result.blob, filename);
     
     // 添加延迟避免浏览器阻止多个下载
     if (i < results.length - 1) {
@@ -95,6 +97,9 @@ export function formatFileSize(bytes: number): string {
   
   return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`;
 }
+
+
+
 
 
 

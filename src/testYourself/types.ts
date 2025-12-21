@@ -93,12 +93,62 @@ export type TestStatus = 'idle' | 'pressing' | 'completed';
  */
 export interface TestYourselfProps {
   /** 配置 */
-  config: TestConfig;
+  config?: TestConfig;
+  /** 配置ID (通过 query 参数指定) */
+  configId?: string;
   /** 结果回调 */
   onResult?: (result: TestResult) => void;
   /** 自定义样式类名 */
   className?: string;
 }
+
+/**
+ * 保存的配置项
+ */
+export interface SavedConfig {
+  /** 配置唯一ID */
+  id: string;
+  /** 配置名称 */
+  name: string;
+  /** 配置描述 */
+  description?: string;
+  /** 测试配置 */
+  config: TestConfig;
+  /** 创建时间 */
+  createdAt: number;
+  /** 更新时间 */
+  updatedAt: number;
+  /** 是否为默认配置 */
+  isDefault?: boolean;
+}
+
+/**
+ * 图片上传结果
+ */
+export interface UploadResult {
+  /** 图片 URL 或 Base64 */
+  url: string;
+  /** 文件名 */
+  filename: string;
+  /** 文件大小(字节) */
+  size: number;
+  /** 图片类型 */
+  type: string;
+}
+
+/**
+ * 配置列表项
+ */
+export interface ConfigListItem {
+  id: string;
+  name: string;
+  description?: string;
+  resultCount: number;
+  createdAt: number;
+  updatedAt: number;
+  isDefault?: boolean;
+}
+
 
 
 

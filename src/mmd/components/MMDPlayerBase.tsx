@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import * as THREE from 'three';
 import { OrbitControls, MMDLoader, MMDAnimationHelper } from 'three-stdlib';
+
+// 🚀 开启 Three.js 全局缓存，确保 CDN 资源在被浏览器缓存后，能直接从内存读取
+if (typeof window !== 'undefined') {
+  THREE.Cache.enabled = true;
+}
+
 import { loadAmmo } from '../utils/ammo-loader';
 import { MMDPlayerBaseProps, MMDPlayerBaseRef } from '../types';
 
@@ -571,6 +577,76 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
 
         scene.add(mesh);
         console.log('[MMDPlayerBase] ✅ Model added to scene (fully loaded)');
+
+        // 🎯 自动降级系统 - 针对移动设备优化
+        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                               (window.innerWidth <= 768);
+        
+        if (isMobileDevice) {
+          console.log('[MMDPlayerBase] 📱 Mobile device detected, applying optimizations...');
+          
+          // 方案 A: 使用骨骼纹理（如果支持）
+          if (renderer.capabilities.vertexTextures) {
+            console.log('[MMDPlayerBase]   ✅ Vertex textures supported');
+          } else {
+            console.log('[MMDPlayerBase]   ⚠️ Vertex textures NOT supported');
+          }
+          
+          // 方案 B: 简化材质
+          let simplifiedMaterialCount = 0;
+          mesh.traverse((child) => {
+            if (child instanceof THREE.Mesh || child instanceof THREE.SkinnedMesh) {
+              const materials = Array.isArray(child.material) ? child.material : [child.material];
+              materials.forEach((material, idx) => {
+                if (material instanceof THREE.MeshPhongMaterial || 
+                    material instanceof THREE.MeshStandardMaterial) {
+                  // 保存原始材质的颜色
+                  const originalColor = material.color?.clone();
+                  const originalMap = material.map;
+                  
+                  // 创建简化的 MeshBasicMaterial
+                  const basicMaterial = new THREE.MeshBasicMaterial({
+                    color: originalColor || 0xffffff,
+                    map: originalMap,
+                    transparent: material.transparent,
+                    opacity: material.opacity,
+                    side: material.side,
+                    alphaTest: material.alphaTest
+                  });
+                  
+                  // 替换材质
+                  if (Array.isArray(child.material)) {
+                    child.material[idx] = basicMaterial;
+                  } else {
+                    child.material = basicMaterial;
+                  }
+                  
+                  // 清理旧材质
+                  material.dispose();
+                  simplifiedMaterialCount++;
+                }
+              });
+            }
+          });
+          
+          if (simplifiedMaterialCount > 0) {
+            console.log(`[MMDPlayerBase]   ✅ Simplified ${simplifiedMaterialCount} materials to MeshBasicMaterial`);
+          }
+          
+          // 方案 C: 限制骨骼数量（检查并警告）
+          const MAX_BONES = 64;
+          if (mesh.skeleton) {
+            const boneCount = mesh.skeleton.bones.length;
+            if (boneCount > MAX_BONES) {
+              console.warn(`[MMDPlayerBase]   ⚠️ Model has ${boneCount} bones (max recommended: ${MAX_BONES})`);
+              console.warn(`[MMDPlayerBase]   This may cause performance issues on mobile devices`);
+            } else {
+              console.log(`[MMDPlayerBase]   ✅ Bone count: ${boneCount} (within limit)`);
+            }
+          }
+          
+          console.log('[MMDPlayerBase] 📱 Mobile optimizations applied');
+        }
 
         // 6.3 加载相机动画
         if (resources.cameraPath) {

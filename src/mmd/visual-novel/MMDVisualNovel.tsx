@@ -11,6 +11,7 @@ import { MMDPlayerBaseRef } from '../types';
 import { DialogueBox } from './DialogueBox';
 import { HistoryPanel } from './HistoryPanel';
 import { LoadingOverlay } from './LoadingOverlay';
+import { SkipConfirmDialog } from './SkipConfirmDialog';
 import {
   MMDVisualNovelProps,
   MMDVisualNovelRef,
@@ -65,6 +66,8 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     const [showHistory, setShowHistory] = useState(false);
     const [history, setHistory] = useState<DialogueHistoryItem[]>([]);
     const [isStarted, setIsStarted] = useState(autoStart);
+    const [isVmdFinished, setIsVmdFinished] = useState(false);
+    const [pendingNodeIndex, setPendingNodeIndex] = useState<number | null>(null);
 
     // Refs
     const playerRef = useRef<MMDPlayerBaseRef>(null);
@@ -72,6 +75,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     const autoTimerRef = useRef<NodeJS.Timeout | null>(null);
     const typingCompleteRef = useRef(false);
     const isStartedRef = useRef(autoStart); // 用 ref 跟踪 isStarted 的当前值
+    const lastAnimationTimeRef = useRef(0);
 
     // 获取当前节点和对话
     const currentNode = nodes[currentNodeIndex];
@@ -127,14 +131,22 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
       }
     }, [currentNode, currentDialogueIndex, currentNodeIndex, nodes.length, loop, addToHistory, onDialogueChange, onScriptComplete]);
 
-    // 切换到指定节点
+    // 跳转到指定节点
     const goToNode = useCallback(
-      (nodeIndex: number) => {
+      (nodeIndex: number, force: boolean = false) => {
         if (nodeIndex < 0 || nodeIndex >= nodes.length) return;
         if (isTransitioning) return;
 
         const node = nodes[nodeIndex];
         if (!node) return;
+
+        // 如果当前节点有 VMD 动画且未播放完成，且不是强制跳转，则弹出确认框
+        const currentResources = nodes[currentNodeIndex]?.resources;
+        if (!force && currentResources?.motionPath && !isVmdFinished) {
+          console.log('[MMDVisualNovel] VMD not finished, showing confirmation');
+          setPendingNodeIndex(nodeIndex);
+          return;
+        }
 
         console.log(`[MMDVisualNovel] Transitioning to node ${nodeIndex}`);
 
@@ -142,6 +154,9 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         setIsTransitioning(true);
         setIsLoading(true);
         setIsAnimationPlaying(false); // 重置动画播放状态
+        setIsVmdFinished(false); // 重置 VMD 完成状态
+        setPendingNodeIndex(null); // 清除挂起的跳转
+        lastAnimationTimeRef.current = 0; // 重置动画时间记录
 
         // 给物理引擎清理时间后再更新节点
         setTimeout(() => {
@@ -168,7 +183,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
           }, 100);
         }, 300);
       },
-      [nodes, isTransitioning, addToHistory, onNodeChange, onDialogueChange]
+      [nodes, isTransitioning, addToHistory, onNodeChange, onDialogueChange, currentNodeIndex, isVmdFinished]
     );
 
     // 跳转到指定对话
@@ -346,6 +361,20 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
                 console.log('[MMDVisualNovel] MMDPlayerBase onPlay called');
                 setIsAnimationPlaying(true);
               }}
+              onTimeUpdate={(time) => {
+                // 如果当前时间小于上一次记录的时间，说明已经完成了一次循环
+                if (time < lastAnimationTimeRef.current && lastAnimationTimeRef.current > 0) {
+                  if (!isVmdFinished) {
+                    console.log('[MMDVisualNovel] VMD loop detected, marking as finished');
+                    setIsVmdFinished(true);
+                  }
+                }
+                lastAnimationTimeRef.current = time;
+              }}
+              onEnded={() => {
+                console.log('[MMDVisualNovel] VMD ended, marking as finished');
+                setIsVmdFinished(true);
+              }}
               onError={onError}
             />
           )}
@@ -403,6 +432,20 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
             />
           ) : null;
         })()}
+
+        {/* 确认跳过动画弹窗 */}
+        {pendingNodeIndex !== null && (
+          <SkipConfirmDialog
+            onConfirm={() => {
+              if (pendingNodeIndex !== null) {
+                goToNode(pendingNodeIndex, true);
+              }
+            }}
+            onCancel={() => {
+              setPendingNodeIndex(null);
+            }}
+          />
+        )}
 
         {/* 历史记录面板 */}
         {showHistory && (
