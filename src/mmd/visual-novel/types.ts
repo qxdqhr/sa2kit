@@ -24,16 +24,33 @@ export interface DialogueLine {
   expression?: string;
   /** 对话时播放的音效（可选） */
   voicePath?: string;
+  /** 对话中插入的分支选项（可选，若有则显示选项） */
+  choices?: DialogueChoice[];
+}
+
+/** 分支判定逻辑 */
+export interface BranchCondition {
+  /** 变量名 */
+  key: string;
+  /** 变量值与节点索引的映射 */
+  map: Record<string | number, number>;
+  /** 默认跳转的节点索引 */
+  defaultIndex: number;
 }
 
 /** 对话分支选项 */
 export interface DialogueChoice {
   /** 选项文字 */
   text: string;
-  /** 跳转到的节点索引 */
-  nextNodeIndex: number;
+  /** 跳转到的节点索引（可选，若不填则继续当前剧情） */
+  nextNodeIndex?: number;
   /** 跳转到的对话索引（可选，默认 0） */
   nextDialogueIndex?: number;
+  /** 设置变量（可选，用于后续剧情判定） */
+  setVariable?: {
+    key: string;
+    value: string | number | boolean;
+  };
   /** 选项点击后的回调（可选） */
   onSelect?: () => void;
 }
@@ -50,8 +67,10 @@ export interface VisualNovelNode {
   dialogues: DialogueLine[];
   /** 节点特定的舞台配置（可选，覆盖全局配置） */
   stage?: MMDStage;
-  /** 节点结束时的分支选项（可选，若有则显示选项，不自动跳转） */
+  /** 节点结束时的分支选项（可选，已废弃，建议使用 DialogueLine.choices） */
   choices?: DialogueChoice[];
+  /** 节点结束时的分支判定逻辑（可选，根据变量跳转不同节点） */
+  nextCondition?: BranchCondition;
   /** 节点开始时播放的背景音乐（可选） */
   bgmPath?: string;
   /** 背景音乐音量 0-1（默认 0.5） */
@@ -189,6 +208,10 @@ export interface MMDVisualNovelRef {
   getCurrentDialogueIndex: () => number;
   /** 获取对话历史 */
   getHistory: () => DialogueHistoryItem[];
+  /** 获取当前剧情变量 */
+  getVariables: () => Record<string, string | number | boolean>;
+  /** 设置剧情变量 */
+  setVariable: (key: string, value: string | number | boolean) => void;
   /** 设置自动播放模式 */
   setAutoMode: (enabled: boolean) => void;
   /** 跳过当前打字动画 */

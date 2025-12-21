@@ -71,6 +71,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     const [pendingNodeIndex, setPendingNodeIndex] = useState<number | null>(null);
     const [showChoices, setShowChoices] = useState(false);
     const [isCameraManual, setIsCameraManual] = useState(false);
+    const [variables, setVariables] = useState<Record<string, string | number | boolean>>({});
 
     // Refs
     const playerRef = useRef<MMDPlayerBaseRef>(null);
@@ -98,45 +99,6 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         },
       ]);
     }, []);
-
-    // 切换到下一条对话
-    const goToNextDialogue = useCallback(() => {
-      if (!currentNode) return;
-
-      // 清除自动播放定时器
-      if (autoTimerRef.current) {
-        clearTimeout(autoTimerRef.current);
-        autoTimerRef.current = null;
-      }
-
-      const nextDialogueIndex = currentDialogueIndex + 1;
-
-      if (nextDialogueIndex < currentNode.dialogues.length && currentNode?.dialogues[nextDialogueIndex] !== undefined) {
-        // 还有更多对话
-        const nextDialogue = currentNode.dialogues[nextDialogueIndex];
-        setCurrentDialogueIndex(nextDialogueIndex);
-        addToHistory(nextDialogue, currentNodeIndex, nextDialogueIndex);
-        onDialogueChange?.(nextDialogue, nextDialogueIndex, currentNodeIndex);
-        typingCompleteRef.current = false;
-      } else if (currentNode.choices && currentNode.choices.length > 0) {
-        // 当前节点有分支选项，显示选项菜单
-        setShowChoices(true);
-      } else {
-        // 无分支，自动切换到下一个节点
-        const nextNodeIndex = currentNodeIndex + 1;
-
-        if (nextNodeIndex < nodes.length) {
-          // 还有更多节点
-          goToNode(nextNodeIndex);
-        } else if (loop) {
-          // 循环播放
-          goToNode(0);
-        } else {
-          // 剧本结束
-          onScriptComplete?.();
-        }
-      }
-    }, [currentNode, currentDialogueIndex, currentNodeIndex, nodes.length, loop, addToHistory, onDialogueChange, onScriptComplete]);
 
     // 跳转到指定节点
     const goToNode = useCallback(
@@ -192,8 +154,70 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
           }, 100);
         }, 300);
       },
-      [nodes, isTransitioning, addToHistory, onNodeChange, onDialogueChange, currentNodeIndex, isVmdFinished]
+      [nodes, isTransitioning, addToHistory, onNodeChange, onDialogueChange, currentNodeIndex]
     );
+
+    // 判定并跳转到下一个节点
+    const triggerNodeTransition = useCallback(() => {
+      if (!currentNode) return;
+      
+      let nextNodeIndex = currentNodeIndex + 1;
+
+      // 如果存在分支判定逻辑
+      if (currentNode.nextCondition) {
+        const { key, map, defaultIndex } = currentNode.nextCondition;
+        const val = variables[key];
+        if (val !== undefined && map[val as string | number] !== undefined) {
+          nextNodeIndex = map[val as string | number]!;
+          console.log(`[MMDVisualNovel] Branching: ${key}=${val} -> node ${nextNodeIndex}`);
+        } else {
+          nextNodeIndex = defaultIndex;
+        }
+      }
+
+      if (nextNodeIndex < nodes.length && nextNodeIndex >= 0) {
+        goToNode(nextNodeIndex);
+      } else if (loop) {
+        goToNode(0);
+      } else {
+        // 剧本结束
+        onScriptComplete?.();
+      }
+    }, [currentNode, currentNodeIndex, nodes.length, loop, variables, goToNode, onScriptComplete]);
+
+    // 切换到下一条对话
+    const goToNextDialogue = useCallback(() => {
+      if (!currentNode) return;
+
+      // 如果当前对话行自带分支，且还未显示分支，则先显示分支
+      if (currentDialogue?.choices && currentDialogue.choices.length > 0 && !showChoices) {
+        setShowChoices(true);
+        return;
+      }
+
+      // 清除自动播放定时器
+      if (autoTimerRef.current) {
+        clearTimeout(autoTimerRef.current);
+        autoTimerRef.current = null;
+      }
+
+      const nextDialogueIndex = currentDialogueIndex + 1;
+
+      if (nextDialogueIndex < currentNode.dialogues.length && currentNode?.dialogues[nextDialogueIndex] !== undefined) {
+        // 还有更多对话
+        const nextDialogue = currentNode.dialogues[nextDialogueIndex];
+        setCurrentDialogueIndex(nextDialogueIndex);
+        addToHistory(nextDialogue, currentNodeIndex, nextDialogueIndex);
+        onDialogueChange?.(nextDialogue, nextDialogueIndex, currentNodeIndex);
+        typingCompleteRef.current = false;
+      } else if (currentNode.choices && currentNode.choices.length > 0) {
+        // 当前节点末尾有分支选项（兼容旧版）
+        setShowChoices(true);
+      } else {
+        // 无分支，自动切换到下一个节点
+        triggerNodeTransition();
+      }
+    }, [currentNode, currentDialogue, currentDialogueIndex, currentNodeIndex, nodes.length, loop, addToHistory, onDialogueChange, onScriptComplete, showChoices, variables, goToNode, triggerNodeTransition]);
 
     // 跳转到指定对话
     const goToDialogue = useCallback(
@@ -301,6 +325,10 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         getCurrentNodeIndex: () => currentNodeIndex,
         getCurrentDialogueIndex: () => currentDialogueIndex,
         getHistory: () => history,
+        getVariables: () => variables,
+        setVariable: (key: string, value: string | number | boolean) => {
+          setVariables(prev => ({ ...prev, [key]: value }));
+        },
         setAutoMode: setIsAutoMode,
         skipTyping: () => {
           typingCompleteRef.current = true;
@@ -480,19 +508,47 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         )}
 
         {/* 分支选项菜单 */}
-        {showChoices && currentNode.choices && (
+        {showChoices && (currentDialogue?.choices || currentNode.choices) && (
           <ChoiceMenu
-            choices={currentNode.choices}
+            choices={(currentDialogue?.choices || currentNode.choices)!}
             theme={dialogueTheme}
             onSelect={(choice) => {
+              // 1. 处理变量设置
+              if (choice.setVariable) {
+                const { key, value } = choice.setVariable;
+                setVariables(prev => ({ ...prev, [key]: value }));
+                console.log(`[MMDVisualNovel] Variable set: ${key} = ${value}`);
+              }
+
+              // 2. 执行回调
               choice.onSelect?.();
-              if (choice.nextNodeIndex === currentNodeIndex) {
-                // 跳转到当前节点的特定对话
-                goToDialogue(choice.nextDialogueIndex || 0);
-                setShowChoices(false);
-              } else {
-                // 跳转到其他节点
-                goToNode(choice.nextNodeIndex, true);
+
+              // 3. 处理跳转逻辑
+              setShowChoices(false);
+              
+              if (choice.nextNodeIndex !== undefined) {
+                if (choice.nextNodeIndex === currentNodeIndex) {
+                  // 跳转到当前节点的特定对话
+                  goToDialogue(choice.nextDialogueIndex || 0);
+                } else {
+                  // 跳转到其他节点
+                  goToNode(choice.nextNodeIndex, true);
+                }
+              } else if (currentDialogue?.choices) {
+                // 没有指定跳转目标且是在对话行中触发的，逻辑上应该进入下一行
+                const nextIdx = currentDialogueIndex + 1;
+                if (currentNode && nextIdx < currentNode.dialogues.length) {
+                  const nextDialogue = currentNode.dialogues[nextIdx];
+                  if (nextDialogue) {
+                    setCurrentDialogueIndex(nextIdx);
+                    addToHistory(nextDialogue, currentNodeIndex, nextIdx);
+                    onDialogueChange?.(nextDialogue, nextIdx, currentNodeIndex);
+                    typingCompleteRef.current = false;
+                  }
+                } else {
+                  // 如果是最后一行了，执行正常的节点切换逻辑
+                  triggerNodeTransition();
+                }
               }
             }}
           />
