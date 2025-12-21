@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2025-12-21
+
+### Added
+- **MMD 音乐播放器** (`sa2kit/mmd/music-player`)
+  - 新增 `MMDMusicPlayer` 组件 (Study with Miku 风格)
+  - 支持多曲目无缝切换，具备 300ms 物理引擎清理缓冲窗
+  - 沉浸式 UI：支持毛玻璃进度条、播放列表抽屉、正在播放动画
+  - 专注模式：鼠标长久不动自动隐藏 UI
+  - 完善的媒体控制：上一曲/下一曲、循环模式（列表、单曲、随机）、进度拖动
+- **MMD 视觉小说增强** (`sa2kit/mmd/visual-novel`)
+  - 新增分支选项（Choices）功能，支持剧情分支跳转
+  - 新增 `SkipConfirmDialog` 确认弹窗
+  - 动画进度检查：若 VMD 动画未完成第一次循环，跳转前会弹出确认提醒
+  - 优化 VMD 循环检测逻辑，增加 98% 进度提前判定
+- **相机控制增强**
+  - 为所有 MMD 组件添加了“恢复初始视角”功能
+  - 当用户手动调整相机后，UI 会自动显示重置按钮
+- **动态舞台支持**
+  - 支持导入带动作数据的场景文件 (`stageMotionPath`)
+  - 完善了舞台背景图片 (`backgroundImage`) 的动态切换支持
+- **模块导出补全**
+  - 在 `package.json` 的 `exports` 中补全了 `audioDetection`, `imageCrop`, `testYourself/admin`, `testYourself/server` 等模块
+- **示例项目集成**
+  - 新增 `/music-player` 沉浸式播放器演示页面
+
+### Optimized
+- **MMD 资源加载优化**: 开启 Three.js 全局资源缓存 (`THREE.Cache.enabled = true`)，极大提升了使用 CDN 加载模型和贴图时的二次加载速度。
+- **性能优化**: 修复了 `MMDPlayerBase` 回调闭包过时的问题，提升了渲染循环中的逻辑执行效率。
+
+### Fixed
+- **构建系统修复**
+  - 修复了 Monorepo 模式下 `examples` 项目无法正确解析 `sa2kit` 子模块路径的问题
+  - 修复了 `tsup.config.ts` 缺失的编译入口
+- **类型安全**
+  - 修复了 `imageCrop` 模块中 `cols` 与 `columns` 混用导致的 TypeScript 类型错误
+  - 修复了 `ai/text-generation` 中错误的类型导入路径
+- **Next.js 15+ 兼容性**
+  - 适配 Next.js 15 的异步路由参数 (`params` 必须 `await`)
+  - 修复了 `useSearchParams` 缺失 `Suspense` 边界导致的构建救助 (CSR Bailout) 错误
+
+### Changed
+- **ConfigService 增强**: 添加了 `init()` 和 `saveConfig()` 方法以支持更灵活的配置管理
+
 ## [0.8.1] - 2025-11-06
 
 ### Changed
