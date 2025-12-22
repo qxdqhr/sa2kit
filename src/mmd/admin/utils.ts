@@ -366,7 +366,15 @@ export function extractPathsFromMmdResources(resources: MMDResources): string[] 
   if (resources.motionPath) paths.push(resources.motionPath);
   if (resources.cameraPath) paths.push(resources.cameraPath);
   if (resources.audioPath) paths.push(resources.audioPath);
-  if (resources.stageModelPath) paths.push(resources.stageModelPath);
+  
+  if (resources.stageModelPath) {
+    if (Array.isArray(resources.stageModelPath)) {
+      paths.push(...resources.stageModelPath);
+    } else {
+      paths.push(resources.stageModelPath);
+    }
+  }
+  
   if (resources.additionalMotions) paths.push(...resources.additionalMotions);
   
   return paths;

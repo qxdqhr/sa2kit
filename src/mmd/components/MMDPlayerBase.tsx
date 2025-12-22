@@ -902,7 +902,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
             // 绑定动作
             if (resources.stageMotionPath) {
               (loader as any).loadAnimation(resources.stageMotionPath, stageMesh, (anim: any) => {
-                if (!checkCancelled()) helper.add(stageMesh, { animation: anim });
+                if (!checkCancelled()) helper.add(stageMesh as any, { animation: anim });
               });
             }
           } catch (err) {
@@ -1506,7 +1506,6 @@ ${errorMessage}
   // 监听渲染特效配置变化
   useEffect(() => {
     if (outlineEffectRef.current) {
-      outlineEffectRef.current.selection = []; // 如果有选择逻辑
       // OutlineEffect 不直接支持实时修改参数，通常需要重新创建或访问私有属性
       // 这里我们可以通过访问内部 renderer 的属性来实现一些更新
     }
