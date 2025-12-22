@@ -349,34 +349,10 @@ function FileUploader() {
 
 ## 常见问题
 
-### Q: 支持哪些文件类型？
+... (省略已有的内容)
 
-A: 支持图片、视频、音频、文档等常见文件类型。可以通过 `allowedTypes` 参数自定义允许的类型。
+## 进阶功能
 
-### Q: 如何实现断点续传？
-
-A: 目前版本暂不支持断点续传，建议将大文件分片上传（未来版本将支持）。
-
-### Q: 如何限制文件大小？
-
-A: 使用 `validateFile` 函数在上传前验证文件大小：
-
-```typescript
-const validation = validateFile(file, { maxSize: 10 * 1024 * 1024 });
-if (!validation.valid) {
-  // 处理验证失败
-}
-```
-
-### Q: 如何自定义存储路径？
-
-A: 在上传时指定 `customPath` 参数：
-
-```typescript
-await universalFileClient.uploadFile({
-  file,
-  moduleId: 'documents',
-  customPath: 'custom/path/to/file',
-});
-```
+### 可视化管理后台
+如果你需要一个可视化的界面来管理阿里云 OSS 中的文件，可以参考 [OSS Manager Module](./ossManager.md) 文档。它提供了一个完整的 Next.js 页面示例，支持文件的浏览、上传、重命名和删除。
 

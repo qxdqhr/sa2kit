@@ -1,6 +1,14 @@
 import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import * as THREE from 'three';
-import { OrbitControls, MMDLoader, MMDAnimationHelper } from 'three-stdlib';
+import { 
+  OrbitControls, 
+  MMDLoader, 
+  MMDAnimationHelper, 
+  OutlineEffect,
+  EffectComposer,
+  RenderPass,
+  UnrealBloomPass
+} from 'three-stdlib';
 
 // 🚀 开启 Three.js 全局缓存，确保 CDN 资源在被浏览器缓存后，能直接从内存读取
 if (typeof window !== 'undefined') {
@@ -111,17 +119,59 @@ async function waitForMaterialsReady(
     texture.needsUpdate = true;
   });
   
-  // 执行几次渲染循环，确保所有纹理都上传到 GPU
-  console.log('[MMDPlayerBase] Warming up renderer...');
-  for (let i = 0; i < 3; i++) {
-    await new Promise<void>((resolve) => {
-      requestAnimationFrame(() => {
-        renderer.render(scene, camera);
-        console.log(`[MMDPlayerBase]   Warmup render ${i + 1}/3`);
-        resolve();
-      });
-    });
-  }
+        // 执行几次渲染循环，确保所有纹理都上传到 GPU
+        console.log('[MMDPlayerBase] Warming up renderer...');
+        for (let i = 0; i < 3; i++) {
+          await new Promise<void>((resolve) => {
+            requestAnimationFrame(() => {
+              try {
+                // 🎯 核心修复：深度清理无效的变形目标数据，防止 Shader 编译错误 (MORPHTARGETS_COUNT undeclared)
+                object.traverse((obj) => {
+                  if ((obj as any).isMesh) {
+                    const mesh = obj as THREE.Mesh;
+                    const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+                    
+                    // 检查几何体是否真的有变形数据
+                    const hasMorphAttributes = mesh.geometry.morphAttributes && 
+                                              Object.keys(mesh.geometry.morphAttributes).length > 0;
+
+                    materials.forEach(m => {
+                      // 针对特定的没有实际变形数据的材质
+                      if (!hasMorphAttributes) {
+                        // 1. 强制材质关闭变形
+                        (m as any).morphTargets = false;
+                        
+                        // 2. 彻底移除几何体中的变形属性引用
+                        if (mesh.geometry.morphAttributes) {
+                          mesh.geometry.morphAttributes = {};
+                        }
+                        
+                        // 3. 重置 Mesh 的变形影响状态
+                        if ((mesh as any).morphTargetInfluences) {
+                          (mesh as any).morphTargetInfluences = [];
+                        }
+                        if ((mesh as any).morphTargetDictionary) {
+                          (mesh as any).morphTargetDictionary = {};
+                        }
+                        m.needsUpdate = true;
+                      }
+                    });
+
+                    if ((mesh as any).updateMorphTargets) {
+                      (mesh as any).updateMorphTargets();
+                    }
+                  }
+                });
+
+                renderer.render(scene, camera);
+                console.log(`[MMDPlayerBase]   Warmup render ${i + 1}/3`);
+              } catch (renderError) {
+                console.warn('[MMDPlayerBase] Warmup render failed (shader error?), skipping...', renderError);
+              }
+              resolve();
+            });
+          });
+        }
   
   console.log('[MMDPlayerBase] All materials and textures fully ready');
 }
@@ -148,6 +198,11 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
     style,
   } = props;
 
+  // 合并渲染配置（优先使用 props，其次使用 stage）
+  const renderEffect = props.renderEffect || stage.renderEffect || 'default';
+  const outlineOptions = { ...stage.outlineOptions, ...props.outlineOptions };
+  const bloomOptions = { ...stage.bloomOptions, ...props.bloomOptions };
+
   // 容器 Ref
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -155,6 +210,8 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const outlineEffectRef = useRef<OutlineEffect | null>(null);
+  const composerRef = useRef<EffectComposer | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
   const helperRef = useRef<any>(null); // MMDAnimationHelper
   const axesHelperRef = useRef<THREE.AxesHelper | null>(null); // 坐标轴
@@ -435,12 +492,36 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         container.appendChild(renderer.domElement);
         rendererRef.current = renderer;
 
+        // 🎯 初始化渲染特效
+        // 1. Outline Effect
+        const effect = new OutlineEffect(renderer, {
+          defaultThickness: outlineOptions.thickness ?? 0.003,
+          defaultColor: new THREE.Color(outlineOptions.color ?? '#000000').toArray(),
+          defaultAlpha: 1,
+          defaultKeepAlive: true
+        });
+        outlineEffectRef.current = effect;
+
+        // 2. Effect Composer (for Bloom)
+        const composer = new EffectComposer(renderer);
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        const bloomPass = new UnrealBloomPass(
+          new THREE.Vector2(width, height),
+          bloomOptions.strength ?? 1.0,
+          bloomOptions.radius ?? 0.4,
+          bloomOptions.threshold ?? 0.8
+        );
+        composer.addPass(bloomPass);
+        composerRef.current = composer;
+
         // Lights
         const ambientLight = new THREE.AmbientLight(0xffffff, stage.ambientLightIntensity ?? 0.5);
         scene.add(ambientLight);
 
         const dirLight = new THREE.DirectionalLight(0xffffff, stage.directionalLightIntensity ?? 0.8);
-        dirLight.position.set(10, 20, 10);
+        dirLight.position.set(0, 10, 0);
         if (stage.enableShadow !== false) {
           dirLight.castShadow = true;
           dirLight.shadow.mapSize.width = mobileOptimization.enabled ? 1024 : 2048;
@@ -487,6 +568,9 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           cameraRef.current.updateProjectionMatrix();
           
           rendererRef.current.setSize(w, h);
+          if (composerRef.current) {
+            composerRef.current.setSize(w, h);
+          }
         };
         
         const resizeObserver = new ResizeObserver(onResize);
@@ -502,7 +586,11 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         animate();
 
         // 6. 资源加载
-        console.log('[MMDPlayerBase] Start loading resources...', resources);
+        console.log('[MMDPlayerBase] Start loading resources...', {
+          model: resources.modelPath,
+          stage: resources.stageModelPath,
+          motion: resources.motionPath
+        });
         const loader = new MMDLoader();
         const helper = new MMDAnimationHelper({
           afterglow: 2.0
@@ -732,61 +820,93 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         }
 
         // 6.5 加载舞台
-        let stageMesh: THREE.Object3D | null = null;
-        if (resources.stageModelPath) {
+        const stagePaths = Array.isArray(resources.stageModelPath) 
+          ? resources.stageModelPath 
+          : (resources.stageModelPath ? [resources.stageModelPath] : []);
+
+        for (const stagePath of stagePaths) {
           try {
-            stageMesh = await new Promise<THREE.Object3D>((resolve, reject) => {
+            console.log(`[MMDPlayerBase] Loading stage from: ${stagePath}`);
+            const stageMesh = await new Promise<THREE.Object3D>((resolve, reject) => {
               loader.load(
-                resources.stageModelPath!,
+                stagePath,
                 (mesh) => resolve(mesh),
-                undefined,
+                (xhr) => {
+                  if (xhr.lengthComputable) {
+                    const percent = (xhr.loaded / xhr.total) * 100;
+                    if (Math.round(percent) % 20 === 0) console.log(`[MMDPlayerBase] Stage loading: ${percent.toFixed(1)}%`);
+                  }
+                },
                 (err) => reject(err)
               );
             });
             
             if (checkCancelled()) return;
             
-            console.log('[MMDPlayerBase] Stage model loaded:', stageMesh);
-            stageMesh.castShadow = true;
-            stageMesh.receiveShadow = true;
+            console.log(`[MMDPlayerBase] Stage model loaded: ${stagePath}`, stageMesh);
             
-            // 🎯 同样，先等待舞台的材质和纹理加载完成，再添加到场景
-            console.log('[MMDPlayerBase] Waiting for stage materials and textures...');
-            const tempStageScene = new THREE.Scene();
-            tempStageScene.add(stageMesh);
-            await waitForMaterialsReady(stageMesh, renderer, tempStageScene, camera);
-            tempStageScene.remove(stageMesh);
+            // 🎯 核心修复：深度清理无效的变形目标数据，防止 Shader 编译错误
+            stageMesh.traverse((child) => {
+              if (child instanceof THREE.Mesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+                
+                const mesh = child as THREE.Mesh;
+                const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+                
+                materials.forEach((m, idx) => {
+                   // 对于普通舞台材质，也确保关闭没用的 morphTargets
+                   if ((m as any).morphTargets) {
+                    (m as any).morphTargets = false;
+                    m.needsUpdate = true;
+                  }
+                });
+
+                // 3. 彻底移除几何体中的变形属性引用
+                if (mesh.geometry.morphAttributes) {
+                  mesh.geometry.morphAttributes = {};
+                }
+                if ((mesh as any).morphTargetInfluences) {
+                  (mesh as any).morphTargetInfluences = [];
+                }
+              }
+            });
+
+            // 🎯 材质预热
+            try {
+              await waitForMaterialsReady(stageMesh, renderer, scene, camera);
+            } catch (e) {
+              console.warn(`[MMDPlayerBase] Warmup error for stage ${stagePath}:`, e);
+            }
             
             if (checkCancelled()) return;
-            console.log('[MMDPlayerBase] ✅ Stage materials and textures loaded');
             
-            // 现在添加到主场景
+            // 添加到场景
             scene.add(stageMesh);
-            console.log('[MMDPlayerBase] ✅ Stage added to scene (fully loaded)');
+            
+            // 🎯 自动调整比例和位置
+            const stageBox = new THREE.Box3().setFromObject(stageMesh);
+            const stageSize = stageBox.getSize(new THREE.Vector3());
+            
+            if (stageSize.length() < 1) {
+              stageMesh.scale.multiplyScalar(100);
+            } else if (stageSize.y < 5) {
+              stageMesh.scale.multiplyScalar(10);
+            }
+            
+            // 确保底部对齐 Y=0 (可选)
+            // stageMesh.position.set(0, 0, 0); 
 
-            // 🎯 新增：如果舞台有配套的 VMD 动作文件，则进行绑定
-            if (resources.stageMotionPath && stageMesh) {
-              console.log('[MMDPlayerBase] Loading stage motion:', resources.stageMotionPath);
-              const anyLoader = loader as any;
-              const anyHelper = helper as any;
-              const anyStage = stageMesh as any;
-              
-              anyLoader.loadAnimation(
-                resources.stageMotionPath,
-                anyStage,
-                (stageAnimation: any) => {
-                  if (checkCancelled()) return;
-                  anyHelper.add(anyStage, {
-                    animation: stageAnimation
-                  });
-                  console.log('[MMDPlayerBase] ✅ Stage motion bound successfully');
-                },
-                undefined,
-                (err: any) => console.error('Failed to load stage motion:', err)
-              );
+            console.log(`[MMDPlayerBase] ✅ Stage added: ${stagePath}`);
+
+            // 绑定动作
+            if (resources.stageMotionPath) {
+              (loader as any).loadAnimation(resources.stageMotionPath, stageMesh, (anim: any) => {
+                if (!checkCancelled()) helper.add(stageMesh, { animation: anim });
+              });
             }
           } catch (err) {
-            console.error('Failed to load stage:', err);
+            console.error(`Failed to load stage ${stagePath}:`, err);
           }
         }
 
@@ -1270,6 +1390,17 @@ ${errorMessage}
       // 清理 Renderer - 增强版
       if (rendererRef.current) {
         try {
+          // 清理 Composer
+          if (composerRef.current) {
+            composerRef.current.passes.forEach(pass => {
+              if ((pass as any).dispose) (pass as any).dispose();
+            });
+            composerRef.current = null;
+          }
+          
+          // 清理 OutlineEffect
+          outlineEffectRef.current = null;
+
           // 清理所有渲染目标
           const renderer = rendererRef.current;
           
@@ -1372,6 +1503,24 @@ ${errorMessage}
     }
   }, [loop]);
 
+  // 监听渲染特效配置变化
+  useEffect(() => {
+    if (outlineEffectRef.current) {
+      outlineEffectRef.current.selection = []; // 如果有选择逻辑
+      // OutlineEffect 不直接支持实时修改参数，通常需要重新创建或访问私有属性
+      // 这里我们可以通过访问内部 renderer 的属性来实现一些更新
+    }
+    
+    if (composerRef.current) {
+      const bloomPass = composerRef.current.passes.find(p => p instanceof UnrealBloomPass) as UnrealBloomPass;
+      if (bloomPass) {
+        bloomPass.strength = bloomOptions.strength ?? 1.0;
+        bloomPass.radius = bloomOptions.radius ?? 0.4;
+        bloomPass.threshold = bloomOptions.threshold ?? 0.8;
+      }
+    }
+  }, [bloomOptions.strength, bloomOptions.radius, bloomOptions.threshold]);
+
   // 监听 stage 变化，动态更新场景属性（不触发完整重载）
   useEffect(() => {
     if (!isReadyRef.current) return;
@@ -1435,7 +1584,17 @@ ${errorMessage}
         }
       }
       
-      rendererRef.current.render(sceneRef.current, cameraRef.current);
+      // 使用选定的渲染方式
+      const useOutline = renderEffect === 'outline' || renderEffect === 'outline+bloom';
+      const useBloom = renderEffect === 'bloom' || renderEffect === 'outline+bloom';
+
+      if (useBloom && composerRef.current) {
+        composerRef.current.render();
+      } else if (useOutline && outlineEffectRef.current) {
+        outlineEffectRef.current.render(sceneRef.current, cameraRef.current);
+      } else {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
     }
   };
 

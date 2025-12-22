@@ -19,6 +19,7 @@ import {
   VisualNovelNode,
   DialogueLine,
   DialogueHistoryItem,
+  VisualEffect,
 } from './types';
 
 /**
@@ -72,6 +73,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     const [showChoices, setShowChoices] = useState(false);
     const [isCameraManual, setIsCameraManual] = useState(false);
     const [variables, setVariables] = useState<Record<string, string | number | boolean>>({});
+    const [activeEffect, setActiveEffect] = useState<VisualEffect | null>(null);
 
     // Refs
     const playerRef = useRef<MMDPlayerBaseRef>(null);
@@ -81,6 +83,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     const isStartedRef = useRef(autoStart); // 用 ref 跟踪 isStarted 的当前值
     const lastAnimationTimeRef = useRef(0);
     const isVmdFinishedRef = useRef(false);
+    const effectTimerRef = useRef<NodeJS.Timeout | null>(null);
 
     // 获取当前节点和对话
     const currentNode = nodes[currentNodeIndex];
@@ -98,6 +101,24 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
           timestamp: Date.now(),
         },
       ]);
+    }, []);
+
+    // 触发特效
+    const triggerEffect = useCallback((effect?: VisualEffect) => {
+      if (!effect) return;
+      
+      // 清除旧的特效定时器
+      if (effectTimerRef.current) {
+        clearTimeout(effectTimerRef.current);
+      }
+
+      setActiveEffect(effect);
+      
+      // 自动清理
+      effectTimerRef.current = setTimeout(() => {
+        setActiveEffect(null);
+        effectTimerRef.current = null;
+      }, effect.duration || 1000);
     }, []);
 
     // 跳转到指定节点
@@ -281,7 +302,13 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
       return undefined;
     }, [currentDialogue, handleTypingComplete]);
 
-    // 切换自动模式
+    useEffect(() => {
+    if (currentDialogue?.effect) {
+      triggerEffect(currentDialogue.effect);
+    }
+  }, [currentNodeIndex, currentDialogueIndex, triggerEffect]);
+
+  // 切换自动模式
     const toggleAutoMode = useCallback(() => {
       setIsAutoMode((prev) => !prev);
     }, []);
@@ -333,8 +360,9 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         skipTyping: () => {
           typingCompleteRef.current = true;
         },
+        triggerEffect,
       }),
-      [goToNode, goToDialogue, currentNodeIndex, currentDialogueIndex, history]
+      [goToNode, goToDialogue, currentNodeIndex, currentDialogueIndex, history, triggerEffect]
     );
 
     // 自动开始时添加第一条对话到历史
@@ -349,6 +377,9 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
       return () => {
         if (autoTimerRef.current) {
           clearTimeout(autoTimerRef.current);
+        }
+        if (effectTimerRef.current) {
+          clearTimeout(effectTimerRef.current);
         }
       };
     }, []);
@@ -433,6 +464,40 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
             />
           )}
         </div>
+
+        {/* 特效渲染层 */}
+        {activeEffect && (
+          <div 
+            className="pointer-events-none absolute inset-0 flex items-center justify-center"
+            style={{ zIndex: 999 }}
+          >
+            {activeEffect.type === 'flash' && (
+              <div 
+                className="h-full w-full"
+                style={{ 
+                  backgroundColor: activeEffect.color || 'white',
+                  animation: `flash-anim ${activeEffect.duration || 500}ms ease-out forwards`
+                }} 
+              />
+            )}
+
+            {activeEffect.type === 'gif' && activeEffect.url && (
+              <img 
+                src={activeEffect.url} 
+                alt="effect"
+                className={activeEffect.position === 'full' ? 'h-full w-full object-cover' : 'max-h-full max-w-full'}
+              />
+            )}
+            
+            <style>{`
+              @keyframes flash-anim {
+                0% { opacity: 0; }
+                25% { opacity: 1; }
+                100% { opacity: 0; }
+              }
+            `}</style>
+          </div>
+        )}
 
         {/* 加载遮罩和开始界面 */}
         <LoadingOverlay
@@ -520,12 +585,17 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
                 console.log(`[MMDVisualNovel] Variable set: ${key} = ${value}`);
               }
 
-              // 2. 执行回调
-              choice.onSelect?.();
+            // 2. 执行回调
+            choice.onSelect?.();
 
-              // 3. 处理跳转逻辑
-              setShowChoices(false);
-              
+            // 3. 触发特效
+            if (choice.effect) {
+              triggerEffect(choice.effect);
+            }
+
+            // 4. 处理跳转逻辑
+            setShowChoices(false);
+
               if (choice.nextNodeIndex !== undefined) {
                 if (choice.nextNodeIndex === currentNodeIndex) {
                   // 跳转到当前节点的特定对话

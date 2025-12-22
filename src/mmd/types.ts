@@ -11,7 +11,7 @@ export interface MMDResources {
   /** 音频文件路径 - 可选 */
   audioPath?: string;
   /** 舞台/场景模型路径 (.pmx/.x) - 可选 */
-  stageModelPath?: string;
+  stageModelPath?: string | string[];
   /** 舞台/场景动作路径 (.vmd) - 可选 */
   stageMotionPath?: string;
   /** 附加动作文件 - 可选 */
@@ -63,6 +63,13 @@ export interface MMDStage {
   cameraPosition?: { x: number; y: number; z: number } | Vector3;
   /** 相机目标点 */
   cameraTarget?: { x: number; y: number; z: number } | Vector3;
+  
+  /** 渲染特效模式 (默认 'default') */
+  renderEffect?: 'default' | 'outline' | 'bloom' | 'outline+bloom';
+  /** 描边效果配置 */
+  outlineOptions?: OutlineOptions;
+  /** 辉光效果配置 */
+  bloomOptions?: BloomOptions;
 }
 
 /** 移动端优化配置 */
@@ -75,6 +82,28 @@ export interface MobileOptimization {
   disablePhysics?: boolean;
   /** 是否降低阴影质量 (默认 true) */
   reduceShadowQuality?: boolean;
+}
+
+/** 描边效果配置 */
+export interface OutlineOptions {
+  /** 是否启用描边 (默认 false) */
+  enabled?: boolean;
+  /** 描边粗细 (默认 0.003) */
+  thickness?: number;
+  /** 描边颜色 (默认 '#000000') */
+  color?: string;
+}
+
+/** 辉光效果配置 */
+export interface BloomOptions {
+  /** 是否启用辉光 (默认 false) */
+  enabled?: boolean;
+  /** 辉光强度 (默认 1.0) */
+  strength?: number;
+  /** 辉光半径 (默认 0.4) */
+  radius?: number;
+  /** 辉光阈值 (默认 0.8) */
+  threshold?: number;
 }
 
 /** MMDPlayerBase Ref 接口 */
@@ -116,6 +145,13 @@ export interface MMDPlayerBaseProps {
   
   /** 调试与辅助 */
   showAxes?: boolean; // 是否显示坐标轴
+  
+  /** 渲染特效配置 */
+  renderEffect?: 'default' | 'outline' | 'bloom' | 'outline+bloom';
+  /** 描边效果配置 */
+  outlineOptions?: OutlineOptions;
+  /** 辉光效果配置 */
+  bloomOptions?: BloomOptions;
   
   /** 事件回调 */
   onLoad?: () => void;

@@ -2,7 +2,7 @@
  * 阿里云OSS存储提供者实现
  */
 
-const OSS = require('ali-oss');
+import OSS from 'ali-oss';
 import { createLogger } from '../../../logger';
 
 import type {
@@ -346,6 +346,54 @@ export class AliyunOSSProvider implements IStorageProvider {
       // 其他错误也视为文件不存在
       logger.warn(`⚠️ [AliyunOSSProvider] 检查文件存在性时出错: ${filePath}:`, error);
       return false;
+    }
+  }
+
+  /**
+   * 列出文件（详细信息）
+   */
+  async listFiles(prefix: string, delimiter: string = '/', maxKeys: number = 1000): Promise<{
+    files: Array<{
+      name: string;
+      url: string;
+      size: number;
+      lastModified: string;
+      etag: string;
+      type: string;
+    }>;
+    folders: string[];
+    nextMarker?: string;
+  }> {
+    this.ensureInitialized();
+
+    try {
+      const options: any = {
+        prefix,
+        delimiter,
+        'max-keys': String(maxKeys),
+      };
+
+      const result = await this.client.list(options);
+
+      const files = (result.objects || []).map((obj: any) => ({
+        name: obj.name,
+        url: this.generateAccessUrl(obj.name),
+        size: obj.size,
+        lastModified: obj.lastModified,
+        etag: obj.etag,
+        type: 'file',
+      }));
+
+      const folders = result.prefixes || [];
+
+      return {
+        files,
+        folders,
+        nextMarker: result.nextMarker,
+      };
+    } catch (error) {
+      logger.error(`❌ [AliyunOSSProvider] 列出文件失败: ${prefix}:`, error);
+      throw new StorageProviderError(`列出文件失败: ${this.formatOSSError(error)}`);
     }
   }
 

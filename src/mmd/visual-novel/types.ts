@@ -26,6 +26,22 @@ export interface DialogueLine {
   voicePath?: string;
   /** 对话中插入的分支选项（可选，若有则显示选项） */
   choices?: DialogueChoice[];
+  /** 视觉特效（可选） */
+  effect?: VisualEffect;
+}
+
+/** 视觉特效配置 */
+export interface VisualEffect {
+  /** 特效类型 */
+  type: 'flash' | 'gif' | 'shake';
+  /** 闪屏颜色，如 'white', 'red' */
+  color?: string;
+  /** 持续时间（毫秒） */
+  duration?: number;
+  /** GIF 动画地址 */
+  url?: string;
+  /** GIF 显示位置 */
+  position?: 'center' | 'full';
 }
 
 /** 分支判定逻辑 */
@@ -53,6 +69,8 @@ export interface DialogueChoice {
   };
   /** 选项点击后的回调（可选） */
   onSelect?: () => void;
+  /** 点击选项后触发的特效（可选） */
+  effect?: VisualEffect;
 }
 
 /** 视觉小说播放节点 */
