@@ -309,7 +309,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({
       </VNModal>
 
       {/* 注入所需的关键帧动画 */}
-      <style jsx>{`
+      <style>{`
         @keyframes floatParticle {
           from { transform: translateY(0) translateX(0); opacity: 0; }
           20% { opacity: 1; }

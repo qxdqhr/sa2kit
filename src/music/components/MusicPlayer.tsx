@@ -36,17 +36,6 @@ export const MusicPlayer: React.FC = () => {
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
-    // 强力禁用 Referer，解决腾讯、网易云等 403 拒绝访问问题
-    useEffect(() => {
-        const meta = document.createElement('meta');
-        meta.name = "referrer";
-        meta.content = "no-referrer";
-        document.head.appendChild(meta);
-        return () => {
-            document.head.removeChild(meta);
-        };
-    }, []);
-
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         if (keyword.trim()) {
