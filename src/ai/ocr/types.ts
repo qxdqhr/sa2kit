@@ -27,3 +27,5 @@ export interface OCRState {
   result: OCRResult | null;
 }
 
+
+

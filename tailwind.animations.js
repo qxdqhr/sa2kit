@@ -25,10 +25,15 @@ module.exports = {
       '0%': { opacity: '0', transform: 'translateY(20px)' },
       '100%': { opacity: '1', transform: 'translateY(0)' },
     },
+    musicBar: {
+      '0%, 100%': { height: '30%' },
+      '50%': { height: '100%' },
+    },
   },
   animation: {
     'fade-in': 'fadeIn 0.3s ease-in-out forwards',
     'slide-up': 'slideUp 0.3s ease-out forwards',
+    'music-bar': 'musicBar 0.8s ease-in-out infinite',
   },
 };
 

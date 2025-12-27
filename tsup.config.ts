@@ -34,6 +34,8 @@ export default defineConfig({
     'testYourself/index': 'src/testYourself/index.ts',
     'testYourself/admin/index': 'src/testYourself/admin/index.ts',
     'testYourself/server/index': 'src/testYourself/server/index.ts',
+    'music/index': 'src/music/index.ts',
+    'music/server/index': 'src/music/server/index.ts',
   },
 
   // Output formats: ESM and CJS

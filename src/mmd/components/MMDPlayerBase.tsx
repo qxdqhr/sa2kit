@@ -202,6 +202,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   const renderEffect = props.renderEffect || stage.renderEffect || 'default';
   const outlineOptions = { ...stage.outlineOptions, ...props.outlineOptions };
   const bloomOptions = { ...stage.bloomOptions, ...props.bloomOptions };
+  const toonOptions = { ...stage.toonOptions, ...props.toonOptions };
 
   // 容器 Ref
   const containerRef = useRef<HTMLDivElement>(null);
@@ -467,6 +468,13 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         renderer.setPixelRatio(pixelRatio);
         console.log('[MMDPlayerBase] Pixel ratio set to:', pixelRatio);
         
+        // 🎯 三渲二优化：关闭色调映射，使色彩更接近 2D 原色
+        if (renderEffect.includes('outline') || toonOptions.enabled) {
+          renderer.toneMapping = THREE.NoToneMapping;
+        } else {
+          renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        }
+        
         // 5. 关键检查点：在操作 DOM 之前再次检查
         if (checkCancelled()) {
             renderer.dispose();
@@ -698,6 +706,51 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         // 🎯 现在所有纹理都已加载完成，添加到场景和 helper
         const enablePhysics = stage.enablePhysics !== false && !mobileOptimization.disablePhysics;
         
+        // 🎯 应用描边设置到模型材质
+        // MMD 模型通常在材质的 userData.outlineParameters 中带有来自 PMX 的描边参数
+        // 我们需要覆盖它们以使 props.outlineOptions 生效
+        mesh.traverse((obj) => {
+          if (obj instanceof THREE.Mesh || obj instanceof THREE.SkinnedMesh) {
+            const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+            materials.forEach((m) => {
+              if (!m.userData) m.userData = {};
+              if (!m.userData.outlineParameters) {
+                m.userData.outlineParameters = {
+                  thickness: outlineOptions.thickness ?? 0.003,
+                  color: new THREE.Color(outlineOptions.color ?? '#000000').toArray(),
+                  alpha: 1,
+                  visible: true,
+                  keepAlive: true
+                };
+              } else {
+                // 覆盖来自模型的默认值
+                if (outlineOptions.thickness !== undefined) {
+                  m.userData.outlineParameters.thickness = outlineOptions.thickness;
+                }
+                if (outlineOptions.color !== undefined) {
+                  m.userData.outlineParameters.color = new THREE.Color(outlineOptions.color).toArray();
+                }
+              }
+
+              // 🎯 应用三渲二(Toon)优化
+              if (m instanceof THREE.MeshPhongMaterial) {
+                if (toonOptions.enabled !== false && (toonOptions.enabled || renderEffect.includes('outline'))) {
+                  // 1. 降低光泽度，使表面更平整，避免塑料感
+                  m.shininess = toonOptions.shininess ?? 0;
+                  m.specular.setScalar(0); // 移除物理高光
+
+                  // 2. 强制硬色阶 (如果是 Toon 材质)
+                  if (toonOptions.forceHardShading && (m as any).toonMap) {
+                    (m as any).toonMap.magFilter = THREE.NearestFilter;
+                    (m as any).toonMap.minFilter = THREE.NearestFilter;
+                    (m as any).toonMap.needsUpdate = true;
+                  }
+                }
+              }
+            });
+          }
+        });
+
         helper.add(mesh, {
           animation: animation,
           physics: enablePhysics
@@ -869,6 +922,27 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
                 if ((mesh as any).morphTargetInfluences) {
                   (mesh as any).morphTargetInfluences = [];
                 }
+
+                // 4. 🎯 应用描边设置到舞台材质
+                materials.forEach((m) => {
+                  if (!m.userData) m.userData = {};
+                  // 舞台通常没有预设描边，我们手动为其添加
+                  m.userData.outlineParameters = {
+                    thickness: outlineOptions.thickness ?? 0.003,
+                    color: new THREE.Color(outlineOptions.color ?? '#000000').toArray(),
+                    alpha: 1,
+                    visible: true,
+                    keepAlive: true
+                  };
+
+                  // 🎯 应用三渲二(Toon)优化 (舞台也可能需要)
+                  if (m instanceof THREE.MeshPhongMaterial) {
+                    if (toonOptions.enabled !== false && (toonOptions.enabled || renderEffect.includes('outline'))) {
+                      m.shininess = toonOptions.shininess ?? 0;
+                      m.specular.setScalar(0);
+                    }
+                  }
+                });
               }
             });
 
@@ -1506,8 +1580,29 @@ ${errorMessage}
   // 监听渲染特效配置变化
   useEffect(() => {
     if (outlineEffectRef.current) {
-      // OutlineEffect 不直接支持实时修改参数，通常需要重新创建或访问私有属性
-      // 这里我们可以通过访问内部 renderer 的属性来实现一些更新
+      // @ts-ignore
+      outlineEffectRef.current.defaultThickness = outlineOptions.thickness ?? 0.003;
+      // @ts-ignore
+      outlineEffectRef.current.defaultColor = new THREE.Color(outlineOptions.color ?? '#000000').toArray();
+
+      // 同步更新场景中所有现有材质的描边参数
+      if (sceneRef.current) {
+        sceneRef.current.traverse((obj) => {
+          if (obj instanceof THREE.Mesh || obj instanceof THREE.SkinnedMesh) {
+            const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+            materials.forEach((m) => {
+              if (m.userData && m.userData.outlineParameters) {
+                if (outlineOptions.thickness !== undefined) {
+                  m.userData.outlineParameters.thickness = outlineOptions.thickness;
+                }
+                if (outlineOptions.color !== undefined) {
+                  m.userData.outlineParameters.color = new THREE.Color(outlineOptions.color).toArray();
+                }
+              }
+            });
+          }
+        });
+      }
     }
     
     if (composerRef.current) {
@@ -1518,7 +1613,32 @@ ${errorMessage}
         bloomPass.threshold = bloomOptions.threshold ?? 0.8;
       }
     }
-  }, [bloomOptions.strength, bloomOptions.radius, bloomOptions.threshold]);
+  }, [outlineOptions.thickness, outlineOptions.color, bloomOptions.strength, bloomOptions.radius, bloomOptions.threshold]);
+
+  // 监听三渲二(Toon)配置变化
+  useEffect(() => {
+    if (!sceneRef.current) return;
+
+    sceneRef.current.traverse((obj) => {
+      if (obj instanceof THREE.Mesh || obj instanceof THREE.SkinnedMesh) {
+        const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+        materials.forEach((m) => {
+          if (m instanceof THREE.MeshPhongMaterial) {
+            if (toonOptions.enabled !== false && (toonOptions.enabled || renderEffect.includes('outline'))) {
+              m.shininess = toonOptions.shininess ?? 0;
+              m.specular.setScalar(0);
+              
+              if (toonOptions.forceHardShading && (m as any).toonMap) {
+                (m as any).toonMap.magFilter = THREE.NearestFilter;
+                (m as any).toonMap.minFilter = THREE.NearestFilter;
+                (m as any).toonMap.needsUpdate = true;
+              }
+            }
+          }
+        });
+      }
+    });
+  }, [toonOptions.enabled, toonOptions.shininess, toonOptions.forceHardShading, renderEffect]);
 
   // 监听 stage 变化，动态更新场景属性（不触发完整重载）
   useEffect(() => {

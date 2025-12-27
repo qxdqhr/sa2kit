@@ -217,6 +217,16 @@
       "types": "./dist/ai/text-generation/index.d.ts",
       "import": "./dist/ai/text-generation/index.mjs",
       "require": "./dist/ai/text-generation/index.js"
+    },
+    "./music": {
+      "types": "./dist/music/index.d.ts",
+      "import": "./dist/music/index.mjs",
+      "require": "./dist/music/index.js"
+    },
+    "./music/server": {
+      "types": "./dist/music/server/index.d.ts",
+      "import": "./dist/music/server/index.mjs",
+      "require": "./dist/music/server/index.js"
     }
   },
   "files": [
@@ -313,6 +323,7 @@
     "three": "^0.181.2",
     "three-stdlib": "^2.36.0",
     "uuid": "^13.0.0",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "@meting/core": "^1.6.0"
   }
 }

@@ -146,3 +146,5 @@ export const OCRScanner: React.FC<OCRScannerProps> = ({
   );
 };
 
+
+

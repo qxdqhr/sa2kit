@@ -31,6 +31,10 @@ export interface LoadingOverlayProps {
   loadingText?: string;
   /** 开始按钮文本 */
   startText?: string;
+  /** 设置按钮文本 */
+  settingsText?: string;
+  /** 关于按钮文本 */
+  aboutText?: string;
   /** 点击开始回调 */
   onStart?: () => void;
   /** 自定义类名 */
@@ -48,7 +52,9 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
   showStartScreen = false,
   scriptName = '',
   loadingText = '正在准备场景中...',
-  startText = '点击开始',
+  startText = '开始游戏',
+  settingsText = '游戏设置',
+  aboutText = '关于作品',
   onStart,
   className = '',
 }) => {
@@ -63,6 +69,8 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
         showStartScreen={showStartScreen}
         scriptName={scriptName}
         startText={startText}
+        settingsText={settingsText}
+        aboutText={aboutText}
         onStart={onStart}
         className={className}
       />
@@ -73,6 +81,9 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
 LoadingOverlay.displayName = 'LoadingOverlay';
 
 export default LoadingOverlay;
+
+
+
 
 
 

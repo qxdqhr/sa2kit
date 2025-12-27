@@ -40,6 +40,9 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
       mobileOptimization,
       dialogueTheme,
       autoStart = false,
+      startText,
+      settingsText,
+      aboutText,
       initialNodeIndex = 0,
       initialDialogueIndex = 0,
       onNodeChange,
@@ -515,7 +518,9 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
           showStartScreen={!isStarted}
           scriptName={script.name}
           loadingText="正在准备场景中..."
-          startText="点击开始"
+          startText={startText}
+          settingsText={settingsText}
+          aboutText={aboutText}
           onStart={handleStart}
         />
 

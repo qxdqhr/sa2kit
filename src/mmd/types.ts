@@ -70,6 +70,20 @@ export interface MMDStage {
   outlineOptions?: OutlineOptions;
   /** 辉光效果配置 */
   bloomOptions?: BloomOptions;
+  /** 三渲二(Toon)效果配置 */
+  toonOptions?: ToonOptions;
+}
+
+/** 三渲二(Toon)效果配置 */
+export interface ToonOptions {
+  /** 是否启用增强三渲二 (默认 false) */
+  enabled?: boolean;
+  /** 是否强制使用硬色阶 (默认 false) */
+  forceHardShading?: boolean;
+  /** 材质光泽度 (默认 0, 越小越有 2D 感) */
+  shininess?: number;
+  /** 是否启用边缘光 (Rim Light) */
+  rimLight?: boolean;
 }
 
 /** 移动端优化配置 */
@@ -152,6 +166,8 @@ export interface MMDPlayerBaseProps {
   outlineOptions?: OutlineOptions;
   /** 辉光效果配置 */
   bloomOptions?: BloomOptions;
+  /** 三渲二(Toon)效果配置 */
+  toonOptions?: ToonOptions;
   
   /** 事件回调 */
   onLoad?: () => void;

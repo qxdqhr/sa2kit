@@ -144,6 +144,12 @@ export interface MMDVisualNovelProps {
   
   /** 是否自动开始（默认 true） */
   autoStart?: boolean;
+  /** 开始按钮文本 */
+  startText?: string;
+  /** 设置按钮文本 */
+  settingsText?: string;
+  /** 关于按钮文本 */
+  aboutText?: string;
   /** 初始节点索引（默认 0） */
   initialNodeIndex?: number;
   /** 初始对话索引（默认 0） */
