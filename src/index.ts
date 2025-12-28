@@ -5,14 +5,6 @@
  * Version: 0.3.0
  * Features: Logger, Utils, Storage, Hooks, File Upload, Data Export, i18n, Analytics, Music, Calendar
  *
- * Note: Import the following modules using subpath exports:
- * - import { ... } from '@qhr123/sa2kit/universalFile'
- * - import { ... } from '@qhr123/sa2kit/universalExport'
- * - import { ... } from '@qhr123/sa2kit/i18n'
- * - import { ... } from '@qhr123/sa2kit/analytics'
- * - import { ... } from '@qhr123/sa2kit/music'
- * - import { ... } from '@qhr123/sa2kit/calendar'
- * - import { ... } from '@qhr123/sa2kit/calendar/routes'
  */
 
 // Logger
