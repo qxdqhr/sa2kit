@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.6.3",
+  "version": "1.6.8",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -108,6 +108,11 @@
       "import": "./dist/auth/index.mjs",
       "require": "./dist/auth/index.js"
     },
+    "./auth/server": {
+      "types": "./dist/auth/server.d.ts",
+      "import": "./dist/auth/server.mjs",
+      "require": "./dist/auth/server.js"
+    },
     "./auth/schema": {
       "types": "./dist/auth/schema/index.d.ts",
       "import": "./dist/auth/schema/index.mjs",
@@ -173,6 +178,21 @@
       "import": "./dist/audioDetection/index.mjs",
       "require": "./dist/audioDetection/index.js"
     },
+    "./calendar": {
+      "types": "./dist/calendar/index.d.ts",
+      "import": "./dist/calendar/index.mjs",
+      "require": "./dist/calendar/index.js"
+    },
+    "./calendar/server": {
+      "types": "./dist/calendar/server.d.ts",
+      "import": "./dist/calendar/server.mjs",
+      "require": "./dist/calendar/server.js"
+    },
+    "./calendar/routes": {
+      "types": "./dist/calendar/routes/index.d.ts",
+      "import": "./dist/calendar/routes/index.mjs",
+      "require": "./dist/calendar/routes/index.js"
+    },
     "./imageCrop": {
       "types": "./dist/imageCrop/index.d.ts",
       "import": "./dist/imageCrop/index.mjs",
@@ -236,8 +256,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "dev": "NODE_OPTIONS='--max-old-space-size=4096' tsup --watch",
-    "build": "NODE_OPTIONS='--max-old-space-size=4096' tsup",
+    "dev": "NODE_OPTIONS='--max-old-space-size=8192' tsup --watch",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' tsup",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
@@ -253,10 +273,13 @@
     "publish:latest": "npm publish --access public"
   },
   "peerDependencies": {
+    "@imgly/background-removal": "^1.7.0",
+    "@xenova/transformers": "^2.17.2",
     "lucide-react": "^0.263.0 || ^0.300.0 || ^0.400.0 || ^0.500.0",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0",
-    "swr": "^2.0.0"
+    "swr": "^2.0.0",
+    "tesseract.js": "^7.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
@@ -270,9 +293,31 @@
     },
     "lucide-react": {
       "optional": true
+    },
+    "@xenova/transformers": {
+      "optional": true
+    },
+    "@imgly/background-removal": {
+      "optional": true
+    },
+    "tesseract.js": {
+      "optional": true
     }
   },
   "devDependencies": {
+    "@imgly/background-removal": "^1.7.0",
+    "@radix-ui/react-alert-dialog": "^1.1.15",
+    "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-dialog": "^1.1.6",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
+    "@radix-ui/react-popover": "^1.1.6",
+    "@radix-ui/react-progress": "^1.1.7",
+    "@radix-ui/react-scroll-area": "^1.2.10",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slot": "^1.1.2",
+    "@radix-ui/react-tabs": "^1.1.13",
+    "@radix-ui/react-tooltip": "^1.2.8",
     "@testing-library/react": "^14.0.0",
     "@types/adm-zip": "^0.5.7",
     "@types/ali-oss": "^6.16.13",
@@ -286,6 +331,9 @@
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
     "@vitest/ui": "^1.2.0",
+    "@xenova/transformers": "^2.17.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "drizzle-orm": "^0.44.7",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
@@ -294,8 +342,12 @@
     "jsdom": "^23.0.0",
     "lru-cache": "^10.0.0",
     "lucide-react": "^0.553.0",
+    "next": "^14.1.0",
+    "null-loader": "^4.0.1",
     "pg": "^8.16.3",
     "prettier": "^3.1.1",
+    "tailwind-merge": "^2.6.0",
+    "tesseract.js": "^7.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.3.3",
     "vitest": "^1.2.0"
@@ -308,8 +360,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@imgly/background-removal": "^1.7.0",
-    "@xenova/transformers": "^2.17.2",
+    "@meting/core": "^1.6.0",
     "adm-zip": "^0.5.16",
     "ali-oss": "^6.23.0",
     "bcryptjs": "^3.0.3",
@@ -319,11 +370,9 @@
     "onnxruntime-web": "1.21.0",
     "postgres": "^3.4.7",
     "proxy-agent": "^6.5.0",
-    "tesseract.js": "^7.0.0",
     "three": "^0.181.2",
     "three-stdlib": "^2.36.0",
     "uuid": "^13.0.0",
-    "xlsx": "^0.18.5",
-    "@meting/core": "^1.6.0"
+    "xlsx": "^0.18.5"
   }
 }

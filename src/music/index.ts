@@ -7,7 +7,7 @@
 export * from './types';
 
 // 前端组件导出
-export * from './components/MusicPlayer';
+export * from './components';
 
 // 前端 Hooks 导出
 export * from './hooks/useMusic';

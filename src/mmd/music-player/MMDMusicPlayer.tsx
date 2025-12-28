@@ -16,6 +16,8 @@ import {
 import { MusicControls } from './components/MusicControls';
 import { PlaylistPanel } from './components/PlaylistPanel';
 import { TrackInfo } from './components/TrackInfo';
+import { useMusic } from '../../music';
+import { Search } from 'lucide-react';
 
 /**
  * MMDMusicPlayer - MMD 音乐播放器组件 (Study with Miku 风格)
@@ -33,6 +35,8 @@ export const MMDMusicPlayer = forwardRef<MMDMusicPlayerRef, MMDMusicPlayerProps>
       stage,
       mobileOptimization,
       initialTrackIndex = 0,
+      fixedResources,
+      mikuMode,
       onTrackChange,
       onPlayPause,
       onProgress,
@@ -42,9 +46,10 @@ export const MMDMusicPlayer = forwardRef<MMDMusicPlayerRef, MMDMusicPlayerProps>
     },
     ref
   ) => {
-    const { tracks, autoPlay = false, defaultLoopMode = 'list' } = config;
+    const { tracks: initialTracks, autoPlay = false, defaultLoopMode = 'list' } = config;
 
     // 状态管理
+    const [tracks, setTracks] = useState<MusicTrack[]>(initialTracks);
     const [currentIndex, setCurrentIndex] = useState(initialTrackIndex);
     const [isPlaying, setIsPlaying] = useState(autoPlay);
     const [isLoading, setIsLoading] = useState(true);
@@ -55,6 +60,66 @@ export const MMDMusicPlayer = forwardRef<MMDMusicPlayerRef, MMDMusicPlayerProps>
     const [showPlaylist, setShowPlaylist] = useState(false);
     const [isUIVisible, setIsUIVisible] = useState(true);
     const [isCameraManual, setIsCameraManual] = useState(false);
+    const [searchKeyword, setSearchKeyword] = useState('');
+
+    // Miku 搜索集成
+    const { search, searchResult, isSearching, getSongUrl } = useMusic();
+
+    // 初始加载 Miku 歌曲
+    useEffect(() => {
+      if (mikuMode && tracks.length === 0) {
+        search({ keyword: '', miku: true });
+      }
+    }, [mikuMode]);
+
+    // 当搜索结果返回时，更新播放列表
+    useEffect(() => {
+      if (searchResult && searchResult.tracks.length > 0) {
+        const newTracks: MusicTrack[] = searchResult.tracks.map(t => ({
+          id: t.id,
+          title: t.name,
+          artist: t.artist,
+          coverUrl: t.pic,
+          resources: {
+            modelPath: fixedResources?.modelPath || '', // 将在切换曲目时进一步处理
+            motionPath: fixedResources?.motionPath || '',
+            audioPath: t.url || '', // 初始可能为空，需要 getSongUrl
+            stageModelPath: fixedResources?.stageModelPath,
+            cameraPath: fixedResources?.cameraPath
+          }
+        }));
+        setTracks(newTracks);
+        setCurrentIndex(0);
+        // 如果是 Miku 模式，第一个通常需要去获取播放链接
+        fetchAndGoToTrack(0, newTracks);
+      }
+    }, [searchResult]);
+
+    // 获取播放链接并跳转
+    const fetchAndGoToTrack = async (index: number, currentTracksList: MusicTrack[] = tracks) => {
+      const track = currentTracksList[index];
+      if (!track) return;
+
+      // 如果没有播放链接，先去获取
+      if (!track.resources.audioPath) {
+        setIsLoading(true);
+        const url = await getSongUrl(track.id, (track as any).source || 'kugou');
+        if (url) {
+          const updatedTracks = [...currentTracksList];
+          updatedTracks[index] = {
+            ...track,
+            resources: { ...track.resources, audioPath: url }
+          };
+          setTracks(updatedTracks);
+          goToTrack(index, updatedTracks);
+        } else {
+          console.error('[MMDMusicPlayer] Failed to get song URL');
+          setIsLoading(false);
+        }
+      } else {
+        goToTrack(index, currentTracksList);
+      }
+    };
 
     // Refs
     const playerRef = useRef<MMDPlayerBaseRef>(null);
@@ -65,41 +130,57 @@ export const MMDMusicPlayer = forwardRef<MMDMusicPlayerRef, MMDMusicPlayerProps>
     // 获取当前曲目
     const currentTrack = tracks[currentIndex];
 
-    // 切换到指定曲目 - 包含物理引擎清理逻辑
+    // 切换到指定曲目
     const goToTrack = useCallback(
-      (index: number) => {
-        if (index < 0 || index >= tracks.length) return;
-        if (isTransitioning) return;
-
-        const track = tracks[index];
+      (index: number, tracksList: MusicTrack[] = tracks) => {
+        if (index < 0 || index >= tracksList.length) return;
+        
+        const track = tracksList[index];
         if (!track) return;
 
-        console.log(`[MMDMusicPlayer] Transitioning to track ${index}: ${track.title}`);
+        // 如果开启了 fixedResources 模式，且模型/动作路径相同，则跳过重载遮罩
+        const isSmoothUpdate = fixedResources && 
+                              track.resources.modelPath === currentTrack?.resources.modelPath &&
+                              track.resources.motionPath === currentTrack?.resources.motionPath;
 
-        // 1. 进入过渡状态并暂停
-        setIsTransitioning(true);
-        setIsLoading(true);
+        if (!isSmoothUpdate) {
+          if (isTransitioning) return;
+          setIsTransitioning(true);
+          setIsLoading(true);
+        }
+        
         const wasPlaying = isPlaying;
         setIsPlaying(false);
 
-        // 2. 给物理引擎和 Three.js 资源清理留出时间 (参照 MMDPlaylist 逻辑)
-        setTimeout(() => {
+        const applyChange = () => {
           setCurrentIndex(index);
           setCurrentTime(0);
           setDuration(0);
           onTrackChange?.(track, index);
 
-          // 3. 结束过渡，允许新播放器挂载
-          setTimeout(() => {
-            setIsTransitioning(false);
-            // 如果之前在播放，等待加载完成后恢复
+          if (!isSmoothUpdate) {
+            setTimeout(() => {
+              setIsTransitioning(false);
+              if (wasPlaying) isStartedRef.current = true;
+            }, 100);
+          } else {
+            // 平滑切换：直接恢复播放状态
             if (wasPlaying) {
-              isStartedRef.current = true;
+              setTimeout(() => {
+                playerRef.current?.play();
+                setIsPlaying(true);
+              }, 300); // 给音频加载留一点点时间
             }
-          }, 100);
-        }, 300);
+          }
+        };
+
+        if (!isSmoothUpdate) {
+          setTimeout(applyChange, 300);
+        } else {
+          applyChange();
+        }
       },
-      [tracks, isTransitioning, isPlaying, onTrackChange]
+      [tracks, currentTrack, isTransitioning, isPlaying, onTrackChange, fixedResources]
     );
 
     // 下一曲逻辑
@@ -110,8 +191,8 @@ export const MMDMusicPlayer = forwardRef<MMDMusicPlayerRef, MMDMusicPlayerProps>
       } else if (nextIndex >= tracks.length) {
         nextIndex = 0;
       }
-      goToTrack(nextIndex);
-    }, [currentIndex, tracks.length, loopMode, goToTrack]);
+      fetchAndGoToTrack(nextIndex);
+    }, [currentIndex, tracks.length, loopMode, fetchAndGoToTrack]);
 
     // 上一曲逻辑
     const previous = useCallback(() => {
@@ -119,8 +200,8 @@ export const MMDMusicPlayer = forwardRef<MMDMusicPlayerRef, MMDMusicPlayerProps>
       if (prevIndex < 0) {
         prevIndex = tracks.length - 1;
       }
-      goToTrack(prevIndex);
-    }, [currentIndex, tracks.length, goToTrack]);
+      fetchAndGoToTrack(prevIndex);
+    }, [currentIndex, tracks.length, fetchAndGoToTrack]);
 
     // 暴露方法给外部
     useImperativeHandle(
@@ -216,7 +297,6 @@ export const MMDMusicPlayer = forwardRef<MMDMusicPlayerRef, MMDMusicPlayerProps>
         >
           {!isTransitioning && (
             <MMDPlayerBase
-              key={currentTrack.id}
               ref={playerRef}
               resources={currentTrack.resources}
               stage={{ ...stage, ...currentTrack.stage }}
@@ -301,9 +381,12 @@ export const MMDMusicPlayer = forwardRef<MMDMusicPlayerRef, MMDMusicPlayerProps>
           tracks={tracks}
           currentIndex={currentIndex}
           isOpen={showPlaylist}
+          mikuMode={mikuMode}
+          isSearching={isSearching}
+          onSearch={(keyword) => search({ keyword, miku: true })}
           onClose={() => setShowPlaylist(false)}
           onSelectTrack={(index) => {
-            goToTrack(index);
+            fetchAndGoToTrack(index);
             setShowPlaylist(false);
           }}
         />

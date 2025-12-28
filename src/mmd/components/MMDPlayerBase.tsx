@@ -228,6 +228,8 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   const animationClipRef = useRef<THREE.AnimationClip | null>(null); // 保存动画剪辑
   const loopRef = useRef(loop); // 循环状态 ref
   const audioRef = useRef<THREE.Audio | null>(null); // 音频对象引用
+  const audioListenerRef = useRef<THREE.AudioListener | null>(null); // 音频监听器引用
+  const audioLoaderRef = useRef<THREE.AudioLoader>(new THREE.AudioLoader());
 
   // 🚀 解决回调函数在渲染循环中的闭包过时问题
   const latestCallbacks = useRef({ onPlay, onPause, onEnded, onTimeUpdate });
@@ -434,7 +436,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
 
         // Scene
         const scene = new THREE.Scene();
-        if (stage.backgroundColor) {
+        if (stage.backgroundColor && stage.backgroundColor !== 'transparent') {
           scene.background = new THREE.Color(stage.backgroundColor);
         } else if (stage.backgroundImage) {
           const textureLoader = new THREE.TextureLoader();
@@ -453,6 +455,11 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
            camera.position.set(0, 20, 30);
         }
         cameraRef.current = camera;
+
+        // 音频监听器
+        const listener = new THREE.AudioListener();
+        camera.add(listener);
+        audioListenerRef.current = listener;
 
         // Renderer
         const renderer = new THREE.WebGLRenderer({ 
@@ -842,33 +849,6 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
             },
             undefined,
             (err) => console.error('Failed to load camera motion:', err)
-          );
-        }
-
-        // 6.4 加载音频
-        if (resources.audioPath) {
-          const listener = new THREE.AudioListener();
-          camera.add(listener);
-          
-          const sound = new THREE.Audio(listener);
-          const audioLoader = new THREE.AudioLoader();
-          
-          audioLoader.load(
-            resources.audioPath,
-            (buffer) => {
-              if (checkCancelled()) return; // Callback check
-              sound.setBuffer(buffer);
-              sound.setLoop(loopRef.current);
-              sound.setVolume(volume);
-              audioRef.current = sound; // 保存音频引用以便后续更新循环状态
-              
-              helper.add(sound, { 
-                delay: 0.0, 
-                duration: buffer.duration 
-              } as any);
-            },
-            undefined,
-            (err) => console.error('Failed to load audio:', err)
           );
         }
 
@@ -1550,7 +1530,51 @@ ${errorMessage}
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resources]); // 关键依赖：当 resources 变了（且没有 key 强制重刷时），执行这个 effect
+  }, [resources.modelPath, resources.motionPath, resources.stageModelPath, stage.enablePhysics, stage.physicsPath]); // 🎯 优化：音频路径变化不再触发完整重载
+
+  // 🎯 独立处理音频加载，支持在不重载模型的情况下切换歌曲
+  useEffect(() => {
+    if (!audioListenerRef.current || !helperRef.current || !resources.audioPath) return;
+
+    const listener = audioListenerRef.current;
+    const helper = helperRef.current;
+    
+    // 1. 如果已有音频，先清理
+    if (audioRef.current) {
+      const oldSound = audioRef.current;
+      if (oldSound.isPlaying) oldSound.stop();
+      if (oldSound.parent) oldSound.parent.remove(oldSound);
+      audioRef.current = null;
+    }
+
+    // 2. 加载新音频
+    console.log('[MMDPlayerBase] Loading new audio track:', resources.audioPath);
+    audioLoaderRef.current.load(
+      resources.audioPath,
+      (buffer) => {
+        if (!audioListenerRef.current) return;
+        
+        const sound = new THREE.Audio(listener);
+        sound.setBuffer(buffer);
+        sound.setLoop(loopRef.current);
+        sound.setVolume(volume);
+        audioRef.current = sound;
+
+        helper.add(sound, { 
+          delay: 0.0, 
+          duration: buffer.duration 
+        } as any);
+        
+        console.log('[MMDPlayerBase] Audio track loaded successfully');
+        
+        if (isPlayingRef.current) {
+          sound.play();
+        }
+      },
+      undefined,
+      (err) => console.error('[MMDPlayerBase] Failed to load audio track:', err)
+    );
+  }, [resources.audioPath, volume]);
 
   // 监听 showAxes 变化，动态添加/移除坐标轴
   useEffect(() => {
@@ -1647,7 +1671,11 @@ ${errorMessage}
     // 更新背景
     if (sceneRef.current) {
       if (stage.backgroundColor) {
-        sceneRef.current.background = new THREE.Color(stage.backgroundColor);
+        if (stage.backgroundColor === 'transparent') {
+          sceneRef.current.background = null;
+        } else {
+          sceneRef.current.background = new THREE.Color(stage.backgroundColor);
+        }
       } else if (stage.backgroundImage) {
         const textureLoader = new THREE.TextureLoader();
         textureLoader.load(stage.backgroundImage, (texture) => {
@@ -1726,7 +1754,7 @@ ${errorMessage}
         height: '100%', 
         overflow: 'hidden', 
         position: 'relative', // 恢复 relative，作为 canvas 的定位容器
-        backgroundColor: stage.backgroundColor || '#000',
+        backgroundColor: stage.backgroundColor === 'transparent' ? 'transparent' : (stage.backgroundColor || '#000'),
         ...style 
       }}
     />

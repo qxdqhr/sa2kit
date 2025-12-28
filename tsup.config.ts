@@ -30,6 +30,9 @@ export default defineConfig({
     'mmd/admin/index': 'src/mmd/admin/index.ts',
     'mmd/server/index': 'src/mmd/server/index.ts',
     'audioDetection/index': 'src/audioDetection/index.ts',
+    'calendar/index': 'src/calendar/index.ts',
+    'calendar/server': 'src/calendar/server.ts',
+    'calendar/routes/index': 'src/calendar/routes/index.ts',
     'imageCrop/index': 'src/imageCrop/index.ts',
     'testYourself/index': 'src/testYourself/index.ts',
     'testYourself/admin/index': 'src/testYourself/admin/index.ts',
@@ -42,7 +45,7 @@ export default defineConfig({
   format: ['esm', 'cjs'],
 
   // Generate TypeScript declaration files
-  dts: true,
+  dts: false,
 
   // Split code for better tree-shaking
   splitting: true,
@@ -75,6 +78,12 @@ export default defineConfig({
     'electron', // Electron 环境专用
     'react-native', // React Native 环境专用
     'three', // externalize three to prevent bundling it twice if user app has it
+    'next',
+    '@xenova/transformers',
+    '@imgly/background-removal',
+    'tesseract.js',
+    'onnxruntime-node',
+    'onnxruntime-web'
   ],
 
   // Skip node_modules
@@ -85,9 +94,6 @@ export default defineConfig({
 
   // Output directory
   outDir: 'dist',
-
-  // Preserve JSX for React
-  // Not needed as we don't have JSX in this library yet, but good to have
 
   // Platform target
   platform: 'neutral', // Works in both browser and Node.js

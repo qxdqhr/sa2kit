@@ -1,4 +1,5 @@
 import { musicService } from './meting';
+import { mikuMusicService } from './miku';
 import { MusicApiResponse } from '../types';
 import { DEFAULT_MUSIC_SOURCE } from '../constants';
 
@@ -6,6 +7,7 @@ import { DEFAULT_MUSIC_SOURCE } from '../constants';
  * 创建搜索接口处理器
  */
 export const createSearchHandler = () => {
+// ...
   return async (req: Request): Promise<Response> => {
     try {
       const { searchParams } = new URL(req.url);
@@ -13,16 +15,19 @@ export const createSearchHandler = () => {
       const source = searchParams.get('source') || DEFAULT_MUSIC_SOURCE;
       const limit = parseInt(searchParams.get('limit') || '20');
       const offset = parseInt(searchParams.get('offset') || '0');
+      const miku = searchParams.get('miku') === 'true';
 
-      if (!keyword) {
+      if (!keyword && !miku) {
         return Response.json({ code: 400, message: 'Keyword is required' }, { status: 400 });
       }
 
-      const result = await musicService.search({
-        keyword,
+      const service = miku ? mikuMusicService : musicService;
+      const result = await service.search({
+        keyword: keyword || '',
         source: source as any,
         limit,
         offset,
+        miku,
       });
 
       return Response.json({

@@ -12,6 +12,7 @@ import type { UserRole } from '../schema/enums';
 export interface JwtPayload {
   userId: string;
   email: string;
+  username?: string;
   role: UserRole;
   iat?: number;
   exp?: number;

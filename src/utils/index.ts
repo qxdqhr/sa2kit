@@ -36,3 +36,6 @@ export { debugUtils } from './debug';
 // 错误处理工具
 export { errorUtils } from './error';
 
+// UI 类名合并工具
+export { cn } from './cn';
+

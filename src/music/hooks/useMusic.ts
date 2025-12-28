@@ -24,7 +24,7 @@ export function useMusic() {
 
   // 搜索歌曲
   const { data: rawData, error: searchError, isLoading: isSearching } = useSWR<MusicApiResponse<any>>(
-    searchOptions ? `/api/music/search?keyword=${encodeURIComponent(searchOptions.keyword)}&source=${searchOptions.source || DEFAULT_MUSIC_SOURCE}&limit=${searchOptions.limit || 20}&offset=${searchOptions.offset || 0}` : null,
+    searchOptions ? `/api/music/search?keyword=${encodeURIComponent(searchOptions.keyword)}&source=${searchOptions.source || DEFAULT_MUSIC_SOURCE}&limit=${searchOptions.limit || 20}&offset=${searchOptions.offset || 0}${searchOptions.miku ? '&miku=true' : ''}` : null,
     fetcher
   );
 

@@ -1,9 +1,19 @@
 /**
- * Universal File Components
- *
- * 提供开箱即用的文件管理 UI 组件
+ * 通用文件管理组件模块入口
  */
 
-export { FileUploader, default as DefaultFileUploader } from './FileUploader';
-export type { FileUploaderProps, UploadingFile } from './FileUploader';
+// 导出上传组件
+export { FileUploader } from './FileUploader';
+export type { FileUploaderProps } from './FileUploader';
 
+// 导出文件管理组件
+export { UniversalFileManager } from './UniversalFileManager';
+export type { FileManagerProps } from './UniversalFileManager';
+
+// 导出文件夹管理组件
+export { default as FolderManager } from './FolderManager';
+export type { FolderManagerProps, FolderNode } from './FolderManager';
+
+// 导出文件分享组件
+export { default as FileShareModal } from './FileShareModal';
+export type { FileShareModalProps, ShareInfo } from './FileShareModal';

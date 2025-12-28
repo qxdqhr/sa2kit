@@ -3,7 +3,7 @@
  * A modern, type-safe React utility library with cross-platform support
  *
  * Version: 0.3.0
- * Features: Logger, Utils, Storage, Hooks, File Upload, Data Export, i18n, Analytics, Music
+ * Features: Logger, Utils, Storage, Hooks, File Upload, Data Export, i18n, Analytics, Music, Calendar
  *
  * Note: Import the following modules using subpath exports:
  * - import { ... } from '@qhr123/sa2kit/universalFile'
@@ -11,6 +11,8 @@
  * - import { ... } from '@qhr123/sa2kit/i18n'
  * - import { ... } from '@qhr123/sa2kit/analytics'
  * - import { ... } from '@qhr123/sa2kit/music'
+ * - import { ... } from '@qhr123/sa2kit/calendar'
+ * - import { ... } from '@qhr123/sa2kit/calendar/routes'
  */
 
 // Logger
@@ -25,6 +27,38 @@ export * from './ai/text-generation';
 // Utils
 export * from './utils';
 
+// Components
+export * from './components';
+
+/// Profile Feature
+export { ProfileButton } from './profile/ProfileButton';
+export type { ProfileButtonProps } from './profile/ProfileButton';
+export { ProfileModal } from './profile/ProfileModal';
+export type { ProfileModalProps } from './profile/ProfileModal';
+export { AutoOpenModal } from './profile/AutoOpenModal';
+export type { AutoOpenModalProps } from './profile/AutoOpenModal';
+export { EnhancedAvatar } from './profile/EnhancedAvatar';
+export type { EnhancedAvatarProps } from './profile/EnhancedAvatar';
+export * from './profile/types';
+
+// Portfolio Feature
+export { default as About } from './portfolio/About';
+export { default as Contact } from './portfolio/Contact';
+export { default as Home } from './portfolio/Home';
+export type { HomeConfig } from './portfolio/Home';
+export { ExperimentCard } from './portfolio/ExperimentCard';
+export type { ExperimentCardProps } from './portfolio/ExperimentCard';
+export { ProjectCarousel } from './portfolio/ProjectCarousel';
+export type { Project, ProjectsConfig } from './portfolio/ProjectCarousel';
+
+// Navigation Feature
+export { default as Navigation } from './navigation/Navigation';
+export { default as NavigationItem } from './navigation/NavigationItem';
+export { default as NavigationToggle } from './navigation/NavigationToggle';
+export { default as FloatingMenu } from './navigation/FloatingMenu';
+export { default as FloatingMenuExample } from './navigation/FloatingMenuExample';
+export * from './navigation/types';
+
 // Storage - Only export types and hooks, not platform adapters
 // Platform adapters should be imported from '@qhr123/sa2kit/storage' subpath
 export type { StorageAdapter, StorageChangeEvent } from './storage/types';
@@ -37,5 +71,6 @@ export * from './storage/hooks';
 // - Internationalization: import { createI18n, useTranslation } from '@qhr123/sa2kit/i18n';
 // - Analytics: import { Analytics } from '@qhr123/sa2kit/analytics';
 // - Music: import { MusicPlayer, musicService } from '@qhr123/sa2kit/music';
+// - Calendar: import { useEvents, CalendarPage } from '@qhr123/sa2kit/calendar';
 
 

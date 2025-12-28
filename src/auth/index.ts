@@ -58,6 +58,9 @@ export {
   type JwtPayload,
 } from './services';
 
+// Server Utilities
+export { validateApiAuth, validateApiAuthNumeric } from './server';
+
 // Routes
 export {
   createLoginHandler,

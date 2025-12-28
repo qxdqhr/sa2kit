@@ -22,6 +22,7 @@ export interface SearchOptions {
   source?: MusicSource;
   limit?: number;
   offset?: number;
+  miku?: boolean;
 }
 
 export interface SearchResult {

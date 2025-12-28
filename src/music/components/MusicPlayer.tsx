@@ -1,369 +1,397 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import {
-    Play,
-    Pause,
-    SkipBack,
-    SkipForward,
-    Search,
-    Volume2,
-    VolumeX,
-    Music as MusicIcon,
-    Loader2,
-    ChevronLeft,
-    ChevronRight,
-    LayoutGrid,
-    List as ListIcon
-} from 'lucide-react';
-import { useMusic } from '../hooks/useMusic';
-import { MusicTrack } from '../types';
-import { MUSIC_SOURCES, DEFAULT_MUSIC_SOURCE, MusicSource, MUSIC_SOURCE_NAMES } from '../constants';
+'use client';
 
-export const MusicPlayer: React.FC = () => {
-    const { search, searchResult: searchData, isSearching, getSongUrl } = useMusic();
-    const [keyword, setKeyword] = useState('');
-    const [selectedSource, setSelectedSource] = useState<MusicSource>(DEFAULT_MUSIC_SOURCE);
-    const [currentPage, setCurrentPage] = useState(0);
-    const [layoutMode, setLayoutMode] = useState<'grid' | 'list'>('grid');
-    const pageSize = 20;
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
-    const [currentTrack, setCurrentTrack] = useState<MusicTrack | null>(null);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const [duration, setDuration] = useState(0);
-    const [volume, setVolume] = useState(0.7);
-    const [isMuted, setIsMuted] = useState(false);
-    const [isLoadingUrl, setIsLoadingUrl] = useState(false);
+export interface MusicPlayerState {
+  isPlaying: boolean;
+  currentTime: number;
+  duration: number;
+  volume: number;
+  isLoading: boolean;
+  error?: string;
+}
 
-    const audioRef = useRef<HTMLAudioElement | null>(null);
+export interface PlayerMusicTrack {
+  id: string;
+  name: string;
+  file: string;
+  duration?: number;
+  volume?: number;
+}
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (keyword.trim()) {
-            setCurrentPage(0);
-            search({ keyword, source: selectedSource, offset: 0, limit: pageSize });
-        }
+export interface MusicPlayerProps {
+  track?: PlayerMusicTrack;
+  onPlay?: () => void; // 新增播放回调
+  onPause?: () => void;
+  onStop?: () => void;
+  onVolumeChange?: (volume: number) => void;
+  onSeek?: (time: number) => void;
+  initialVolume?: number;
+  className?: string;
+  compact?: boolean;
+  ultraCompact?: boolean; // 超级紧缩模式，只显示播放控制和音量
+  hideVolumeControl?: boolean; // 隐藏音量控制模块
+  showTrackInfo?: boolean;
+  // 外部状态控制 - 必需的props
+  isPlaying: boolean; // 外部播放状态
+  currentTime: number; // 外部当前时间
+  duration: number; // 外部总时长
+  externalVolume?: number; // 外部音量状态
+}
+
+export default function MusicPlayer({
+  track,
+  onPlay,
+  onPause,
+  onStop,
+  onVolumeChange,
+  onSeek,
+  initialVolume = 0.7,
+  className = '',
+  compact = false,
+  ultraCompact = false,
+  hideVolumeControl = false,
+  showTrackInfo = true,
+  isPlaying,
+  currentTime,
+  duration,
+  externalVolume
+}: MusicPlayerProps) {
+  const [volume, setVolume] = useState(externalVolume ?? initialVolume);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | undefined>();
+
+  const progressRef = useRef<HTMLDivElement>(null);
+  const volumeRef = useRef<HTMLDivElement>(null);
+  const [isDraggingProgress, setIsDraggingProgress] = useState(false);
+  const [isDraggingVolume, setIsDraggingVolume] = useState(false);
+
+  // 同步外部音量状态
+  useEffect(() => {
+    if (externalVolume !== undefined) {
+      setVolume(externalVolume);
+    }
+  }, [externalVolume]);
+
+  // 格式化时间显示
+  const formatTime = (seconds: number): string => {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // 播放控制
+  const handlePlay = useCallback(() => {
+    onPlay?.();
+  }, [onPlay]);
+
+  // 暂停控制
+  const handlePause = useCallback(() => {
+    onPause?.();
+  }, [onPause]);
+
+  // 停止控制
+  const handleStop = useCallback(() => {
+    onStop?.();
+  }, [onStop]);
+
+  // 音量控制
+  const handleVolumeChange = useCallback((newVolume: number) => {
+    const clampedVolume = Math.max(0, Math.min(1, newVolume));
+    setVolume(clampedVolume);
+    onVolumeChange?.(clampedVolume);
+  }, [onVolumeChange]);
+
+  // 进度控制
+  const handleSeek = useCallback((time: number) => {
+    if (!duration || isNaN(duration)) return;
+    
+    const seekTime = Math.max(0, Math.min(duration, time));
+    onSeek?.(seekTime);
+  }, [duration, onSeek]);
+
+  // 鼠标拖拽进度条
+  const handleProgressMouseDown = useCallback((e: React.MouseEvent) => {
+    if (!progressRef.current || !duration) return;
+    
+    setIsDraggingProgress(true);
+    const rect = progressRef.current.getBoundingClientRect();
+    const percent = (e.clientX - rect.left) / rect.width;
+    const time = percent * duration;
+    handleSeek(time);
+  }, [duration, handleSeek]);
+
+  // 鼠标拖拽音量条
+  const handleVolumeMouseDown = useCallback((e: React.MouseEvent) => {
+    if (!volumeRef.current) return;
+    
+    setIsDraggingVolume(true);
+    const rect = volumeRef.current.getBoundingClientRect();
+    const percent = (e.clientX - rect.left) / rect.width;
+    handleVolumeChange(percent);
+  }, [handleVolumeChange]);
+
+  // 处理拖拽事件
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDraggingProgress && progressRef.current && duration) {
+        const rect = progressRef.current.getBoundingClientRect();
+        const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        const time = percent * duration;
+        handleSeek(time);
+      }
+      
+      if (isDraggingVolume && volumeRef.current) {
+        const rect = volumeRef.current.getBoundingClientRect();
+        const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        handleVolumeChange(percent);
+      }
     };
 
-    const handlePageChange = (newPage: number) => {
-        setCurrentPage(newPage);
-        search({ keyword, source: selectedSource, offset: newPage, limit: pageSize });
+    const handleMouseUp = () => {
+      setIsDraggingProgress(false);
+      setIsDraggingVolume(false);
     };
 
-    const playTrack = async (track: MusicTrack) => {
-        setIsLoadingUrl(true);
-        const url = await getSongUrl(track.id, track.source);
-        setIsLoadingUrl(false);
+    if (isDraggingProgress || isDraggingVolume) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
 
-        if (url) {
-            const fullTrack = { ...track, url };
-            setCurrentTrack(fullTrack);
-            setIsPlaying(true);
-            if (audioRef.current) {
-                audioRef.current.src = url;
-                audioRef.current.play();
-            }
-        } else {
-            alert('无法获取播放链接');
-        }
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
     };
+  }, [isDraggingProgress, isDraggingVolume, duration, handleSeek, handleVolumeChange]);
 
-    const togglePlay = () => {
-        if (!audioRef.current || !currentTrack) return;
+  // 阻止事件传播的通用处理器
+  const stopPropagation = useCallback((e: React.SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
 
-        if (isPlaying) {
-            audioRef.current.pause();
-        } else {
-            audioRef.current.play();
-        }
-        setIsPlaying(!isPlaying);
-    };
-
-    const handleTimeUpdate = () => {
-        if (audioRef.current) {
-            setProgress(audioRef.current.currentTime);
-            setDuration(audioRef.current.duration);
-        }
-    };
-
-    const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const time = parseFloat(e.target.value);
-        setProgress(time);
-        if (audioRef.current) {
-            audioRef.current.currentTime = time;
-        }
-    };
-
-    const formatTime = (time: number) => {
-        if (isNaN(time)) return '00:00';
-        const mins = Math.floor(time / 60);
-        const secs = Math.floor(time % 60);
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    };
-
+  // 如果是超级紧缩模式
+  if (ultraCompact) {
     return (
-        <div className="flex flex-col h-full bg-black text-white font-sans">
-            {/* 搜索栏 */}
-            <div className="p-6 border-b border-gray-800 max-w-400 mx-auto">
-                <form onSubmit={handleSearch} className="flex flex-row items-center gap-4 max-w-screen mx-auto">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                        <input
-                            type="text"
-                            value={keyword}
-                            onChange={(e) => setKeyword(e.target.value)}
-                            placeholder="搜索歌曲、歌手..."
-                            className="w-full bg-gray-900 border border-gray-700 rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        />
-                    </div>
-                    <select
-                        value={selectedSource}
-                        onChange={(e) => setSelectedSource(e.target.value as MusicSource)}
-                        className="bg-gray-900  p-2 border border-gray-700 text-gray-300 text-sm rounded-full px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer hover:bg-gray-800"
-                    >
-                        {MUSIC_SOURCES.map((src) => (
-                            <option key={src} value={src}>
-                                {MUSIC_SOURCE_NAMES[src]}
-                            </option>
-                        ))}
-                    </select>
-                    <div className=" flex items-center justify-center max-w-lg bg-gray-900 rounded-full p-2 border border-gray-700">
-                        <button
-                           
-                            onClick={() => setLayoutMode('list')}
-                            className={`p-1.5 rounded-full transition-all ${layoutMode === 'list' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-gray-300'}`}
-                            title="列表视图"
-                        >
-                            <ListIcon className="w-4 h-4" />
-                        </button>
-                        <button
-                            
-                            onClick={() => setLayoutMode('grid')}
-                            className={`p-1.5 rounded-full transition-all ${layoutMode === 'grid' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-gray-300'}`}
-                            title="网格视图"
-                        >
-                            <LayoutGrid className="w-4 h-4" />
-                        </button>
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={isSearching}
-                        className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-white rounded-full px-8 py-2 font-medium transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shrink-0"
-                    >
-                        {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : '搜索'}
-                    </button>
-                </form>
-            </div>
+      <div 
+        className={`flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-xl p-2 shadow-lg border border-purple-200 ${className}`}
+        style={{ width: hideVolumeControl ? '120px' : '192px' }}
+        onClick={stopPropagation}
+        onMouseDown={stopPropagation}
+        onMouseUp={stopPropagation}
+        onTouchStart={stopPropagation}
+        onTouchEnd={stopPropagation}
+        onPointerDown={stopPropagation}
+        onPointerUp={stopPropagation}
+      >
+        {/* 控制按钮 */}
+        <div className={`flex items-center gap-1 ${hideVolumeControl ? 'w-full justify-center' : ''}`}>
+          {/* 停止按钮 */}
+          <button
+            onClick={(e) => { stopPropagation(e); handleStop(); }}
+            onMouseDown={stopPropagation}
+            onMouseUp={stopPropagation}
+            onTouchStart={stopPropagation}
+            onTouchEnd={stopPropagation}
+            onPointerDown={stopPropagation}
+            onPointerUp={stopPropagation}
+            className="w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 border border-gray-300 flex items-center justify-center transition-colors"
+            title="停止"
+          >
+            <div className="w-2.5 h-2.5 bg-gray-600 rounded-sm"></div>
+          </button>
 
-            {/* 歌曲列表和详情区域 */}
-            <div className="flex-1 flex overflow-hidden">
-                {/* 左侧列表 */}
-                <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-gray-800">
-                    {Array.isArray(searchData?.tracks) && searchData.tracks.length > 0 ? (
-                        <div className={layoutMode === 'grid'
-                            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                            : "flex flex-col gap-2 max-w-5xl mx-auto"
-                        }>
-                            {searchData.tracks.map((track) => (
-                                <div
-                                    key={track.id}
-                                    onClick={() => playTrack(track)}
-                                    className={`flex items-center gap-4 p-3 rounded-xl cursor-pointer transition-all ${currentTrack?.id === track.id
-                                            ? 'bg-blue-600/20 border border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.2)]'
-                                            : 'bg-gray-900/50 border border-gray-800 hover:bg-gray-800/80 hover:border-gray-700'
-                                        } ${layoutMode === 'list' ? 'hover:pl-5' : ''}`}
-                                >
-                                    <div className={`relative rounded-lg overflow-hidden shrink-0 bg-gray-800 transition-all ${layoutMode === 'grid' ? 'w-14 h-14' : 'w-12 h-12'
-                                        }`}>
-                                        {track.pic ? (
-                                            <img src={track.pic} alt={track.name} className="w-full h-full object-cover" />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center">
-                                                <MusicIcon className="w-6 h-6 text-gray-600" />
-                                            </div>
-                                        )}
-                                        {currentTrack?.id === track.id && isPlaying && (
-                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                                <div className="flex gap-0.5 items-end h-4">
-                                                    <div className="w-0.5 bg-blue-400 animate-music-bar" style={{ height: '60%' }} />
-                                                    <div className="w-0.5 bg-blue-400 animate-music-bar" style={{ height: '100%', animationDelay: '0.2s' }} />
-                                                    <div className="w-0.5 bg-blue-400 animate-music-bar" style={{ height: '40%', animationDelay: '0.4s' }} />
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2">
-                                            <h3 className={`font-semibold truncate ${layoutMode === 'grid' ? 'text-sm' : 'text-base'}`}>{track.name}</h3>
-                                            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-gray-800 text-gray-400 shrink-0">
-                                                {MUSIC_SOURCE_NAMES[track.source].replace('音乐', '')}
-                                            </span>
-                                            {track.isVip && (
-                                                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 shrink-0 font-bold">
-                                                    VIP
-                                                </span>
-                                            )}
-                                        </div>
-                                        <p className="text-xs text-gray-400 truncate mt-1">{track.artist}</p>
-                                    </div>
-                                    {layoutMode === 'list' && (
-                                        <div className="hidden sm:block text-xs text-gray-500 px-4 truncate max-w-[200px]">
-                                            {track.album}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-gray-500 gap-4">
-                            <div className="w-16 h-16 rounded-full bg-gray-900 flex items-center justify-center">
-                                <MusicIcon className="w-8 h-8" />
-                            </div>
-                            <p>{isSearching ? '正在搜索...' : '搜索你喜欢的音乐'}</p>
-                        </div>
-                    )}
-
-                    {/* 分页控制 */}
-                    {searchData?.tracks && searchData.tracks.length > 0 && (
-                        <div className="mt-8 flex items-center justify-center gap-4 pb-8">
-                            <button
-                                onClick={() => handlePageChange(Math.max(0, currentPage - 1))}
-                                disabled={currentPage === 0 || isSearching}
-                                className="p-2 rounded-full bg-gray-900 border border-gray-800 text-gray-400 hover:text-white hover:border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                            >
-                                <ChevronLeft className="w-5 h-5" />
-                            </button>
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium text-blue-500 bg-blue-500/10 px-3 py-1 rounded-md">
-                                    第 {currentPage + 1} 页
-                                </span>
-                                {searchData.total > 0 && (
-                                    <span className="text-xs text-gray-500">
-                                        共 {Math.ceil(searchData.total / pageSize)} 页
-                                    </span>
-                                )}
-                            </div>
-                            <button
-                                onClick={() => handlePageChange(currentPage + 1)}
-                                disabled={isSearching || (searchData.total > 0 && (currentPage + 1) * pageSize >= searchData.total)}
-                                className="p-2 rounded-full bg-gray-900 border border-gray-800 text-gray-400 hover:text-white hover:border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                            >
-                                <ChevronRight className="w-5 h-5" />
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* 底部播放控制栏 */}
-            <div className="bg-gray-900/80 backdrop-blur-xl border-t border-gray-800 p-4 pb-8 md:pb-4">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-4">
-                    {/* 歌曲信息 */}
-                    <div className="flex items-center gap-4 w-full md:w-1/4">
-                        <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-800 shrink-0">
-                            {currentTrack?.pic ? (
-                                <img src={currentTrack.pic} alt="" className="w-full h-full object-cover" />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                    <MusicIcon className="w-5 h-5 text-gray-600" />
-                                </div>
-                            )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-sm truncate">{currentTrack?.name || '未在播放'}</h4>
-                            <p className="text-xs text-gray-400 truncate mt-0.5">{currentTrack?.artist || '-'}</p>
-                        </div>
-                    </div>
-
-                    {/* 播放控制 */}
-                    <div className="flex flex-col items-center gap-2 flex-1 w-full">
-                        <div className="flex items-center gap-6">
-                            <button className="text-gray-400 hover:text-white transition-colors">
-                                <SkipBack className="w-5 h-5 fill-current" />
-                            </button>
-                            <button
-                                onClick={togglePlay}
-                                disabled={!currentTrack || isLoadingUrl}
-                                className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform disabled:opacity-50 disabled:scale-100"
-                            >
-                                {isLoadingUrl ? (
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                ) : isPlaying ? (
-                                    <Pause className="w-5 h-5 fill-current" />
-                                ) : (
-                                    <Play className="w-5 h-5 fill-current ml-0.5" />
-                                )}
-                            </button>
-                            <button className="text-gray-400 hover:text-white transition-colors">
-                                <SkipForward className="w-5 h-5 fill-current" />
-                            </button>
-                        </div>
-
-                        <div className="flex items-center gap-3 w-full max-w-2xl text-xs text-gray-400">
-                            <span>{formatTime(progress)}</span>
-                            <div className="flex-1 relative h-1 group cursor-pointer">
-                                <input
-                                    type="range"
-                                    min="0"
-                                    max={duration || 0}
-                                    step="0.1"
-                                    value={progress}
-                                    onChange={handleSeek}
-                                    className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer"
-                                />
-                                <div className="absolute inset-0 bg-gray-700 rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-blue-500 group-hover:bg-blue-400 transition-colors"
-                                        style={{ width: `${(progress / (duration || 1)) * 100}%` }}
-                                    />
-                                </div>
-                            </div>
-                            <span>{formatTime(duration)}</span>
-                        </div>
-                    </div>
-
-                    {/* 音量控制 */}
-                    <div className="hidden md:flex items-center gap-3 w-1/4 justify-end">
-                        <button
-                            onClick={() => setIsMuted(!isMuted)}
-                            className="text-gray-400 hover:text-white transition-colors"
-                        >
-                            {isMuted || volume === 0 ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-                        </button>
-                        <div className="w-24 relative h-1 group">
-                            <input
-                                type="range"
-                                min="0"
-                                max="1"
-                                step="0.01"
-                                value={isMuted ? 0 : volume}
-                                onChange={(e) => {
-                                    const val = parseFloat(e.target.value);
-                                    setVolume(val);
-                                    setIsMuted(false);
-                                    if (audioRef.current) audioRef.current.volume = val;
-                                }}
-                                className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer"
-                            />
-                            <div className="absolute inset-0 bg-gray-700 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-gray-300 group-hover:bg-blue-400 transition-colors"
-                                    style={{ width: `${(isMuted ? 0 : volume) * 100}%` }}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-      <audio
-        ref={audioRef}
-        {...({ referrerPolicy: 'no-referrer' } as any)}
-        onTimeUpdate={handleTimeUpdate}
-        onEnded={() => setIsPlaying(false)}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-        style={{ display: 'none' }}
-      />
+          {/* 播放/暂停按钮 */}
+          <button
+            onClick={(e) => { stopPropagation(e); isPlaying ? handlePause() : handlePlay(); }}
+            onMouseDown={stopPropagation}
+            onMouseUp={stopPropagation}
+            onTouchStart={stopPropagation}
+            onTouchEnd={stopPropagation}
+            onPointerDown={stopPropagation}
+            onPointerUp={stopPropagation}
+            className={`w-8 h-8 rounded-lg border flex items-center justify-center transition-colors ${
+              isPlaying 
+                ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-purple-400' 
+                : 'bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-green-400 cursor-pointer'
+            }`}
+            title={isPlaying ? "暂停" : "播放"}
+          >
+            {isPlaying ? (
+              <div className="flex gap-0.5">
+                <div className="w-1 h-3 bg-white rounded-sm"></div>
+                <div className="w-1 h-3 bg-white rounded-sm"></div>
+              </div>
+            ) : (
+              <div className="w-0 h-0 border-l-[6px] border-l-white border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent ml-0.5"></div>
+            )}
+          </button>
         </div>
+
+        {/* 音量控制 */}
+        {!hideVolumeControl && (
+          <div className="flex items-center gap-1 flex-1">
+            <div className="text-gray-500 text-xs">🔊</div>
+            <div 
+              ref={volumeRef}
+              className="flex-1 h-2 bg-gray-200 rounded-full cursor-pointer relative"
+              onMouseDown={handleVolumeMouseDown}
+              onClick={stopPropagation}
+              onTouchStart={stopPropagation}
+              onTouchEnd={stopPropagation}
+              onPointerDown={stopPropagation}
+              onPointerUp={stopPropagation}
+            >
+              <div 
+                className="h-full bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"
+                style={{ width: `${volume * 100}%` }}
+              ></div>
+              <div 
+                className="absolute top-1/2 w-3 h-3 bg-white border-2 border-purple-400 rounded-full transform -translate-y-1/2 cursor-grab"
+                style={{ left: `${volume * 100}%`, transform: 'translateX(-50%) translateY(-50%)' }}
+              ></div>
+            </div>
+          </div>
+        )}
+      </div>
     );
-};
+  }
+
+  return (
+    <div 
+      className={`bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-purple-200 ${className}`}
+      style={{ width: compact ? '280px' : '320px' }}
+      onClick={stopPropagation}
+      onMouseDown={stopPropagation}
+      onMouseUp={stopPropagation}
+      onTouchStart={stopPropagation}
+      onTouchEnd={stopPropagation}
+      onPointerDown={stopPropagation}
+      onPointerUp={stopPropagation}
+    >
+      {/* 音乐信息 */}
+      {!compact && showTrackInfo && track && (
+        <div className="mb-3">
+          <h3 className="text-sm font-medium text-gray-800 truncate">{track.name}</h3>
+          <p className="text-xs text-gray-500">背景音乐</p>
+        </div>
+      )}
+
+      {/* 进度条 */}
+      {!compact && (
+        <div className="mb-3">
+          <div 
+            ref={progressRef}
+            className="w-full h-2 bg-gray-200 rounded-full cursor-pointer relative"
+            onMouseDown={handleProgressMouseDown}
+            onClick={stopPropagation}
+            onTouchStart={stopPropagation}
+            onTouchEnd={stopPropagation}
+            onPointerDown={stopPropagation}
+            onPointerUp={stopPropagation}
+          >
+            <div 
+              className="h-full bg-gradient-to-r from-purple-400 to-pink-400 rounded-full transition-all duration-100"
+              style={{ width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%' }}
+            ></div>
+            <div 
+              className="absolute top-1/2 w-4 h-4 bg-white border-2 border-purple-400 rounded-full transform -translate-y-1/2 cursor-grab"
+              style={{ 
+                left: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%',
+                transform: 'translateX(-50%) translateY(-50%)'
+              }}
+            ></div>
+          </div>
+          
+          <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <span>{formatTime(currentTime)}</span>
+            <span>{formatTime(duration)}</span>
+          </div>
+        </div>
+      )}
+
+      {/* 控制按钮 */}
+      <div className="flex items-center justify-center gap-3 mb-3">
+        {/* 停止按钮 */}
+        <button
+          onClick={(e) => { stopPropagation(e); handleStop(); }}
+          onMouseDown={stopPropagation}
+          onMouseUp={stopPropagation}
+          onTouchStart={stopPropagation}
+          onTouchEnd={stopPropagation}
+          onPointerDown={stopPropagation}
+          onPointerUp={stopPropagation}
+          className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-300 flex items-center justify-center transition-colors"
+          title="停止"
+        >
+          <div className="w-4 h-4 bg-gray-600 rounded-sm"></div>
+        </button>
+
+        {/* 播放/暂停按钮 */}
+        <button
+          onClick={(e) => { stopPropagation(e); isPlaying ? handlePause() : handlePlay(); }}
+          onMouseDown={stopPropagation}
+          onMouseUp={stopPropagation}
+          onTouchStart={stopPropagation}
+          onTouchEnd={stopPropagation}
+          onPointerDown={stopPropagation}
+          onPointerUp={stopPropagation}
+          className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-colors ${
+            isPlaying 
+              ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-purple-400' 
+              : 'bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-green-400 cursor-pointer'
+          }`}
+          title={isPlaying ? "暂停" : "播放"}
+        >
+          {isLoading ? (
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          ) : isPlaying ? (
+            <div className="flex gap-1">
+              <div className="w-1.5 h-4 bg-white rounded-sm"></div>
+              <div className="w-1.5 h-4 bg-white rounded-sm"></div>
+            </div>
+          ) : (
+            <div className="w-0 h-0 border-l-[10px] border-l-white border-t-[7px] border-t-transparent border-b-[7px] border-b-transparent ml-1"></div>
+          )}
+        </button>
+      </div>
+
+      {/* 音量控制 */}
+      {!hideVolumeControl && (
+        <div className="flex items-center gap-3">
+          <div className="text-gray-500 text-sm">🔊</div>
+          <div 
+            ref={volumeRef}
+            className="flex-1 h-2 bg-gray-200 rounded-full cursor-pointer relative"
+            onMouseDown={handleVolumeMouseDown}
+            onClick={stopPropagation}
+            onTouchStart={stopPropagation}
+            onTouchEnd={stopPropagation}
+            onPointerDown={stopPropagation}
+            onPointerUp={stopPropagation}
+          >
+            <div 
+              className="h-full bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"
+              style={{ width: `${volume * 100}%` }}
+            ></div>
+            <div 
+              className="absolute top-1/2 w-4 h-4 bg-white border-2 border-purple-400 rounded-full transform -translate-y-1/2 cursor-grab"
+              style={{ left: `${volume * 100}%`, transform: 'translateX(-50%) translateY(-50%)' }}
+            ></div>
+          </div>
+          <div className="text-xs text-gray-500 w-8 text-right">
+            {Math.round(volume * 100)}%
+          </div>
+        </div>
+      )}
+
+      {/* 错误信息 */}
+      {error && (
+        <div className="mt-2 text-xs text-red-500">
+          {error}
+        </div>
+      )}
+    </div>
+  );
+}

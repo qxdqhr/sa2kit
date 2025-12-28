@@ -7,3 +7,20 @@ export * from './components/MMDPlaylistDebugInfo';
 export * from './utils/ammo-loader';
 export * from './visual-novel';
 export * from './music-player';
+export * from './ar/MMDARPlayer';
+export * from './ar/types';
+
+// Explicitly export visual novel types to ensure they are found by TS
+export type { 
+  VisualNovelScript, 
+  VisualNovelNode, 
+  DialogueLine, 
+  DialogueChoice, 
+  DialogueBoxTheme,
+  VisualEffect,
+  BranchCondition,
+  DialogueBoxProps,
+  DialogueHistoryItem,
+  MMDVisualNovelProps,
+  MMDVisualNovelRef
+} from './visual-novel/types';

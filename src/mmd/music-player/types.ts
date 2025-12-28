@@ -42,6 +42,20 @@ export interface MMDMusicPlayerProps {
   /** 初始曲目索引 */
   initialTrackIndex?: number;
   
+  /** 
+   * 固定资源配置 
+   * 如果提供，所有曲目将使用这些指定的模型和动作，仅切换音频
+   */
+  fixedResources?: {
+    modelPath: string;
+    motionPath?: string;
+    stageModelPath?: string | string[];
+    cameraPath?: string;
+  };
+
+  /** 是否开启 Miku 搜索模式 */
+  mikuMode?: boolean;
+
   /** 事件回调 */
   onTrackChange?: (track: MusicTrack, index: number) => void;
   onPlayPause?: (isPlaying: boolean) => void;
