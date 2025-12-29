@@ -353,6 +353,30 @@ export class FXToThreeAdapter {
   }
 
   /**
+   * 配置Three.js场景
+   * 仅应用渲染器配置，不添加光源
+   */
+  configureScene(scene: THREE.Scene, renderer: THREE.WebGLRenderer): void {
+    const renderConfig = this.extractRenderConfig();
+
+    // 配置阴影
+    if (renderConfig.enableShadow !== undefined) {
+      renderer.shadowMap.enabled = renderConfig.enableShadow;
+      if (renderConfig.enableShadow) {
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      }
+    }
+
+    // 配置色调映射
+    if (renderConfig.toneMapping !== undefined) {
+      renderer.toneMapping = renderConfig.toneMapping;
+    }
+    if (renderConfig.toneMappingExposure !== undefined) {
+      renderer.toneMappingExposure = renderConfig.toneMappingExposure;
+    }
+  }
+
+  /**
    * 获取指定用途的纹理
    */
   private getTextureByPurpose(purpose: string): THREE.Texture | null {

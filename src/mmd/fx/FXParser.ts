@@ -117,11 +117,12 @@ export class FXParser {
 
     if (!vertexShaderName || !fragmentShaderName) {
       // 尝试从technique中自动检测
-      if (effect.techniques.length > 0 && effect.techniques[0]?.passes.length > 0) {
-        const firstPass = effect.techniques[0].passes[0];
+      const firstTechnique = effect.techniques[0];
+      if (firstTechnique?.passes && firstTechnique.passes.length > 0) {
+        const firstPass = firstTechnique.passes[0];
         if (firstPass) {
-          vertexShaderName = vertexShaderName || firstPass.vertexShader?.function;
-          fragmentShaderName = fragmentShaderName || firstPass.pixelShader?.function;
+          vertexShaderName = vertexShaderName || firstPass.vertexShader?.function || undefined;
+          fragmentShaderName = fragmentShaderName || firstPass.pixelShader?.function || undefined;
         }
       }
     }
@@ -178,7 +179,7 @@ export class FXParser {
 
     lines.forEach((line, index) => {
       const match = line.match(defineRegex);
-      if (match) {
+      if (match && match[2]) {
         const isCommented = !!match[1];
         const name = match[2];
         const value = match[3]?.trim();
@@ -192,9 +193,10 @@ export class FXParser {
           }
         }
 
+        const cleanValue = value?.replace(/\/\/.*$/, '').trim();
         defines.push({
           name,
-          value: value?.replace(/\/\/.*$/, '').trim() || undefined,
+          value: cleanValue || undefined,
           isCommented,
           lineNumber: index + 1,
           comment,
@@ -282,7 +284,7 @@ export class FXParser {
 
     lines.forEach((line, index) => {
       const match = line.match(staticRegex);
-      if (match) {
+      if (match && match[1] && match[2] && match[3]) {
         variables.push({
           type: match[1],
           name: match[2],
@@ -304,7 +306,7 @@ export class FXParser {
 
     defines.forEach((define) => {
       const match = define.name.match(textureDefineRegex);
-      if (match && define.value && !define.isCommented) {
+      if (match && match[1] && define.value && !define.isCommented) {
         const purpose = match[1].toLowerCase();
         const path = define.value.replace(/"/g, '');
 
@@ -334,7 +336,7 @@ export class FXParser {
 
     lines.forEach((line) => {
       const match = line.match(controllerRegex);
-      if (match) {
+      if (match && match[1] && match[2] && match[3]) {
         controllers.push({
           name: match[1],
           objectName: match[2],
@@ -356,7 +358,7 @@ export class FXParser {
 
     lines.forEach((line) => {
       const match = line.match(includeRegex);
-      if (match) {
+      if (match && match[1]) {
         includes.push(match[1]);
       }
     });
@@ -373,6 +375,8 @@ export class FXParser {
 
     let match;
     while ((match = techniqueRegex.exec(content)) !== null) {
+      if (!match[1] || !match[2]) continue;
+      
       const name = match[1];
       const body = match[2];
       const lineNumber = content.substring(0, match.index).split('\n').length;
@@ -396,7 +400,9 @@ export class FXParser {
 
     let match;
     while ((match = passRegex.exec(techniqueBody)) !== null) {
-      const name = match[1];
+      if (!match[2]) continue;
+      
+      const name = match[1] || undefined;
       const body = match[2];
 
       const pass: FXPass = {
@@ -406,7 +412,7 @@ export class FXParser {
 
       // 解析VertexShader
       const vsMatch = /VertexShader\s*=\s*compile\s+(\w+)\s+(\w+)/i.exec(body);
-      if (vsMatch) {
+      if (vsMatch && vsMatch[1] && vsMatch[2]) {
         pass.vertexShader = {
           profile: vsMatch[1],
           function: vsMatch[2],
@@ -415,7 +421,7 @@ export class FXParser {
 
       // 解析PixelShader
       const psMatch = /PixelShader\s*=\s*compile\s+(\w+)\s+(\w+)/i.exec(body);
-      if (psMatch) {
+      if (psMatch && psMatch[1] && psMatch[2]) {
         pass.pixelShader = {
           profile: psMatch[1],
           function: psMatch[2],
@@ -426,6 +432,8 @@ export class FXParser {
       const stateRegex = /(\w+)\s*=\s*([^;]+);/g;
       let stateMatch;
       while ((stateMatch = stateRegex.exec(body)) !== null) {
+        if (!stateMatch[1] || !stateMatch[2]) continue;
+        
         const stateName = stateMatch[1];
         const stateValue = stateMatch[2].trim();
         
@@ -451,10 +459,12 @@ export class FXParser {
 
     let match;
     while ((match = functionRegex.exec(content)) !== null) {
+      if (!match[1] || !match[2] || !match[3]) continue;
+      
       const returnType = match[1];
       const name = match[2];
       const parameters = match[3];
-      const outputSemantic = match[4];
+      const outputSemantic = match[4] || undefined;
       const lineNumber = content.substring(0, match.index).split('\n').length;
 
       // 提取函数体（简化版，不处理嵌套花括号）
@@ -492,7 +502,7 @@ export class FXParser {
     lines.forEach((line, index) => {
       // 单行注释
       const lineCommentMatch = line.match(/^\s*\/\/(.*)$/);
-      if (lineCommentMatch) {
+      if (lineCommentMatch && lineCommentMatch[1]) {
         comments.push({
           content: lineCommentMatch[1].trim(),
           type: 'line',
@@ -502,7 +512,7 @@ export class FXParser {
 
       // 块注释（简化版，仅处理单行的块注释）
       const blockCommentMatch = line.match(/\/\*(.+?)\*\//);
-      if (blockCommentMatch) {
+      if (blockCommentMatch && blockCommentMatch[1]) {
         comments.push({
           content: blockCommentMatch[1].trim(),
           type: 'block',

@@ -614,7 +614,18 @@ export class MultiFXAdapter {
       const adapter = this.adapters.get(config.path);
       if (adapter) {
         console.log(`[MultiFXAdapter]   - Applying: ${config.description || config.path}`);
-        adapter.configureScene(scene, renderer);
+        
+        // 应用渲染器配置（不添加光源）
+        const renderConfig = adapter.extractRenderConfig();
+        if (renderConfig.toneMapping !== undefined) {
+          renderer.toneMapping = renderConfig.toneMapping;
+        }
+        if (renderConfig.toneMappingExposure !== undefined) {
+          renderer.toneMappingExposure = renderConfig.toneMappingExposure;
+        }
+        if (renderConfig.enableShadow !== undefined) {
+          renderer.shadowMap.enabled = renderConfig.enableShadow;
+        }
         
         // .x文件应用到所有对象
         scene.traverse(obj => {

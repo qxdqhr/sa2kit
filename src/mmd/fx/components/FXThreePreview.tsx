@@ -246,7 +246,7 @@ export const FXThreePreview: React.FC<FXThreePreviewProps> = ({
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         .fx-three-preview {
           display: flex;
           flex-direction: column;
