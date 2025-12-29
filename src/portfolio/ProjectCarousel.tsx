@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { ExperimentCard } from './ExperimentCard';
-import { cn } from '../utils';
+import { cn } from '@/utils';
 
 // Project相关的类型定义
 export interface Project {

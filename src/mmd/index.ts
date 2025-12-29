@@ -9,6 +9,7 @@ export * from './visual-novel';
 export * from './music-player';
 export * from './ar/MMDARPlayer';
 export * from './ar/types';
+export * from './fx';
 
 // Explicitly export visual novel types to ensure they are found by TS
 export type { 

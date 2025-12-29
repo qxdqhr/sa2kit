@@ -1,6 +1,6 @@
 import React from 'react';
-import { Badge } from '../../components/Badge';
-import { cn } from '../../utils';
+import { Badge } from '@/components/Badge';
+import { cn } from '@/utils';
 import { BadgeType } from '../types';
     
 interface BadgeListProps {

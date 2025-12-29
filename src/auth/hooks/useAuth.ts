@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import type { User, BaseApiClient, AuthResult, UseAuthReturn } from '../types';
+import type { User, IAuthClient as BaseApiClient, AuthResult, UseAuthReturn } from '../types';
 
 export type { User, BaseApiClient, AuthResult, UseAuthReturn };
 

@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Avatar, AvatarImage, AvatarFallback } from '../components/Avatar';
-import { cn } from '../utils';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/Avatar';
+import { cn } from '@/utils';
 
 export interface EnhancedAvatarProps {
   src?: string;

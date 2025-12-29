@@ -1,6 +1,6 @@
 import { StatType } from "..";
 import { Stat } from "./Stat";
-import { cn } from '../../utils';
+import { cn } from '@/utils';
 
 interface StatListProps {
   stats: StatType[];

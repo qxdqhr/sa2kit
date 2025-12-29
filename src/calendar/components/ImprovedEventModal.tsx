@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Modal, ConfirmModal } from '../../components/PopWindow';
+import { Modal, ConfirmModal } from '@/components';
 import { EventType, RecurrencePattern, EventData, EventTypeService } from '../services/eventTypeService';
 import { CalendarEvent, EventPriority } from '../types';
 

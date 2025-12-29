@@ -35,3 +35,4 @@ export type { FilterButtonGroupProps, FilterOption } from './FilterButtonGroup';
 export { SearchResultHint } from './SearchResultHint';
 export type { SearchResultHintProps } from './SearchResultHint';
 export { Modal, ConfirmModal } from './PopWindow';
+export type { ModalProps, ConfirmModalProps } from './PopWindow';

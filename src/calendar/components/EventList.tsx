@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState, useCallback } from 'react';
 import { SearchBox } from '../../components/SearchBox';
-import { ConfirmModal } from '../../components/PopWindow';
+import { ConfirmModal } from '@/components';
 import { 
   CalendarEvent, 
   EventListProps, 

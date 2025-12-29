@@ -45,7 +45,7 @@ export default defineConfig({
   format: ['esm', 'cjs'],
 
   // Generate TypeScript declaration files
-  dts: false,
+  dts: true,
 
   // Split code for better tree-shaking
   splitting: true,

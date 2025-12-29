@@ -3,36 +3,9 @@
  * API 客户端类型定义
  */
 
-/**
- * API 响应类型
- */
-export interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-}
+import type { UserRole, User, ApiResponse, AuthResponse } from '../types';
 
-/**
- * 用户类型
- */
-export interface User {
-  id: string;
-  email: string;
-  username: string;
-  role: string;
-  nickname?: string;
-  avatar?: string;
-  image?: string;
-}
-
-/**
- * 认证响应类型
- */
-export interface AuthResponse {
-  user: User;
-  token: string;
-}
+export type { UserRole, User, ApiResponse, AuthResponse };
 
 /**
  * 存储键名

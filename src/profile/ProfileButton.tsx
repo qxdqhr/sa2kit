@@ -5,7 +5,7 @@ import ProfileModal from './ProfileModal';
 import { ProfileData } from './types';
 import { BadgeList } from './internal/BadgeList';
 import { StatList } from './internal/StatList';
-import { Button } from '../components/Button';
+import { Button } from '@/components/Button';
 
 // 示例数据
 const exampleProfileData: ProfileData = {

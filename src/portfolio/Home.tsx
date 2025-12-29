@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { cn } from '../utils';
+import { cn } from '@/utils';
 
 export interface HomeConfig {
   title: string;

@@ -65,25 +65,31 @@ export interface MMDStage {
   cameraTarget?: { x: number; y: number; z: number } | Vector3;
   
   /** 渲染特效模式 (默认 'default') */
-  renderEffect?: 'default' | 'outline' | 'bloom' | 'outline+bloom';
+  renderEffect?: 'default' | 'outline';
   /** 描边效果配置 */
   outlineOptions?: OutlineOptions;
-  /** 辉光效果配置 */
-  bloomOptions?: BloomOptions;
-  /** 三渲二(Toon)效果配置 */
-  toonOptions?: ToonOptions;
-}
-
-/** 三渲二(Toon)效果配置 */
-export interface ToonOptions {
-  /** 是否启用增强三渲二 (默认 false) */
-  enabled?: boolean;
-  /** 是否强制使用硬色阶 (默认 false) */
-  forceHardShading?: boolean;
-  /** 材质光泽度 (默认 0, 越小越有 2D 感) */
-  shininess?: number;
-  /** 是否启用边缘光 (Rim Light) */
-  rimLight?: boolean;
+  /** 
+   * FX效果文件路径 (.fx文件，MME格式)
+   * 注意：
+   * - .fx 文件用于模型级效果（应用到人物模型）
+   * - .x 文件用于场景级渲染（渲染整个环境，包括模型）
+   * 如需同时使用多个效果，请使用 fxConfigs
+   */
+  fxPath?: string;
+  /** FX纹理基础路径 */
+  fxTexturePath?: string;
+  /** 
+   * 多个FX效果配置（高级用法）
+   * 支持同时应用多个.fx和.x文件
+   */
+  fxConfigs?: Array<{
+    path: string;
+    texturePath?: string;
+    type?: 'fx' | 'x' | 'auto';
+    priority?: number;
+    target?: 'all' | 'model' | 'stage' | 'scene' | string[];
+    description?: string;
+  }>;
 }
 
 /** 移动端优化配置 */
@@ -106,18 +112,6 @@ export interface OutlineOptions {
   thickness?: number;
   /** 描边颜色 (默认 '#000000') */
   color?: string;
-}
-
-/** 辉光效果配置 */
-export interface BloomOptions {
-  /** 是否启用辉光 (默认 false) */
-  enabled?: boolean;
-  /** 辉光强度 (默认 1.0) */
-  strength?: number;
-  /** 辉光半径 (默认 0.4) */
-  radius?: number;
-  /** 辉光阈值 (默认 0.8) */
-  threshold?: number;
 }
 
 /** MMDPlayerBase Ref 接口 */
@@ -161,13 +155,22 @@ export interface MMDPlayerBaseProps {
   showAxes?: boolean; // 是否显示坐标轴
   
   /** 渲染特效配置 */
-  renderEffect?: 'default' | 'outline' | 'bloom' | 'outline+bloom';
+  renderEffect?: 'default' | 'outline';
   /** 描边效果配置 */
   outlineOptions?: OutlineOptions;
-  /** 辉光效果配置 */
-  bloomOptions?: BloomOptions;
-  /** 三渲二(Toon)效果配置 */
-  toonOptions?: ToonOptions;
+  /** FX效果文件路径 */
+  fxPath?: string;
+  /** FX纹理基础路径 */
+  fxTexturePath?: string;
+  /** 多个FX效果配置（高级用法） */
+  fxConfigs?: Array<{
+    path: string;
+    texturePath?: string;
+    type?: 'fx' | 'x' | 'auto';
+    priority?: number;
+    target?: 'all' | 'model' | 'stage' | 'scene' | string[];
+    description?: string;
+  }>;
   
   /** 事件回调 */
   onLoad?: () => void;

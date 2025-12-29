@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { cn } from '../utils';
+import { cn } from '@/utils';
 
 export interface ExperimentCardProps {
   href: string;

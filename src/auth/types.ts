@@ -51,13 +51,31 @@ export interface RegisterForm {
 }
 
 /**
+ * API 响应类型
+ */
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+}
+
+/**
+ * 认证响应类型
+ */
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
+
+/**
  * API 客户端基础接口
  */
-export interface BaseApiClient {
+export interface IAuthClient {
   isAuthenticated(): Promise<boolean>;
-  getCurrentUser(): Promise<{ success: boolean; data?: User; error?: string }>;
-  login(email: string, password: string): Promise<{ success: boolean; data?: { user: User }; error?: string }>;
-  register(email: string, password: string, username: string): Promise<{ success: boolean; data?: { user: User }; error?: string }>;
+  getCurrentUser(): Promise<ApiResponse<User>>;
+  login(email: string, password: string): Promise<ApiResponse<AuthResponse>>;
+  register(email: string, password: string, username: string): Promise<ApiResponse<AuthResponse>>;
   logout(): Promise<void>;
   clearUserData(): Promise<void>;
 }

@@ -1,5 +1,5 @@
 import { StatType } from '..';
-import { cn } from '../../utils';
+import { cn } from '@/utils';
 
 interface StatProps extends StatType {
   className?: string;

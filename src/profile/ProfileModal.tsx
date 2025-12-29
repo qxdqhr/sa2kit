@@ -6,10 +6,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '../components/Dialog';
-import { Avatar, AvatarImage, AvatarFallback } from '../components/Avatar';
+} from '@/components/Dialog';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/Avatar';
 import { ProfileData, SocialLink } from './types';
-import { cn } from '../utils';
+import { cn } from '@/utils';
 
 const themeStyles = {
   light: "",

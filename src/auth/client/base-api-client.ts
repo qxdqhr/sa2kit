@@ -6,6 +6,7 @@
 import type { StorageAdapter } from '../../storage';
 import type { RequestAdapter, RequestConfig } from '../../request';
 import { API_ROUTES, STORAGE_KEYS, type ApiResponse, type User, type AuthResponse } from './types';
+import type { IAuthClient } from '../types';
 
 /**
  * 基础 API 客户端
@@ -27,7 +28,7 @@ import { API_ROUTES, STORAGE_KEYS, type ApiResponse, type User, type AuthRespons
  * const result = await apiClient.login('user@example.com', 'password');
  * ```
  */
-export class BaseApiClient {
+export class BaseApiClient implements IAuthClient {
   private token: string | null = null;
   private user: User | null = null;
 
