@@ -13,6 +13,8 @@ export * from './LoadingScreen';
 export * from './StartScreen';
 export * from './ChoiceMenu';
 export * from './LoopConfirmDialog';
+export * from './CheerButton';
+export * from './CheerParticles';
 
 
 

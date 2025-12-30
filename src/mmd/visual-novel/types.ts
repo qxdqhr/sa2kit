@@ -95,6 +95,8 @@ export interface VisualNovelNode {
   bgmVolume?: number;
   /** 节点是否循环 MMD 动画（对话期间循环，默认 true） */
   loopAnimation?: boolean;
+  /** 是否支持应援功能（默认 false） */
+  supportCheer?: boolean;
 }
 
 /** 视觉小说剧本配置 */

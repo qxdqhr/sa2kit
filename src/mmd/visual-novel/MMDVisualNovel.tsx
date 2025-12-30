@@ -14,6 +14,8 @@ import { LoadingOverlay } from './LoadingOverlay';
 import { SkipConfirmDialog } from './SkipConfirmDialog';
 import { ChoiceMenu } from './ChoiceMenu';
 import { LoopConfirmDialog } from './LoopConfirmDialog';
+import { CheerButton } from './CheerButton';
+import { CheerParticles, CheerParticlesRef } from './CheerParticles';
 import {
   MMDVisualNovelProps,
   MMDVisualNovelRef,
@@ -89,6 +91,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     const lastAnimationTimeRef = useRef(0);
     const isVmdFinishedRef = useRef(false);
     const effectTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const cheerParticlesRef = useRef<CheerParticlesRef>(null);
 
     // 获取当前节点和对话
     const currentNode = nodes[currentNodeIndex];
@@ -374,6 +377,12 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
       typingCompleteRef.current = false;
       console.log('[MMDVisualNovel] 回到开始页面');
     }, [initialNodeIndex, initialDialogueIndex]);
+
+    // 处理应援按钮点击
+    const handleCheer = useCallback(() => {
+      console.log('[MMDVisualNovel] 触发应援效果');
+      cheerParticlesRef.current?.trigger();
+    }, []);
 
     // 重新开始（从第一个节点）
     const handleRestartLoop = useCallback(() => {
@@ -683,6 +692,15 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
           />
         )}
 
+        {/* 应援粒子效果 */}
+        <CheerParticles ref={cheerParticlesRef} />
+
+        {/* 应援按钮 - 仅在支持应援的节点显示 */}
+        <CheerButton
+          show={isStarted && isAnimationPlaying && !showHistory && !showChoices && !showLoopConfirm && (currentNode?.supportCheer === true)}
+          onClick={handleCheer}
+          text="应援"
+        />
      
       </div>
     );
