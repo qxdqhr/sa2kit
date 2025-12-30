@@ -31,20 +31,33 @@ export const ChoiceMenu: React.FC<ChoiceMenuProps> = ({
           <button
             key={index}
             onClick={() => onSelect(choice)}
-            className="w-full py-4 px-8 rounded-2xl text-white font-bold text-lg transition-all border border-white/20 shadow-xl hover:scale-105 active:scale-95 group relative overflow-hidden"
+            className="w-full py-4 px-8 rounded-2xl font-bold text-lg transition-all border shadow-xl hover:scale-105 active:scale-95 group relative overflow-hidden"
             style={{
               background: `linear-gradient(135deg, 
-                rgba(255, 255, 255, 0.2) 0%, 
-                rgba(255, 255, 255, 0.1) 100%)`,
-              backdropFilter: 'blur(32px) saturate(200%)',
-              WebkitBackdropFilter: 'blur(32px) saturate(200%)',
+                rgba(248, 250, 252, 0.98) 0%, 
+                rgba(241, 245, 249, 0.95) 50%, 
+                rgba(226, 232, 240, 0.92) 100%)`,
+              backdropFilter: 'blur(16px) saturate(200%)',
+              WebkitBackdropFilter: 'blur(16px) saturate(200%)',
+              borderColor: 'rgba(203, 213, 225, 0.8)',
+              color: '#22c55e',
+              boxShadow: `
+                0 8px 40px rgba(148, 163, 184, 0.2),
+                0 4px 16px rgba(100, 116, 139, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8),
+                inset 0 -1px 0 rgba(203, 213, 225, 0.5)
+              `,
             }}
           >
-            {/* 悬停光效 */}
-            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+            {/* 悬停光效 - 灰白色调 */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              style={{
+                background: 'linear-gradient(135deg, rgba(226, 232, 240, 0.5), rgba(203, 213, 225, 0.3))'
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
             
-            <span className="relative z-10 drop-shadow-md">{choice.text}</span>
+            <span className="relative z-10 ">{choice.text}</span>
           </button>
         ))}
       </div>

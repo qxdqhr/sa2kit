@@ -31,46 +31,60 @@ const VNModal: React.FC<{
 
   return (
     <div 
-      className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-xl z-[1000000] pointer-events-auto transition-all animate-in fade-in zoom-in-95 duration-300"
+      className="fixed inset-0 flex items-center justify-center backdrop-blur-xl z-[1000000] pointer-events-auto transition-all animate-in fade-in zoom-in-95 duration-300 px-4"
+      style={{ background: 'rgba(100, 116, 139, 0.3)' }}
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-lg mx-4 p-8 rounded-[2.5rem] border border-white/40 shadow-[0_20px_80px_rgba(0,0,0,0.4)] relative overflow-hidden"
+        className="w-full max-w-lg p-4 sm:p-6 md:p-8 rounded-3xl sm:rounded-[2.5rem] border relative overflow-hidden max-h-[90vh] overflow-y-auto"
         style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.15))',
+          background: 'linear-gradient(135deg, rgba(248, 250, 252, 0.98), rgba(241, 245, 249, 0.95))',
           backdropFilter: 'blur(40px) saturate(200%)',
           WebkitBackdropFilter: 'blur(40px) saturate(200%)',
+          borderColor: 'rgba(203, 213, 225, 0.8)',
+          boxShadow: '0 20px 80px rgba(100, 116, 139, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* 装饰性背景光晕 */}
-        <div className="absolute -top-24 -right-24 w-64 h-64 bg-cyan-400/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-pink-400/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-64 h-64 bg-slate-300/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-slate-400/15 rounded-full blur-3xl pointer-events-none" />
 
-        {/* 标题 */}
-        <div className="flex items-center justify-between mb-8 relative">
+        {/* 标题 - 移动端优化 */}
+        <div className="flex items-center justify-between mb-6 sm:mb-8 relative">
           <div className="flex flex-col">
-            <h2 className="text-2xl font-bold text-white tracking-wider drop-shadow-lg">{title}</h2>
-            <div className="h-1.5 w-16 bg-white/60 rounded-full mt-2 shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+            <h2 className="text-xl sm:text-2xl font-bold tracking-wider drop-shadow-sm" style={{ color: '#22c55e' }}>{title}</h2>
+            <div className="h-1 sm:h-1.5 w-12 sm:w-16 bg-green-500/80 rounded-full mt-2 shadow-[0_0_10px_rgba(34,197,94,0.4)]" />
           </div>
           <button 
             onClick={onClose}
-            className="w-12 h-12 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/30 text-white transition-all border border-white/20 shadow-inner"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all border shadow-inner touch-manipulation shrink-0"
+            style={{
+              background: 'rgba(241, 245, 249, 0.8)',
+              borderColor: 'rgba(203, 213, 225, 0.6)',
+              color: '#64748b'
+            }}
           >
             ✕
           </button>
         </div>
         
-        {/* 内容 */}
-        <div className="text-white leading-relaxed max-h-[50vh] overflow-y-auto pr-4 custom-scrollbar relative font-medium">
+        {/* 内容 - 移动端优化 */}
+        <div className="leading-relaxed max-h-[40vh] sm:max-h-[50vh] overflow-y-auto pr-2 sm:pr-4 custom-scrollbar relative font-medium text-sm sm:text-base" style={{ color: '#475569' }}>
           {children}
         </div>
         
-        {/* 确定按钮 */}
-        <div className="mt-10 flex justify-center relative">
+        {/* 确定按钮 - 移动端优化 */}
+        <div className="mt-6 sm:mt-10 flex justify-center relative">
           <button
             onClick={onClose}
-            className="px-14 py-3.5 rounded-2xl bg-white/20 hover:bg-white/40 text-white font-bold transition-all border border-white/50 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:scale-105 active:scale-95 tracking-[0.2em] uppercase text-sm"
+            className="px-10 sm:px-14 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl font-bold transition-all border hover:scale-105 active:scale-95 tracking-[0.15em] sm:tracking-[0.2em] uppercase text-xs sm:text-sm touch-manipulation"
+            style={{
+              background: 'linear-gradient(135deg, rgba(248, 250, 252, 0.98), rgba(226, 232, 240, 0.95))',
+              borderColor: 'rgba(203, 213, 225, 0.8)',
+              color: '#22c55e',
+              boxShadow: '0 4px 16px rgba(100, 116, 139, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
+            }}
           >
             Confirm
           </button>
@@ -111,7 +125,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({
       style={{
         zIndex: 999999,
         pointerEvents: 'auto',
-        backgroundColor: '#050505',
+        backgroundColor: '#f1f5f9',
         margin: 0,
         padding: 0,
       }}
@@ -120,33 +134,33 @@ export const StartScreen: React.FC<StartScreenProps> = ({
       <div className="absolute inset-0 w-full h-full overflow-hidden">
         {/* 中心扩散光辉 */}
         <div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] opacity-40 pointer-events-none"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] opacity-20 pointer-events-none"
           style={{
-            background: 'radial-gradient(circle at center, rgba(57, 197, 187, 0.4) 0%, rgba(255, 182, 193, 0.2) 30%, transparent 70%)',
+            background: 'radial-gradient(circle at center, rgba(226, 232, 240, 0.6) 0%, rgba(203, 213, 225, 0.3) 30%, transparent 70%)',
             filter: 'blur(60px)',
             animation: 'pulse 10s ease-in-out infinite'
           }}
         />
         
-        {/* 漂浮的彩色星云 */}
+        {/* 漂浮的灰色星云 */}
         <div className="absolute inset-0 transition-opacity duration-1000">
-          <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-cyan-500/10 rounded-full blur-[120px] animate-blob" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-500/10 rounded-full blur-[120px] animate-blob animation-delay-2000" />
-          <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-pink-500/10 rounded-full blur-[100px] animate-blob animation-delay-4000" />
+          <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-slate-300/20 rounded-full blur-[120px] animate-blob" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-slate-400/15 rounded-full blur-[120px] animate-blob animation-delay-2000" />
+          <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-slate-300/15 rounded-full blur-[100px] animate-blob animation-delay-4000" />
         </div>
 
-        {/* 密集的微粒效果 */}
-        <div className="absolute inset-0 opacity-60">
-          {[...Array(40)].map((_, i) => (
+        {/* 密集的微粒效果 - 移动端减少数量 */}
+        <div className="absolute inset-0 opacity-30">
+          {[...Array(typeof window !== 'undefined' && window.innerWidth < 768 ? 20 : 40)].map((_, i) => (
             <div 
               key={i}
-              className="absolute bg-white/40 rounded-full"
+              className="absolute bg-slate-400/60 rounded-full"
               style={{
                 width: Math.random() * 3 + 1 + 'px',
                 height: Math.random() * 3 + 1 + 'px',
                 top: Math.random() * 100 + '%',
                 left: Math.random() * 100 + '%',
-                boxShadow: '0 0 10px rgba(255,255,255,0.5)',
+                boxShadow: '0 0 10px rgba(148, 163, 184, 0.3)',
                 animation: `floatParticle ${Math.random() * 10 + 10}s linear infinite`,
                 animationDelay: `-${Math.random() * 20}s`
               }}
@@ -155,77 +169,85 @@ export const StartScreen: React.FC<StartScreenProps> = ({
         </div>
       </div>
 
-      {/* 主内容区域 */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-6 flex flex-col items-center">
+      {/* 主内容区域 - 移动端优化 */}
+      <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-center">
         
-        {/* 标题区域 - 彻底解决重叠与间距 */}
-        <div className="text-center mb-20 md:mb-32 group flex flex-col items-center">
-          {/* 上装饰线 */}
-          <div className="w-40 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent mb-10 shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
+        {/* 标题区域 - 响应式间距 */}
+        <div className="text-center mb-12 sm:mb-20 md:mb-32 group flex flex-col items-center">
+          {/* 上装饰线 - 移动端缩小 */}
+          <div className="w-24 sm:w-40 h-px bg-gradient-to-r from-transparent via-slate-400/60 to-transparent mb-6 sm:mb-10 shadow-[0_0_15px_rgba(148,163,184,0.3)]" />
           
+          {/* 标题 - 响应式字体 */}
           <h1
-            className="text-6xl md:text-8xl font-black text-white tracking-[0.15em] leading-tight select-none"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black tracking-[0.1em] sm:tracking-[0.15em] leading-tight select-none px-4"
             style={{
-              filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.3))',
-              textShadow: '0 10px 30px rgba(0,0,0,0.5)'
+              color: '#22c55e',
+              filter: 'drop-shadow(0 0 20px rgba(34, 197, 94, 0.4))',
+              textShadow: '0 4px 12px rgba(100, 116, 139, 0.3)'
             }}
           >
             {scriptName || 'VISUAL NOVEL'}
           </h1>
           
-          {/* 下装饰区 - 增加明显间距 */}
-          <div className="mt-10 flex flex-col items-center gap-4">
-            <div className="h-1 w-32 bg-white rounded-full opacity-80 shadow-[0_0_20px_rgba(255,255,255,0.8)]" />
-            <span className="text-sm md:text-base tracking-[0.8em] text-white/60 font-medium uppercase translate-x-[0.4em]">
+          {/* 下装饰区 - 响应式 */}
+          <div className="mt-6 sm:mt-10 flex flex-col items-center gap-3 sm:gap-4">
+            <div className="h-0.5 sm:h-1 w-20 sm:w-32 bg-green-500 rounded-full opacity-80 shadow-[0_0_20px_rgba(34,197,94,0.5)]" />
+            <span className="text-xs sm:text-sm md:text-base tracking-[0.5em] sm:tracking-[0.8em] font-medium uppercase translate-x-[0.25em] sm:translate-x-[0.4em]" style={{ color: '#64748b' }}>
               Adventure System
             </span>
           </div>
         </div>
 
-        {/* 交互按钮区 - 更加明亮精致 */}
-        <div className="flex flex-col gap-10 items-center w-full max-w-sm">
+        {/* 交互按钮区 - 移动端优化 */}
+        <div className="flex flex-col gap-6 sm:gap-10 items-center w-full max-w-sm px-4 sm:px-0">
           
-          {/* 核心开始按钮 */}
+          {/* 核心开始按钮 - 响应式高度 */}
           <button
             onClick={onStart}
-            className="group relative w-full h-20 flex items-center justify-center transition-all duration-500 active:scale-95"
+            className="group relative w-full h-16 sm:h-20 flex items-center justify-center transition-all duration-500 active:scale-95 touch-manipulation"
           >
             {/* 按钮底色 */}
             <div 
-              className="absolute inset-0 bg-white/10 backdrop-blur-2xl border-2 border-white/40 rounded-3xl transition-all duration-500 group-hover:bg-white/25 group-hover:border-white/70 group-hover:shadow-[0_0_50px_rgba(255,255,255,0.3)] group-hover:-inset-1"
+              className="absolute inset-0 backdrop-blur-2xl border-2 rounded-3xl transition-all duration-500 group-hover:-inset-1"
+              style={{
+                background: 'linear-gradient(135deg, rgba(248, 250, 252, 0.98), rgba(226, 232, 240, 0.95))',
+                borderColor: 'rgba(203, 213, 225, 0.8)',
+                boxShadow: '0 8px 40px rgba(148, 163, 184, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
+              }}
             />
             
             {/* 流光特效 */}
             <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-[25deg] -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-r from-transparent via-slate-300/30 to-transparent -skew-x-[25deg] -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
             </div>
             
-            <div className="relative flex items-center gap-6">
-              <div className="w-3 h-3 rounded-full bg-cyan-400 animate-ping opacity-75" />
-              <span className="text-2xl font-black text-white tracking-[0.4em] drop-shadow-md">{startText}</span>
-              <div className="w-3 h-3 rounded-full bg-pink-400 animate-ping opacity-75" />
+            <div className="relative flex items-center gap-3 sm:gap-6">
+              <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500 animate-ping opacity-75" />
+              <span className="text-lg sm:text-2xl font-black tracking-[0.3em] sm:tracking-[0.4em] drop-shadow-sm" style={{ color: '#22c55e' }}>{startText}</span>
+              <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-600 animate-ping opacity-75" />
             </div>
           </button>
 
-          {/* 功能按钮组 */}
-          <div className="flex gap-8 w-full justify-center">
+          {/* 功能按钮组 - 移动端优化 */}
+          <div className="flex gap-4 sm:gap-8 w-full justify-center">
             {[
-              { text: settingsText, onClick: () => setShowSettings(true), color: 'rgba(57, 197, 187, 0.2)' },
-              { text: aboutText, onClick: () => setShowAbout(true), color: 'rgba(255, 182, 193, 0.2)' }
+              { text: settingsText, onClick: () => setShowSettings(true) },
+              { text: aboutText, onClick: () => setShowAbout(true) }
             ].map((btn, idx) => (
               <button
                 key={idx}
                 onClick={btn.onClick}
-                className="group relative flex-1 h-14 flex items-center justify-center transition-all duration-300 active:scale-95 overflow-hidden rounded-2xl"
+                className="group relative flex-1 h-12 sm:h-14 flex items-center justify-center transition-all duration-300 active:scale-95 overflow-hidden rounded-xl sm:rounded-2xl touch-manipulation"
               >
                 <div 
-                  className="absolute inset-0 bg-white/5 backdrop-blur-xl border border-white/20 transition-all duration-300 group-hover:bg-white/15 group-hover:border-white/40"
+                  className="absolute inset-0 backdrop-blur-xl border transition-all duration-300"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(241, 245, 249, 0.95), rgba(226, 232, 240, 0.9))',
+                    borderColor: 'rgba(203, 213, 225, 0.6)',
+                    boxShadow: '0 4px 16px rgba(100, 116, 139, 0.15)'
+                  }}
                 />
-                <div 
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" 
-                  style={{ background: btn.color }}
-                />
-                <span className="relative text-sm md:text-base font-bold text-white/80 group-hover:text-white tracking-[0.25em] transition-colors uppercase">
+                <span className="relative text-xs sm:text-sm md:text-base font-bold tracking-[0.15em] sm:tracking-[0.25em] transition-colors uppercase" style={{ color: '#64748b' }}>
                   {btn.text}
                 </span>
               </button>
@@ -234,10 +256,13 @@ export const StartScreen: React.FC<StartScreenProps> = ({
         </div>
       </div>
 
-      {/* 固定到底部的版本信息 - 不再随内容重叠 */}
-      <div className="fixed bottom-10 left-0 right-0 text-center pointer-events-none select-none">
-        <div className="inline-block px-6 py-2 rounded-full bg-white/5 backdrop-blur-md border border-white/10">
-          <span className="text-[10px] md:text-xs text-white/30 tracking-[0.5em] font-light uppercase">
+      {/* 固定到底部的版本信息 - 移动端优化 */}
+      <div className="fixed bottom-4 sm:bottom-10 left-0 right-0 text-center pointer-events-none select-none px-4">
+        <div className="inline-block px-3 sm:px-6 py-1.5 sm:py-2 rounded-full backdrop-blur-md border" style={{
+          background: 'rgba(248, 250, 252, 0.8)',
+          borderColor: 'rgba(203, 213, 225, 0.3)'
+        }}>
+          <span className="text-[8px] sm:text-[10px] md:text-xs tracking-[0.3em] sm:tracking-[0.5em] font-light uppercase" style={{ color: 'rgba(100, 116, 139, 0.5)' }}>
             Ver 1.6.2 — ENGINE POWERED BY SA2KIT
           </span>
         </div>
@@ -245,32 +270,44 @@ export const StartScreen: React.FC<StartScreenProps> = ({
 
       {/* 弹窗内容 */}
       <VNModal title={settingsText} show={showSettings} onClose={() => setShowSettings(false)}>
-        <div className="space-y-8 py-4">
-          <div className="space-y-4">
-            <div className="flex justify-between items-center text-sm font-bold tracking-widest text-white/60">
+        <div className="space-y-6 sm:space-y-8 py-2 sm:py-4">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex justify-between items-center text-xs sm:text-sm font-bold tracking-wider sm:tracking-widest" style={{ color: '#64748b' }}>
               <span>MUSIC VOLUME</span>
               <span>80%</span>
             </div>
-            <div className="h-3 bg-white/10 rounded-full p-0.5 border border-white/10">
-              <div className="h-full w-[80%] bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full shadow-[0_0_15px_rgba(34,211,238,0.5)]" />
+            <div className="h-2.5 sm:h-3 rounded-full p-0.5 border" style={{ background: 'rgba(241, 245, 249, 0.5)', borderColor: 'rgba(203, 213, 225, 0.4)' }}>
+              <div className="h-full w-[80%] rounded-full" style={{ background: 'linear-gradient(to right, #22c55e, #4ade80)', boxShadow: '0 0 15px rgba(34, 197, 94, 0.5)' }} />
             </div>
           </div>
           
-          <div className="space-y-4">
-            <div className="flex justify-between items-center text-sm font-bold tracking-widest text-white/60">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex justify-between items-center text-xs sm:text-sm font-bold tracking-wider sm:tracking-widest" style={{ color: '#64748b' }}>
               <span>TEXT SPEED</span>
               <span>NORMAL</span>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-2 sm:gap-3">
               {['SLOW', 'NORMAL', 'FAST'].map((s, i) => (
-                <div key={s} className={`flex-1 py-3 rounded-xl border text-center text-xs font-bold transition-all cursor-pointer ${i===1 ? 'bg-white/20 border-white/60 text-white' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:border-white/30'}`}>
+                <div 
+                  key={s} 
+                  className="flex-1 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border text-center text-[10px] sm:text-xs font-bold transition-all cursor-pointer touch-manipulation"
+                  style={i===1 ? {
+                    background: 'rgba(34, 197, 94, 0.15)',
+                    borderColor: '#22c55e',
+                    color: '#22c55e'
+                  } : {
+                    background: 'rgba(241, 245, 249, 0.5)',
+                    borderColor: 'rgba(203, 213, 225, 0.4)',
+                    color: 'rgba(100, 116, 139, 0.6)'
+                  }}
+                >
                   {s}
                 </div>
               ))}
             </div>
           </div>
           
-          <div className="pt-4 flex items-center justify-between opacity-50 italic text-xs border-t border-white/10">
+          <div className="pt-3 sm:pt-4 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0 opacity-50 italic text-[10px] sm:text-xs border-t" style={{ borderColor: 'rgba(203, 213, 225, 0.3)' }}>
             <span>Auto Save Enabled</span>
             <span>Cloud Sync Active</span>
           </div>
@@ -278,31 +315,31 @@ export const StartScreen: React.FC<StartScreenProps> = ({
       </VNModal>
 
       <VNModal title={aboutText} show={showAbout} onClose={() => setShowAbout(false)}>
-        <div className="space-y-8 py-4">
-          <div className="flex items-center gap-6 p-6 rounded-3xl bg-white/5 border border-white/10">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 flex items-center justify-center text-3xl font-black text-white shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+        <div className="space-y-6 sm:space-y-8 py-2 sm:py-4">
+          <div className="flex items-center gap-3 sm:gap-6 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border" style={{ background: 'rgba(241, 245, 249, 0.6)', borderColor: 'rgba(203, 213, 225, 0.4)' }}>
+            <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-black text-white shadow-lg shrink-0" style={{ background: 'linear-gradient(to bottom right, #22c55e, #4ade80)' }}>
               S2
             </div>
             <div>
-              <h3 className="text-2xl font-black text-white tracking-tight">{scriptName || 'Project SA2'}</h3>
-              <p className="text-xs font-bold text-white/40 tracking-widest mt-1 uppercase">Visual Novel Experience</p>
+              <h3 className="text-lg sm:text-2xl font-black tracking-tight" style={{ color: '#22c55e' }}>{scriptName || 'Project SA2'}</h3>
+              <p className="text-[10px] sm:text-xs font-bold tracking-wider sm:tracking-widest mt-1 uppercase" style={{ color: 'rgba(100, 116, 139, 0.6)' }}>Visual Novel Experience</p>
             </div>
           </div>
           
-          <div className="space-y-4 px-2">
-            <p className="text-white/80 font-medium leading-relaxed">
+          <div className="space-y-3 sm:space-y-4 px-1 sm:px-2">
+            <p className="font-medium leading-relaxed text-sm sm:text-base" style={{ color: '#475569' }}>
               采用 sa2kit 引擎构建的新一代实时 3D 视觉小说。结合了 MMD 实时渲染技术与交互式剧情分支系统，致力于打造极致的沉浸式叙事体验。
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 pt-6 border-t border-white/10">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 pt-4 sm:pt-6 border-t" style={{ borderColor: 'rgba(203, 213, 225, 0.3)' }}>
             <div className="flex flex-col gap-1">
-              <span className="text-[10px] font-bold text-white/30 tracking-widest">DEVELOPER</span>
-              <span className="text-xs font-bold text-white/80">SA2KIT TEAM</span>
+              <span className="text-[9px] sm:text-[10px] font-bold tracking-wider sm:tracking-widest" style={{ color: 'rgba(100, 116, 139, 0.5)' }}>DEVELOPER</span>
+              <span className="text-xs font-bold" style={{ color: '#64748b' }}>SA2KIT TEAM</span>
             </div>
             <div className="flex flex-col gap-1 text-right">
-              <span className="text-[10px] font-bold text-white/30 tracking-widest">ENGINE</span>
-              <span className="text-xs font-bold text-white/80">THREE.JS / REACT</span>
+              <span className="text-[9px] sm:text-[10px] font-bold tracking-wider sm:tracking-widest" style={{ color: 'rgba(100, 116, 139, 0.5)' }}>ENGINE</span>
+              <span className="text-xs font-bold" style={{ color: '#64748b' }}>THREE.JS / REACT</span>
             </div>
           </div>
         </div>

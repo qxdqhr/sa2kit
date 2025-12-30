@@ -689,8 +689,8 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         }
 
         // 设置模型基础属性
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
+        mesh.castShadow = true;      // 保留：模型投射阴影到地面
+        mesh.receiveShadow = false;  // 🎯 优化：模型不接收阴影（避免头发、腿部等自阴影）
         
         // 🎯 关键优化：先等待所有材质和纹理加载完成，再添加到场景
         // 这样可以避免用户看到"逐个子模型显示"的过程
@@ -937,8 +937,8 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
             let stageMaterialCount = 0;
             stageMesh.traverse((child) => {
               if (child instanceof THREE.Mesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
+                child.castShadow = false;     // 🎯 舞台不投射阴影
+                child.receiveShadow = true;   // 舞台接收阴影（模型投射到地面的阴影）
                 
                 const mesh = child as THREE.Mesh;
                 const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];

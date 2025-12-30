@@ -13,6 +13,7 @@ import { HistoryPanel } from './HistoryPanel';
 import { LoadingOverlay } from './LoadingOverlay';
 import { SkipConfirmDialog } from './SkipConfirmDialog';
 import { ChoiceMenu } from './ChoiceMenu';
+import { LoopConfirmDialog } from './LoopConfirmDialog';
 import {
   MMDVisualNovelProps,
   MMDVisualNovelRef,
@@ -77,6 +78,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     const [isCameraManual, setIsCameraManual] = useState(false);
     const [variables, setVariables] = useState<Record<string, string | number | boolean>>({});
     const [activeEffect, setActiveEffect] = useState<VisualEffect | null>(null);
+    const [showLoopConfirm, setShowLoopConfirm] = useState(false);
 
     // Refs
     const playerRef = useRef<MMDPlayerBaseRef>(null);
@@ -202,7 +204,9 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
       if (nextNodeIndex < nodes.length && nextNodeIndex >= 0) {
         goToNode(nextNodeIndex);
       } else if (loop) {
-        goToNode(0);
+        // 到达最后一个节点，显示循环确认对话框
+        console.log('[MMDVisualNovel] 到达最后一个节点，显示循环确认对话框');
+        setShowLoopConfirm(true);
       } else {
         // 剧本结束
         onScriptComplete?.();
@@ -318,6 +322,12 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
 
     // 快进 - 跳到下一个节点
     const handleSkip = useCallback(() => {
+      // 如果循环确认对话框已显示，忽略快进操作
+      if (showLoopConfirm) {
+        return;
+      }
+
+      // 如果当前节点有选项，先显示选项
       if (currentNode?.choices && currentNode.choices.length > 0) {
         setShowChoices(true);
         return;
@@ -325,13 +335,17 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
       
       const nextNodeIndex = currentNodeIndex + 1;
       if (nextNodeIndex < nodes.length) {
+        // 还有下一个节点，直接跳转
         goToNode(nextNodeIndex);
       } else if (loop) {
-        goToNode(0);
+        // 🔧 修复：到达最后一个节点且开启循环时，显示确认对话框
+        console.log('[MMDVisualNovel] 快进到最后，显示循环确认对话框');
+        setShowLoopConfirm(true);
       } else {
+        // 剧本结束
         onScriptComplete?.();
       }
-    }, [currentNodeIndex, nodes.length, loop, goToNode, onScriptComplete]);
+    }, [currentNode, currentNodeIndex, nodes.length, loop, goToNode, onScriptComplete, showLoopConfirm]);
 
     // 开始游戏
     const handleStart = useCallback(() => {
@@ -345,6 +359,28 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         playerRef.current?.play();
       }, 100);
     }, [currentNode, currentNodeIndex, addToHistory]);
+
+    // 回到开始页面
+    const handleBackToStart = useCallback(() => {
+      setShowLoopConfirm(false);
+      setIsStarted(false);
+      isStartedRef.current = false;
+      setCurrentNodeIndex(initialNodeIndex);
+      setCurrentDialogueIndex(initialDialogueIndex);
+      setHistory([]);
+      setVariables({});
+      setIsLoading(true);
+      setIsAnimationPlaying(false);
+      typingCompleteRef.current = false;
+      console.log('[MMDVisualNovel] 回到开始页面');
+    }, [initialNodeIndex, initialDialogueIndex]);
+
+    // 重新开始（从第一个节点）
+    const handleRestartLoop = useCallback(() => {
+      setShowLoopConfirm(false);
+      goToNode(0, true);
+      console.log('[MMDVisualNovel] 重新开始循环');
+    }, [goToNode]);
 
     // 暴露给父组件的方法
     useImperativeHandle(
@@ -526,13 +562,14 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
 
         {/* 对话框 - 仅在动画开始播放后显示 */}
         {(() => {
-          const shouldShow = isStarted && isAnimationPlaying && currentDialogue && !showHistory && !showChoices;
+          const shouldShow = isStarted && isAnimationPlaying && currentDialogue && !showHistory && !showChoices && !showLoopConfirm;
           console.log('[MMDVisualNovel] DialogueBox render condition:', {
             isStarted,
             isAnimationPlaying,
             hasDialogue: !!currentDialogue,
             showHistory,
             showChoices,
+            showLoopConfirm,
             shouldShow,
             dialogue: currentDialogue
           });
@@ -635,6 +672,14 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
             history={history}
             theme={dialogueTheme}
             onClose={() => setShowHistory(false)}
+          />
+        )}
+
+        {/* 循环确认对话框 */}
+        {showLoopConfirm && (
+          <LoopConfirmDialog
+            onRestart={handleRestartLoop}
+            onBackToStart={handleBackToStart}
           />
         )}
 

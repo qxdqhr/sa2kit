@@ -12,6 +12,7 @@ export * from './LoadingOverlay';
 export * from './LoadingScreen';
 export * from './StartScreen';
 export * from './ChoiceMenu';
+export * from './LoopConfirmDialog';
 
 
 
