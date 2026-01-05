@@ -165,6 +165,10 @@ export interface MMDVisualNovelProps {
   
   /** 是否显示调试信息 */
   showDebugInfo?: boolean;
+  /** 是否显示光照调试面板（默认false） */
+  showLightingDebugPanel?: boolean;
+  /** 光照调试面板初始参数 */
+  lightingDebugInitialParams?: any;
   /** 是否显示快进按钮 */
   showSkipButton?: boolean;
   /** 是否显示自动播放按钮 */

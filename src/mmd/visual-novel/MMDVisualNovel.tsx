@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { MMDPlayerBase } from '../components/MMDPlayerBase';
 import { MMDPlayerBaseRef } from '../types';
+import { MMDLightingDebugPanel, type MMDSceneRefs } from '../components/MMDLightingDebugPanel';
 import { DialogueBox } from './DialogueBox';
 import { HistoryPanel } from './HistoryPanel';
 import { LoadingOverlay } from './LoadingOverlay';
@@ -56,6 +57,8 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
       showSkipButton = true,
       showAutoButton = true,
       showHistoryButton = true,
+      showLightingDebugPanel = false,
+      lightingDebugInitialParams,
       className,
       style,
     },
@@ -114,14 +117,14 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     // 触发特效
     const triggerEffect = useCallback((effect?: VisualEffect) => {
       if (!effect) return;
-      
+
       // 清除旧的特效定时器
       if (effectTimerRef.current) {
         clearTimeout(effectTimerRef.current);
       }
 
       setActiveEffect(effect);
-      
+
       // 自动清理
       effectTimerRef.current = setTimeout(() => {
         setActiveEffect(null);
@@ -189,7 +192,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     // 判定并跳转到下一个节点
     const triggerNodeTransition = useCallback(() => {
       if (!currentNode) return;
-      
+
       let nextNodeIndex = currentNodeIndex + 1;
 
       // 如果存在分支判定逻辑
@@ -313,12 +316,12 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     }, [currentDialogue, handleTypingComplete]);
 
     useEffect(() => {
-    if (currentDialogue?.effect) {
-      triggerEffect(currentDialogue.effect);
-    }
-  }, [currentNodeIndex, currentDialogueIndex, triggerEffect]);
+      if (currentDialogue?.effect) {
+        triggerEffect(currentDialogue.effect);
+      }
+    }, [currentNodeIndex, currentDialogueIndex, triggerEffect]);
 
-  // 切换自动模式
+    // 切换自动模式
     const toggleAutoMode = useCallback(() => {
       setIsAutoMode((prev) => !prev);
     }, []);
@@ -335,7 +338,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         setShowChoices(true);
         return;
       }
-      
+
       const nextNodeIndex = currentNodeIndex + 1;
       if (nextNodeIndex < nodes.length) {
         // 还有下一个节点，直接跳转
@@ -448,9 +451,9 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         style={{ width: '100%', height: '100%', overflow: 'hidden', ...style }}
       >
         {/* MMD 播放器层 - 覆盖整个屏幕，明确在最底层 */}
-        <div 
+        <div
           className="absolute inset-0 w-full h-full"
-          style={{ 
+          style={{
             zIndex: 0,
             // 在加载期间隐藏，避免看到模型加载过程
             opacity: (isLoading || isTransitioning || !isAnimationPlaying) ? 0 : 1,
@@ -484,7 +487,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
               }}
               onTimeUpdate={(time) => {
                 const duration = playerRef.current?.getDuration() || 0;
-                
+
                 // 判定动画完成的条件：
                 // 1. 播放进度超过 98%
                 // 2. 或者检测到时间回跳（循环发生）
@@ -515,28 +518,28 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
 
         {/* 特效渲染层 */}
         {activeEffect && (
-          <div 
+          <div
             className="pointer-events-none absolute inset-0 flex items-center justify-center"
             style={{ zIndex: 999 }}
           >
             {activeEffect.type === 'flash' && (
-              <div 
+              <div
                 className="h-full w-full"
-                style={{ 
+                style={{
                   backgroundColor: activeEffect.color || 'white',
                   animation: `flash-anim ${activeEffect.duration || 500}ms ease-out forwards`
-                }} 
+                }}
               />
             )}
 
             {activeEffect.type === 'gif' && activeEffect.url && (
-              <img 
-                src={activeEffect.url} 
+              <img
+                src={activeEffect.url}
                 alt="effect"
                 className={activeEffect.position === 'full' ? 'h-full w-full object-cover' : 'max-h-full max-w-full'}
               />
             )}
-            
+
             <style>{`
               @keyframes flash-anim {
                 0% { opacity: 0; }
@@ -582,7 +585,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
             shouldShow,
             dialogue: currentDialogue
           });
-          
+
           return shouldShow ? (
             <DialogueBox
               dialogue={currentDialogue}
@@ -636,16 +639,16 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
                 console.log(`[MMDVisualNovel] Variable set: ${key} = ${value}`);
               }
 
-            // 2. 执行回调
-            choice.onSelect?.();
+              // 2. 执行回调
+              choice.onSelect?.();
 
-            // 3. 触发特效
-            if (choice.effect) {
-              triggerEffect(choice.effect);
-            }
+              // 3. 触发特效
+              if (choice.effect) {
+                triggerEffect(choice.effect);
+              }
 
-            // 4. 处理跳转逻辑
-            setShowChoices(false);
+              // 4. 处理跳转逻辑
+              setShowChoices(false);
 
               if (choice.nextNodeIndex !== undefined) {
                 if (choice.nextNodeIndex === currentNodeIndex) {
@@ -701,7 +704,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
           onClick={handleCheer}
           text="应援"
         />
-     
+
       </div>
     );
   }

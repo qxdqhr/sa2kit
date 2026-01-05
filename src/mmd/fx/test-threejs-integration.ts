@@ -158,3 +158,6 @@ async function testThreeJSIntegration() {
 // 运行测试
 testThreeJSIntegration().catch(console.error);
 
+
+
+

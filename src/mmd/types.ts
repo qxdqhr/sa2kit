@@ -59,6 +59,22 @@ export interface MMDStage {
   ambientLightIntensity?: number;
   /** 方向光强度 (默认 0.8) */
   directionalLightIntensity?: number;
+  /** 方向光位置 (默认 { x: 0, y: 10, z: 0 }) */
+  directionalLightPosition?: { x: number; y: number; z: number } | Vector3;
+  /** 半球光强度 (默认关闭，设置值以启用) */
+  hemisphereLightIntensity?: number;
+  /** 半球光天空颜色 (默认 0xffffff) */
+  hemisphereLightSkyColor?: string | number;
+  /** 半球光地面颜色 (默认 0x444444) */
+  hemisphereLightGroundColor?: string | number;
+  /** 侧面补光强度 (默认关闭，设置值以启用) */
+  sideLightIntensity?: number;
+  /** 侧面补光位置 (默认 { x: -3, y: 8, z: 8 }) */
+  sideLightPosition?: { x: number; y: number; z: number } | Vector3;
+  /** 色调映射类型 (默认 'ACESFilmic') */
+  toneMapping?: 'None' | 'Linear' | 'Reinhard' | 'Cineon' | 'ACESFilmic';
+  /** 色调映射曝光度 (默认 1.0) */
+  toneMappingExposure?: number;
   /** 相机初始位置 */
   cameraPosition?: { x: number; y: number; z: number } | Vector3;
   /** 相机目标点 */
@@ -68,6 +84,36 @@ export interface MMDStage {
   renderEffect?: 'default' | 'outline';
   /** 描边效果配置 */
   outlineOptions?: OutlineOptions;
+  
+  // 🎨 材质属性配置（来自光照调试面板）
+  /** 材质自发光强度 (默认 0) */
+  emissiveIntensity?: number;
+  /** 颜色亮度系数 (默认 1.0) */
+  colorBrightness?: number;
+  /** 颜色饱和度系数 (默认 1.0) */
+  colorSaturation?: number;
+  /** 高光强度 Shininess (默认 30) */
+  shininess?: number;
+  /** 高光颜色强度 (默认 0.5) */
+  specularIntensity?: number;
+  /** 反射率 (默认 0.5) */
+  reflectivity?: number;
+  /** 金属度 PBR (默认 0) */
+  metalness?: number;
+  /** 粗糙度 PBR (默认 0.8) */
+  roughness?: number;
+  /** 环境光遮蔽强度 (默认 1.0) */
+  aoMapIntensity?: number;
+  /** 边缘光强度 (默认 0) */
+  rimLightIntensity?: number;
+  /** 边缘光颜色 (默认 '#ffffff') */
+  rimLightColor?: string;
+  
+  // 🌑 阴影配置
+  /** 模型是否接收阴影 (默认 true) */
+  modelReceiveShadow?: boolean;
+  /** 阴影偏移 (默认 -0.0001) */
+  shadowBias?: number;
   /** 
    * FX效果文件路径 (.fx文件，MME格式)
    * 注意：
