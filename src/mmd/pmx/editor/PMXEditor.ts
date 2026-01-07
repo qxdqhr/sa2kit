@@ -89,16 +89,16 @@ export class PMXEditor {
       index: this.data.textures.length,
       path,
     };
-    
+
     this.data.textures.push(newTexture);
-    
+
     this.recordHistory({
       type: 'texture',
       action: 'add',
       target: newTexture.index,
       data: { path },
     }, `添加纹理: ${path}`);
-    
+
     return newTexture.index;
   }
 
@@ -109,17 +109,17 @@ export class PMXEditor {
     if (index < 0 || index >= this.data.textures.length) {
       throw new Error(`Invalid texture index: ${index}`);
     }
-    
-    const oldPath = this.data.textures[index].path;
-    this.data.textures[index].path = newPath;
-    
+
+    const oldPath = this.data.textures[index]!.path;
+    this.data.textures[index]!.path = newPath;
+
     this.recordHistory({
       type: 'texture',
       action: 'update',
       target: index,
       data: { oldPath, newPath },
     }, `更新纹理 #${index}: ${oldPath} → ${newPath}`);
-    
+
     return true;
   }
 
@@ -130,25 +130,26 @@ export class PMXEditor {
     if (index < 0 || index >= this.data.textures.length) {
       throw new Error(`Invalid texture index: ${index}`);
     }
-    
+
     // 检查是否有材质使用此纹理
     const usedByMaterials = this.data.materials.filter(
-      m => m.textureIndex === index || 
-           m.sphereTextureIndex === index || 
-           (!m.isSharedToon && m.toonTextureIndex === index)
+      m => m.textureIndex === index ||
+        m.sphereTextureIndex === index ||
+        (!m.isSharedToon && m.toonTextureIndex === index)
     );
-    
+
     if (usedByMaterials.length > 0) {
       throw new Error(`纹理 #${index} 正在被 ${usedByMaterials.length} 个材质使用，无法删除`);
     }
-    
+
     const deletedTexture = this.data.textures.splice(index, 1)[0];
-    
+    if (!deletedTexture) return false;
+
     // 更新后续纹理的索引
     this.data.textures.forEach((tex, i) => {
       tex.index = i;
     });
-    
+
     // 更新材质中大于此索引的纹理引用
     this.data.materials.forEach(material => {
       if (material.textureIndex > index) material.textureIndex--;
@@ -157,17 +158,17 @@ export class PMXEditor {
         material.toonTextureIndex--;
       }
     });
-    
+
     // 重新生成映射
     this.regenerateMappings();
-    
+
     this.recordHistory({
       type: 'texture',
       action: 'delete',
       target: index,
       data: { path: deletedTexture.path },
     }, `删除纹理 #${index}: ${deletedTexture.path}`);
-    
+
     return true;
   }
 
@@ -178,29 +179,29 @@ export class PMXEditor {
     if (materialIndex < 0 || materialIndex >= this.data.materials.length) {
       throw new Error(`Invalid material index: ${materialIndex}`);
     }
-    
+
     if (textureIndex !== -1 && (textureIndex < 0 || textureIndex >= this.data.textures.length)) {
       throw new Error(`Invalid texture index: ${textureIndex}`);
     }
-    
-    const material = this.data.materials[materialIndex];
+
+    const material = this.data.materials[materialIndex]!;
     const oldIndex = material.textureIndex;
     material.textureIndex = textureIndex;
-    
+
     // 重新生成映射
     this.regenerateMappings();
-    
+
     this.recordHistory({
       type: 'binding',
       action: 'update',
       target: materialIndex,
-      data: { 
+      data: {
         bindingType: 'main',
-        oldIndex, 
-        newIndex: textureIndex 
+        oldIndex,
+        newIndex: textureIndex
       },
     }, `材质 #${materialIndex} 主纹理: #${oldIndex} → #${textureIndex}`);
-    
+
     return true;
   }
 
@@ -208,41 +209,41 @@ export class PMXEditor {
    * 更新材质的Sphere纹理绑定
    */
   setMaterialSphereTexture(
-    materialIndex: number, 
-    textureIndex: number, 
+    materialIndex: number,
+    textureIndex: number,
     mode: number = 1
   ): boolean {
     if (materialIndex < 0 || materialIndex >= this.data.materials.length) {
       throw new Error(`Invalid material index: ${materialIndex}`);
     }
-    
+
     if (textureIndex !== -1 && (textureIndex < 0 || textureIndex >= this.data.textures.length)) {
       throw new Error(`Invalid texture index: ${textureIndex}`);
     }
-    
-    const material = this.data.materials[materialIndex];
+
+    const material = this.data.materials[materialIndex]!;
     const oldIndex = material.sphereTextureIndex;
     const oldMode = material.sphereMode;
-    
+
     material.sphereTextureIndex = textureIndex;
     material.sphereMode = textureIndex === -1 ? 0 : mode;
-    
+
     // 重新生成映射
     this.regenerateMappings();
-    
+
     this.recordHistory({
       type: 'binding',
       action: 'update',
       target: materialIndex,
-      data: { 
+      data: {
         bindingType: 'sphere',
-        oldIndex, 
+        oldIndex,
         newIndex: textureIndex,
         oldMode,
         newMode: mode
       },
     }, `材质 #${materialIndex} Sphere纹理: #${oldIndex} → #${textureIndex} (模式: ${mode})`);
-    
+
     return true;
   }
 
@@ -250,42 +251,42 @@ export class PMXEditor {
    * 更新材质的Toon纹理绑定
    */
   setMaterialToonTexture(
-    materialIndex: number, 
+    materialIndex: number,
     textureIndex: number,
     isShared: boolean = false
   ): boolean {
     if (materialIndex < 0 || materialIndex >= this.data.materials.length) {
       throw new Error(`Invalid material index: ${materialIndex}`);
     }
-    
-    if (!isShared && textureIndex !== -1 && 
-        (textureIndex < 0 || textureIndex >= this.data.textures.length)) {
+
+    if (!isShared && textureIndex !== -1 &&
+      (textureIndex < 0 || textureIndex >= this.data.textures.length)) {
       throw new Error(`Invalid texture index: ${textureIndex}`);
     }
-    
-    const material = this.data.materials[materialIndex];
+
+    const material = this.data.materials[materialIndex]!;
     const oldIndex = material.toonTextureIndex;
     const oldShared = material.isSharedToon;
-    
+
     material.toonTextureIndex = textureIndex;
     material.isSharedToon = isShared;
-    
+
     // 重新生成映射
     this.regenerateMappings();
-    
+
     this.recordHistory({
       type: 'binding',
       action: 'update',
       target: materialIndex,
-      data: { 
+      data: {
         bindingType: 'toon',
-        oldIndex, 
+        oldIndex,
         newIndex: textureIndex,
         oldShared,
         isShared
       },
     }, `材质 #${materialIndex} Toon纹理: #${oldIndex} → #${textureIndex} (共享: ${isShared})`);
-    
+
     return true;
   }
 
@@ -296,22 +297,38 @@ export class PMXEditor {
     if (materialIndex < 0 || materialIndex >= this.data.materials.length) {
       throw new Error(`Invalid material index: ${materialIndex}`);
     }
-    
-    const material = this.data.materials[materialIndex];
+
+    const material = this.data.materials[materialIndex]!;
     const oldData = { ...material };
-    
-    Object.assign(material, updates);
-    
+
+    // 手动合并属性，避免 TS 类型问题
+    if (updates.name !== undefined) material.name = updates.name;
+    if (updates.nameEnglish !== undefined) material.nameEnglish = updates.nameEnglish;
+    if (updates.diffuse !== undefined) material.diffuse = updates.diffuse;
+    if (updates.specular !== undefined) material.specular = updates.specular;
+    if (updates.specularStrength !== undefined) material.specularStrength = updates.specularStrength;
+    if (updates.ambient !== undefined) material.ambient = updates.ambient;
+    if (updates.drawingFlags !== undefined) material.drawingFlags = updates.drawingFlags;
+    if (updates.edgeColor !== undefined) material.edgeColor = updates.edgeColor;
+    if (updates.edgeSize !== undefined) material.edgeSize = updates.edgeSize;
+    if (updates.textureIndex !== undefined) material.textureIndex = updates.textureIndex;
+    if (updates.sphereTextureIndex !== undefined) material.sphereTextureIndex = updates.sphereTextureIndex;
+    if (updates.sphereMode !== undefined) material.sphereMode = updates.sphereMode;
+    if (updates.isSharedToon !== undefined) material.isSharedToon = updates.isSharedToon;
+    if (updates.toonTextureIndex !== undefined) material.toonTextureIndex = updates.toonTextureIndex;
+    if (updates.memo !== undefined) material.memo = updates.memo;
+    if (updates.surfaceCount !== undefined) material.surfaceCount = updates.surfaceCount;
+
     // 重新生成映射
     this.regenerateMappings();
-    
+
     this.recordHistory({
       type: 'material',
       action: 'update',
       target: materialIndex,
       data: { oldData, updates },
     }, `更新材质 #${materialIndex}: ${material.name}`);
-    
+
     return true;
   }
 
@@ -320,7 +337,7 @@ export class PMXEditor {
    */
   private regenerateMappings(): void {
     const sphereModeMap = ['none', 'multiply', 'add', 'subTexture'] as const;
-    
+
     this.data.materialTextureMappings = this.data.materials.map((material, index) => {
       const mapping: MaterialTextureMapping = {
         materialIndex: index,
@@ -328,15 +345,15 @@ export class PMXEditor {
         materialNameEnglish: material.nameEnglish,
         surfaceCount: material.surfaceCount,
       };
-      
+
       // 主纹理
       if (material.textureIndex >= 0 && material.textureIndex < this.data.textures.length) {
         mapping.mainTexture = {
           index: material.textureIndex,
-          path: this.data.textures[material.textureIndex].path,
+          path: this.data.textures[material.textureIndex]!.path,
         };
       }
-      
+
       // Sphere纹理
       if (
         material.sphereTextureIndex >= 0 &&
@@ -345,11 +362,11 @@ export class PMXEditor {
       ) {
         mapping.sphereTexture = {
           index: material.sphereTextureIndex,
-          path: this.data.textures[material.sphereTextureIndex].path,
+          path: this.data.textures[material.sphereTextureIndex]!.path,
           mode: sphereModeMap[material.sphereMode] as 'multiply' | 'add' | 'subTexture',
         };
       }
-      
+
       // Toon纹理
       if (material.isSharedToon) {
         mapping.toonTexture = {
@@ -363,11 +380,11 @@ export class PMXEditor {
       ) {
         mapping.toonTexture = {
           index: material.toonTextureIndex,
-          path: this.data.textures[material.toonTextureIndex].path,
+          path: this.data.textures[material.toonTextureIndex]!.path,
           isShared: false,
         };
       }
-      
+
       return mapping;
     });
   }
@@ -380,14 +397,14 @@ export class PMXEditor {
     if (this.historyIndex < this.history.length - 1) {
       this.history = this.history.slice(0, this.historyIndex + 1);
     }
-    
+
     // 添加新历史
     this.history.push({
       operation,
       timestamp: Date.now(),
       description,
     });
-    
+
     // 限制历史长度
     if (this.history.length > this.maxHistory) {
       this.history.shift();
@@ -415,7 +432,7 @@ export class PMXEditor {
    */
   getUnusedTextures(): PMXTexture[] {
     const usedIndices = new Set<number>();
-    
+
     this.data.materials.forEach(material => {
       if (material.textureIndex >= 0) usedIndices.add(material.textureIndex);
       if (material.sphereTextureIndex >= 0) usedIndices.add(material.sphereTextureIndex);
@@ -423,7 +440,7 @@ export class PMXEditor {
         usedIndices.add(material.toonTextureIndex);
       }
     });
-    
+
     return this.data.textures.filter(tex => !usedIndices.has(tex.index));
   }
 }

@@ -39,6 +39,10 @@ export interface LoadingOverlayProps {
   onStart?: () => void;
   /** 自定义类名 */
   className?: string;
+  /** 自定义设置面板内容 */
+  customSettingsContent?: React.ReactNode;
+  /** 自定义关于面板内容 */
+  customAboutContent?: React.ReactNode;
 }
 
 /**
@@ -57,6 +61,8 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
   aboutText = '关于作品',
   onStart,
   className = '',
+  customSettingsContent,
+  customAboutContent,
 }) => {
   return (
     <>
@@ -73,6 +79,8 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
         aboutText={aboutText}
         onStart={onStart}
         className={className}
+        customSettingsContent={customSettingsContent}
+        customAboutContent={customAboutContent}
       />
     </>
   );

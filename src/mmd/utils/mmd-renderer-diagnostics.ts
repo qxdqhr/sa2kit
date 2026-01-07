@@ -48,15 +48,15 @@ export function diagnoseMaterialsMMD(
     issues: [],
     suggestions: [],
   };
-  
+
   // 遍历场景检查材质
   scene.traverse((obj) => {
     if (obj instanceof THREE.Mesh || obj instanceof THREE.SkinnedMesh) {
       const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
-      
+
       materials.forEach((material) => {
         report.totalMaterials++;
-        
+
         // 统计材质类型
         if (material instanceof THREE.MeshToonMaterial) {
           report.toonMaterialCount++;
@@ -67,34 +67,34 @@ export function diagnoseMaterialsMMD(
         if (material instanceof THREE.MeshStandardMaterial) {
           report.standardMaterialCount++;
         }
-        
+
         // 检查纹理
         if ((material as any).gradientMap || (material as any).toonMap) {
           report.materialsWithToon++;
         }
-        
+
         if (material.envMap) {
           report.materialsWithSphere++;
         }
-        
+
         if (material.map) {
           report.materialsWithMainTexture++;
         }
       });
     }
   });
-  
+
   // 分析问题
   if (report.totalMaterials === 0) {
     report.issues.push('场景中没有找到任何材质');
   }
-  
+
   if (report.materialsWithToon === 0 && report.toonMaterialCount > 0) {
     report.issues.push('检测到Toon材质但没有gradientMap/toonMap纹理');
     report.suggestions.push('调用 configureMaterialsForMMD(mesh, { enableGradientMap: true })');
     report.suggestions.push('或配置 loader.setToonPath("/mmd/toon/")');
   }
-  
+
   if (report.materialsWithSphere === 0) {
     report.issues.push('❌ 没有检测到Sphere纹理（envMap）- 这是缺少金属光泽的主要原因！');
     report.suggestions.push('🔍 步骤1: 检查模型定义 - 运行 printModelSphereInfo("模型URL")');
@@ -102,23 +102,23 @@ export function diagnoseMaterialsMMD(
     report.suggestions.push('💡 临时方案: 调用 addDefaultSphereTextures(mesh) 添加默认sphere纹理');
     report.suggestions.push('⚡ 或提高"高光强度"(50-60)和"反射率"(0.6-0.8)来弥补');
   }
-  
+
   if (report.phongMaterialCount === 0 && report.toonMaterialCount === 0) {
     report.issues.push('没有检测到MMD常用的材质类型（MeshPhongMaterial或MeshToonMaterial）');
   }
-  
+
   // 检查渲染器配置
   if (renderer) {
     if (renderer.toneMapping === THREE.ACESFilmicToneMapping) {
       report.suggestions.push('当前使用ACESFilmic色调映射，建议尝试Linear映射以获得更接近MMD的效果');
     }
-    
+
     if (!renderer.shadowMap.enabled) {
       report.issues.push('阴影未启用');
       report.suggestions.push('启用阴影: renderer.shadowMap.enabled = true');
     }
   }
-  
+
   return report;
 }
 
@@ -130,20 +130,20 @@ export function diagnoseMaterialsMMD(
 export function printDiagnosticReport(report: MMDDiagnosticReport): void {
   console.log('🔍 MMD渲染诊断报告');
   console.log('='.repeat(60));
-  
+
   // 材质统计
   console.log('\n📊 材质统计:');
   console.log(`  总材质数: ${report.totalMaterials}`);
   console.log(`  MeshToonMaterial: ${report.toonMaterialCount}`);
   console.log(`  MeshPhongMaterial: ${report.phongMaterialCount}`);
   console.log(`  MeshStandardMaterial: ${report.standardMaterialCount}`);
-  
+
   // 纹理统计
   console.log('\n🎨 纹理统计:');
   console.log(`  有Toon纹理: ${report.materialsWithToon} / ${report.totalMaterials} ${report.materialsWithToon > 0 ? '✅' : '❌'}`);
   console.log(`  有Sphere纹理: ${report.materialsWithSphere} / ${report.totalMaterials} ${report.materialsWithSphere > 0 ? '✅' : '❌'}`);
   console.log(`  有主纹理: ${report.materialsWithMainTexture} / ${report.totalMaterials}`);
-  
+
   // 问题列表
   if (report.issues.length > 0) {
     console.log('\n⚠️ 发现的问题:');
@@ -153,7 +153,7 @@ export function printDiagnosticReport(report: MMDDiagnosticReport): void {
   } else {
     console.log('\n✅ 未发现明显问题');
   }
-  
+
   // 建议列表
   if (report.suggestions.length > 0) {
     console.log('\n💡 改进建议:');
@@ -161,9 +161,9 @@ export function printDiagnosticReport(report: MMDDiagnosticReport): void {
       console.log(`  ${i + 1}. ${suggestion}`);
     });
   }
-  
+
   console.log('\n' + '='.repeat(60));
-  
+
   // 返回可复制的修复代码
   if (report.materialsWithToon === 0) {
     console.log('\n📋 修复代码（复制到你的代码中）:');
@@ -208,10 +208,10 @@ export function inspectMaterial(material: THREE.Material): Record<string, any> {
   const info: Record<string, any> = {
     type: material.type,
     name: material.name,
-    hasMap: !!material.map,
-    hasEnvMap: !!material.envMap,
+    hasMap: !!(material as any).map,
+    hasEnvMap: !!(material as any).envMap,
   };
-  
+
   // Toon/Phong/Standard 特有属性
   if ('gradientMap' in material) {
     info.hasGradientMap = !!(material as any).gradientMap;
@@ -231,7 +231,7 @@ export function inspectMaterial(material: THREE.Material): Record<string, any> {
   if ('roughness' in material) {
     info.roughness = (material as any).roughness;
   }
-  
+
   return info;
 }
 
@@ -243,12 +243,12 @@ export function inspectMaterial(material: THREE.Material): Record<string, any> {
 export function listAllMaterials(scene: THREE.Scene): void {
   console.log('📋 材质列表');
   console.log('='.repeat(60));
-  
+
   let index = 0;
   scene.traverse((obj) => {
     if (obj instanceof THREE.Mesh || obj instanceof THREE.SkinnedMesh) {
       const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
-      
+
       materials.forEach((mat) => {
         console.log(`\n材质 #${index}:`, obj.name || 'unnamed');
         console.log(inspectMaterial(mat));
@@ -256,7 +256,7 @@ export function listAllMaterials(scene: THREE.Scene): void {
       });
     }
   });
-  
+
   console.log('\n' + '='.repeat(60));
 }
 

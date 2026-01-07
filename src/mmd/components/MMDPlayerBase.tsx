@@ -232,6 +232,9 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   const audioRef = useRef<THREE.Audio | null>(null); // 音频对象引用
   const audioListenerRef = useRef<THREE.AudioListener | null>(null); // 音频监听器引用
   const audioLoaderRef = useRef<THREE.AudioLoader>(new THREE.AudioLoader());
+  
+  // 🎵 音频系统就绪状态 - 用于解决音频加载与模型加载的竞态条件
+  const [isAudioSystemReady, setIsAudioSystemReady] = useState(false);
 
   // 🚀 解决回调函数在渲染循环中的闭包过时问题
   const latestCallbacks = useRef({ onPlay, onPause, onEnded, onTimeUpdate });
@@ -273,6 +276,11 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   useImperativeHandle(ref, () => ({
     play: () => {
       if (!isReadyRef.current) return;
+      // 🔧 防止重复调用：如果已经在播放状态，直接返回
+      if (isPlayingRef.current) {
+        console.log('[MMDPlayerBase] play() called but already playing, skipping');
+        return;
+      }
       console.log('[MMDPlayerBase] play() called, audioRef:', !!audioRef.current, 'isPlaying:', audioRef.current?.isPlaying);
       isPlayingRef.current = true;
       if (!clockRef.current.running) clockRef.current.start();
@@ -612,6 +620,9 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           afterglow: 2.0
         });
         helperRef.current = helper;
+        
+        // 🎵 标记音频系统已准备好（audioListenerRef 和 helperRef 都已设置）
+        setIsAudioSystemReady(true);
 
         // 6.1 加载模型和动作
         const loadModelPromise = new Promise<{ mesh: THREE.SkinnedMesh, animation?: THREE.AnimationClip }>((resolve, reject) => {
@@ -1227,6 +1238,8 @@ ${errorMessage}
           console.warn('[MMDPlayerBase] Error cleaning up AnimationHelper:', e);
         }
         helperRef.current = null;
+        // 🎵 重置音频系统就绪状态
+        setIsAudioSystemReady(false);
       }
 
       // 清理 AnimationClip
@@ -1443,10 +1456,22 @@ ${errorMessage}
 
   // 🎯 独立处理音频加载，支持在不重载模型的情况下切换歌曲
   useEffect(() => {
-    if (!audioListenerRef.current || !helperRef.current || !resources.audioPath) return;
+    // 🎵 等待音频系统就绪（audioListenerRef 和 helperRef 都已设置）
+    if (!isAudioSystemReady || !audioListenerRef.current || !helperRef.current || !resources.audioPath) {
+      console.log('[MMDPlayerBase] 🎵 Audio loading skipped:', {
+        isAudioSystemReady,
+        hasListener: !!audioListenerRef.current,
+        hasHelper: !!helperRef.current,
+        audioPath: resources.audioPath
+      });
+      return;
+    }
 
     const listener = audioListenerRef.current;
     const helper = helperRef.current;
+    let retryTimer: NodeJS.Timeout | null = null;
+
+    console.log('[MMDPlayerBase] 🎵 Starting audio load for:', resources.audioPath);
 
     // 1. 如果已有音频，先清理
     if (audioRef.current) {
@@ -1473,14 +1498,38 @@ ${errorMessage}
           duration: buffer.duration
         } as any);
 
+        console.log('[MMDPlayerBase] 🎵 Audio loaded, isPlayingRef:', isPlayingRef.current, 'autoPlay:', autoPlay, 'isReadyRef:', isReadyRef.current);
+
+        // 🎯 核心修复：解决音频加载竞态条件
+        // 如果当前正在播放，立即播放音频
         if (isPlayingRef.current) {
+          console.log('[MMDPlayerBase] 🎵 Playing audio immediately (isPlayingRef=true)');
           sound.play();
+        } 
+        // 如果设置了autoPlay，延迟一小段时间后检查并播放
+        // 这样可以处理音频加载完成早于 autoPlay 触发的情况
+        else if (autoPlay) {
+          console.log('[MMDPlayerBase] 🎵 Audio loaded before autoPlay triggered, waiting for play state...');
+          // 延迟150ms再次检查，给autoPlay的setTimeout(100ms)足够时间
+          retryTimer = setTimeout(() => {
+            if (isPlayingRef.current && audioRef.current && !audioRef.current.isPlaying) {
+              console.log('[MMDPlayerBase] 🎵 Playing audio after delay (autoPlay=true)');
+              audioRef.current.play();
+            }
+          }, 150);
         }
       },
       undefined,
       (err) => console.error('[MMDPlayerBase] Failed to load audio track:', err)
     );
-  }, [resources.audioPath, volume]);
+
+    // 清理函数
+    return () => {
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+      }
+    };
+  }, [resources.audioPath, volume, autoPlay, isAudioSystemReady]); // 🎵 添加 isAudioSystemReady 依赖
 
   // 监听 showAxes 变化，动态添加/移除坐标轴
   // 坐标轴动态切换

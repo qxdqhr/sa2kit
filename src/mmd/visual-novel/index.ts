@@ -6,6 +6,8 @@
 
 export * from './types';
 export * from './MMDVisualNovel';
+export * from './MMDVisualNovelWithSelector';
+export * from './ModelSelectorSettings';
 export * from './DialogueBox';
 export * from './HistoryPanel';
 export * from './LoadingOverlay';

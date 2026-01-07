@@ -45,7 +45,7 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
 
         const parser = new PMXParser();
         const parseResult = await parser.loadAndParse(modelUrl);
-        
+
         const editorInstance = new PMXEditorCore(parseResult);
         setEditor(editorInstance);
         onParsed?.(parseResult);
@@ -63,7 +63,7 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
 
   const handleExport = () => {
     if (!editor) return;
-    
+
     const data = editor.getData();
     const exporter = new PMXExporter(data);
     exporter.exportAndDownload(`${data.modelInfo.modelName || 'model'}_edited.pmx`);
@@ -75,7 +75,7 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
     textureIndex: number
   ) => {
     if (!editor) return;
-    
+
     try {
       switch (textureType) {
         case 'main':
@@ -96,10 +96,10 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
 
   const handleAddTexture = () => {
     if (!editor) return;
-    
+
     const path = prompt('请输入纹理路径:');
     if (!path) return;
-    
+
     try {
       const index = editor.addTexture(path);
       setRefresh(r => r + 1);
@@ -111,9 +111,9 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
 
   const handleDeleteTexture = (index: number) => {
     if (!editor) return;
-    
+
     if (!confirm(`确定要删除纹理 #${index} 吗？`)) return;
-    
+
     try {
       editor.deleteTexture(index);
       setRefresh(r => r + 1);
@@ -190,11 +190,10 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`py-3 px-4 font-medium transition-colors ${
-                activeTab === tab.id
+              className={`py-3 px-4 font-medium transition-colors ${activeTab === tab.id
                   ? 'border-b-2 border-blue-500 text-blue-600'
                   : 'text-gray-600 hover:text-gray-900'
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -216,15 +215,14 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
                   <div
                     key={mapping.materialIndex}
                     onClick={() => setSelectedMaterial(mapping.materialIndex)}
-                    className={`p-4 cursor-pointer hover:bg-gray-50 ${
-                      selectedMaterial === mapping.materialIndex ? 'bg-blue-50' : ''
-                    }`}
+                    className={`p-4 cursor-pointer hover:bg-gray-50 ${selectedMaterial === mapping.materialIndex ? 'bg-blue-50' : ''
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
                         className="w-10 h-10 rounded border"
                         style={{
-                          backgroundColor: `rgba(${data.materials[mapping.materialIndex].diffuse[0] * 255}, ${data.materials[mapping.materialIndex].diffuse[1] * 255}, ${data.materials[mapping.materialIndex].diffuse[2] * 255}, 1)`,
+                          backgroundColor: `rgba(${data.materials[mapping.materialIndex]?.diffuse[0]! * 255}, ${data.materials[mapping.materialIndex]?.diffuse[1]! * 255}, ${data.materials[mapping.materialIndex]?.diffuse[2]! * 255}, 1)`,
                         }}
                       />
                       <div className="flex-1">
@@ -257,7 +255,7 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
                       🖼️ 主纹理
                     </label>
                     <select
-                      value={data.materials[selectedMaterial].textureIndex}
+                      value={data.materials[selectedMaterial]!.textureIndex}
                       onChange={(e) => handleMaterialTextureChange(selectedMaterial, 'main', parseInt(e.target.value))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     >
@@ -268,9 +266,9 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
                         </option>
                       ))}
                     </select>
-                    {data.materialTextureMappings[selectedMaterial].mainTexture && (
+                    {data.materialTextureMappings[selectedMaterial]?.mainTexture && (
                       <p className="mt-1 text-xs text-gray-500">
-                        当前: {data.materialTextureMappings[selectedMaterial].mainTexture.path}
+                        当前: {data.materialTextureMappings[selectedMaterial]!.mainTexture!.path}
                       </p>
                     )}
                   </div>
@@ -281,7 +279,7 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
                       ✨ Sphere纹理
                     </label>
                     <select
-                      value={data.materials[selectedMaterial].sphereTextureIndex}
+                      value={data.materials[selectedMaterial]!.sphereTextureIndex}
                       onChange={(e) => handleMaterialTextureChange(selectedMaterial, 'sphere', parseInt(e.target.value))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     >
@@ -300,10 +298,10 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
                       🎨 Toon纹理
                     </label>
                     <select
-                      value={data.materials[selectedMaterial].toonTextureIndex}
+                      value={data.materials[selectedMaterial]!.toonTextureIndex}
                       onChange={(e) => handleMaterialTextureChange(selectedMaterial, 'toon', parseInt(e.target.value))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                      disabled={data.materials[selectedMaterial].isSharedToon}
+                      disabled={data.materials[selectedMaterial]!.isSharedToon}
                     >
                       <option value={-1}>（无）</option>
                       {data.textures.map((tex) => (
@@ -312,7 +310,7 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
                         </option>
                       ))}
                     </select>
-                    {data.materials[selectedMaterial].isSharedToon && (
+                    {data.materials[selectedMaterial]!.isSharedToon && (
                       <p className="mt-1 text-xs text-yellow-600">
                         此材质使用共享Toon纹理
                       </p>

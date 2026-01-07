@@ -59,6 +59,8 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
       showHistoryButton = true,
       showLightingDebugPanel = false,
       lightingDebugInitialParams,
+      customSettingsContent,
+      customAboutContent,
       className,
       style,
     },
@@ -570,6 +572,8 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
           settingsText={settingsText}
           aboutText={aboutText}
           onStart={handleStart}
+          customSettingsContent={customSettingsContent}
+          customAboutContent={customAboutContent}
         />
 
         {/* 对话框 - 仅在动画开始播放后显示 */}

@@ -16,6 +16,10 @@ export interface StartScreenProps {
   onStart?: () => void;
   /** 自定义类名 */
   className?: string;
+  /** 自定义设置面板内容 */
+  customSettingsContent?: React.ReactNode;
+  /** 自定义关于面板内容 */
+  customAboutContent?: React.ReactNode;
 }
 
 /**
@@ -107,6 +111,8 @@ export const StartScreen: React.FC<StartScreenProps> = ({
   aboutText = '关于作品',
   onStart,
   className = '',
+  customSettingsContent,
+  customAboutContent,
 }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -270,79 +276,91 @@ export const StartScreen: React.FC<StartScreenProps> = ({
 
       {/* 弹窗内容 */}
       <VNModal title={settingsText} show={showSettings} onClose={() => setShowSettings(false)}>
-        <div className="space-y-6 sm:space-y-8 py-2 sm:py-4">
-          <div className="space-y-3 sm:space-y-4">
-            <div className="flex justify-between items-center text-xs sm:text-sm font-bold tracking-wider sm:tracking-widest" style={{ color: '#64748b' }}>
-              <span>MUSIC VOLUME</span>
-              <span>80%</span>
+        {customSettingsContent ? (
+          <div className="py-2 sm:py-4">
+            {customSettingsContent}
+          </div>
+        ) : (
+          <div className="space-y-6 sm:space-y-8 py-2 sm:py-4">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex justify-between items-center text-xs sm:text-sm font-bold tracking-wider sm:tracking-widest" style={{ color: '#64748b' }}>
+                <span>MUSIC VOLUME</span>
+                <span>80%</span>
+              </div>
+              <div className="h-2.5 sm:h-3 rounded-full p-0.5 border" style={{ background: 'rgba(241, 245, 249, 0.5)', borderColor: 'rgba(203, 213, 225, 0.4)' }}>
+                <div className="h-full w-[80%] rounded-full" style={{ background: 'linear-gradient(to right, #22c55e, #4ade80)', boxShadow: '0 0 15px rgba(34, 197, 94, 0.5)' }} />
+              </div>
             </div>
-            <div className="h-2.5 sm:h-3 rounded-full p-0.5 border" style={{ background: 'rgba(241, 245, 249, 0.5)', borderColor: 'rgba(203, 213, 225, 0.4)' }}>
-              <div className="h-full w-[80%] rounded-full" style={{ background: 'linear-gradient(to right, #22c55e, #4ade80)', boxShadow: '0 0 15px rgba(34, 197, 94, 0.5)' }} />
+            
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex justify-between items-center text-xs sm:text-sm font-bold tracking-wider sm:tracking-widest" style={{ color: '#64748b' }}>
+                <span>TEXT SPEED</span>
+                <span>NORMAL</span>
+              </div>
+              <div className="flex gap-2 sm:gap-3">
+                {['SLOW', 'NORMAL', 'FAST'].map((s, i) => (
+                  <div 
+                    key={s} 
+                    className="flex-1 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border text-center text-[10px] sm:text-xs font-bold transition-all cursor-pointer touch-manipulation"
+                    style={i===1 ? {
+                      background: 'rgba(34, 197, 94, 0.15)',
+                      borderColor: '#22c55e',
+                      color: '#22c55e'
+                    } : {
+                      background: 'rgba(241, 245, 249, 0.5)',
+                      borderColor: 'rgba(203, 213, 225, 0.4)',
+                      color: 'rgba(100, 116, 139, 0.6)'
+                    }}
+                  >
+                    {s}
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="pt-3 sm:pt-4 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0 opacity-50 italic text-[10px] sm:text-xs border-t" style={{ borderColor: 'rgba(203, 213, 225, 0.3)' }}>
+              <span>Auto Save Enabled</span>
+              <span>Cloud Sync Active</span>
             </div>
           </div>
-          
-          <div className="space-y-3 sm:space-y-4">
-            <div className="flex justify-between items-center text-xs sm:text-sm font-bold tracking-wider sm:tracking-widest" style={{ color: '#64748b' }}>
-              <span>TEXT SPEED</span>
-              <span>NORMAL</span>
-            </div>
-            <div className="flex gap-2 sm:gap-3">
-              {['SLOW', 'NORMAL', 'FAST'].map((s, i) => (
-                <div 
-                  key={s} 
-                  className="flex-1 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border text-center text-[10px] sm:text-xs font-bold transition-all cursor-pointer touch-manipulation"
-                  style={i===1 ? {
-                    background: 'rgba(34, 197, 94, 0.15)',
-                    borderColor: '#22c55e',
-                    color: '#22c55e'
-                  } : {
-                    background: 'rgba(241, 245, 249, 0.5)',
-                    borderColor: 'rgba(203, 213, 225, 0.4)',
-                    color: 'rgba(100, 116, 139, 0.6)'
-                  }}
-                >
-                  {s}
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="pt-3 sm:pt-4 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0 opacity-50 italic text-[10px] sm:text-xs border-t" style={{ borderColor: 'rgba(203, 213, 225, 0.3)' }}>
-            <span>Auto Save Enabled</span>
-            <span>Cloud Sync Active</span>
-          </div>
-        </div>
+        )}
       </VNModal>
 
       <VNModal title={aboutText} show={showAbout} onClose={() => setShowAbout(false)}>
-        <div className="space-y-6 sm:space-y-8 py-2 sm:py-4">
-          <div className="flex items-center gap-3 sm:gap-6 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border" style={{ background: 'rgba(241, 245, 249, 0.6)', borderColor: 'rgba(203, 213, 225, 0.4)' }}>
-            <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-black text-white shadow-lg shrink-0" style={{ background: 'linear-gradient(to bottom right, #22c55e, #4ade80)' }}>
-              S2
-            </div>
-            <div>
-              <h3 className="text-lg sm:text-2xl font-black tracking-tight" style={{ color: '#22c55e' }}>{scriptName || 'Project SA2'}</h3>
-              <p className="text-[10px] sm:text-xs font-bold tracking-wider sm:tracking-widest mt-1 uppercase" style={{ color: 'rgba(100, 116, 139, 0.6)' }}>Visual Novel Experience</p>
-            </div>
+        {customAboutContent ? (
+          <div className="py-2 sm:py-4">
+            {customAboutContent}
           </div>
-          
-          <div className="space-y-3 sm:space-y-4 px-1 sm:px-2">
-            <p className="font-medium leading-relaxed text-sm sm:text-base" style={{ color: '#475569' }}>
-              采用 sa2kit 引擎构建的新一代实时 3D 视觉小说。结合了 MMD 实时渲染技术与交互式剧情分支系统，致力于打造极致的沉浸式叙事体验。
-            </p>
-          </div>
+        ) : (
+          <div className="space-y-6 sm:space-y-8 py-2 sm:py-4">
+            <div className="flex items-center gap-3 sm:gap-6 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border" style={{ background: 'rgba(241, 245, 249, 0.6)', borderColor: 'rgba(203, 213, 225, 0.4)' }}>
+              <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-black text-white shadow-lg shrink-0" style={{ background: 'linear-gradient(to bottom right, #22c55e, #4ade80)' }}>
+                S2
+              </div>
+              <div>
+                <h3 className="text-lg sm:text-2xl font-black tracking-tight" style={{ color: '#22c55e' }}>{scriptName || 'Project SA2'}</h3>
+                <p className="text-[10px] sm:text-xs font-bold tracking-wider sm:tracking-widest mt-1 uppercase" style={{ color: 'rgba(100, 116, 139, 0.6)' }}>Visual Novel Experience</p>
+              </div>
+            </div>
+            
+            <div className="space-y-3 sm:space-y-4 px-1 sm:px-2">
+              <p className="font-medium leading-relaxed text-sm sm:text-base" style={{ color: '#475569' }}>
+                采用 sa2kit 引擎构建的新一代实时 3D 视觉小说。结合了 MMD 实时渲染技术与交互式剧情分支系统，致力于打造极致的沉浸式叙事体验。
+              </p>
+            </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 pt-4 sm:pt-6 border-t" style={{ borderColor: 'rgba(203, 213, 225, 0.3)' }}>
-            <div className="flex flex-col gap-1">
-              <span className="text-[9px] sm:text-[10px] font-bold tracking-wider sm:tracking-widest" style={{ color: 'rgba(100, 116, 139, 0.5)' }}>DEVELOPER</span>
-              <span className="text-xs font-bold" style={{ color: '#64748b' }}>SA2KIT TEAM</span>
-            </div>
-            <div className="flex flex-col gap-1 text-right">
-              <span className="text-[9px] sm:text-[10px] font-bold tracking-wider sm:tracking-widest" style={{ color: 'rgba(100, 116, 139, 0.5)' }}>ENGINE</span>
-              <span className="text-xs font-bold" style={{ color: '#64748b' }}>THREE.JS / REACT</span>
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 pt-4 sm:pt-6 border-t" style={{ borderColor: 'rgba(203, 213, 225, 0.3)' }}>
+              <div className="flex flex-col gap-1">
+                <span className="text-[9px] sm:text-[10px] font-bold tracking-wider sm:tracking-widest" style={{ color: 'rgba(100, 116, 139, 0.5)' }}>DEVELOPER</span>
+                <span className="text-xs font-bold" style={{ color: '#64748b' }}>SA2KIT TEAM</span>
+              </div>
+              <div className="flex flex-col gap-1 text-right">
+                <span className="text-[9px] sm:text-[10px] font-bold tracking-wider sm:tracking-widest" style={{ color: 'rgba(100, 116, 139, 0.5)' }}>ENGINE</span>
+                <span className="text-xs font-bold" style={{ color: '#64748b' }}>THREE.JS / REACT</span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </VNModal>
 
       {/* 注入所需的关键帧动画 */}

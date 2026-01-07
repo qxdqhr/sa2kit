@@ -176,6 +176,11 @@ export interface MMDVisualNovelProps {
   /** 是否显示历史记录按钮 */
   showHistoryButton?: boolean;
   
+  /** 自定义设置面板内容 */
+  customSettingsContent?: React.ReactNode;
+  /** 自定义关于面板内容 */
+  customAboutContent?: React.ReactNode;
+  
   /** 样式 */
   className?: string;
   style?: React.CSSProperties;
@@ -246,6 +251,8 @@ export interface MMDVisualNovelRef {
   setAutoMode: (enabled: boolean) => void;
   /** 跳过当前打字动画 */
   skipTyping: () => void;
+  /** 触发视觉特效 */
+  triggerEffect?: (effect: VisualEffect) => void;
 }
 
 

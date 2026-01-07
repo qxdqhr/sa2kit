@@ -39,54 +39,54 @@ export function configureMaterialsForMMD(
     shininess = 30,
     specularColor = 0x888888,
   } = config;
-  
+
   let materialCount = 0;
   let toonMaterialCount = 0;
   let phongMaterialCount = 0;
-  
+
   mesh.traverse((obj) => {
     if (obj instanceof THREE.Mesh || obj instanceof THREE.SkinnedMesh) {
       const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
-      
+
       materials.forEach((material) => {
         materialCount++;
-        
+
         // 1. MeshToonMaterial 配置（MMD常用）
         if (material instanceof THREE.MeshToonMaterial) {
           toonMaterialCount++;
-          
+
           // 设置高光强度
           (material as any).shininess = shininess;
-          
+
           // 添加渐变贴图（5级阶梯）实现卡通风格的明暗过渡
           if (enableGradientMap && !material.gradientMap) {
             material.gradientMap = createGradientMap();
             material.needsUpdate = true;
           }
         }
-        
+
         // 2. MeshPhongMaterial 配置
         if (material instanceof THREE.MeshPhongMaterial) {
           phongMaterialCount++;
-          
+
           // 设置高光参数
           material.shininess = shininess;
           material.specular = new THREE.Color(specularColor);
         }
-        
+
         // 3. 通用材质配置
-        
+
         // 主纹理：确保使用sRGB颜色空间
         if (material.map) {
           material.map.colorSpace = THREE.SRGBColorSpace;
         }
-        
+
         // 环境贴图（Sphere texture）：设置正确的映射方式
         if (material.envMap) {
           // MMD的sphere map使用球形映射
           material.envMap.mapping = THREE.EquirectangularReflectionMapping;
         }
-        
+
         // Toon贴图（如果存在）
         if ((material as any).gradientMap) {
           const toonMap = (material as any).gradientMap;
@@ -96,7 +96,7 @@ export function configureMaterialsForMMD(
       });
     }
   });
-  
+
   console.log(`[MMD Material Config] Processed ${materialCount} materials (Toon: ${toonMaterialCount}, Phong: ${phongMaterialCount})`);
 }
 
@@ -114,7 +114,7 @@ function createGradientMap(): THREE.DataTexture {
   for (let c = 0; c < colors.length; c++) {
     colors[c] = (c / (colors.length - 1)) * 255;
   }
-  
+
   // 创建1D纹理
   const gradientMap = new THREE.DataTexture(
     colors,
@@ -122,12 +122,12 @@ function createGradientMap(): THREE.DataTexture {
     1,
     THREE.RedFormat
   );
-  
+
   // 使用最近邻过滤，确保阶梯效果清晰
   gradientMap.minFilter = THREE.NearestFilter;
   gradientMap.magFilter = THREE.NearestFilter;
   gradientMap.needsUpdate = true;
-  
+
   return gradientMap;
 }
 
@@ -158,23 +158,23 @@ export function createMMDLights(
     fillIntensity = 0.3,
     enableShadow = true,
   } = options;
-  
+
   // 1. 环境光：提供基础亮度，避免完全黑暗
   const ambientLight = new THREE.AmbientLight(0xffffff, ambientIntensity);
   scene.add(ambientLight);
-  
+
   // 2. 主光源：从左前上方照射（MMD默认方向）
   const mainLight = new THREE.DirectionalLight(0xffffff, mainIntensity);
   mainLight.position.set(-1, 1, 1);
   mainLight.position.normalize().multiplyScalar(10);
-  
+
   // 配置阴影
   if (enableShadow) {
     mainLight.castShadow = true;
     mainLight.shadow.mapSize.width = 2048;
     mainLight.shadow.mapSize.height = 2048;
     mainLight.shadow.bias = -0.0001;
-    
+
     // 配置阴影相机（正交投影）
     mainLight.shadow.camera.left = -20;
     mainLight.shadow.camera.right = 20;
@@ -183,17 +183,17 @@ export function createMMDLights(
     mainLight.shadow.camera.near = 0.1;
     mainLight.shadow.camera.far = 50;
   }
-  
+
   scene.add(mainLight);
-  
+
   // 3. 补光：从右侧照射，柔化阴影
   const fillLight = new THREE.DirectionalLight(0xffffff, fillIntensity);
   fillLight.position.set(1, 0.5, 0.5);
   fillLight.position.normalize().multiplyScalar(10);
   scene.add(fillLight);
-  
+
   console.log('[MMD Lights] Created 3-point lighting setup (ambient, main, fill)');
-  
+
   return {
     ambientLight,
     mainLight,
@@ -226,25 +226,25 @@ export function configureRendererForMMD(
     toneMappingExposure = 1.0,
     enableShadow = true,
   } = options;
-  
+
   // 色调映射：使用线性映射，避免颜色过饱和
   renderer.toneMapping = toneMapping;
   renderer.toneMappingExposure = toneMappingExposure;
-  
+
   // 颜色空间：sRGB（标准）
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  
+
   // 阴影配置
   if (enableShadow) {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 软阴影
   }
-  
+
   console.log('[MMD Renderer] Configured for MMD-style rendering');
   console.log(`  - Tone Mapping: ${toneMapping === THREE.LinearToneMapping ? 'Linear' : 'Custom'}`);
   console.log(`  - Color Space: sRGB`);
   console.log(`  - Shadow: ${enableShadow ? 'Enabled (PCF Soft)' : 'Disabled'}`);
-  
+
   return renderer;
 }
 
@@ -258,19 +258,19 @@ export function generateToonTexture(index: number): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.width = 256;
   canvas.height = 1;
-  
+
   const ctx = canvas.getContext('2d')!;
   const gradient = ctx.createLinearGradient(0, 0, 256, 0);
-  
+
   // index=1最亮, index=10最暗
   const brightness = 1 - (index - 1) / 9;
-  
+
   gradient.addColorStop(0, `rgb(${255 * brightness}, ${255 * brightness}, ${255 * brightness})`);
   gradient.addColorStop(1, `rgb(${128 * brightness}, ${128 * brightness}, ${128 * brightness})`);
-  
+
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, 256, 1);
-  
+
   return canvas;
 }
 
@@ -281,7 +281,7 @@ export function generateToonTexture(index: number): HTMLCanvasElement {
  */
 export function generateAllToonTextures(): THREE.CanvasTexture[] {
   const textures: THREE.CanvasTexture[] = [];
-  
+
   for (let i = 1; i <= 10; i++) {
     const canvas = generateToonTexture(i);
     const texture = new THREE.CanvasTexture(canvas);
@@ -289,82 +289,15 @@ export function generateAllToonTextures(): THREE.CanvasTexture[] {
     texture.magFilter = THREE.LinearFilter;
     textures.push(texture);
   }
-  
+
   console.log('[MMD Toon] Generated 10 toon textures');
-  
+
   return textures;
 }
 
-/**
- * 诊断工具：检查MMD材质配置
- * 
- * @param scene - Three.js场景
- * @returns 诊断报告
- */
-export function diagnoseMaterialsMMD(scene: THREE.Scene) {
-  const report = {
-    totalMaterials: 0,
-    toonMaterials: 0,
-    phongMaterials: 0,
-    materialsWithGradientMap: 0,
-    materialsWithToonMap: 0,
-    materialsWithEnvMap: 0,
-    materialsWithMap: 0,
-    issues: [] as string[],
-  };
-  
-  scene.traverse((obj) => {
-    if (obj instanceof THREE.Mesh || obj instanceof THREE.SkinnedMesh) {
-      const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
-      
-      materials.forEach((material) => {
-        report.totalMaterials++;
-        
-        if (material instanceof THREE.MeshToonMaterial) {
-          report.toonMaterials++;
-          
-          if (material.gradientMap) {
-            report.materialsWithGradientMap++;
-          } else {
-            report.issues.push(`Toon材质缺少gradientMap: ${obj.name || 'unnamed'}`);
-          }
-        }
-        
-        if (material instanceof THREE.MeshPhongMaterial) {
-          report.phongMaterials++;
-        }
-        
-        if ((material as any).gradientMap || (material as any).toonMap) {
-          report.materialsWithToonMap++;
-        }
-        
-        if (material.envMap) {
-          report.materialsWithEnvMap++;
-        }
-        
-        if (material.map) {
-          report.materialsWithMap++;
-        }
-      });
-    }
-  });
-  
-  console.log('[MMD Material Diagnosis]');
-  console.log(`  Total Materials: ${report.totalMaterials}`);
-  console.log(`  Toon Materials: ${report.toonMaterials}`);
-  console.log(`  Phong Materials: ${report.phongMaterials}`);
-  console.log(`  With Gradient Map: ${report.materialsWithGradientMap}`);
-  console.log(`  With Toon Map: ${report.materialsWithToonMap}`);
-  console.log(`  With Env Map: ${report.materialsWithEnvMap}`);
-  console.log(`  With Main Map: ${report.materialsWithMap}`);
-  
-  if (report.issues.length > 0) {
-    console.warn(`  Issues: ${report.issues.length}`);
-    report.issues.forEach(issue => console.warn(`    - ${issue}`));
-  }
-  
-  return report;
-}
+
+
+
 
 
 
