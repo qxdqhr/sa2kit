@@ -17,3 +17,7 @@ export * from './constants';
 
 // 导出工具函数
 export * from './utils';
+
+// 导出组件
+export { UniversalExportButton, ExportConfigEditor } from './components';
+export type { UniversalExportButtonProps, ExportConfigEditorProps } from './components';

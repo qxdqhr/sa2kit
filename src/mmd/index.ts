@@ -25,6 +25,9 @@ export type {
   MotionPreset,
   AudioPreset
 } from './ar/types';
+
+// Export AR mode enum
+export { ARMode } from './ar/types';
 export * from './fx';
 
 // Explicitly export visual novel types to ensure they are found by TS

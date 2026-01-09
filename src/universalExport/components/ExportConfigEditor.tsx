@@ -248,32 +248,32 @@ export const ExportConfigEditor: React.FC<ExportConfigEditorProps> = ({
 
   // 阻止背景滚动
   useEffect(() => {
-    if (visible) {
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.left = '0';
-      document.body.style.right = '0';
-      document.body.style.overflow = 'hidden';
-      
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          onCancel?.();
-        }
-      };
-      
-      document.addEventListener('keydown', handleKeyDown);
-      
-      return () => {
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.left = '';
-        document.body.style.right = '';
-        document.body.style.overflow = '';
-        window.scrollTo(0, scrollY);
-        document.removeEventListener('keydown', handleKeyDown);
-      };
-    }
+    if (!visible) return;
+    
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.overflow = 'hidden';
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onCancel?.();
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, scrollY);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, [visible, onCancel]);
 
   // ============= 字段管理 =============
@@ -306,9 +306,13 @@ export const ExportConfigEditor: React.FC<ExportConfigEditorProps> = ({
       const index = fields.findIndex(f => f.key === fieldKey);
       
       if (direction === 'up' && index > 0) {
-        [fields[index], fields[index - 1]] = [fields[index - 1], fields[index]];
+        const temp = fields[index - 1]!;
+        fields[index - 1] = fields[index]!;
+        fields[index] = temp;
       } else if (direction === 'down' && index < fields.length - 1) {
-        [fields[index], fields[index + 1]] = [fields[index + 1], fields[index]];
+        const temp = fields[index + 1]!;
+        fields[index + 1] = fields[index]!;
+        fields[index] = temp;
       }
       
       return {
@@ -389,9 +393,13 @@ export const ExportConfigEditor: React.FC<ExportConfigEditorProps> = ({
       const index = fields.findIndex(f => f.key === fieldKey);
       
       if (direction === 'up' && index > 0) {
-        [fields[index], fields[index - 1]] = [fields[index - 1], fields[index]];
+        const temp = fields[index - 1]!;
+        fields[index - 1] = fields[index]!;
+        fields[index] = temp;
       } else if (direction === 'down' && index < fields.length - 1) {
-        [fields[index], fields[index + 1]] = [fields[index + 1], fields[index]];
+        const temp = fields[index + 1]!;
+        fields[index + 1] = fields[index]!;
+        fields[index] = temp;
       }
       
       return {

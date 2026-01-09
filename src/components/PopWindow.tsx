@@ -59,10 +59,13 @@ export const Modal: React.FC<ModalProps> = ({
         }}
         style={width ? { maxWidth: typeof width === 'number' ? `${width}px` : width } : undefined}
       >
-        {title && (
+        {title ? (
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
           </DialogHeader>
+        ) : (
+          // 无障碍性：始终需要 DialogTitle，使用 sr-only 对视觉隐藏但对屏幕阅读器可见
+          <DialogTitle className="sr-only">弹窗</DialogTitle>
         )}
         <div className="py-4">
           {children}

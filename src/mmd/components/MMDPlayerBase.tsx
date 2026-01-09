@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, forwardRef, useImperativeHandle, useState } from 'react';
+import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import * as THREE from 'three';
-import {
-  OrbitControls,
-  MMDLoader,
-  MMDAnimationHelper,
+import { 
+  OrbitControls, 
+  MMDLoader, 
+  MMDAnimationHelper, 
   OutlineEffect,
 } from 'three-stdlib';
 
@@ -18,27 +18,26 @@ import { FXParser } from '../fx/FXParser';
 import { FXToThreeAdapter } from '../fx/FXToThreeAdapter';
 import { MultiFXAdapter } from '../fx/MultiFXAdapter';
 import type { FXEffect } from '../fx/types';
-import { configureMaterialsForMMD } from '../utils/mmd-loader-config';
 
 /**
  * 等待模型的所有材质和纹理加载完成
  * 确保渲染时不会有逐个子模型显示的效果
  */
 async function waitForMaterialsReady(
-  object: THREE.Object3D,
+  object: THREE.Object3D, 
   renderer: THREE.WebGLRenderer,
   scene: THREE.Scene,
   camera: THREE.Camera
 ): Promise<void> {
   const textures: THREE.Texture[] = [];
   let meshCount = 0;
-
+  
   // 遍历对象及其所有子对象，收集所有纹理和网格
   object.traverse((obj) => {
     if (obj instanceof THREE.Mesh || obj instanceof THREE.SkinnedMesh) {
       meshCount++;
       const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
-
+      
       materials.forEach((material) => {
         if (material instanceof THREE.Material) {
           // 收集所有可能的纹理属性
@@ -49,7 +48,7 @@ async function waitForMaterialsReady(
             // MMD 特有纹理
             'gradientMap', 'toonMap', 'sphereMap', 'matcap'
           ];
-
+          
           textureProps.forEach((prop) => {
             const texture = (material as any)[prop];
             if (texture instanceof THREE.Texture && !textures.includes(texture)) {
@@ -60,18 +59,18 @@ async function waitForMaterialsReady(
       });
     }
   });
-
+  
   // 等待所有纹理的图像数据加载完成
   const texturePromises = textures.map((texture, index) => {
     return new Promise<void>((resolve) => {
       const image = texture.image;
-
+      
       // 检查是否已经加载完成
       if (!image) {
         resolve();
         return;
       }
-
+      
       if (image instanceof HTMLImageElement) {
         if (image.complete && image.naturalWidth > 0) {
           resolve();
@@ -82,17 +81,17 @@ async function waitForMaterialsReady(
             image.removeEventListener('error', onError);
             resolve();
           };
-
+          
           const onError = (e: any) => {
             console.warn(`[MMDPlayerBase]   Texture ${index + 1}/${textures.length}: Failed to load`, e);
             image.removeEventListener('load', onLoad);
             image.removeEventListener('error', onError);
             resolve();
           };
-
+          
           image.addEventListener('load', onLoad);
           image.addEventListener('error', onError);
-
+          
           // 超时保护
           setTimeout(() => {
             image.removeEventListener('load', onLoad);
@@ -106,64 +105,65 @@ async function waitForMaterialsReady(
       }
     });
   });
-
+  
   await Promise.all(texturePromises);
-
+  
   // 强制更新所有材质的纹理需要更新标志
   textures.forEach((texture) => {
     texture.needsUpdate = true;
   });
+  
+        // 执行几次渲染循环，确保所有纹理都上传到 GPU
+        for (let i = 0; i < 3; i++) {
+          await new Promise<void>((resolve) => {
+            requestAnimationFrame(() => {
+              try {
+                // 🎯 核心修复：深度清理无效的变形目标数据，防止 Shader 编译错误 (MORPHTARGETS_COUNT undeclared)
+                object.traverse((obj) => {
+                  if ((obj as any).isMesh) {
+                    const mesh = obj as THREE.Mesh;
+                    const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+                    
+                    // 检查几何体是否真的有变形数据
+                    const hasMorphAttributes = mesh.geometry.morphAttributes && 
+                                              Object.keys(mesh.geometry.morphAttributes).length > 0;
 
-  // 执行一次渲染循环，确保所有纹理都上传到 GPU
-  // 优化：从 3 次减少到 1 次，大部分情况下这就足够了
-  await new Promise<void>((resolve) => {
-    requestAnimationFrame(() => {
-      try {
-        // 🎯 核心修复：深度清理无效的变形目标数据，防止 Shader 编译错误 (MORPHTARGETS_COUNT undeclared)
-        object.traverse((obj) => {
-          if ((obj as any).isMesh) {
-            const mesh = obj as THREE.Mesh;
-            const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+                    materials.forEach(m => {
+                      // 针对特定的没有实际变形数据的材质
+                      if (!hasMorphAttributes) {
+                        // 1. 强制材质关闭变形
+                        (m as any).morphTargets = false;
+                        
+                        // 2. 彻底移除几何体中的变形属性引用
+                        if (mesh.geometry.morphAttributes) {
+                          mesh.geometry.morphAttributes = {};
+                        }
+                        
+                        // 3. 重置 Mesh 的变形影响状态
+                        if ((mesh as any).morphTargetInfluences) {
+                          (mesh as any).morphTargetInfluences = [];
+                        }
+                        if ((mesh as any).morphTargetDictionary) {
+                          (mesh as any).morphTargetDictionary = {};
+                        }
+                        m.needsUpdate = true;
+                      }
+                    });
 
-            // 检查几何体是否真的有变形数据
-            const hasMorphAttributes = mesh.geometry.morphAttributes &&
-              Object.keys(mesh.geometry.morphAttributes).length > 0;
+                    if ((mesh as any).updateMorphTargets) {
+                      (mesh as any).updateMorphTargets();
+                    }
+                  }
+                });
 
-            materials.forEach(m => {
-              // 针对特定的没有实际变形数据的材质
-              if (!hasMorphAttributes) {
-                // 1. 强制材质关闭变形
-                (m as any).morphTargets = false;
-
-                // 2. 彻底移除几何体中的变形属性引用
-                if (mesh.geometry.morphAttributes) {
-                  mesh.geometry.morphAttributes = {};
-                }
-
-                // 3. 重置 Mesh 的变形影响状态
-                if ((mesh as any).morphTargetInfluences) {
-                  (mesh as any).morphTargetInfluences = [];
-                }
-                if ((mesh as any).morphTargetDictionary) {
-                  (mesh as any).morphTargetDictionary = {};
-                }
-                m.needsUpdate = true;
+                renderer.render(scene, camera);
+              } catch (renderError) {
+                console.warn('[MMDPlayerBase] Warmup render failed (shader error?), skipping...', renderError);
               }
+              resolve();
             });
-
-            if ((mesh as any).updateMorphTargets) {
-              (mesh as any).updateMorphTargets();
-            }
-          }
-        });
-
-        renderer.render(scene, camera);
-      } catch (renderError) {
-        console.warn('[MMDPlayerBase] Warmup render failed (shader error?), skipping...', renderError);
-      }
-      resolve();
-    });
-  });
+          });
+        }
 }
 
 export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((props, ref) => {
@@ -197,7 +197,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
 
   // 容器 Ref
   const containerRef = useRef<HTMLDivElement>(null);
-
+  
   // Three.js 对象 Refs
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -209,19 +209,12 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   const clockRef = useRef<THREE.Clock>(new THREE.Clock());
   const animationIdRef = useRef<number | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
-
-  // 🎨 光源 Refs（用于调试面板）
-  const ambientLightRef = useRef<THREE.AmbientLight | null>(null);
-  const directionalLightRef = useRef<THREE.DirectionalLight | null>(null);
-  const sideLightRef = useRef<THREE.DirectionalLight | null>(null);
-  const hemisphereLightRef = useRef<THREE.HemisphereLight | null>(null);
-  const mmdMeshRef = useRef<THREE.SkinnedMesh | null>(null);
-
+  
   // FX 相关 Refs
   const fxEffectRef = useRef<FXEffect | null>(null);
   const fxAdapterRef = useRef<FXToThreeAdapter | null>(null);
   const multiFXAdapterRef = useRef<MultiFXAdapter | null>(null); // 多FX适配器
-
+  
   // 状态 Refs
   const isReadyRef = useRef(false);
   const isPlayingRef = useRef(false);
@@ -232,16 +225,13 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   const audioRef = useRef<THREE.Audio | null>(null); // 音频对象引用
   const audioListenerRef = useRef<THREE.AudioListener | null>(null); // 音频监听器引用
   const audioLoaderRef = useRef<THREE.AudioLoader>(new THREE.AudioLoader());
-  
-  // 🎵 音频系统就绪状态 - 用于解决音频加载与模型加载的竞态条件
-  const [isAudioSystemReady, setIsAudioSystemReady] = useState(false);
 
   // 🚀 解决回调函数在渲染循环中的闭包过时问题
   const latestCallbacks = useRef({ onPlay, onPause, onEnded, onTimeUpdate });
   useEffect(() => {
     latestCallbacks.current = { onPlay, onPause, onEnded, onTimeUpdate };
   }, [onPlay, onPause, onEnded, onTimeUpdate]);
-
+  
   // 🎯 新增：物理引擎组件引用 - 用于正确清理 Ammo 对象
   // 改用数组来追踪所有创建的对象（每个模型会创建多个物理世界和刚体）
   const physicsComponentsRef = useRef<{
@@ -257,17 +247,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
     solvers: [],
     worlds: []
   });
-
-  // 🎯 新增：存储原始 Ammo 构造函数，以便在清理时恢复
-  // 防止无限递归 Monkey-patch
-  const originalAmmoMethodsRef = useRef<{
-    btDefaultCollisionConfiguration?: any;
-    btCollisionDispatcher?: any;
-    btDbvtBroadphase?: any;
-    btSequentialImpulseConstraintSolver?: any;
-    btDiscreteDynamicsWorld?: any;
-  }>({});
-
+  
   // 🕐 运行时间追踪 - 用于 OOM 错误报告
   const startTimeRef = useRef<number>(Date.now());
   const modelSwitchCountRef = useRef<number>(0);
@@ -276,21 +256,16 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
   useImperativeHandle(ref, () => ({
     play: () => {
       if (!isReadyRef.current) return;
-      // 🔧 防止重复调用：如果已经在播放状态，直接返回
-      if (isPlayingRef.current) {
-        console.log('[MMDPlayerBase] play() called but already playing, skipping');
-        return;
-      }
       console.log('[MMDPlayerBase] play() called, audioRef:', !!audioRef.current, 'isPlaying:', audioRef.current?.isPlaying);
       isPlayingRef.current = true;
       if (!clockRef.current.running) clockRef.current.start();
-
+      
       // 🎵 如果音频已加载但未播放，触发播放
       if (audioRef.current && !audioRef.current.isPlaying) {
         console.log('[MMDPlayerBase] Starting audio playback from play()');
         audioRef.current.play();
       }
-
+      
       latestCallbacks.current.onPlay?.();
     },
     pause: () => {
@@ -308,14 +283,14 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
       console.warn('Seek not fully implemented in MMDPlayerBase yet');
     },
     getCurrentTime: () => {
-      const elapsed = clockRef.current.elapsedTime;
-      const duration = durationRef.current;
-      // 如果是循环播放，返回模除后的时间
-      if (duration > 0 && loopRef.current) {
-        return elapsed % duration;
-      }
-      return elapsed;
-    },
+       const elapsed = clockRef.current.elapsedTime;
+       const duration = durationRef.current;
+       // 如果是循环播放，返回模除后的时间
+       if (duration > 0 && loopRef.current) {
+         return elapsed % duration;
+       }
+       return elapsed;
+    }, 
     getDuration: () => durationRef.current,
     isPlaying: () => isPlayingRef.current,
     snapshot: () => {
@@ -327,23 +302,23 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
     },
     resetCamera: () => {
       if (!cameraRef.current || !controlsRef.current) return;
-
+      
       const { cameraPosition, cameraTarget } = stage;
-
+      
       if (cameraPosition) {
         const pos = cameraPosition as any;
         cameraRef.current.position.set(pos.x, pos.y, pos.z);
       } else {
         cameraRef.current.position.set(0, 20, 30);
       }
-
+      
       if (cameraTarget) {
         const target = cameraTarget as any;
         controlsRef.current.target.set(target.x, target.y, target.z);
       } else {
         controlsRef.current.target.set(0, 10, 0);
       }
-
+      
       controlsRef.current.update();
       onCameraChange?.(false); // 重置后标记为非手动
     }
@@ -351,13 +326,12 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
 
   // 初始化 Effect
   useEffect(() => {
-
     if (!containerRef.current) return;
 
     const init = async () => {
       // 1. 生成当前初始化的唯一 ID
       const myId = ++initIdRef.current;
-
+      
       // 辅助函数：检查当前初始化是否已过时或组件已卸载
       const checkCancelled = () => {
         return myId !== initIdRef.current || !containerRef.current;
@@ -367,7 +341,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
       if (containerRef.current) {
         containerRef.current.innerHTML = '';
       }
-
+      
       // 3. 重置物理引擎组件引用
       physicsComponentsRef.current = {
         configs: [],
@@ -376,7 +350,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         solvers: [],
         worlds: []
       };
-
+      
       // 🕐 记录开始时间和切换计数
       if (modelSwitchCountRef.current === 0) {
         // 首次加载，记录开始时间
@@ -392,63 +366,48 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         if (stage.enablePhysics !== false && !mobileOptimization.disablePhysics) {
           await loadAmmo(stage.physicsPath);
           if (checkCancelled()) return;
-
+          
           // 🎯 关键修复：Hook MMDPhysics._createWorld 以捕获物理引擎组件
           // 这样我们可以在清理时正确销毁它们，防止 WASM 内存泄漏
           const Ammo = (window as any).Ammo;
           if (Ammo) {
-            // 🔒 1. 备份原始构造函数 (如果还没有备份)
-            // 注意：我们必须检查 current 是否为空，以防多次 init 覆盖了原始备份
-            if (!originalAmmoMethodsRef.current.btDefaultCollisionConfiguration) {
-              originalAmmoMethodsRef.current = {
-                btDefaultCollisionConfiguration: Ammo.btDefaultCollisionConfiguration,
-                btCollisionDispatcher: Ammo.btCollisionDispatcher,
-                btDbvtBroadphase: Ammo.btDbvtBroadphase,
-                btSequentialImpulseConstraintSolver: Ammo.btSequentialImpulseConstraintSolver,
-                btDiscreteDynamicsWorld: Ammo.btDiscreteDynamicsWorld
-              };
-            }
-
-            // 获取原始引用 (优先从备份中获取，确保我们使用的是"干净"的版本)
-            const originals = originalAmmoMethodsRef.current;
-
-            // ⚠️ 关键修改：使用数组来保存所有对象
+            // 保存原始的 Ammo 构造函数，以便在 _createWorld 中使用
+            const originalBtDefaultCollisionConfiguration = Ammo.btDefaultCollisionConfiguration;
+            const originalBtCollisionDispatcher = Ammo.btCollisionDispatcher;
+            const originalBtDbvtBroadphase = Ammo.btDbvtBroadphase;
+            const originalBtSequentialImpulseConstraintSolver = Ammo.btSequentialImpulseConstraintSolver;
+            const originalBtDiscreteDynamicsWorld = Ammo.btDiscreteDynamicsWorld;
+            
+            // Monkey patch Ammo 构造函数来拦截创建过程
+            // ⚠️ 关键修改：使用数组来保存所有对象，而不是只保存最后一个
             const componentsRef = physicsComponentsRef.current;
-
-            // 🔒 2. 应用 Monkey Patch
-            // 每次创建对象时，将其添加到我们的追踪数组中
-
-            Ammo.btDefaultCollisionConfiguration = function (...args: any[]) {
-              // @ts-ignore
-              const obj = new originals.btDefaultCollisionConfiguration(...args);
-              componentsRef.configs.push(obj);
+            
+            Ammo.btDefaultCollisionConfiguration = function(...args: any[]) {
+              const obj = new originalBtDefaultCollisionConfiguration(...args);
+              componentsRef.configs.push(obj);  // 🎯 添加到数组而不是覆盖
               return obj;
             };
-
-            Ammo.btCollisionDispatcher = function (...args: any[]) {
-              // @ts-ignore
-              const obj = new originals.btCollisionDispatcher(...args);
+            
+            Ammo.btCollisionDispatcher = function(...args: any[]) {
+              const obj = new originalBtCollisionDispatcher(...args);
               componentsRef.dispatchers.push(obj);
               return obj;
             };
-
-            Ammo.btDbvtBroadphase = function (...args: any[]) {
-              // @ts-ignore
-              const obj = new originals.btDbvtBroadphase(...args);
+            
+            Ammo.btDbvtBroadphase = function(...args: any[]) {
+              const obj = new originalBtDbvtBroadphase(...args);
               componentsRef.caches.push(obj);
               return obj;
             };
-
-            Ammo.btSequentialImpulseConstraintSolver = function (...args: any[]) {
-              // @ts-ignore
-              const obj = new originals.btSequentialImpulseConstraintSolver(...args);
+            
+            Ammo.btSequentialImpulseConstraintSolver = function(...args: any[]) {
+              const obj = new originalBtSequentialImpulseConstraintSolver(...args);
               componentsRef.solvers.push(obj);
               return obj;
             };
-
-            Ammo.btDiscreteDynamicsWorld = function (...args: any[]) {
-              // @ts-ignore
-              const obj = new originals.btDiscreteDynamicsWorld(...args);
+            
+            Ammo.btDiscreteDynamicsWorld = function(...args: any[]) {
+              const obj = new originalBtDiscreteDynamicsWorld(...args);
               componentsRef.worlds.push(obj);
               return obj;
             };
@@ -460,7 +419,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         const width = container.clientWidth || 300;
         const height = container.clientHeight || 150;
 
-        // 创建场景
+        // Scene
         const scene = new THREE.Scene();
         if (stage.backgroundColor && stage.backgroundColor !== 'transparent') {
           scene.background = new THREE.Color(stage.backgroundColor);
@@ -475,103 +434,174 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         // Camera
         const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 2000);
         if (stage.cameraPosition) {
-          const pos = stage.cameraPosition as any;
-          camera.position.set(pos.x, pos.y, pos.z);
+           const pos = stage.cameraPosition as any;
+           camera.position.set(pos.x, pos.y, pos.z);
         } else {
-          camera.position.set(0, 20, 30);
+           camera.position.set(0, 20, 30);
         }
         cameraRef.current = camera;
 
+        // 音频监听器
+        const listener = new THREE.AudioListener();
+        camera.add(listener);
+        audioListenerRef.current = listener;
+
         // Renderer
-        const renderer = new THREE.WebGLRenderer({
-          antialias: !mobileOptimization.enabled,
-          alpha: true,
-          preserveDrawingBuffer: true
+        const renderer = new THREE.WebGLRenderer({ 
+          antialias: !mobileOptimization.enabled, 
+          alpha: true, 
+          preserveDrawingBuffer: true 
         });
         renderer.setSize(width, height);
         // 使用更高的像素比例以获得更清晰的渲染效果
-        const pixelRatio = mobileOptimization.enabled
+        const pixelRatio = mobileOptimization.enabled 
           ? (mobileOptimization.pixelRatio || Math.min(window.devicePixelRatio, 2))
           : window.devicePixelRatio;
         renderer.setPixelRatio(pixelRatio);
-
-        // 🎨 渲染器色调映射和颜色空间设置（使用 NoToneMapping 保持原始颜色）
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        renderer.toneMapping = THREE.NoToneMapping;  // 使用 NoToneMapping 保持原始颜色
-        renderer.toneMappingExposure = 1.4;
-        renderer.outputColorSpace = THREE.SRGBColorSpace;
-
+        
+        // 默认色调映射（FX文件可以覆盖此设置）
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        
+        // 5. 关键检查点：在操作 DOM 之前再次检查
         if (checkCancelled()) {
-          renderer.dispose();
-          return;
+            renderer.dispose();
+            return;
         }
-
+        
         // 再次确保容器为空，防止并行执行导致的残留
         container.innerHTML = '';
-
+        
         // 强制 Canvas 样式 - 确保 canvas 在最底层
         renderer.domElement.style.display = 'block';
         renderer.domElement.style.width = '100%';
         renderer.domElement.style.height = '100%';
         renderer.domElement.style.outline = 'none';
         renderer.domElement.style.position = 'relative';
-
+        
+        // Shadow
+        if (stage.enableShadow !== false && !mobileOptimization.reduceShadowQuality) {
+          renderer.shadowMap.enabled = true;
+          renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        }
+        
         container.appendChild(renderer.domElement);
         rendererRef.current = renderer;
 
-        // 音频监听器
-        const listener = new THREE.AudioListener();
-        camera.add(listener);
-        audioListenerRef.current = listener;
-        // 🎯 注释掉 OutlineEffect（简化渲染，与 demo 保持一致）
+        // 🎯 初始化渲染特效
+        // Outline Effect
         const effect = new OutlineEffect(renderer, {
           defaultThickness: outlineOptions.thickness ?? 0.003,
           defaultColor: new THREE.Color(outlineOptions.color ?? '#000000').toArray(),
           defaultAlpha: 1,
           defaultKeepAlive: true
-        });
+        }        );
         outlineEffectRef.current = effect;
 
-        // 环境光
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
+        // 🎯 1. 先创建光源（FX配置可能需要更新它们）
+        const ambientLight = new THREE.AmbientLight(0xffffff, stage.ambientLightIntensity ?? 0.5);
         scene.add(ambientLight);
 
-        // 主方向光
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(5, 10, 5);
-        directionalLight.castShadow = true;
-        directionalLight.shadow.mapSize.width = 2048;
-        directionalLight.shadow.mapSize.height = 2048;
-        directionalLight.shadow.camera.left = -15;
-        directionalLight.shadow.camera.right = 15;
-        directionalLight.shadow.camera.top = 15;
-        directionalLight.shadow.camera.bottom = -15;
-        directionalLight.shadow.camera.near = 0.5;
-        directionalLight.shadow.camera.far = 50;
-        directionalLight.shadow.bias = -0.0001;
-        scene.add(directionalLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, stage.directionalLightIntensity ?? 0.8);
+        dirLight.position.set(0, 10, 0);
+        if (stage.enableShadow !== false) {
+          dirLight.castShadow = true;
+          dirLight.shadow.mapSize.width = mobileOptimization.enabled ? 1024 : 2048;
+          dirLight.shadow.mapSize.height = mobileOptimization.enabled ? 1024 : 2048;
+          dirLight.shadow.bias = -0.0001;
+        }
+        scene.add(dirLight);
 
-        // 侧面补光
-        const sideLight = new THREE.DirectionalLight(0xffffff, 0.5);
-        sideLight.position.set(-3, 8, 8);
-        scene.add(sideLight);
+        // 🎨 2. 加载并解析FX文件（在光源创建后，可以更新光源配置）
+        if (fxConfigs && fxConfigs.length > 0) {
+          // 多FX模式：支持同时加载多个.fx和.x文件
+          try {
+            console.log('[MMDPlayerBase] Loading multiple FX files:', fxConfigs.length);
+            const multiFX = new MultiFXAdapter({
+              mergeStrategy: 'override',
+              autoLoadTextures: true,
+            });
+            
+            // 批量加载所有FX文件
+            await multiFX.addMultipleFX(fxConfigs);
+            multiFXAdapterRef.current = multiFX;
+            
+            // 打印配置（调试）
+            multiFX.printConfig();
+            
+            // 应用到场景（更新已有光照、阴影等）
+            multiFX.applyToScene(scene, renderer);
+            
+            console.log('[MMDPlayerBase] Multiple FX files loaded successfully');
+          } catch (error) {
+            console.error('[MMDPlayerBase] Failed to load multiple FX files:', error);
+            // FX加载失败不影响基础渲染
+          }
+        } else if (fxPath) {
+          // 单FX模式：兼容旧API
+          try {
+            console.log('[MMDPlayerBase] Loading single FX file:', fxPath);
+            const parser = new FXParser();
+            const fxEffect = await parser.loadAndParse(fxPath);
+            fxEffectRef.current = fxEffect;
+            
+            // 创建FX适配器
+            const fxAdapter = new FXToThreeAdapter(fxEffect, fxTexturePath || '');
+            fxAdapterRef.current = fxAdapter;
+            
+            // 加载FX纹理
+            console.log('[MMDPlayerBase] Loading FX textures...');
+            await fxAdapter.loadTextures();
+            
+            // 🎯 只应用渲染器配置，不添加新光源（因为已经创建了）
+            console.log('[MMDPlayerBase] Applying FX render config (renderer only)...');
+            const renderConfig = fxAdapter.extractRenderConfig();
+            
+            // 应用色调映射
+            if (renderConfig.toneMapping !== undefined) {
+              renderer.toneMapping = renderConfig.toneMapping;
+              console.log('[MMDPlayerBase] Applied toneMapping from FX:', renderConfig.toneMapping === THREE.NoToneMapping ? 'NoToneMapping' : 'ACESFilmicToneMapping');
+            }
+            if (renderConfig.toneMappingExposure !== undefined) {
+              renderer.toneMappingExposure = renderConfig.toneMappingExposure;
+            }
+            
+            // 应用阴影配置
+            if (renderConfig.enableShadow !== undefined) {
+              renderer.shadowMap.enabled = renderConfig.enableShadow;
+              if (renderConfig.enableShadow) {
+                renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+              }
+            }
+            
+            // 🎯 更新已有光源的强度（如果FX有配置）
+            if (renderConfig.ambientLightIntensity !== undefined) {
+              ambientLight.intensity = renderConfig.ambientLightIntensity;
+              console.log('[MMDPlayerBase] Updated ambient light from FX:', renderConfig.ambientLightIntensity);
+            }
+            if (renderConfig.directionalLightIntensity !== undefined) {
+              dirLight.intensity = renderConfig.directionalLightIntensity;
+              console.log('[MMDPlayerBase] Updated directional light from FX:', renderConfig.directionalLightIntensity);
+            }
+            if (renderConfig.lightDirection) {
+              dirLight.position.copy(renderConfig.lightDirection).multiplyScalar(10);
+            }
+            
+            console.log('[MMDPlayerBase] FX file loaded successfully');
+          } catch (error) {
+            console.error('[MMDPlayerBase] Failed to load FX file:', error);
+            // FX加载失败不影响基础渲染
+          }
+        }
 
-        // 半球光
-        const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xaaaaaa, 0.6);
-        scene.add(hemisphereLight);
-
-        // Controls（与 demo 保持一致的配置）
+        // Controls
         const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.minDistance = 5;  // 与 demo 一致
-        controls.maxDistance = 50;  // 与 demo 一致
+        controls.minDistance = 10;
+        controls.maxDistance = 100;
         if (stage.cameraTarget) {
           const target = stage.cameraTarget as any;
           controls.target.set(target.x, target.y, target.z);
         } else {
-          controls.target.set(0, 10, 0);  // 与 demo 一致
+          controls.target.set(0, 10, 0);
         }
         controls.update();
 
@@ -594,22 +624,22 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           if (!containerRef.current || !cameraRef.current || !rendererRef.current) return;
           const w = containerRef.current.clientWidth;
           const h = containerRef.current.clientHeight;
-
+          
           if (w === 0 || h === 0) return;
 
           cameraRef.current.aspect = w / h;
           cameraRef.current.updateProjectionMatrix();
-
+          
           rendererRef.current.setSize(w, h);
         };
-
+        
         const resizeObserver = new ResizeObserver(onResize);
         resizeObserver.observe(container);
         resizeObserverRef.current = resizeObserver;
-
+        
         // 立即执行一次 Resize
         onResize();
-
+        
         // 🎯 提前启动渲染循环（但不播放动画）
         // 这样可以在加载过程中显示场景，但动画要等完全准备好才开始
         animate();
@@ -620,9 +650,6 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           afterglow: 2.0
         });
         helperRef.current = helper;
-        
-        // 🎵 标记音频系统已准备好（audioListenerRef 和 helperRef 都已设置）
-        setIsAudioSystemReady(true);
 
         // 6.1 加载模型和动作
         const loadModelPromise = new Promise<{ mesh: THREE.SkinnedMesh, animation?: THREE.AnimationClip }>((resolve, reject) => {
@@ -659,73 +686,183 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         });
 
         const { mesh, animation } = await loadModelPromise;
-        //关键修改:加载好mmd mesh 后直接设置属性并优化材质,可以解决光照过强的问题
-        // 设置模型基础属性（与 demo 一致）
-        mesh.castShadow = true;      // 模型投射阴影
-        mesh.receiveShadow = stage.modelReceiveShadow ?? true;  // 模型接收阴影（默认 true，与 demo 一致）
-
-        // 🎨 应用MMD材质优化（添加渐变贴图等）
-        configureMaterialsForMMD(mesh, {
-          enableGradientMap: true,
-          shininess: 50,
-          specularColor: 0x888888,
-        });
-
+        
         // 关键检查点：资源加载耗时较长，再次检查是否已失效
         if (checkCancelled()) return;
-
-        // 保存模型引用供调试面板使用
-        mmdMeshRef.current = mesh;
-
+        
         // 保存动画时长
         if (animation) {
           animationClipRef.current = animation;
           durationRef.current = animation.duration;
         }
 
+        // 设置模型基础属性
+        mesh.castShadow = true;      // 保留：模型投射阴影到地面
+        mesh.receiveShadow = false;  // 🎯 优化：模型不接收阴影（避免头发、腿部等自阴影）
+        
+        // 🎯 关键优化：先等待所有材质和纹理加载完成，再添加到场景
+        // 这样可以避免用户看到"逐个子模型显示"的过程
+        
         // 创建一个临时场景来等待纹理加载（不影响主场景）
         const tempScene = new THREE.Scene();
         tempScene.add(mesh);
         await waitForMaterialsReady(mesh, renderer, tempScene, camera);
-
+        
         if (checkCancelled()) return;
-
+        
         // 从临时场景移除
         tempScene.remove(mesh);
 
+        // 计算模型边界并自动聚焦
+        const box = new THREE.Box3().setFromObject(mesh);
+        if (!box.isEmpty()) {
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+
+            if (!stage.cameraTarget) {
+                // 对于人形模型，聚焦在胸部/头部之间的位置（center.y + 30-40% 高度）
+                controls.target.set(center.x, center.y + size.y * 0.35, center.z);
+                
+                if (!stage.cameraPosition) {
+                    // MMD 模型通常正面朝向 -Z 轴，相机应该在 +Z 方向
+                    // 距离基于模型尺寸，确保能看到全身
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    const dist = maxDim * 2.0; // 增加距离系数
+                    
+                    // 相机位置：在模型前方（+Z），稍微抬高（俯视角度）
+                    camera.position.set(
+                        center.x,                    // X: 水平对齐
+                        center.y + size.y * 0.6,     // Y: 稍高于模型中心（眼睛平视或略俯视）
+                        center.z + dist              // Z: 在模型正前方（+Z 方向）
+                    );
+                }
+                controls.update();
+            }
+        }
+        
         // 🎯 现在所有纹理都已加载完成，添加到场景和 helper
         const enablePhysics = stage.enablePhysics !== false && !mobileOptimization.disablePhysics;
-        scene.add(mesh);
+        
+        // 🎯 应用描边设置到模型材质
+        // MMD 模型通常在材质的 userData.outlineParameters 中带有来自 PMX 的描边参数
+        // 我们需要覆盖它们以使 props.outlineOptions 生效
+        console.log('[MMDPlayerBase] 🎨 Traversing model mesh to apply FX and outline, multiFX:', !!multiFXAdapterRef.current, 'singleFX:', !!fxAdapterRef.current);
+        let materialCount = 0;
+        mesh.traverse((obj) => {
+          if (obj instanceof THREE.Mesh || obj instanceof THREE.SkinnedMesh) {
+            const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+            materialCount += materials.length;
+            materials.forEach((m) => {
+              if (!m.userData) m.userData = {};
+              if (!m.userData.outlineParameters) {
+                m.userData.outlineParameters = {
+                  thickness: outlineOptions.thickness ?? 0.003,
+                  color: new THREE.Color(outlineOptions.color ?? '#000000').toArray(),
+                  alpha: 1,
+                  visible: true,
+                  keepAlive: true
+                };
+              } else {
+                // 覆盖来自模型的默认值
+                if (outlineOptions.thickness !== undefined) {
+                  m.userData.outlineParameters.thickness = outlineOptions.thickness;
+                }
+                if (outlineOptions.color !== undefined) {
+                  m.userData.outlineParameters.color = new THREE.Color(outlineOptions.color).toArray();
+                }
+              }
+
+              // 🎨 应用FX材质配置（如果有）
+              // 支持MeshPhongMaterial和MeshToonMaterial（MMD常用）
+              if (m instanceof THREE.MeshPhongMaterial || m instanceof THREE.MeshToonMaterial) {
+                console.log('[MMDPlayerBase] 🎨 Applying FX to model material (type:', m.type, '), multiFX:', !!multiFXAdapterRef.current, 'singleFX:', !!fxAdapterRef.current);
+                // 优先使用多FX适配器
+                if (multiFXAdapterRef.current) {
+                  console.log('[MMDPlayerBase] Using MultiFXAdapter');
+                  multiFXAdapterRef.current.applyToMaterial(m, 'model');
+                } else if (fxAdapterRef.current) {
+                  console.log('[MMDPlayerBase] Using single FXAdapter');
+                  // 回退到单FX适配器
+                  const materialConfig = fxAdapterRef.current.extractMaterialConfig();
+                  
+                  // 🔍 调试：打印提取的配置
+                  console.log('[MMDPlayerBase] Extracted material config:');
+                  console.log('  - color:', materialConfig.color);
+                  console.log('  - emissive:', materialConfig.emissive);
+                  console.log('  - specular:', materialConfig.specular);
+                  console.log('  - shininess:', materialConfig.shininess);
+                  
+                  // 🎯 应用颜色（跳过纯黑色，避免覆盖原有材质）
+                  if (materialConfig.color) {
+                    const isBlack = materialConfig.color.r === 0 && materialConfig.color.g === 0 && materialConfig.color.b === 0;
+                    if (!isBlack) {
+                      m.color.copy(materialConfig.color);
+                      console.log('[MMDPlayerBase] Applied color:', materialConfig.color);
+                    } else {
+                      console.log('[MMDPlayerBase] Skipping black color (0,0,0) to preserve original material');
+                    }
+                  }
+                  
+                  // 🎯 应用发光颜色（跳过纯黑色）
+                  if (materialConfig.emissive) {
+                    const isBlack = materialConfig.emissive.r === 0 && materialConfig.emissive.g === 0 && materialConfig.emissive.b === 0;
+                    if (!isBlack) {
+                      m.emissive.copy(materialConfig.emissive);
+                      console.log('[MMDPlayerBase] Applied emissive:', materialConfig.emissive);
+                    }
+                  }
+                  
+                  // 应用高光
+                  if (materialConfig.specular && (m as any).specular) {
+                    (m as any).specular.copy(materialConfig.specular);
+                    console.log('[MMDPlayerBase] Applied specular:', materialConfig.specular);
+                  }
+                  
+                  // 应用光泽度
+                  if (materialConfig.shininess !== undefined && (m as any).shininess !== undefined) {
+                    console.log('[MMDPlayerBase] Applying shininess:', materialConfig.shininess);
+                    (m as any).shininess = materialConfig.shininess;
+                  }
+                }
+              } else {
+                console.log('[MMDPlayerBase] Material type not supported for FX:', m.type);
+              }
+            });
+          }
+        });
+        console.log('[MMDPlayerBase] 🎨 Model traverse complete, processed materials:', materialCount);
+
         helper.add(mesh, {
           animation: animation,
           physics: enablePhysics
         });
 
+        scene.add(mesh);
 
         // 🎯 自动降级系统 - 针对移动设备优化
-        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-          (window.innerWidth <= 768);
-
+        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                               (window.innerWidth <= 768);
+        
         if (isMobileDevice) {
           console.log('[MMDPlayerBase] 📱 Mobile device detected, applying optimizations...');
-
+          
           // 方案 A: 使用骨骼纹理（如果支持）
           if (!renderer.capabilities.vertexTextures) {
             console.log('[MMDPlayerBase]   ⚠️ Vertex textures NOT supported');
           }
-
+          
           // 方案 B: 简化材质
           let simplifiedMaterialCount = 0;
           mesh.traverse((child) => {
             if (child instanceof THREE.Mesh || child instanceof THREE.SkinnedMesh) {
               const materials = Array.isArray(child.material) ? child.material : [child.material];
               materials.forEach((material, idx) => {
-                if (material instanceof THREE.MeshPhongMaterial ||
-                  material instanceof THREE.MeshStandardMaterial) {
+                if (material instanceof THREE.MeshPhongMaterial || 
+                    material instanceof THREE.MeshStandardMaterial) {
                   // 保存原始材质的颜色
                   const originalColor = material.color?.clone();
                   const originalMap = material.map;
-
+                  
                   // 创建简化的 MeshBasicMaterial
                   const basicMaterial = new THREE.MeshBasicMaterial({
                     color: originalColor || 0xffffff,
@@ -735,14 +872,14 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
                     side: material.side,
                     alphaTest: material.alphaTest
                   });
-
+                  
                   // 替换材质
                   if (Array.isArray(child.material)) {
                     child.material[idx] = basicMaterial;
                   } else {
                     child.material = basicMaterial;
                   }
-
+                  
                   // 清理旧材质
                   material.dispose();
                   simplifiedMaterialCount++;
@@ -750,7 +887,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
               });
             }
           });
-
+          
           // 方案 C: 限制骨骼数量（检查并警告）
           const MAX_BONES = 64;
           if (mesh.skeleton) {
@@ -779,8 +916,8 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         }
 
         // 6.5 加载舞台
-        const stagePaths = Array.isArray(resources.stageModelPath)
-          ? resources.stageModelPath
+        const stagePaths = Array.isArray(resources.stageModelPath) 
+          ? resources.stageModelPath 
           : (resources.stageModelPath ? [resources.stageModelPath] : []);
 
         for (const stagePath of stagePaths) {
@@ -798,11 +935,11 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
                 (err) => reject(err)
               );
             });
-
+            
             if (checkCancelled()) return;
-
+            
             console.log(`[MMDPlayerBase] Stage model loaded: ${stagePath}`, stageMesh);
-
+            
             // 🎯 核心修复：深度清理无效的变形目标数据，防止 Shader 编译错误
             console.log('[MMDPlayerBase] 🎨 Traversing stage mesh to apply FX, multiFX:', !!multiFXAdapterRef.current, 'singleFX:', !!fxAdapterRef.current);
             let stageMaterialCount = 0;
@@ -810,14 +947,14 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
               if (child instanceof THREE.Mesh) {
                 child.castShadow = false;     // 🎯 舞台不投射阴影
                 child.receiveShadow = true;   // 舞台接收阴影（模型投射到地面的阴影）
-
+                
                 const mesh = child as THREE.Mesh;
                 const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
                 stageMaterialCount += materials.length;
-
+                
                 materials.forEach((m, idx) => {
-                  // 对于普通舞台材质，也确保关闭没用的 morphTargets
-                  if ((m as any).morphTargets) {
+                   // 对于普通舞台材质，也确保关闭没用的 morphTargets
+                   if ((m as any).morphTargets) {
                     (m as any).morphTargets = false;
                     m.needsUpdate = true;
                   }
@@ -847,54 +984,54 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
                   // 支持MeshPhongMaterial和MeshToonMaterial（MMD常用）
                   if (m instanceof THREE.MeshPhongMaterial || m instanceof THREE.MeshToonMaterial) {
                     console.log('[MMDPlayerBase] 🎨 Applying FX to stage material (type:', m.type, '), multiFX:', !!multiFXAdapterRef.current, 'singleFX:', !!fxAdapterRef.current);
-                    // // 优先使用多FX适配器
-                    // if (multiFXAdapterRef.current) {
-                    //   console.log('[MMDPlayerBase] Using MultiFXAdapter for stage');
-                    //   multiFXAdapterRef.current.applyToMaterial(m, 'stage');
-                    // } else if (fxAdapterRef.current) {
-                    //   console.log('[MMDPlayerBase] Using single FXAdapter for stage');
-                    //   // 回退到单FX适配器
-                    //   const materialConfig = fxAdapterRef.current.extractMaterialConfig();
-
-                    //   // 🔍 调试：打印提取的配置
-                    //   console.log('[MMDPlayerBase] Extracted material config for stage:');
-                    //   console.log('  - color:', materialConfig.color);
-                    //   console.log('  - emissive:', materialConfig.emissive);
-                    //   console.log('  - specular:', materialConfig.specular);
-                    //   console.log('  - shininess:', materialConfig.shininess);
-
-                    //   // 🎯 应用颜色（跳过纯黑色，避免覆盖原有材质）
-                    //   if (materialConfig.color) {
-                    //     const isBlack = materialConfig.color.r === 0 && materialConfig.color.g === 0 && materialConfig.color.b === 0;
-                    //     if (!isBlack) {
-                    //       m.color.copy(materialConfig.color);
-                    //       console.log('[MMDPlayerBase] Applied color to stage:', materialConfig.color);
-                    //     } else {
-                    //       console.log('[MMDPlayerBase] Skipping black color (0,0,0) for stage to preserve original material');
-                    //     }
-                    //   }
-
-                    //   // // 🎯 应用发光颜色（跳过纯黑色）
-                    //   // if (materialConfig.emissive) {
-                    //   //   const isBlack = materialConfig.emissive.r === 0 && materialConfig.emissive.g === 0 && materialConfig.emissive.b === 0;
-                    //   //   if (!isBlack) {
-                    //   //     m.emissive.copy(materialConfig.emissive);
-                    //   //     console.log('[MMDPlayerBase] Applied emissive to stage:', materialConfig.emissive);
-                    //   //   }
-                    //   // }
-
-                    //   // // 应用高光
-                    //   // if (materialConfig.specular && (m as any).specular) {
-                    //   //   (m as any).specular.copy(materialConfig.specular);
-                    //   //   console.log('[MMDPlayerBase] Applied specular to stage:', materialConfig.specular);
-                    //   // }
-
-                    //   // // 应用光泽度
-                    //   // if (materialConfig.shininess !== undefined && (m as any).shininess !== undefined) {
-                    //   //   console.log('[MMDPlayerBase] Applying shininess to stage:', materialConfig.shininess);
-                    //   //   (m as any).shininess = materialConfig.shininess;
-                    //   // }
-                    // }
+                    // 优先使用多FX适配器
+                    if (multiFXAdapterRef.current) {
+                      console.log('[MMDPlayerBase] Using MultiFXAdapter for stage');
+                      multiFXAdapterRef.current.applyToMaterial(m, 'stage');
+                    } else if (fxAdapterRef.current) {
+                      console.log('[MMDPlayerBase] Using single FXAdapter for stage');
+                      // 回退到单FX适配器
+                      const materialConfig = fxAdapterRef.current.extractMaterialConfig();
+                      
+                      // 🔍 调试：打印提取的配置
+                      console.log('[MMDPlayerBase] Extracted material config for stage:');
+                      console.log('  - color:', materialConfig.color);
+                      console.log('  - emissive:', materialConfig.emissive);
+                      console.log('  - specular:', materialConfig.specular);
+                      console.log('  - shininess:', materialConfig.shininess);
+                      
+                      // 🎯 应用颜色（跳过纯黑色，避免覆盖原有材质）
+                      if (materialConfig.color) {
+                        const isBlack = materialConfig.color.r === 0 && materialConfig.color.g === 0 && materialConfig.color.b === 0;
+                        if (!isBlack) {
+                          m.color.copy(materialConfig.color);
+                          console.log('[MMDPlayerBase] Applied color to stage:', materialConfig.color);
+                        } else {
+                          console.log('[MMDPlayerBase] Skipping black color (0,0,0) for stage to preserve original material');
+                        }
+                      }
+                      
+                      // 🎯 应用发光颜色（跳过纯黑色）
+                      if (materialConfig.emissive) {
+                        const isBlack = materialConfig.emissive.r === 0 && materialConfig.emissive.g === 0 && materialConfig.emissive.b === 0;
+                        if (!isBlack) {
+                          m.emissive.copy(materialConfig.emissive);
+                          console.log('[MMDPlayerBase] Applied emissive to stage:', materialConfig.emissive);
+                        }
+                      }
+                      
+                      // 应用高光
+                      if (materialConfig.specular && (m as any).specular) {
+                        (m as any).specular.copy(materialConfig.specular);
+                        console.log('[MMDPlayerBase] Applied specular to stage:', materialConfig.specular);
+                      }
+                      
+                      // 应用光泽度
+                      if (materialConfig.shininess !== undefined && (m as any).shininess !== undefined) {
+                        console.log('[MMDPlayerBase] Applying shininess to stage:', materialConfig.shininess);
+                        (m as any).shininess = materialConfig.shininess;
+                      }
+                    }
                   } else {
                     console.log('[MMDPlayerBase] Stage material type not supported for FX:', m.type);
                   }
@@ -909,22 +1046,22 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
             } catch (e) {
               console.warn(`[MMDPlayerBase] Warmup error for stage ${stagePath}:`, e);
             }
-
+            
             if (checkCancelled()) return;
-
+            
             // 添加到场景
             scene.add(stageMesh);
-
+            
             // 🎯 自动调整比例和位置
             const stageBox = new THREE.Box3().setFromObject(stageMesh);
             const stageSize = stageBox.getSize(new THREE.Vector3());
-
+            
             if (stageSize.length() < 1) {
               stageMesh.scale.multiplyScalar(100);
             } else if (stageSize.y < 5) {
               stageMesh.scale.multiplyScalar(10);
             }
-
+            
             // 确保底部对齐 Y=0 (可选)
             // stageMesh.position.set(0, 0, 0);
 
@@ -940,25 +1077,25 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
         }
 
         if (checkCancelled()) return;
-
+        
         // 🎯 所有资源完全加载完成，模型已完全显示，现在可以触发回调并开始播放动画
         isReadyRef.current = true;
         onLoad?.();
-
+        
         if (autoPlay) {
           // 给一点时间让渲染系统稳定，然后开始播放动画
           setTimeout(() => {
-            if (checkCancelled()) return;
-            isPlayingRef.current = true;
-            if (!clockRef.current.running) clockRef.current.start();
-            onPlay?.();
+             if (checkCancelled()) return;
+             isPlayingRef.current = true;
+             if (!clockRef.current.running) clockRef.current.start();
+             onPlay?.();
           }, 100);
         }
 
       } catch (error) {
         if (checkCancelled()) return; // 如果是因为取消导致的 error，忽略
         console.error('MMDPlayerBase initialization failed:', error);
-
+        
         // 检测 OOM 错误并弹出警告
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (errorMessage.includes('OOM') || errorMessage.includes('out of memory')) {
@@ -967,13 +1104,13 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           const hours = Math.floor(runningTime / 3600000);
           const minutes = Math.floor((runningTime % 3600000) / 60000);
           const seconds = Math.floor((runningTime % 60000) / 1000);
-
-          const timeString = hours > 0
-            ? `${hours}小时${minutes}分${seconds}秒`
+          
+          const timeString = hours > 0 
+            ? `${hours}小时${minutes}分${seconds}秒` 
             : minutes > 0
               ? `${minutes}分${seconds}秒`
               : `${seconds}秒`;
-
+          
           alert(`⚠️ 内存溢出错误 (OOM)
 
 📊 系统运行统计：
@@ -990,7 +1127,7 @@ ${errorMessage}
 
 💡 建议：请刷新页面或联系开发者`);
         }
-
+        
         onError?.(error instanceof Error ? error : new Error(String(error)));
       }
     };
@@ -1000,25 +1137,25 @@ ${errorMessage}
     return () => {
       // 清理逻辑 - 彻底清理所有 Three.js 资源以防止内存泄漏
       console.log('[MMDPlayerBase] Cleanup started');
-
+      
       // 增加 ID，立即使当前的 init 失效（如果还在跑）
       initIdRef.current++;
-
+      
       // 停止动画循环
       if (animationIdRef.current) {
         cancelAnimationFrame(animationIdRef.current);
         animationIdRef.current = null;
       }
-
+      
       isPlayingRef.current = false;
       isReadyRef.current = false;
-
+      
       // 清理 ResizeObserver
       if (resizeObserverRef.current) {
         resizeObserverRef.current.disconnect();
         resizeObserverRef.current = null;
       }
-
+      
       // 清理音频资源
       if (audioRef.current) {
         try {
@@ -1037,34 +1174,34 @@ ${errorMessage}
           console.warn('[MMDPlayerBase] Error cleaning up audio:', e);
         }
       }
-
+      
       // 清理 AnimationHelper - 包含物理引擎清理  
       if (helperRef.current) {
         try {
           console.log('[MMDPlayerBase] Cleaning up AnimationHelper');
-
+          
           const helperObjects = (helperRef.current as any).objects;
           const meshes = (helperRef.current as any).meshes || [];
-
+          
           console.log('[MMDPlayerBase] Found meshes count:', meshes.length);
-
+          
           if (meshes && Array.isArray(meshes) && meshes.length > 0) {
             meshes.forEach((mesh: any, idx: number) => {
               // 🎯 关键修复：从 WeakMap 中获取真正的 meshData
               let meshData: any = null;
-
+              
               if (helperObjects instanceof WeakMap) {
                 meshData = helperObjects.get(mesh);
               }
-
+              
               // 如果没有从 WeakMap 获取到，使用 mesh 本身作为 fallback
               if (!meshData) {
                 meshData = mesh;
               }
-
+              
               // 清理物理系统 - 从 meshData 中获取
               const physics = meshData?.physics;
-
+              
               if (physics) {
                 try {
                   // 优先使用 MMDPhysics.dispose() 方法（three-stdlib 提供的标准清理方法）
@@ -1090,7 +1227,7 @@ ${errorMessage}
                         }
                         physics.bodies.length = 0;
                       }
-
+                      
                       // 清理约束
                       if (physics.world && Array.isArray(physics.constraints) && physics.constraints.length > 0) {
                         for (let i = physics.constraints.length - 1; i >= 0; i--) {
@@ -1105,11 +1242,11 @@ ${errorMessage}
                         }
                         physics.constraints.length = 0;
                       }
-
+                      
                       // 注意：不在这里销毁 world，因为它会在后面统一清理
                     }
                   }
-
+                  
                   // 清除引用
                   meshData.physics = null;
                 } catch (physicsError) {
@@ -1117,7 +1254,7 @@ ${errorMessage}
                   console.error('[MMDPlayerBase] Physics error stack:', (physicsError as Error).stack);
                 }
               }
-
+              
               // 清理 AnimationMixer (从 meshData 中获取)
               if (meshData?.mixer) {
                 meshData.mixer.stopAllAction();
@@ -1131,7 +1268,7 @@ ${errorMessage}
                 });
                 meshData.mixer = null;
               }
-
+              
               // 清理 audio 引用 (从 meshData 中获取)
               if (meshData?.audio) {
                 if (meshData.audio.isPlaying) {
@@ -1149,16 +1286,16 @@ ${errorMessage}
             // 清空数组
             meshes.length = 0;
           }
-
+          
           // 🎯 核心修复：使用捕获的物理引擎组件引用进行清理
           const Ammo = (window as any).Ammo;
           if (Ammo && Ammo.destroy) {
             const components = physicsComponentsRef.current;
-
+            
             // 按照正确的顺序销毁 Ammo 对象（与创建顺序相反）
             // 创建顺序：config -> dispatcher -> cache -> solver -> world
             // 销毁顺序：world -> solver -> cache -> dispatcher -> config
-
+            
             // 销毁所有 worlds
             if (components.worlds.length > 0) {
               for (let i = components.worlds.length - 1; i >= 0; i--) {
@@ -1170,7 +1307,7 @@ ${errorMessage}
               }
               components.worlds.length = 0;
             }
-
+            
             // 销毁所有 solvers
             if (components.solvers.length > 0) {
               for (let i = components.solvers.length - 1; i >= 0; i--) {
@@ -1182,7 +1319,7 @@ ${errorMessage}
               }
               components.solvers.length = 0;
             }
-
+            
             // 销毁所有 caches
             if (components.caches.length > 0) {
               for (let i = components.caches.length - 1; i >= 0; i--) {
@@ -1194,7 +1331,7 @@ ${errorMessage}
               }
               components.caches.length = 0;
             }
-
+            
             // 销毁所有 dispatchers
             if (components.dispatchers.length > 0) {
               for (let i = components.dispatchers.length - 1; i >= 0; i--) {
@@ -1206,7 +1343,7 @@ ${errorMessage}
               }
               components.dispatchers.length = 0;
             }
-
+            
             // 销毁所有 configs
             if (components.configs.length > 0) {
               for (let i = components.configs.length - 1; i >= 0; i--) {
@@ -1221,7 +1358,7 @@ ${errorMessage}
           } else {
             console.warn('[MMDPlayerBase] ⚠️ Ammo.destroy not available, skipping physics cleanup');
           }
-
+          
           // 清理 sharedPhysics 和 masterPhysics（如果存在）
           if ((helperRef.current as any).sharedPhysics) {
             (helperRef.current as any).sharedPhysics = null;
@@ -1229,7 +1366,7 @@ ${errorMessage}
           if ((helperRef.current as any).masterPhysics) {
             (helperRef.current as any).masterPhysics = null;
           }
-
+          
           // 清理 helper 自身
           if (helperRef.current.dispose) {
             helperRef.current.dispose();
@@ -1238,13 +1375,11 @@ ${errorMessage}
           console.warn('[MMDPlayerBase] Error cleaning up AnimationHelper:', e);
         }
         helperRef.current = null;
-        // 🎵 重置音频系统就绪状态
-        setIsAudioSystemReady(false);
       }
-
+      
       // 清理 AnimationClip
       animationClipRef.current = null;
-
+      
       // 清理坐标轴
       if (axesHelperRef.current) {
         if (sceneRef.current) {
@@ -1253,7 +1388,7 @@ ${errorMessage}
         axesHelperRef.current.dispose();
         axesHelperRef.current = null;
       }
-
+      
       // 清理场景中的所有对象 - 增强版
       if (sceneRef.current) {
         sceneRef.current.traverse((object) => {
@@ -1272,25 +1407,25 @@ ${errorMessage}
                 object.bindMatrixInverse = null as any;
               }
             }
-
+            
             // 清理几何体
             if (object.geometry) {
               object.geometry.dispose();
               object.geometry = null as any;
             }
-
+            
             // 清理材质和纹理
             if (object.material) {
               const disposeMaterial = (m: THREE.Material) => {
                 // 清理所有可能的纹理类型（包括 MMD 特有的）
                 const textureProps = [
-                  'map', 'lightMap', 'bumpMap', 'normalMap', 'specularMap',
+                  'map', 'lightMap', 'bumpMap', 'normalMap', 'specularMap', 
                   'envMap', 'alphaMap', 'emissiveMap', 'displacementMap',
                   'roughnessMap', 'metalnessMap', 'aoMap',
                   // MMD 特有纹理
                   'gradientMap', 'toonMap', 'sphereMap', 'matcap'
                 ];
-
+                
                 textureProps.forEach(prop => {
                   // @ts-ignore
                   if (m[prop] && m[prop].dispose) {
@@ -1300,11 +1435,11 @@ ${errorMessage}
                     m[prop] = null;
                   }
                 });
-
+                
                 // 清理材质本身
                 m.dispose();
               };
-
+              
               if (Array.isArray(object.material)) {
                 object.material.forEach(disposeMaterial);
               } else {
@@ -1313,7 +1448,7 @@ ${errorMessage}
               object.material = null as any;
             }
           }
-
+          
           // 清理 AudioListener
           if (object instanceof THREE.AudioListener) {
             try {
@@ -1326,7 +1461,7 @@ ${errorMessage}
               console.warn('[MMDPlayerBase] Error closing AudioContext:', e);
             }
           }
-
+          
           // 清理灯光的阴影贴图
           if (object instanceof THREE.Light) {
             if (object.shadow && object.shadow.map) {
@@ -1335,7 +1470,7 @@ ${errorMessage}
             }
           }
         });
-
+        
         // 清空场景
         sceneRef.current.clear();
         sceneRef.current = null;
@@ -1344,7 +1479,7 @@ ${errorMessage}
       // 清理 Controls
       if (controlsRef.current) {
         controlsRef.current.dispose();
-        controlsRef.current = null;
+      controlsRef.current = null;
       }
 
       // 清理 Renderer - 增强版
@@ -1352,7 +1487,7 @@ ${errorMessage}
         try {
           // 清理 OutlineEffect
           outlineEffectRef.current = null;
-
+          
           // 清理 FX 资源
           if (multiFXAdapterRef.current) {
             multiFXAdapterRef.current.clear();
@@ -1363,12 +1498,12 @@ ${errorMessage}
 
           // 清理所有渲染目标
           const renderer = rendererRef.current;
-
+          
           // 清理渲染列表
           if (renderer.renderLists) {
             renderer.renderLists.dispose();
           }
-
+          
           // 清理渲染器信息
           if (renderer.info && renderer.info.programs) {
             renderer.info.programs.forEach((program: any) => {
@@ -1377,7 +1512,7 @@ ${errorMessage}
               }
             });
           }
-
+          
           // 清理 WebGL 程序
           if (renderer.getContext) {
             const gl = renderer.getContext();
@@ -1388,59 +1523,43 @@ ${errorMessage}
               gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
             }
           }
-
+          
           // Dispose 渲染器
           renderer.dispose();
-
+          
           // 强制失去 WebGL 上下文
           renderer.forceContextLoss();
-
+          
           // 从 DOM 中移除 canvas
           if (containerRef.current && renderer.domElement) {
             if (containerRef.current.contains(renderer.domElement)) {
               containerRef.current.removeChild(renderer.domElement);
             }
           }
-
+          
           // 清空 canvas 引用
           if (renderer.domElement) {
             renderer.domElement.width = 1;
             renderer.domElement.height = 1;
           }
-
+          
         } catch (e) {
           console.warn('[MMDPlayerBase] Error cleaning up renderer:', e);
         }
         rendererRef.current = null;
       }
-
+      
       // 重置 Camera
       cameraRef.current = null;
-
+      
       // 重置 Clock
       clockRef.current = new THREE.Clock();
-
+      
       // 重置时长
       durationRef.current = 0;
-
+      
       console.log('[MMDPlayerBase] Cleanup completed');
-
-      // 🎯 关键修复：还原全局 Ammo 对象，防止内存泄漏和性能下降
-      const Ammo = (window as any).Ammo;
-      if (Ammo && originalAmmoMethodsRef.current.btDefaultCollisionConfiguration) {
-        console.log('[MMDPlayerBase] Restoring original Ammo methods');
-        const originals = originalAmmoMethodsRef.current;
-
-        if (originals.btDefaultCollisionConfiguration) Ammo.btDefaultCollisionConfiguration = originals.btDefaultCollisionConfiguration;
-        if (originals.btCollisionDispatcher) Ammo.btCollisionDispatcher = originals.btCollisionDispatcher;
-        if (originals.btDbvtBroadphase) Ammo.btDbvtBroadphase = originals.btDbvtBroadphase;
-        if (originals.btSequentialImpulseConstraintSolver) Ammo.btSequentialImpulseConstraintSolver = originals.btSequentialImpulseConstraintSolver;
-        if (originals.btDiscreteDynamicsWorld) Ammo.btDiscreteDynamicsWorld = originals.btDiscreteDynamicsWorld;
-
-        // 清空备份引用
-        originalAmmoMethodsRef.current = {};
-      }
-
+      
       // 提示浏览器可以进行垃圾回收（只在开发环境）
       if (typeof window !== 'undefined' && 'gc' in window) {
         try {
@@ -1451,28 +1570,16 @@ ${errorMessage}
         }
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resources.modelPath, resources.motionPath, resources.stageModelPath, stage.enablePhysics, stage.physicsPath]); // 🎯 优化：音频路径变化不再触发完整重载
 
   // 🎯 独立处理音频加载，支持在不重载模型的情况下切换歌曲
   useEffect(() => {
-    // 🎵 等待音频系统就绪（audioListenerRef 和 helperRef 都已设置）
-    if (!isAudioSystemReady || !audioListenerRef.current || !helperRef.current || !resources.audioPath) {
-      console.log('[MMDPlayerBase] 🎵 Audio loading skipped:', {
-        isAudioSystemReady,
-        hasListener: !!audioListenerRef.current,
-        hasHelper: !!helperRef.current,
-        audioPath: resources.audioPath
-      });
-      return;
-    }
+    if (!audioListenerRef.current || !helperRef.current || !resources.audioPath) return;
 
     const listener = audioListenerRef.current;
     const helper = helperRef.current;
-    let retryTimer: NodeJS.Timeout | null = null;
-
-    console.log('[MMDPlayerBase] 🎵 Starting audio load for:', resources.audioPath);
-
+    
     // 1. 如果已有音频，先清理
     if (audioRef.current) {
       const oldSound = audioRef.current;
@@ -1486,56 +1593,36 @@ ${errorMessage}
       resources.audioPath,
       (buffer) => {
         if (!audioListenerRef.current) return;
-
+        
         const sound = new THREE.Audio(listener);
         sound.setBuffer(buffer);
         sound.setLoop(loopRef.current);
         sound.setVolume(volume);
         audioRef.current = sound;
 
-        helper.add(sound, {
-          delay: 0.0,
-          duration: buffer.duration
+        helper.add(sound, { 
+          delay: 0.0, 
+          duration: buffer.duration 
         } as any);
-
-        console.log('[MMDPlayerBase] 🎵 Audio loaded, isPlayingRef:', isPlayingRef.current, 'autoPlay:', autoPlay, 'isReadyRef:', isReadyRef.current);
-
-        // 🎯 核心修复：解决音频加载竞态条件
-        // 如果当前正在播放，立即播放音频
+        
+        console.log('[MMDPlayerBase] Audio track loaded successfully, isPlaying:', isPlayingRef.current);
+        
         if (isPlayingRef.current) {
-          console.log('[MMDPlayerBase] 🎵 Playing audio immediately (isPlayingRef=true)');
+          console.log('[MMDPlayerBase] Auto-starting audio playback');
           sound.play();
-        } 
-        // 如果设置了autoPlay，延迟一小段时间后检查并播放
-        // 这样可以处理音频加载完成早于 autoPlay 触发的情况
-        else if (autoPlay) {
-          console.log('[MMDPlayerBase] 🎵 Audio loaded before autoPlay triggered, waiting for play state...');
-          // 延迟150ms再次检查，给autoPlay的setTimeout(100ms)足够时间
-          retryTimer = setTimeout(() => {
-            if (isPlayingRef.current && audioRef.current && !audioRef.current.isPlaying) {
-              console.log('[MMDPlayerBase] 🎵 Playing audio after delay (autoPlay=true)');
-              audioRef.current.play();
-            }
-          }, 150);
+        } else {
+          console.log('[MMDPlayerBase] Audio loaded but not playing (isPlayingRef.current is false)');
         }
       },
       undefined,
       (err) => console.error('[MMDPlayerBase] Failed to load audio track:', err)
     );
-
-    // 清理函数
-    return () => {
-      if (retryTimer) {
-        clearTimeout(retryTimer);
-      }
-    };
-  }, [resources.audioPath, volume, autoPlay, isAudioSystemReady]); // 🎵 添加 isAudioSystemReady 依赖
+  }, [resources.audioPath, volume]);
 
   // 监听 showAxes 变化，动态添加/移除坐标轴
-  // 坐标轴动态切换
   useEffect(() => {
     if (!sceneRef.current) return;
-
+    
     if (showAxes && !axesHelperRef.current) {
       const axesHelper = new THREE.AxesHelper(20);
       sceneRef.current.add(axesHelper);
@@ -1550,7 +1637,7 @@ ${errorMessage}
   // 监听 loop 变化，更新循环状态
   useEffect(() => {
     loopRef.current = loop;
-
+    
     // 同步更新音频的循环状态
     if (audioRef.current && audioRef.current.buffer) {
       audioRef.current.setLoop(loop);
@@ -1608,31 +1695,14 @@ ${errorMessage}
 
     // 更新灯光强度
     if (sceneRef.current) {
-      // sceneRef.current.traverse((obj) => {
-      //   if (obj instanceof THREE.AmbientLight && stage.ambientLightIntensity !== undefined) {
-      //     obj.intensity = stage.ambientLightIntensity;
-      //   }
-      //   if (obj instanceof THREE.DirectionalLight) {
-      //     if (stage.directionalLightIntensity !== undefined) {
-      //       obj.intensity = stage.directionalLightIntensity;
-      //     }
-      //     // 更新方向光位置
-      //     if (stage.directionalLightPosition) {
-      //       const pos = stage.directionalLightPosition as any;
-      //       obj.position.set(pos.x, pos.y, pos.z);
-      //     }
-      //   }
-      //   if (obj instanceof THREE.HemisphereLight && stage.hemisphereLightIntensity !== undefined) {
-      //     obj.intensity = stage.hemisphereLightIntensity;
-      //     // 更新半球光颜色
-      //     if (stage.hemisphereLightSkyColor !== undefined) {
-      //       obj.color.set(stage.hemisphereLightSkyColor as any);
-      //     }
-      //     if (stage.hemisphereLightGroundColor !== undefined) {
-      //       obj.groundColor.set(stage.hemisphereLightGroundColor as any);
-      //     }
-      //   }
-      // });
+      sceneRef.current.traverse((obj) => {
+        if (obj instanceof THREE.AmbientLight && stage.ambientLightIntensity !== undefined) {
+          obj.intensity = stage.ambientLightIntensity;
+        }
+        if (obj instanceof THREE.DirectionalLight && stage.directionalLightIntensity !== undefined) {
+          obj.intensity = stage.directionalLightIntensity;
+        }
+      });
     }
 
     // 更新相机和目标
@@ -1645,34 +1715,23 @@ ${errorMessage}
       controlsRef.current.target.set(target.x, target.y, target.z);
       controlsRef.current.update();
     }
-  }, [
-    stage.backgroundColor,
-    stage.backgroundImage,
-    stage.ambientLightIntensity,
-    stage.directionalLightIntensity,
-    stage.directionalLightPosition,
-    stage.hemisphereLightIntensity,
-    stage.hemisphereLightSkyColor,
-    stage.hemisphereLightGroundColor,
-    stage.cameraPosition,
-    stage.cameraTarget
-  ]);
+  }, [stage.backgroundColor, stage.backgroundImage, stage.ambientLightIntensity, stage.directionalLightIntensity, stage.cameraPosition, stage.cameraTarget]);
 
   // 渲染循环
   const animate = () => {
     animationIdRef.current = requestAnimationFrame(animate);
-
+    
     if (rendererRef.current && sceneRef.current && cameraRef.current) {
       if (isReadyRef.current && isPlayingRef.current && helperRef.current) {
         const delta = clockRef.current.getDelta();
         helperRef.current.update(delta);
-
+        
         // 触发时间更新回调（使用模除后的时间）
         const elapsed = clockRef.current.elapsedTime;
         const duration = durationRef.current;
         const currentTime = duration > 0 && loopRef.current ? (elapsed % duration) : elapsed;
         latestCallbacks.current.onTimeUpdate?.(currentTime);
-
+        
         // 简单的结束检测（非循环模式）
         if (!loopRef.current && duration > 0 && elapsed >= duration) {
           isPlayingRef.current = false;
@@ -1680,24 +1739,27 @@ ${errorMessage}
           latestCallbacks.current.onEnded?.();
         }
       }
-
-      // 简化渲染（与 demo 一致，不使用 OutlineEffect）
-      rendererRef.current.render(sceneRef.current, cameraRef.current);
+      
+      // 使用选定的渲染方式
+      if (renderEffect === 'outline' && outlineEffectRef.current) {
+        outlineEffectRef.current.render(sceneRef.current, cameraRef.current);
+      } else {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
     }
   };
 
-
   return (
-    <div
-      ref={containerRef}
-      className={className}
-      style={{
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden',
-        position: 'relative',
+    <div 
+      ref={containerRef} 
+      className={className} 
+      style={{ 
+        width: '100%', 
+        height: '100%', 
+        overflow: 'hidden', 
+        position: 'relative', // 恢复 relative，作为 canvas 的定位容器
         backgroundColor: stage.backgroundColor === 'transparent' ? 'transparent' : (stage.backgroundColor || '#000'),
-        ...style
+        ...style 
       }}
     />
   );
