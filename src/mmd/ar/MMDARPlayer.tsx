@@ -7,7 +7,7 @@ if (typeof window !== 'undefined') {
 import Script from 'next/script';
 
 
-import * as THREEx from './node_modules/@ar-js-org/ar.js/three.js/build/ar-threex-location-only.js'
+import * as THREEx from '@ar-js-org/ar.js/three.js/build/ar-threex-location-only.js'
 
 /**
  * ============================================================================
