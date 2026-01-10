@@ -139,7 +139,7 @@ export class FXParser {
     const fsFunc = effect.shaderFunctions.find(f => f.name === fragmentShaderName);
 
     if (!vsFunc || !fsFunc) {
-      warnings.push(`Shader functions not found: ${vertexShaderName} or ${fragmentShaderName}`);
+      warnings.push('Shader functions not found: ' + (vertexShaderName) + ' or ' + (fragmentShaderName));
       return {
         warnings,
       };
@@ -311,8 +311,8 @@ export class FXParser {
         const path = define.value.replace(/"/g, '');
 
         // 查找对应的宽度和高度定义
-        const widthDefine = defines.find(d => d.name === `${define.name}_X`);
-        const heightDefine = defines.find(d => d.name === `${define.name}_Y`);
+        const widthDefine = defines.find(d => d.name === (define.name) + '_X');
+        const heightDefine = defines.find(d => d.name === (define.name) + '_Y');
 
         textures.push({
           name: define.name,
@@ -557,7 +557,7 @@ export class FXParser {
     const func = effect.shaderFunctions.find(f => f.name === functionName);
     if (!func) return null;
 
-    return `${func.returnType} ${func.name}(${func.parameters})${func.outputSemantic ? ' : ' + func.outputSemantic : ''}\n{\n${func.body}\n}`;
+    return (func.returnType) + ' ' + (func.name) + '(' + (func.parameters) + ')' + (func.outputSemantic ? ' : ' + func.outputSemantic : '') + '\n{\n' + (func.body) + '\n}';
   }
 
   /**

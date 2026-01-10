@@ -34,7 +34,7 @@ export class CalendarImportService {
       return {
         success: false,
         importedCount: 0,
-        errors: [`读取文件失败: ${error instanceof Error ? error.message : '未知错误'}`],
+        errors: ['读取文件失败: ' + (error instanceof Error ? error.message : '未知错误')],
         events: []
       };
     }
@@ -58,7 +58,7 @@ export class CalendarImportService {
           events = this.parseCSVContent(content);
           break;
         default:
-          throw new Error(`不支持的导入格式: ${options.format}`);
+          throw new Error('不支持的导入格式: ' + (options.format));
       }
 
       // 验证事件（如果启用）
@@ -76,7 +76,7 @@ export class CalendarImportService {
       return {
         success: false,
         importedCount: 0,
-        errors: [`解析内容失败: ${error instanceof Error ? error.message : '未知错误'}`],
+        errors: ['解析内容失败: ' + (error instanceof Error ? error.message : '未知错误')],
         events: []
       };
     }
@@ -346,7 +346,7 @@ export class CalendarImportService {
         const hour = dateTime.substring(8, 10);
         const minute = dateTime.substring(10, 12);
         const second = dateTime.substring(12, 14);
-        return `${year}-${month}-${day}T${hour}:${minute}:${second}.000Z`;
+        return (year) + '-' + (month) + '-' + (day) + 'T' + (hour) + ':' + (minute) + ':' + (second) + '.000Z';
       }
     } else {
       // 只有日期的格式：20240315
@@ -355,7 +355,7 @@ export class CalendarImportService {
         const year = dateOnly.substring(0, 4);
         const month = dateOnly.substring(4, 6);
         const day = dateOnly.substring(6, 8);
-        return `${year}-${month}-${day}T00:00:00.000Z`;
+        return (year) + '-' + (month) + '-' + (day) + 'T00:00:00.000Z';
       }
     }
     

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { clsx } from 'clsx';
 
 export interface MikutapMusicTrack {
   id: string;
@@ -40,7 +41,7 @@ export default function MikutapMusicPlayer({
     if (!seconds || isNaN(seconds)) return '0:00';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return (mins) + ':' + (secs.toString().padStart(2, '0'));
   };
 
   // 播放控制
@@ -106,7 +107,7 @@ export default function MikutapMusicPlayer({
 
   return (
     <div 
-      className={`bg-gradient-to-r from-purple-900/95 to-pink-900/95 backdrop-blur-sm rounded-2xl p-4 shadow-2xl border border-purple-300/30 ${className}`}
+      className={clsx('bg-gradient-to-r from-purple-900/95 to-pink-900/95 backdrop-blur-sm rounded-2xl p-4 shadow-2xl border border-purple-300/30', className)}
       style={{ width: '200px' }}
       onClick={stopPropagation}
       onMouseDown={stopPropagation}
@@ -138,11 +139,9 @@ export default function MikutapMusicPlayer({
           onTouchEnd={stopPropagation}
           onPointerDown={stopPropagation}
           onPointerUp={stopPropagation}
-          className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all duration-300 shadow-lg hover:scale-105 ${
-            isPlaying 
+          className={clsx('w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all duration-300 shadow-lg hover:scale-105', isPlaying 
               ? 'bg-gradient-to-r from-orange-400 to-red-500 hover:from-orange-500 hover:to-red-600 text-white border-orange-300 shadow-orange-500/50' 
-              : 'bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white border-green-300 shadow-green-500/50'
-          }`}
+              : 'bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white border-green-300 shadow-green-500/50')}
           title={isPlaying ? "暂停" : "播放"}
         >
           {isPlaying ? (
@@ -170,12 +169,12 @@ export default function MikutapMusicPlayer({
         >
           <div 
             className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full transition-all duration-100 shadow-sm"
-            style={{ width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%' }}
+            style={{ width: duration > 0 ? ((currentTime / duration) * 100) + '%' : '0%' }}
           ></div>
           <div 
             className="absolute top-1/2 w-3 h-3 bg-white border-2 border-cyan-400 rounded-full transform -translate-y-1/2 cursor-grab shadow-lg"
             style={{ 
-              left: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%',
+              left: duration > 0 ? ((currentTime / duration) * 100) + '%' : '0%',
               transform: 'translateX(-50%) translateY(-50%)'
             }}
           ></div>
@@ -189,14 +188,10 @@ export default function MikutapMusicPlayer({
 
       {/* 状态指示器 */}
       <div className="flex justify-center">
-        <div className={`flex items-center gap-2 text-xs px-3 py-1 rounded-full transition-all duration-300 ${
-          isPlaying 
+        <div className={clsx('flex items-center gap-2 text-xs px-3 py-1 rounded-full transition-all duration-300', isPlaying 
             ? 'bg-orange-500/20 text-orange-200 border border-orange-400/30' 
-            : 'bg-gray-500/20 text-gray-300 border border-gray-400/30'
-        }`}>
-          <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
-            isPlaying ? 'bg-orange-400 animate-pulse' : 'bg-gray-400'
-          }`}></div>
+            : 'bg-gray-500/20 text-gray-300 border border-gray-400/30')}>
+          <div className={clsx('w-2 h-2 rounded-full transition-all duration-300', isPlaying ? 'bg-orange-400 animate-pulse' : 'bg-gray-400')}></div>
           <span>{isPlaying ? '播放中' : '已暂停'}</span>
         </div>
       </div>

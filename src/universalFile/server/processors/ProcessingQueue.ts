@@ -86,7 +86,7 @@ export class ProcessingQueue extends EventEmitter {
    */
   registerProcessor(processor: IFileProcessor): void {
     this.processors.set(processor.type, processor);
-    logger.info(`🔧 [ProcessingQueue] 注册处理器: ${processor.type}`);
+    logger.info('🔧 [ProcessingQueue] 注册处理器: ' + (processor.type));
   }
 
   /**
@@ -119,13 +119,13 @@ export class ProcessingQueue extends EventEmitter {
     // 获取对应的处理器
     const processor = this.processors.get(options.type);
     if (!processor) {
-      throw new Error(`未找到类型为 ${options.type} 的文件处理器`);
+      throw new Error('未找到类型为 ' + (options.type) + ' 的文件处理器');
     }
     task.processor = processor;
 
     this.tasks.set(taskId, task);
 
-    logger.info(`📝 [ProcessingQueue] 添加任务: ${taskId} (${inputPath})`);
+    logger.info('📝 [ProcessingQueue] 添加任务: ' + (taskId) + ' (' + (inputPath) + ')');
 
     this.emit('taskAdded', task);
 
@@ -186,17 +186,17 @@ export class ProcessingQueue extends EventEmitter {
   pauseTask(taskId: string): boolean {
     const task = this.tasks.get(taskId);
     if (!task) {
-      console.warn(`⚠️ [ProcessingQueue] 任务不存在: ${taskId}`);
+      console.warn('⚠️ [ProcessingQueue] 任务不存在: ' + (taskId));
       return false;
     }
 
     if (task.status === 'running') {
-      console.warn(`⚠️ [ProcessingQueue] 无法暂停正在运行的任务: ${taskId}`);
+      console.warn('⚠️ [ProcessingQueue] 无法暂停正在运行的任务: ' + (taskId));
       return false;
     }
 
     task.status = 'cancelled';
-    logger.info(`⏸️ [ProcessingQueue] 暂停任务: ${taskId}`);
+    logger.info('⏸️ [ProcessingQueue] 暂停任务: ' + (taskId));
 
     this.emit('taskCancelled', task);
     return true;
@@ -208,17 +208,17 @@ export class ProcessingQueue extends EventEmitter {
   cancelTask(taskId: string): boolean {
     const task = this.tasks.get(taskId);
     if (!task) {
-      console.warn(`⚠️ [ProcessingQueue] 任务不存在: ${taskId}`);
+      console.warn('⚠️ [ProcessingQueue] 任务不存在: ' + (taskId));
       return false;
     }
 
     if (task.status === 'running') {
-      console.warn(`⚠️ [ProcessingQueue] 无法取消正在运行的任务: ${taskId}`);
+      console.warn('⚠️ [ProcessingQueue] 无法取消正在运行的任务: ' + (taskId));
       return false;
     }
 
     task.status = 'cancelled';
-    logger.info(`❌ [ProcessingQueue] 取消任务: ${taskId}`);
+    logger.info('❌ [ProcessingQueue] 取消任务: ' + (taskId));
 
     this.emit('taskCancelled', task);
     return true;
@@ -294,7 +294,7 @@ export class ProcessingQueue extends EventEmitter {
     const afterCount = this.tasks.size;
     const cleanedCount = beforeCount - afterCount;
 
-    logger.info(`🧹 [ProcessingQueue] 清理完成，移除 ${cleanedCount} 个任务`);
+    logger.info('🧹 [ProcessingQueue] 清理完成，移除 ' + (cleanedCount) + ' 个任务');
     this.emit('cleanup', { cleaned: cleanedCount, remaining: afterCount });
   }
 
@@ -361,7 +361,7 @@ export class ProcessingQueue extends EventEmitter {
       return;
     }
 
-    logger.info(`🚀 [ProcessingQueue] 开始处理任务: ${task.id}`);
+    logger.info('🚀 [ProcessingQueue] 开始处理任务: ' + (task.id));
 
     // 更新任务状态
     task.status = 'running';
@@ -405,7 +405,7 @@ export class ProcessingQueue extends EventEmitter {
 
     this.runningTasks.delete(task.id);
 
-    logger.info(`✅ [ProcessingQueue] 任务完成: ${task.id}`);
+    logger.info('✅ [ProcessingQueue] 任务完成: ' + (task.id));
 
     if (task.onComplete) {
       try {
@@ -433,7 +433,7 @@ export class ProcessingQueue extends EventEmitter {
       task.status = 'pending';
       task.error = undefined;
 
-      logger.info(`🔄 [ProcessingQueue] 重试任务: ${task.id} (${task.retries}/${task.maxRetries})`);
+      logger.info('🔄 [ProcessingQueue] 重试任务: ' + (task.id) + ' (' + (task.retries) + '/' + (task.maxRetries) + ')');
 
       this.emit('taskRetried', task);
 
@@ -459,7 +459,7 @@ export class ProcessingQueue extends EventEmitter {
 
     this.runningTasks.delete(task.id);
 
-    console.error(`❌ [ProcessingQueue] 任务失败: ${task.id} - ${error}`);
+    console.error('❌ [ProcessingQueue] 任务失败: ' + (task.id) + ' - ' + (error));
 
     if (task.onError) {
       try {
@@ -479,7 +479,7 @@ export class ProcessingQueue extends EventEmitter {
    * 生成唯一任务ID
    */
   private generateTaskId(): string {
-    return `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return 'task_' + (Date.now()) + '_' + (Math.random().toString(36).substr(2, 9));
   }
 
   /**
@@ -499,7 +499,7 @@ export class ProcessingQueue extends EventEmitter {
     const results = new Map<string, ProcessingResult>();
     let completedCount = 0;
 
-    logger.info(`📦 [ProcessingQueue] 批量添加 ${tasks.length} 个任务`);
+    logger.info('📦 [ProcessingQueue] 批量添加 ' + (tasks.length) + ' 个任务');
 
     for (const taskSpec of tasks) {
       const taskId = this.addTask(taskSpec.inputPath, taskSpec.outputPath, taskSpec.options, {
@@ -550,20 +550,20 @@ export class ProcessingQueue extends EventEmitter {
 
     // 检查成功率
     if (stats.successRate < 0.8 && stats.totalTasks > 10) {
-      issues.push(`成功率过低: ${(stats.successRate * 100).toFixed(1)}%`);
+      issues.push('成功率过低: ' + ((stats.successRate * 100).toFixed(1)) + '%');
       recommendations.push('检查文件处理器配置和输入文件质量');
     }
 
     // 检查待处理任务积压
     if (stats.pendingTasks > 50) {
-      issues.push(`待处理任务积压: ${stats.pendingTasks} 个`);
+      issues.push('待处理任务积压: ' + (stats.pendingTasks) + ' 个');
       recommendations.push('考虑增加并发处理数或优化处理性能');
     }
 
     // 检查平均处理时间
     if (stats.averageProcessingTime > 60000) {
       // 超过1分钟
-      issues.push(`平均处理时间过长: ${(stats.averageProcessingTime / 1000).toFixed(1)}秒`);
+      issues.push('平均处理时间过长: ' + ((stats.averageProcessingTime / 1000).toFixed(1)) + '秒');
       recommendations.push('优化文件处理逻辑或减少处理复杂度');
     }
 

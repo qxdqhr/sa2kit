@@ -19,7 +19,7 @@ export class WebStorageAdapter implements StorageAdapter {
     try {
       return localStorage.getItem(key);
     } catch (error) {
-      console.error(`[WebStorage] Error getting item "${key}":`, error);
+      console.error('[WebStorage] Error getting item "' + (key) + '":', error);
       return null;
     }
   }
@@ -33,7 +33,7 @@ export class WebStorageAdapter implements StorageAdapter {
     try {
       localStorage.setItem(key, value);
     } catch (error) {
-      console.error(`[WebStorage] Error setting item "${key}":`, error);
+      console.error('[WebStorage] Error setting item "' + (key) + '":', error);
       throw error;
     }
   }
@@ -47,7 +47,7 @@ export class WebStorageAdapter implements StorageAdapter {
     try {
       localStorage.removeItem(key);
     } catch (error) {
-      console.error(`[WebStorage] Error removing item "${key}":`, error);
+      console.error('[WebStorage] Error removing item "' + (key) + '":', error);
       throw error;
     }
   }

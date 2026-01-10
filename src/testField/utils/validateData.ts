@@ -55,17 +55,17 @@ export function validateExperimentData(): {
   const errors: string[] = [];
   
   if (duplicateIds.length > 0) {
-    errors.push(`发现重复的ID: ${duplicateIds.join(', ')}`);
+    errors.push('发现重复的ID: ' + (duplicateIds.join(', ')));
   }
   
   if (duplicatePaths.length > 0) {
-    errors.push(`发现重复的路径: ${duplicatePaths.join(', ')}`);
+    errors.push('发现重复的路径: ' + (duplicatePaths.join(', ')));
   }
   
   // 检查必需字段
   experiments.forEach((item, index) => {
     if (!item.id || !item.title || !item.path || !item.category) {
-      errors.push(`项目 ${index + 1} 缺少必需字段`);
+      errors.push('项目 ' + (index + 1) + ' 缺少必需字段');
     }
   });
   

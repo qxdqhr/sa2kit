@@ -24,7 +24,7 @@ export function useMusic() {
 
   // 搜索歌曲
   const { data: rawData, error: searchError, isLoading: isSearching } = useSWR<MusicApiResponse<any>>(
-    searchOptions ? `/api/music/search?keyword=${encodeURIComponent(searchOptions.keyword)}&source=${searchOptions.source || DEFAULT_MUSIC_SOURCE}&limit=${searchOptions.limit || 20}&offset=${searchOptions.offset || 0}${searchOptions.miku ? '&miku=true' : ''}` : null,
+    searchOptions ? '/api/music/search?keyword=' + (encodeURIComponent(searchOptions.keyword)) + '&source=' + (searchOptions.source || DEFAULT_MUSIC_SOURCE) + '&limit=' + (searchOptions.limit || 20) + '&offset=' + (searchOptions.offset || 0) + (searchOptions.miku ? '&miku=true' : '') : null,
     fetcher
   );
 
@@ -44,7 +44,7 @@ export function useMusic() {
   // 获取播放链接
   const getSongUrl = useCallback(async (id: string, source: string = DEFAULT_MUSIC_SOURCE): Promise<string | undefined> => {
     try {
-      const res = await fetch(`/api/music/url?id=${id}&source=${source}`);
+      const res = await fetch('/api/music/url?id=' + (id) + '&source=' + (source));
       const json: MusicApiResponse<any> = await res.json();
       const adapter = ADAPTERS[source];
       console.log('json2', json.data,source,adapter);
@@ -62,7 +62,7 @@ export function useMusic() {
   // 获取歌词
   const getLyric = useCallback(async (id: string, source: string = DEFAULT_MUSIC_SOURCE): Promise<string | undefined> => {
     try {
-      const res = await fetch(`/api/music/lyric?id=${id}&source=${source}`);
+      const res = await fetch('/api/music/lyric?id=' + (id) + '&source=' + (source));
       const json: MusicApiResponse<any> = await res.json();
       const adapter = ADAPTERS[source];
       if (adapter && json.data) {

@@ -7,6 +7,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import { clsx } from 'clsx';
 import { 
   Download, 
   Settings, 
@@ -224,7 +225,7 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
         if ('message' in error && typeof error.message === 'string') {
           errorMessage = error.message;
         } else if ('code' in error && 'message' in error) {
-          errorMessage = `${error.code}: ${error.message}`;
+          errorMessage = (error.code) + ': ' + (error.message);
         }
       } else if (typeof error === 'string') {
         errorMessage = error;
@@ -305,7 +306,7 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div 
               className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
+              style={{ width: (progress) + '%' }}
             />
           </div>
         </div>
@@ -373,15 +374,15 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
   // ============= 渲染组件 =============
 
   const buttonStyle = BUTTON_STYLES[variant][size];
-  const baseClasses = `inline-flex items-center gap-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${buttonStyle}`;
+  const baseClasses = 'inline-flex items-center gap-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ' + (buttonStyle);
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={clsx('relative', className)}>
       {/* 主按钮 */}
       <button
         onClick={() => setShowDropdown(!showDropdown)}
         disabled={disabled || isExporting}
-        className={`${baseClasses} ${isExporting ? 'cursor-not-allowed' : ''}`}
+        className={clsx(baseClasses, isExporting ? 'cursor-not-allowed' : '')}
       >
         {isExporting ? (
           <Loader2 className="w-4 h-4 animate-spin" />

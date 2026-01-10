@@ -148,7 +148,7 @@ export function getNestedValue(obj: any, path: string): any {
 export function escapeCsvValue(value: string): string {
   // 如果包含逗号、引号或换行符，需要用引号包裹并转义引号
   if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-    return `"${value.replace(/"/g, '""')}"`;
+    return '"' + (value.replace(/"/g, '""')) + '"';
   }
   return value;
 }
@@ -169,7 +169,7 @@ export function escapeCsvValue(value: string): string {
 export function generateUniqueFilename(prefix: string, extension: string): string {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
   const random = Math.random().toString(36).substring(2, 8);
-  return `${prefix}_${timestamp}_${random}.${extension}`;
+  return (prefix) + '_' + (timestamp) + '_' + (random) + '.' + (extension);
 }
 
 /**

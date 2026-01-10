@@ -210,7 +210,7 @@ export class HLSLToGLSLConverter {
     // 替换类型声明
     for (const [hlslType, glslType] of Object.entries(this.typeMap)) {
       // 使用单词边界确保完整匹配
-      const regex = new RegExp(`\\b${hlslType}\\b`, 'g');
+      const regex = new RegExp('\\b' + (hlslType) + '\\b', 'g');
       code = code.replace(regex, glslType);
     }
 
@@ -222,7 +222,7 @@ export class HLSLToGLSLConverter {
    */
   private convertFunctions(code: string): string {
     for (const [hlslFunc, glslFunc] of Object.entries(this.functionMap)) {
-      const regex = new RegExp(`\\b${hlslFunc}\\b`, 'g');
+      const regex = new RegExp('\\b' + (hlslFunc) + '\\b', 'g');
       code = code.replace(regex, glslFunc);
     }
 
@@ -257,7 +257,7 @@ export class HLSLToGLSLConverter {
   private convertSemantics(code: string, shaderType: 'vertex' | 'fragment'): string {
     // 转换输入/输出语义
     for (const [hlslSemantic, glslSemantic] of Object.entries(this.semanticMap)) {
-      const regex = new RegExp(`\\b${hlslSemantic}\\b`, 'g');
+      const regex = new RegExp('\\b' + (hlslSemantic) + '\\b', 'g');
       code = code.replace(regex, glslSemantic);
     }
 
@@ -369,7 +369,7 @@ vec4 saturate(vec4 x) { return clamp(x, 0.0, 1.0); }
     const fsFunc = effect.shaderFunctions?.find((f: any) => f.name === fragmentShaderName);
 
     if (!vsFunc || !fsFunc) {
-      this.warnings.push(`Shader functions not found: ${vertexShaderName} or ${fragmentShaderName}`);
+      this.warnings.push('Shader functions not found: ' + (vertexShaderName) + ' or ' + (fragmentShaderName));
       return null;
     }
 

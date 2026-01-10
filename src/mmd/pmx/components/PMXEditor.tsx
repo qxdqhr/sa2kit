@@ -8,6 +8,7 @@ import { PMXParser } from '../parser/PMXParser';
 import { PMXEditor as PMXEditorCore } from '../editor/PMXEditor';
 import { PMXExporter } from '../editor/PMXExporter';
 import type { PMXParseResult, PMXMaterial, PMXTexture, MaterialTextureMapping } from '../types';
+import { clsx } from 'clsx';
 
 export interface PMXEditorProps {
   /** PMX模型文件URL */
@@ -66,7 +67,7 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
 
     const data = editor.getData();
     const exporter = new PMXExporter(data);
-    exporter.exportAndDownload(`${data.modelInfo.modelName || 'model'}_edited.pmx`);
+    exporter.exportAndDownload((data.modelInfo.modelName || 'model') + '_edited.pmx');
   };
 
   const handleMaterialTextureChange = (
@@ -103,7 +104,7 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
     try {
       const index = editor.addTexture(path);
       setRefresh(r => r + 1);
-      alert(`成功添加纹理 #${index}: ${path}`);
+      alert('成功添加纹理 #' + (index) + ': ' + (path));
     } catch (err) {
       alert(err instanceof Error ? err.message : '添加失败');
     }
@@ -112,7 +113,7 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
   const handleDeleteTexture = (index: number) => {
     if (!editor) return;
 
-    if (!confirm(`确定要删除纹理 #${index} 吗？`)) return;
+    if (!confirm('确定要删除纹理 #' + (index) + ' 吗？')) return;
 
     try {
       editor.deleteTexture(index);
@@ -125,7 +126,7 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
 
   if (loading) {
     return (
-      <div className={`pmx-editor loading ${className}`}>
+      <div className={clsx('pmx-editor loading', className)}>
         <div className="flex items-center justify-center p-8">
           <div className="text-center">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-500 border-r-transparent"></div>
@@ -138,7 +139,7 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
 
   if (error || !editor) {
     return (
-      <div className={`pmx-editor error ${className}`}>
+      <div className={clsx('pmx-editor error', className)}>
         <div className="rounded-lg bg-red-50 p-6 border border-red-200">
           <h3 className="text-lg font-semibold text-red-800 mb-2">❌ 加载错误</h3>
           <p className="text-red-600">{error || '未知错误'}</p>
@@ -153,7 +154,7 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
   const unusedTextures = editor.getUnusedTextures();
 
   return (
-    <div className={`pmx-editor ${className}`}>
+    <div className={clsx('pmx-editor', className)}>
       {/* 顶部工具栏 */}
       <div className="bg-white border-b border-gray-200 p-4">
         <div className="flex items-center justify-between">
@@ -190,10 +191,9 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`py-3 px-4 font-medium transition-colors ${activeTab === tab.id
+              className={clsx('py-3 px-4 font-medium transition-colors', activeTab === tab.id
                   ? 'border-b-2 border-blue-500 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
-                }`}
+                  : 'text-gray-600 hover:text-gray-900')}
             >
               {tab.label}
             </button>
@@ -215,14 +215,13 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
                   <div
                     key={mapping.materialIndex}
                     onClick={() => setSelectedMaterial(mapping.materialIndex)}
-                    className={`p-4 cursor-pointer hover:bg-gray-50 ${selectedMaterial === mapping.materialIndex ? 'bg-blue-50' : ''
-                      }`}
+                    className={clsx('p-4 cursor-pointer hover:bg-gray-50', selectedMaterial === mapping.materialIndex ? 'bg-blue-50' : '')}
                   >
                     <div className="flex items-center gap-3">
                       <div
                         className="w-10 h-10 rounded border"
                         style={{
-                          backgroundColor: `rgba(${data.materials[mapping.materialIndex]?.diffuse[0]! * 255}, ${data.materials[mapping.materialIndex]?.diffuse[1]! * 255}, ${data.materials[mapping.materialIndex]?.diffuse[2]! * 255}, 1)`,
+                          backgroundColor: 'rgba(' + (data.materials[mapping.materialIndex]?.diffuse[0]! * 255) + ', ' + (data.materials[mapping.materialIndex]?.diffuse[1]! * 255) + ', ' + (data.materials[mapping.materialIndex]?.diffuse[2]! * 255) + ', 1)',
                         }}
                       />
                       <div className="flex-1">
@@ -244,7 +243,7 @@ export const PMXEditor: React.FC<PMXEditorProps> = ({
             <div className="bg-white rounded-lg shadow">
               <div className="p-4 border-b border-gray-200">
                 <h3 className="text-lg font-semibold">
-                  {selectedMaterial !== null ? `编辑材质 #${selectedMaterial}` : '请选择材质'}
+                  {selectedMaterial !== null ? '编辑材质 #' + (selectedMaterial) : '请选择材质'}
                 </h3>
               </div>
               {selectedMaterial !== null && (

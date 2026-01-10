@@ -28,8 +28,8 @@ interface Logger {
 
 // 默认 logger（如果未提供）
 const defaultLogger: Logger = {
-  info: (message, data) => console.log(`[Analytics] ${message}`, data || ''),
-  error: (message, error) => console.error(`[Analytics] ${message}`, error),
+  info: (message, data) => console.log('[Analytics] ' + (message), data || ''),
+  error: (message, error) => console.error('[Analytics] ' + (message), error),
 };
 
 /**
@@ -144,8 +144,8 @@ export function createAnalyticsService(
         // 修复时间戳格式：添加 'Z' 后缀表示 UTC 时间
         const formattedEvents = events.map((event: any) => ({
           ...event,
-          timestamp: event.timestamp.endsWith('Z') ? event.timestamp : `${event.timestamp}Z`,
-          createdAt: event.createdAt.endsWith('Z') ? event.createdAt : `${event.createdAt}Z`,
+          timestamp: event.timestamp.endsWith('Z') ? event.timestamp : (event.timestamp) + 'Z',
+          createdAt: event.createdAt.endsWith('Z') ? event.createdAt : (event.createdAt) + 'Z',
         }));
 
         return {

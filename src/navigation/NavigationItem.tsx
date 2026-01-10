@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { NavigationItem, NavigationDirection } from './types';
+import { clsx } from 'clsx';
 
 interface NavigationItemProps {
   item: NavigationItem;
@@ -39,7 +40,7 @@ const NavigationItemComponent: React.FC<NavigationItemProps> = ({
         ? 'text-gray-700 hover:bg-purple-50 hover:text-purple-600 border border-purple-200'
         : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600';
 
-    return `${baseClasses} ${directionClasses} ${stateClasses}`;
+    return (baseClasses) + ' ' + (directionClasses) + ' ' + (stateClasses);
   };
 
   return (
@@ -58,7 +59,7 @@ const NavigationItemComponent: React.FC<NavigationItemProps> = ({
       )}
 
       {/* 标签 */}
-      <span className={`font-medium ${direction === 'vertical' ? 'text-sm' : 'text-xs'}`}>
+      <span className={clsx('font-medium', direction === 'vertical' ? 'text-sm' : 'text-xs')}>
         {item.label}
       </span>
 

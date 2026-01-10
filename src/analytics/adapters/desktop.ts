@@ -126,7 +126,7 @@ export class DesktopNetworkAdapter implements AnalyticsNetworkAdapter {
       } else {
         return {
           success: false,
-          message: `HTTP ${response.status}`,
+          message: 'HTTP ' + (response.status),
           code: response.status,
         };
       }
@@ -173,14 +173,14 @@ export class DesktopDeviceAdapter implements AnalyticsDeviceAdapter {
       if (!deviceId) {
         // Electron 中可以使用机器的唯一标识
         // 这里简化处理，实际可以通过 IPC 获取
-        deviceId = `desktop_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+        deviceId = 'desktop_' + (Date.now()) + '_' + (Math.random().toString(36).substring(2, 15));
         localStorage.setItem('analytics:device_id', deviceId);
       }
 
       return deviceId;
     }
 
-    return `desktop_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    return 'desktop_' + (Date.now()) + '_' + (Math.random().toString(36).substring(2, 15));
   }
 
   private getOSName(): string {

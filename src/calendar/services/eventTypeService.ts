@@ -99,7 +99,7 @@ export class EventTypeService {
         return this.generateRecurringEvents(eventData, viewStartDate, viewEndDate, parentEventId);
       
       default:
-        throw new Error(`不支持的事件类型: ${(eventData as any).type}`);
+        throw new Error('不支持的事件类型: ' + ((eventData as any).type));
     }
   }
 
@@ -268,7 +268,7 @@ export class EventTypeService {
         break;
         
       default:
-        throw new Error(`不支持的重复模式: ${recurrence.pattern}`);
+        throw new Error('不支持的重复模式: ' + (recurrence.pattern));
     }
     
     return nextDate;
@@ -416,7 +416,7 @@ export class EventTypeService {
         
       case EventType.MULTI_DAY:
         const dayCount = Math.ceil((eventData.endDate.getTime() - eventData.startDate.getTime()) / (24 * 60 * 60 * 1000)) + 1;
-        return `持续 ${dayCount} 天`;
+        return '持续 ' + (dayCount) + ' 天';
         
       case EventType.RECURRING:
         const { pattern, interval, count, endDate } = eventData.recurrence;
@@ -424,23 +424,23 @@ export class EventTypeService {
         
         switch (pattern) {
           case RecurrencePattern.DAILY:
-            desc = interval === 1 ? '每天' : `每 ${interval} 天`;
+            desc = interval === 1 ? '每天' : '每 ' + (interval) + ' 天';
             break;
           case RecurrencePattern.WEEKLY:
-            desc = interval === 1 ? '每周' : `每 ${interval} 周`;
+            desc = interval === 1 ? '每周' : '每 ' + (interval) + ' 周';
             break;
           case RecurrencePattern.MONTHLY:
-            desc = interval === 1 ? '每月' : `每 ${interval} 个月`;
+            desc = interval === 1 ? '每月' : '每 ' + (interval) + ' 个月';
             break;
           case RecurrencePattern.YEARLY:
-            desc = interval === 1 ? '每年' : `每 ${interval} 年`;
+            desc = interval === 1 ? '每年' : '每 ' + (interval) + ' 年';
             break;
         }
         
         if (count) {
-          desc += `，共 ${count} 次`;
+          desc += '，共 ' + (count) + ' 次';
         } else if (endDate) {
-          desc += `，直到 ${endDate.toLocaleDateString('zh-CN')}`;
+          desc += '，直到 ' + (endDate.toLocaleDateString('zh-CN'));
         }
         
         return desc;

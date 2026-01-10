@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { clsx } from 'clsx';
 
 interface FormData {
   name: string;
@@ -108,11 +109,9 @@ const Contact: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white 
-                  ${isSubmitting 
+                className={clsx('inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white', isSubmitting 
                     ? 'bg-blue-400 cursor-not-allowed' 
-                    : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
-                  }`}
+                    : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500')}
               >
                 {isSubmitting ? '发送中...' : '发送消息'}
               </button>

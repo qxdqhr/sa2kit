@@ -5,6 +5,7 @@ import { useDraggable } from '@dnd-kit/core';
 import { CalendarEvent } from '../types';
 import { formatTime } from '../utils/dateUtils';
 import { useDeviceType } from '../utils/deviceUtils';
+import { clsx } from 'clsx';
 
 interface DraggableEventProps {
   event: CalendarEvent;
@@ -51,13 +52,13 @@ export const DraggableEvent: React.FC<DraggableEventProps> = ({
 
   // 计算拖拽时的样式变换
   const style = transform ? {
-    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    transform: 'translate3d(' + (transform.x) + 'px, ' + (transform.y) + 'px, 0)',
   } : undefined;
 
   // 格式化显示时间
   const displayTime = event.allDay 
     ? '全天' 
-    : `${formatTime(new Date(event.startTime))} - ${formatTime(new Date(event.endTime))}`;
+    : (formatTime(new Date(event.startTime))) + ' - ' + (formatTime(new Date(event.endTime)));
 
   // 事件颜色映射
   const getEventColorClasses = (color?: string) => {
@@ -101,14 +102,7 @@ export const DraggableEvent: React.FC<DraggableEventProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`
-        group relative rounded border-l-2 px-1 py-0.5 mb-0.5 
-        ${dragSupported ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}
-        transition-all duration-150 ease-in-out text-xs
-        ${getEventColorClasses(event.color)}
-        ${isDragActive || isDragging ? 'opacity-60 shadow-md z-[40]' : 'opacity-100'}
-        ${className}
-      `}
+      className={clsx('group relative rounded border-l-2 px-1 py-0.5 mb-0.5', dragSupported ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer', 'transition-all duration-150 ease-in-out text-xs', getEventColorClasses(event.color), isDragActive || isDragging ? 'opacity-60 shadow-md z-[40]' : 'opacity-100', className)}
       // 只在支持拖拽时应用拖拽事件监听器
       {...(dragSupported ? listeners : {})}
       {...(dragSupported ? attributes : {})}

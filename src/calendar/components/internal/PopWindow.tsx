@@ -41,7 +41,7 @@ export const Modal: React.FC<ModalProps> = ({
       />
       <div 
         className="bg-white rounded-xl shadow-2xl z-[10] overflow-hidden flex flex-col transition-all transform scale-100"
-        style={{ width: typeof width === 'number' ? `${width}px` : width, maxWidth: '100%' }}
+        style={{ width: typeof width === 'number' ? (width) + 'px' : width, maxWidth: '100%' }}
       >
         {title && (
           <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">

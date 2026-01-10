@@ -31,7 +31,7 @@ export class CalendarExportService {
       case 'csv':
         return this.exportToCSV(events);
       default:
-        throw new Error(`不支持的导出格式: ${options.format}`);
+        throw new Error('不支持的导出格式: ' + (options.format));
     }
   }
 
@@ -51,18 +51,18 @@ export class CalendarExportService {
     // 导出每个事件
     events.forEach(event => {
       lines.push('BEGIN:VEVENT');
-      lines.push(`UID:${event.id}@profile-v1.calendar`);
-      lines.push(`DTSTART:${this.formatDateTimeToICal(new Date(event.startTime))}`);
-      lines.push(`DTEND:${this.formatDateTimeToICal(new Date(event.endTime))}`);
-      lines.push(`DTSTAMP:${this.formatDateTimeToICal(new Date(event.createdAt))}`);
-      lines.push(`SUMMARY:${this.escapeICalText(event.title)}`);
+      lines.push('UID:' + (event.id) + '@profile-v1.calendar');
+      lines.push('DTSTART:' + (this.formatDateTimeToICal(new Date(event.startTime))));
+      lines.push('DTEND:' + (this.formatDateTimeToICal(new Date(event.endTime))));
+      lines.push('DTSTAMP:' + (this.formatDateTimeToICal(new Date(event.createdAt))));
+      lines.push('SUMMARY:' + (this.escapeICalText(event.title)));
       
       if (event.description) {
-        lines.push(`DESCRIPTION:${this.escapeICalText(event.description)}`);
+        lines.push('DESCRIPTION:' + (this.escapeICalText(event.description)));
       }
       
       if (event.location) {
-        lines.push(`LOCATION:${this.escapeICalText(event.location)}`);
+        lines.push('LOCATION:' + (this.escapeICalText(event.location)));
       }
       
       // 优先级
@@ -72,7 +72,7 @@ export class CalendarExportService {
           'normal': '5',
           'high': '1'
         };
-        lines.push(`PRIORITY:${priorityMap[event.priority] || '5'}`);
+        lines.push('PRIORITY:' + (priorityMap[event.priority] || '5'));
       }
       
       // 全天事件
@@ -224,7 +224,7 @@ export class CalendarExportService {
    */
   private static escapeCSVField(field: string): string {
     if (field.includes(',') || field.includes('"') || field.includes('\n')) {
-      return `"${field.replace(/"/g, '""')}"`;
+      return '"' + (field.replace(/"/g, '""')) + '"';
     }
     return field;
   }

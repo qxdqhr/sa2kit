@@ -17,7 +17,7 @@ export function exportFXToJSON(effect: FXEffect): string {
 export function exportFXToMarkdown(effect: FXEffect): string {
   const lines: string[] = [];
 
-  lines.push(`# ${effect.fileName}`);
+  lines.push('# ' + (effect.fileName));
   lines.push('');
 
   // 宏定义
@@ -28,7 +28,7 @@ export function exportFXToMarkdown(effect: FXEffect): string {
     lines.push('|------|-----|------|------|');
     effect.defines.forEach(d => {
       const status = d.isCommented ? '禁用' : '启用';
-      lines.push(`| ${d.name} | ${d.value || '-'} | ${status} | ${d.comment || '-'} |`);
+      lines.push('| ' + (d.name) + ' | ' + (d.value || '-') + ' | ' + (status) + ' | ' + (d.comment || '-') + ' |');
     });
     lines.push('');
   }
@@ -40,8 +40,8 @@ export function exportFXToMarkdown(effect: FXEffect): string {
     lines.push('| 名称 | 路径 | 尺寸 | 用途 |');
     lines.push('|------|------|------|------|');
     effect.textures.forEach(t => {
-      const size = t.width && t.height ? `${t.width}x${t.height}` : '-';
-      lines.push(`| ${t.name} | ${t.path} | ${size} | ${t.purpose || '-'} |`);
+      const size = t.width && t.height ? (t.width) + 'x' + (t.height) : '-';
+      lines.push('| ' + (t.name) + ' | ' + (t.path) + ' | ' + (size) + ' | ' + (t.purpose || '-') + ' |');
     });
     lines.push('');
   }
@@ -53,7 +53,7 @@ export function exportFXToMarkdown(effect: FXEffect): string {
     lines.push('| 名称 | 类型 | 语义 | 默认值 |');
     lines.push('|------|------|------|--------|');
     effect.parameters.forEach(p => {
-      lines.push(`| ${p.name} | ${p.type} | ${p.semantic || '-'} | ${p.defaultValue || '-'} |`);
+      lines.push('| ' + (p.name) + ' | ' + (p.type) + ' | ' + (p.semantic || '-') + ' | ' + (p.defaultValue || '-') + ' |');
     });
     lines.push('');
   }
@@ -65,7 +65,7 @@ export function exportFXToMarkdown(effect: FXEffect): string {
     lines.push('| 参数 | 对象名 | 控制项 |');
     lines.push('|------|--------|--------|');
     effect.controllers.forEach(c => {
-      lines.push(`| ${c.name} | ${c.objectName} | ${c.itemName} |`);
+      lines.push('| ' + (c.name) + ' | ' + (c.objectName) + ' | ' + (c.itemName) + ' |');
     });
     lines.push('');
   }
@@ -75,7 +75,7 @@ export function exportFXToMarkdown(effect: FXEffect): string {
     lines.push('## 包含文件 (Includes)');
     lines.push('');
     effect.includes.forEach(inc => {
-      lines.push(`- ${inc}`);
+      lines.push('- ' + (inc));
     });
     lines.push('');
   }
@@ -85,15 +85,15 @@ export function exportFXToMarkdown(effect: FXEffect): string {
     lines.push('## 技术 (Techniques)');
     lines.push('');
     effect.techniques.forEach(t => {
-      lines.push(`### ${t.name}`);
+      lines.push('### ' + (t.name));
       lines.push('');
       t.passes.forEach((p, idx) => {
-        lines.push(`#### Pass ${p.name || idx + 1}`);
+        lines.push('#### Pass ' + (p.name || idx + 1));
         if (p.vertexShader) {
-          lines.push(`- **顶点着色器**: ${p.vertexShader.function} (${p.vertexShader.profile})`);
+          lines.push('- **顶点着色器**: ' + (p.vertexShader.function) + ' (' + (p.vertexShader.profile) + ')');
         }
         if (p.pixelShader) {
-          lines.push(`- **像素着色器**: ${p.pixelShader.function} (${p.pixelShader.profile})`);
+          lines.push('- **像素着色器**: ' + (p.pixelShader.function) + ' (' + (p.pixelShader.profile) + ')');
         }
         lines.push('');
       });
@@ -251,7 +251,7 @@ export function getConfigSummaryText(effect: FXEffect): string {
   }
 
   return features.length > 0 
-    ? `启用功能: ${features.join(', ')}` 
+    ? '启用功能: ' + (features.join(', ')) 
     : '无特殊功能启用';
 }
 
@@ -281,7 +281,7 @@ export function validateFXEffect(effect: FXEffect): {
   // 检查纹理路径是否存在
   effect.textures.forEach(texture => {
     if (!texture.path || texture.path === '') {
-      errors.push(`纹理 ${texture.name} 缺少路径`);
+      errors.push('纹理 ' + (texture.name) + ' 缺少路径');
     }
   });
 
@@ -290,7 +290,7 @@ export function validateFXEffect(effect: FXEffect): {
     if (param.type.includes('float') && param.defaultValue) {
       const floatRegex = /^float[234]?\s*\(/;
       if (!floatRegex.test(param.defaultValue) && isNaN(parseFloat(param.defaultValue))) {
-        warnings.push(`参数 ${param.name} 的默认值可能不合法: ${param.defaultValue}`);
+        warnings.push('参数 ' + (param.name) + ' 的默认值可能不合法: ' + (param.defaultValue));
       }
     }
   });

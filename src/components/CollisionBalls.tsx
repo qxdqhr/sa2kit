@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from "react";
+import { clsx } from 'clsx';
 
 // CollisionBalls相关的类型定义
 export interface Ball {
@@ -63,8 +64,8 @@ export const CollisionBalls: React.FC<CollisionBallsProps> = ({
     canvas.height = containerHeight;
     
     // 设置canvas的显示尺寸
-    canvas.style.width = `${containerWidth}px`;
-    canvas.style.height = `${containerHeight}px`;
+    canvas.style.width = (containerWidth) + 'px';
+    canvas.style.height = (containerHeight) + 'px';
     
     console.log('Canvas size updated:', {
       width: canvas.width,
@@ -150,7 +151,7 @@ export const CollisionBalls: React.FC<CollisionBallsProps> = ({
         // 计算帧率
         frameCount++;
         if (currentTime - lastTime >= 1000) {
-          console.log(`FPS: ${frameCount}`);
+          console.log('FPS: ' + (frameCount));
           frameCount = 0;
           lastTime = currentTime;
         }
@@ -384,17 +385,13 @@ export const CollisionBalls: React.FC<CollisionBallsProps> = ({
       <div className="absolute bottom-4 right-4 flex gap-2">
         <button
           onClick={shake}
-          className={`px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors ${
-            isShaking ? "animate-pulse" : ""
-          }`}
+          className={clsx('px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors', isShaking ? "animate-pulse" : "")}
         >
           摇一摇
         </button>
         <button
           onClick={slowdown}
-          className={`px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors ${
-            isShaking ? "animate-pulse" : ""
-          }`}
+          className={clsx('px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors', isShaking ? "animate-pulse" : "")}
         >
           减速
         </button>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Settings, Calendar, List, Cog, User } from 'lucide-react';
+import { clsx } from 'clsx';
 import { 
   CalendarViewType, 
   EventColor,
@@ -105,7 +106,7 @@ export function CalendarPage({
     
     if (viewStart && viewEnd) {
       console.log('📅 加载月视图事件范围:', {
-        currentMonth: `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`,
+        currentMonth: (currentDate.getFullYear()) + '-' + (currentDate.getMonth() + 1),
         viewStart: formatDate(viewStart),
         viewEnd: formatDate(viewEnd),
         totalDays: viewDates.length
@@ -178,9 +179,9 @@ export function CalendarPage({
           return getMonthName(currentDate);
         }
         if (weekStart.getMonth() === weekEnd.getMonth()) {
-          return `${weekStart.getFullYear()}年${weekStart.getMonth() + 1}月 第${Math.ceil(weekStart.getDate() / 7)}周`;
+          return (weekStart.getFullYear()) + '年' + (weekStart.getMonth() + 1) + '月 第' + (Math.ceil(weekStart.getDate() / 7)) + '周';
         } else {
-          return `${weekStart.getMonth() + 1}月${weekStart.getDate()}日 - ${weekEnd.getMonth() + 1}月${weekEnd.getDate()}日`;
+          return (weekStart.getMonth() + 1) + '月' + (weekStart.getDate()) + '日 - ' + (weekEnd.getMonth() + 1) + '月' + (weekEnd.getDate()) + '日';
         }
       case CalendarViewType.DAY:
         return currentDate.toLocaleDateString('zh-CN', { 
@@ -425,13 +426,9 @@ export function CalendarPage({
                 return (
                   <th 
                     key={index} 
-                    className={`p-3 text-center border-b border-gray-200 ${
-                      index < 6 ? 'border-r border-gray-200' : ''
-                    }`}
+                    className={clsx('p-3 text-center border-b border-gray-200', index < 6 ? 'border-r border-gray-200' : '')}
                   >
-                    <div className={`text-sm font-medium ${
-                      isWeekend ? 'text-red-600' : 'text-gray-700'
-                    }`}>
+                    <div className={clsx('text-sm font-medium', isWeekend ? 'text-red-600' : 'text-gray-700')}>
                       {getWeekdayName(date, 'zh-CN', 'short')}
                     </div>
                   </th>
@@ -450,19 +447,12 @@ export function CalendarPage({
                   <td
                     key={index}
                     onClick={() => handleDateClick(date)}
-                    className={`
-                      h-56 border-b border-gray-200 relative cursor-pointer
-                      ${index < 6 ? 'border-r border-gray-200' : ''}
-                      hover:bg-gray-50 transition-colors
-                      ${isTodayDate ? 'bg-blue-50' : 'bg-white'}
-                    `}
+                    className={clsx('h-56 border-b border-gray-200 relative cursor-pointer', index < 6 ? 'border-r border-gray-200' : '', 'hover:bg-gray-50 transition-colors', isTodayDate ? 'bg-blue-50' : 'bg-white')}
                   >
                     <div className="flex flex-col h-full p-3">
                       <div className="flex flex-col items-center mb-3">
-                        <div className={`flex items-center justify-center text-lg font-bold w-10 h-10 rounded-full ${
-                          isTodayDate ? 'bg-blue-600 text-white shadow-md' : 
-                          isWeekend ? 'text-red-600 bg-red-50' : 'text-gray-900 hover:bg-gray-100'
-                        } transition-colors`}>
+                        <div className={clsx('flex items-center justify-center text-lg font-bold w-10 h-10 rounded-full', isTodayDate ? 'bg-blue-600 text-white shadow-md' : 
+                          isWeekend ? 'text-red-600 bg-red-50' : 'text-gray-900 hover:bg-gray-100', 'transition-colors')}>
                           {date.getDate()}
                         </div>
                         {(index === 0 || date.getDate() === 1) && (
@@ -476,11 +466,9 @@ export function CalendarPage({
                         {dayEvents.length > 0 ? (
                           <>
                             <div className="text-center mb-2">
-                              <span className={`inline-flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full ${
-                                dayEvents.length > 5 ? 'bg-red-100 text-red-700' :
+                              <span className={clsx('inline-flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full', dayEvents.length > 5 ? 'bg-red-100 text-red-700' :
                                 dayEvents.length > 2 ? 'bg-yellow-100 text-yellow-700' :
-                                'bg-green-100 text-green-700'
-                              }`}>
+                                'bg-green-100 text-green-700')}>
                                 {dayEvents.length}
                               </span>
                             </div>
@@ -490,12 +478,7 @@ export function CalendarPage({
                                 <div
                                   key={eventIndex}
                                   onClick={(e) => event.isRealEvent && event.id ? handleEventClick(events.find(e => e.id === event.id), e) : undefined}
-                                  className={`
-                                    text-xs px-2 py-1 rounded font-medium truncate text-center
-                                    ${event.isRealEvent ? 'cursor-pointer hover:opacity-80 hover:shadow-sm' : 'cursor-default'}
-                                    transition-all duration-200
-                                    ${getEventColorClass(event.color)}
-                                  `}
+                                  className={clsx('text-xs px-2 py-1 rounded font-medium truncate text-center', event.isRealEvent ? 'cursor-pointer hover:opacity-80 hover:shadow-sm' : 'cursor-default', 'transition-all duration-200', getEventColorClass(event.color))}
                                   title={event.title}
                                 >
                                   {event.title}
@@ -544,9 +527,7 @@ export function CalendarPage({
             <div className="text-sm text-gray-600 mb-1">
               {currentDate.toLocaleDateString('zh-CN', { weekday: 'long' })}
             </div>
-            <div className={`text-2xl font-bold ${
-              isTodayDate ? 'text-blue-600' : 'text-gray-900'
-            }`}>
+            <div className={clsx('text-2xl font-bold', isTodayDate ? 'text-blue-600' : 'text-gray-900')}>
               {currentDate.getDate()}日
             </div>
             <div className="text-sm text-gray-600">
@@ -572,12 +553,7 @@ export function CalendarPage({
                 <div
                   key={eventIndex}
                   onClick={(e) => event.isRealEvent && event.id ? handleEventClick(events.find(e => e.id === event.id), e) : undefined}
-                  className={`
-                    p-3 rounded-lg border-l-4 bg-gray-50
-                    ${event.isRealEvent ? 'cursor-pointer hover:shadow-md' : 'cursor-default'}
-                    transition-shadow
-                    ${getEventColorClass(event.color)}
-                  `}
+                  className={clsx('p-3 rounded-lg border-l-4 bg-gray-50', event.isRealEvent ? 'cursor-pointer hover:shadow-md' : 'cursor-default', 'transition-shadow', getEventColorClass(event.color))}
                 >
                   <div className="font-medium text-sm mb-1">{event.title}</div>
                   {event.isRealEvent && event.id && (
@@ -611,7 +587,7 @@ export function CalendarPage({
       
       const eventCount = createdEvents.length;
       if (eventCount > 1) {
-        alert(`成功创建 ${eventCount} 个事件！`);
+        alert('成功创建 ' + (eventCount) + ' 个事件！');
       } else {
         alert('事件创建成功！');
       }
@@ -649,31 +625,25 @@ export function CalendarPage({
           <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
             <button
               onClick={() => setActiveTab('calendar')}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                activeTab === 'calendar'
+              className={clsx('px-4 py-2 text-sm font-medium rounded-md transition-colors', activeTab === 'calendar'
                   ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+                  : 'text-gray-600 hover:text-gray-900')}
             >
               📅 日历视图
             </button>
             <button
               onClick={() => setActiveTab('events')}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                activeTab === 'events'
+              className={clsx('px-4 py-2 text-sm font-medium rounded-md transition-colors', activeTab === 'events'
                   ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+                  : 'text-gray-600 hover:text-gray-900')}
             >
               📋 事件列表
             </button>
             <button
               onClick={() => setActiveTab('settings')}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                activeTab === 'settings'
+              className={clsx('px-4 py-2 text-sm font-medium rounded-md transition-colors', activeTab === 'settings'
                   ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+                  : 'text-gray-600 hover:text-gray-900')}
             >
               ⚙️ 设置
             </button>
@@ -750,11 +720,9 @@ export function CalendarPage({
                       <button
                         key={view}
                         onClick={() => setViewType(CalendarViewType[view.toUpperCase() as keyof typeof CalendarViewType])}
-                        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                          viewType === CalendarViewType[view.toUpperCase() as keyof typeof CalendarViewType]
+                        className={clsx('px-3 py-1.5 text-sm font-medium rounded-md transition-colors', viewType === CalendarViewType[view.toUpperCase() as keyof typeof CalendarViewType]
                             ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
-                        }`}
+                            : 'text-gray-600 hover:text-gray-900')}
                       >
                         {view === 'month' ? '月' : view === 'week' ? '周' : '日'}
                       </button>

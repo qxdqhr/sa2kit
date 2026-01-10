@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Check, Image as ImageIcon, Music, Video, User } from 'lucide-react';
 import { MMDResourceItem, MMDResourceOptions, ResourceOption } from '../types';
+import { clsx } from 'clsx';
 
 interface SettingsPanelProps {
   mode: 'list' | 'options';
@@ -43,11 +44,9 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           <button
             key={item.id}
             onClick={() => onSelectId?.(item.id)}
-            className={`group flex items-center gap-3 rounded-lg p-3 transition-all ${
-              currentId === item.id 
+            className={clsx('group flex items-center gap-3 rounded-lg p-3 transition-all', currentId === item.id 
                 ? 'bg-blue-500/20 ring-1 ring-blue-500' 
-                : 'bg-white/5 hover:bg-white/10'
-            }`}
+                : 'bg-white/5 hover:bg-white/10')}
           >
             <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded bg-black/20 overflow-hidden">
               {item.thumbnail ? (
@@ -57,7 +56,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               )}
             </div>
             <div className="flex-1 text-left">
-              <div className={`font-medium ${currentId === item.id ? 'text-blue-400' : 'text-white'}`}>
+              <div className={clsx('font-medium', currentId === item.id ? 'text-blue-400' : 'text-white')}>
                 {item.name}
               </div>
               {item.description && (
@@ -91,11 +90,9 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <button
               key={opt.id}
               onClick={() => onSelectOption?.(type, opt.id)}
-              className={`relative flex flex-col items-center gap-2 rounded-lg p-2 text-center transition-all ${
-                currentVal === opt.id 
+              className={clsx('relative flex flex-col items-center gap-2 rounded-lg p-2 text-center transition-all', currentVal === opt.id 
                   ? 'bg-blue-500/20 ring-1 ring-blue-500' 
-                  : 'bg-white/5 hover:bg-white/10'
-              }`}
+                  : 'bg-white/5 hover:bg-white/10')}
             >
               {opt.thumbnail ? (
                  <img src={opt.thumbnail} alt={opt.name} className="h-16 w-full rounded object-cover bg-black/20" />
@@ -104,7 +101,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                    <div className="text-xs opacity-30">{opt.name.slice(0, 2)}</div>
                  </div>
               )}
-              <div className={`w-full truncate text-xs ${currentVal === opt.id ? 'text-blue-400' : 'text-white/80'}`}>
+              <div className={clsx('w-full truncate text-xs', currentVal === opt.id ? 'text-blue-400' : 'text-white/80')}>
                 {opt.name}
               </div>
               {currentVal === opt.id && (

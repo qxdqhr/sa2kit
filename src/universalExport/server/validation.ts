@@ -44,7 +44,7 @@ export function validateExportConfig(config: UniversalExportServiceConfig): void
   // 安全建议
   if (config.maxRows && config.maxRows > 1000000) {
     console.warn(
-      `⚠️  Warning: maxRows (${config.maxRows}) is very large. ` +
+      '⚠️  Warning: maxRows (' + (config.maxRows) + ') is very large. ' +
       `Consider using pagination or streaming for better performance.`
     );
   }
@@ -64,7 +64,7 @@ export function validateEnvironment(requiredVars: string[]): void {
 
   if (missing.length > 0) {
     throw new ConfigValidationError(
-      `Missing required environment variables: ${missing.join(', ')}`,
+      'Missing required environment variables: ' + (missing.join(', ')),
       'environment'
     );
   }

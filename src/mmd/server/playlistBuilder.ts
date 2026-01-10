@@ -31,7 +31,7 @@ const defaultNormalizer = (value: string) => {
   if (value.startsWith('http://') || value.startsWith('https://')) {
     return value;
   }
-  return value.startsWith('/') ? value : `/${value}`;
+  return value.startsWith('/') ? value : '/' + (value);
 };
 
 /**
@@ -69,7 +69,7 @@ export function buildMmdPlaylistFromSources(options: BuildMmdPlaylistOptions): M
 
   return {
     id: options.playlistId,
-    name: options.playlistName ?? `MMD 播放列表 - ${options.playlistId}`,
+    name: options.playlistName ?? 'MMD 播放列表 - ' + (options.playlistId),
     nodes,
     loop: options.loop ?? true,
     preload: options.preload ?? 'next',

@@ -27,7 +27,7 @@ export class PMXParser {
   async loadAndParse(url: string): Promise<PMXParseResult> {
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error(`Failed to load PMX file: ${response.statusText}`);
+      throw new Error('Failed to load PMX file: ' + (response.statusText));
     }
 
     const buffer = await response.arrayBuffer();
@@ -93,7 +93,7 @@ export class PMXParser {
     // 签名 "PMX " (4 bytes)
     const signature = this.readString(4);
     if (signature !== 'PMX ') {
-      throw new Error(`Invalid PMX signature: ${signature}`);
+      throw new Error('Invalid PMX signature: ' + (signature));
     }
 
     // 版本号 (4 bytes float)
@@ -105,7 +105,7 @@ export class PMXParser {
     this.offset += 1;
 
     if (globalsCount !== 8) {
-      throw new Error(`Unexpected globals count: ${globalsCount}`);
+      throw new Error('Unexpected globals count: ' + (globalsCount));
     }
 
     // 读取全局设置
@@ -250,7 +250,7 @@ export class PMXParser {
     console.log('[PMXParser] Parsing textures, count:', count);
 
     if (count < 0 || count > 10000) {
-      throw new Error(`Invalid texture count: ${count} at offset ${this.offset - 4}`);
+      throw new Error('Invalid texture count: ' + (count) + ' at offset ' + (this.offset - 4));
     }
 
     const textures: PMXTexture[] = [];
@@ -261,7 +261,7 @@ export class PMXParser {
         index: i,
         path,
       });
-      console.log(`[PMXParser]   Texture ${i}: ${path}`);
+      console.log('[PMXParser]   Texture ' + (i) + ': ' + (path));
     }
 
     return textures;
@@ -409,7 +409,7 @@ export class PMXParser {
       if (material.isSharedToon) {
         mapping.toonTexture = {
           index: material.toonTextureIndex,
-          path: `toon${String(material.toonTextureIndex).padStart(2, '0')}.bmp`,
+          path: 'toon' + (String(material.toonTextureIndex).padStart(2, '0')) + '.bmp',
           isShared: true,
         };
       } else if (
@@ -438,11 +438,11 @@ export class PMXParser {
 
     // 添加边界检查
     if (length < 0 || length > 10000000) { // 10MB 限制
-      throw new Error(`Invalid text buffer length: ${length} at offset ${this.offset - 4}`);
+      throw new Error('Invalid text buffer length: ' + (length) + ' at offset ' + (this.offset - 4));
     }
 
     if (this.offset + length > this.view.buffer.byteLength) {
-      throw new Error(`Text buffer extends beyond file boundary: offset=${this.offset}, length=${length}, fileSize=${this.view.buffer.byteLength}`);
+      throw new Error('Text buffer extends beyond file boundary: offset=' + (this.offset) + ', length=' + (length) + ', fileSize=' + (this.view.buffer.byteLength));
     }
 
     const bytes = new Uint8Array(this.view.buffer, this.offset, length);
@@ -481,7 +481,7 @@ export class PMXParser {
         value = this.view.getInt32(this.offset, true);
         break;
       default:
-        throw new Error(`Invalid index size: ${size}`);
+        throw new Error('Invalid index size: ' + (size));
     }
 
     this.offset += size;

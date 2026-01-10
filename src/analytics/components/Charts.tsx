@@ -5,6 +5,7 @@
 
 import React from 'react';
 import type { ChartDataPoint } from './types';
+import { clsx } from 'clsx';
 
 export interface PieChartProps {
   data: ChartDataPoint[];
@@ -27,7 +28,7 @@ export const PieChart: React.FC<PieChartProps> = ({ data, title, className = '' 
   ];
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm p-6 ${className}`}>
+    <div className={clsx('bg-white rounded-lg shadow-sm p-6', className)}>
       {title && <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>}
       <div className="space-y-3">
         {data.map((item, index) => {
@@ -42,8 +43,8 @@ export const PieChart: React.FC<PieChartProps> = ({ data, title, className = '' 
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
-                  className={`h-2 rounded-full ${colors[index % colors.length]}`}
-                  style={{ width: `${percentage}%` }}
+                  className={clsx('h-2 rounded-full', colors[index % colors.length])}
+                  style={{ width: (percentage) + '%' }}
                 />
               </div>
             </div>
@@ -64,7 +65,7 @@ export const BarChart: React.FC<BarChartProps> = ({ data, title, className = '' 
   const maxValue = Math.max(...data.map((item) => item.value), 1);
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm p-6 ${className}`}>
+    <div className={clsx('bg-white rounded-lg shadow-sm p-6', className)}>
       {title && <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>}
       <div className="space-y-4">
         {data.map((item, index) => {
@@ -76,7 +77,7 @@ export const BarChart: React.FC<BarChartProps> = ({ data, title, className = '' 
                 <div className="flex-1 bg-gray-200 rounded-full h-8 relative overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-end px-3"
-                    style={{ width: `${percentage}%`, minWidth: '40px' }}
+                    style={{ width: (percentage) + '%', minWidth: '40px' }}
                   >
                     <span className="text-xs text-white font-semibold">
                       {item.value.toLocaleString()}
@@ -106,15 +107,15 @@ export const LineChart: React.FC<LineChartProps> = ({ data, title, className = '
     .map((item, index) => {
       const x = (index / (data.length - 1 || 1)) * 100;
       const y = height - (item.value / maxValue) * height;
-      return `${x},${y}`;
+      return (x) + ',' + (y);
     })
     .join(' ');
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm p-6 ${className}`}>
+    <div className={clsx('bg-white rounded-lg shadow-sm p-6', className)}>
       {title && <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>}
-      <div className="relative" style={{ height: `${height}px` }}>
-        <svg viewBox={`0 0 100 ${height}`} preserveAspectRatio="none" className="w-full h-full">
+      <div className="relative" style={{ height: (height) + 'px' }}>
+        <svg viewBox={'0 0 100 ' + (height)} preserveAspectRatio="none" className="w-full h-full">
           {/* 网格线 */}
           {[0, 25, 50, 75, 100].map((y) => (
             <line

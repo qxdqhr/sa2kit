@@ -98,14 +98,14 @@ export function printSphereDiagnostic(diagnostic: SphereTextureDiagnostic): void
   console.log('='.repeat(60));
 
   console.log(`\n📊 统计:`);
-  console.log(`  总材质数: ${diagnostic.totalMaterials}`);
-  console.log(`  预期有sphere纹理: ${diagnostic.expectedSphere}`);
-  console.log(`  实际有sphere纹理: ${diagnostic.actualSphere} ${diagnostic.actualSphere > 0 ? '✅' : '❌'}`);
+  console.log('  总材质数: ' + (diagnostic.totalMaterials));
+  console.log('  预期有sphere纹理: ' + (diagnostic.expectedSphere));
+  console.log('  实际有sphere纹理: ' + (diagnostic.actualSphere) + ' ' + (diagnostic.actualSphere > 0 ? '✅' : '❌'));
 
   if (diagnostic.missingSphere.length > 0) {
-    console.log(`\n⚠️ 缺少sphere纹理的材质 (${diagnostic.missingSphere.length}个):`);
+    console.log('\n⚠️ 缺少sphere纹理的材质 (' + (diagnostic.missingSphere.length) + '个):');
     diagnostic.missingSphere.forEach((item, i) => {
-      console.log(`  ${i + 1}. [${item.index}] ${item.name} (对象: ${item.objectName})`);
+      console.log('  ' + (i + 1) + '. [' + (item.index) + '] ' + (item.name) + ' (对象: ' + (item.objectName) + ')');
     });
   } else {
     console.log('\n✅ 所有预期的材质都有sphere纹理');
@@ -194,7 +194,7 @@ export function addDefaultSphereTextures(
     }
   });
 
-  console.log(`🔮 添加默认Sphere纹理到 ${appliedCount} 个材质`);
+  console.log('🔮 添加默认Sphere纹理到 ' + (appliedCount) + ' 个材质');
 }
 
 /**
@@ -254,23 +254,23 @@ export async function checkModelSphereDefinition(modelUrl: string): Promise<{
  */
 export async function printModelSphereInfo(modelUrl: string): Promise<void> {
   console.log('\n🔍 检查模型的Sphere纹理定义...');
-  console.log(`模型: ${modelUrl}`);
+  console.log('模型: ' + (modelUrl));
   console.log('='.repeat(60));
 
   const info = await checkModelSphereDefinition(modelUrl);
 
   if (info.hasSphere) {
-    console.log(`\n✅ 模型定义了 ${info.sphereTextures.length} 个Sphere纹理:`);
+    console.log('\n✅ 模型定义了 ' + (info.sphereTextures.length) + ' 个Sphere纹理:');
     info.sphereTextures.forEach((item, i) => {
-      console.log(`\n${i + 1}. ${item.materialName}`);
-      console.log(`   纹理: ${item.texturePath}`);
-      console.log(`   模式: ${item.mode}`);
+      console.log('\n' + (i + 1) + '. ' + (item.materialName));
+      console.log('   纹理: ' + (item.texturePath));
+      console.log('   模式: ' + (item.mode));
     });
 
     console.log('\n💡 建议:');
     console.log('  1. 检查以下文件是否存在于模型目录:');
     info.sphereTextures.forEach((item) => {
-      console.log(`     - ${item.texturePath}`);
+      console.log('     - ' + (item.texturePath));
     });
     console.log('  2. 确保这些文件可以被访问（无CORS错误）');
     console.log('  3. MMDLoader应该会自动加载这些纹理');
@@ -331,7 +331,7 @@ export async function fullSphereDiagnostic(
     }
   } else {
     console.log('\n✅ 检测到sphere纹理！');
-    console.log(`当前有 ${runtimeDiag.actualSphere} 个材质使用sphere纹理`);
+    console.log('当前有 ' + (runtimeDiag.actualSphere) + ' 个材质使用sphere纹理');
   }
 
   console.log('\n' + '='.repeat(60));

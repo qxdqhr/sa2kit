@@ -39,7 +39,7 @@ export const TestYourself: React.FC<TestYourselfProps> = ({
           if (savedConfig) {
             setLoadedConfig(savedConfig.config);
           } else {
-            console.warn(`配置 ${configId} 不存在，使用默认配置`);
+            console.warn('配置 ' + (configId) + ' 不存在，使用默认配置');
           }
         } catch (error) {
           console.error('加载配置失败:', error);
@@ -89,7 +89,7 @@ export const TestYourself: React.FC<TestYourselfProps> = ({
       }
 
       // 使用不同的 storage key（如果有 configId）
-      const storageKey = configId ? `${STORAGE_KEY}_${configId}` : STORAGE_KEY;
+      const storageKey = configId ? (STORAGE_KEY) + '_' + (configId) : STORAGE_KEY;
       
       // 检查localStorage中是否已有结果
       const savedResult = localStorage.getItem(storageKey);
@@ -151,7 +151,7 @@ export const TestYourself: React.FC<TestYourselfProps> = ({
       console.log('计算结果成功:', selectedResult);
 
       // 保存到localStorage（使用不同的 key）
-      const storageKey = configId ? `${STORAGE_KEY}_${configId}` : STORAGE_KEY;
+      const storageKey = configId ? (STORAGE_KEY) + '_' + (configId) : STORAGE_KEY;
       localStorage.setItem(storageKey, JSON.stringify(selectedResult));
 
       return selectedResult;
@@ -289,7 +289,7 @@ export const TestYourself: React.FC<TestYourselfProps> = ({
 
   // 重新测试
   const handleReset = () => {
-    const storageKey = configId ? `${STORAGE_KEY}_${configId}` : STORAGE_KEY;
+    const storageKey = configId ? (STORAGE_KEY) + '_' + (configId) : STORAGE_KEY;
     localStorage.removeItem(storageKey);
     setResult(null);
     setStatus('idle');
@@ -591,7 +591,7 @@ export const TestYourself: React.FC<TestYourselfProps> = ({
               transition: 'transform 0.3s ease',
               transform: status === 'pressing' ? 'scale(0.95)' : 'scale(1)',
               background: status === 'pressing' 
-                ? `linear-gradient(to top, rgb(168, 85, 247) ${pressProgress}%, rgb(236, 72, 153) ${pressProgress}%)`
+                ? 'linear-gradient(to top, rgb(168, 85, 247) ' + (pressProgress) + '%, rgb(236, 72, 153) ' + (pressProgress) + '%)'
                 : 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 25%, #db2777 50%, #f97316 75%, #059669 100%)',
               boxShadow: status === 'pressing' 
                 ? 'inset 0 4px 12px rgba(0,0,0,0.3), 0 0 0 4px rgba(168, 85, 247, 0.5)'
@@ -653,7 +653,7 @@ export const TestYourself: React.FC<TestYourselfProps> = ({
             }}>
               <div style={{
                 height: '100%',
-                width: `${pressProgress}%`,
+                width: (pressProgress) + '%',
                 background: 'linear-gradient(to right, #a855f7, #ec4899)',
                 transition: 'width 0.1s ease',
               }} />

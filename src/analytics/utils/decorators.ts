@@ -42,7 +42,7 @@ export function Track(eventName?: string, priority: EventPriority = EventPriorit
         // 执行失败
         analytics?.track(
           EventType.ERROR,
-          `${finalEventName}_error`,
+          (finalEventName) + '_error',
           {
             success: false,
             duration: Date.now() - startTime,

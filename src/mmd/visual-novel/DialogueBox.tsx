@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { DialogueBoxProps, DialogueBoxTheme } from './types';
+import { clsx } from 'clsx';
 
 // 注入全局样式
 if (typeof document !== 'undefined' && !document.getElementById('dialogue-box-animations')) {
@@ -174,7 +175,7 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
 
   const dialogueContent = (
     <div
-      className={`${className || ''}`}
+      className={clsx(className || '')}
       style={{ 
         position: 'fixed',
         bottom: 0,
@@ -193,8 +194,8 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
         onClick={handleClick}
         style={{
           borderColor: theme.borderColor,
-          backdropFilter: `blur(${theme.blur}) saturate(200%)`,
-          WebkitBackdropFilter: `blur(${theme.blur}) saturate(200%)`,
+          backdropFilter: 'blur(' + (theme.blur) + ') saturate(200%)',
+          WebkitBackdropFilter: 'blur(' + (theme.blur) + ') saturate(200%)',
           opacity: theme.opacity,
           pointerEvents: 'auto',
           position: 'relative',
@@ -282,10 +283,9 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
                   e.stopPropagation();
                   onToggleAuto?.();
                 }}
-                className={`px-4 py-2 text-xs rounded-xl font-medium transition-all backdrop-blur-lg border hover:scale-105 active:scale-95 shadow-lg ${isAutoMode
+                className={clsx('px-4 py-2 text-xs rounded-xl font-medium transition-all backdrop-blur-lg border hover:scale-105 active:scale-95 shadow-lg', isAutoMode
                     ? 'border-slate-400 text-slate-900'
-                    : 'border-slate-300 hover:border-slate-400 text-slate-700'
-                  }`}
+                    : 'border-slate-300 hover:border-slate-400 text-slate-700')}
                 style={{
                   background: isAutoMode 
                     ? 'linear-gradient(135deg, rgba(203, 213, 225, 0.95), rgba(148, 163, 184, 0.85))'

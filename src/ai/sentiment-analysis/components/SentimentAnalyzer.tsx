@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSentimentAnalysis } from '../hooks/useSentimentAnalysis';
 import { MessageSquare, Send, Loader2, Smile, Frown, Meh } from 'lucide-react';
+import { clsx } from 'clsx';
 
 interface SentimentAnalyzerProps {
   onResult?: (result: any) => void;
@@ -45,7 +46,7 @@ export const SentimentAnalyzer: React.FC<SentimentAnalyzerProps> = ({
   };
 
   return (
-    <div className={`p-6 border rounded-xl bg-white dark:bg-gray-800 shadow-sm ${className}`}>
+    <div className={clsx('p-6 border rounded-xl bg-white dark:bg-gray-800 shadow-sm', className)}>
       <div className="flex items-center gap-2 mb-4 text-gray-700 dark:text-gray-300 font-medium">
         <MessageSquare size={20} />
         <span>文本情感分析</span>
@@ -76,7 +77,7 @@ export const SentimentAnalyzer: React.FC<SentimentAnalyzerProps> = ({
       )}
 
       {result && !isProcessing && (
-        <div className={`mt-4 p-4 border rounded-lg flex items-center gap-4 animate-in fade-in slide-in-from-top-2 ${getSentimentColor()}`}>
+        <div className={clsx('mt-4 p-4 border rounded-lg flex items-center gap-4 animate-in fade-in slide-in-from-top-2', getSentimentColor())}>
           <div className="p-2 bg-white rounded-full shadow-sm">
             {getSentimentIcon()}
           </div>

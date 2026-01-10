@@ -11,6 +11,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { clsx } from 'clsx';
 import { useAuth } from '../hooks';
 import type { BaseApiClient } from '../client/base-api-client';
 import type { User } from '../types';
@@ -210,9 +211,7 @@ const DefaultButton: React.FC<any> = ({ children, disabled, type, ...props }) =>
     type={type || 'button'}
     disabled={disabled}
     {...props}
-    className={`w-full bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-dashed border-blue-300 text-blue-700 hover:from-blue-100 hover:to-indigo-100 hover:border-blue-400 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 transform hover:scale-105 active:scale-95 ${
-      disabled ? 'opacity-60 cursor-not-allowed hover:scale-100 hover:shadow-none' : 'block'}
-    }`}
+    className={clsx('w-full bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-dashed border-blue-300 text-blue-700 hover:from-blue-100 hover:to-indigo-100 hover:border-blue-400 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 transform hover:scale-105 active:scale-95', disabled ? 'opacity-60 cursor-not-allowed hover:scale-100 hover:shadow-none' : 'block', '}')}
     style={{
       backgroundSize: '200% 100%',
       backgroundPosition: disabled ? '0% 0%' : '0% 0%',
@@ -248,11 +247,9 @@ const DefaultBadge: React.FC<{ children: React.ReactNode; variant?: string; clas
   className = '',
 }) => (
   <span
-    className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm ${
-      variant === 'dev'
+    className={clsx('inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm', variant === 'dev'
         ? 'bg-gradient-to-r from-orange-400 to-amber-500 text-white border-0'
-        : 'bg-gray-100 text-gray-700 border border-gray-200'
-    } ${className}`}
+        : 'bg-gray-100 text-gray-700 border border-gray-200', className)}
   >
     {children}
   </span>
@@ -411,7 +408,7 @@ export function AdminLoginPage(props: AdminLoginPageProps) {
 
   // Copy test credentials
   const copyTestCredentials = async () => {
-    const credentials = `邮箱: ${testEmail}\n密码: ${testPassword}`;
+    const credentials = '邮箱: ' + (testEmail) + '\n密码: ' + (testPassword);
     try {
       await navigator.clipboard.writeText(credentials);
     } catch (err) {

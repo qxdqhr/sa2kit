@@ -1,4 +1,5 @@
 import React from 'react';
+import { clsx } from 'clsx';
 import { 
   Play, 
   Pause, 
@@ -47,20 +48,20 @@ export const MusicControls: React.FC<MusicControlsProps> = ({
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return (mins) + ':' + (secs.toString().padStart(2, '0'));
   };
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
     <div 
-      className={`w-full max-w-4xl mx-auto px-6 py-4 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl pointer-events-auto transition-all group ${className}`}
+      className={clsx('w-full max-w-4xl mx-auto px-6 py-4 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl pointer-events-auto transition-all group', className)}
     >
       {/* 进度条 */}
       <div className="relative w-full h-1.5 bg-white/20 rounded-full mb-4 cursor-pointer group/progress overflow-hidden">
         <div 
           className="absolute h-full bg-blue-500 rounded-full transition-all duration-300"
-          style={{ width: `${progress}%` }}
+          style={{ width: (progress) + '%' }}
         />
         <input
           type="range"

@@ -20,7 +20,7 @@ export const tencentAdapter: MusicSourceAdapter = {
         // 处理封面图 (QQ 音乐封面通常基于 album mid)
         let pic = item.pic;
         if (!pic && item.album?.mid) {
-          pic = `https://y.gtimg.cn/music/photo_new/T002R300x300M000${item.album.mid}.jpg`;
+          pic = 'https://y.gtimg.cn/music/photo_new/T002R300x300M000' + (item.album.mid) + '.jpg';
         }
 
         return {
@@ -47,7 +47,7 @@ export const tencentAdapter: MusicSourceAdapter = {
     const urlData = root.url.url;
     let finalUrl = Object.values(urlData)[0] as string;
       console.log('finalUrl2', finalUrl);
-    return finalUrl.startsWith('http') ? finalUrl : `http://${finalUrl}`;
+    return finalUrl.startsWith('http') ? finalUrl : 'http://' + (finalUrl);
   },
 
   parseGetLyric(data: any): any {

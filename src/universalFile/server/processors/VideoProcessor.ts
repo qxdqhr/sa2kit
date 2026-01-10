@@ -84,12 +84,12 @@ export class VideoProcessor implements IFileProcessor {
     const videoOptions = options as VideoProcessingOptions;
     const startTime = Date.now();
 
-    logger.info(`🎬 [VideoProcessor] 开始处理视频: ${inputPath}`);
+    logger.info('🎬 [VideoProcessor] 开始处理视频: ' + (inputPath));
 
     try {
       // 检查输入文件是否存在
       if (!existsSync(inputPath)) {
-        throw new Error(`输入文件不存在: ${inputPath}`);
+        throw new Error('输入文件不存在: ' + (inputPath));
       }
 
       // 确保输出目录存在
@@ -99,7 +99,7 @@ export class VideoProcessor implements IFileProcessor {
       // 获取视频元数据
       const metadata = await this.getVideoMetadata(inputPath);
       logger.info(
-        `📊 [VideoProcessor] 视频信息: ${metadata.width}x${metadata.height}, ${this.formatDuration(metadata.duration)}, ${metadata.fps}fps`
+        '📊 [VideoProcessor] 视频信息: ' + (metadata.width) + 'x' + (metadata.height) + ', ' + (this.formatDuration(metadata.duration)) + ', ' + (metadata.fps) + 'fps'
       );
 
       // 确定输出格式
@@ -122,7 +122,7 @@ export class VideoProcessor implements IFileProcessor {
       const processedStats = await fs.stat(outputPath);
       const processingTime = Date.now() - startTime;
 
-      logger.info(`✅ [VideoProcessor] 视频处理完成: ${outputPath}, 耗时: ${processingTime}ms`);
+      logger.info('✅ [VideoProcessor] 视频处理完成: ' + (outputPath) + ', 耗时: ' + (processingTime) + 'ms');
 
       return {
         success: true,
@@ -146,11 +146,11 @@ export class VideoProcessor implements IFileProcessor {
         },
       };
     } catch (error) {
-      console.error(`❌ [VideoProcessor] 视频处理失败: ${inputPath}:`, error);
+      console.error('❌ [VideoProcessor] 视频处理失败: ' + (inputPath) + ':', error);
 
       return {
         success: false,
-        error: `视频处理失败: ${error instanceof Error ? error.message : '未知错误'}`,
+        error: '视频处理失败: ' + (error instanceof Error ? error.message : '未知错误'),
         processingTime: Date.now() - startTime,
       };
     }
@@ -201,7 +201,7 @@ export class VideoProcessor implements IFileProcessor {
         quality: this.getQualityDescription(metadata.width, metadata.height, metadata.bitrate),
       };
     } catch (error) {
-      console.error(`❌ [VideoProcessor] 获取视频信息失败: ${filePath}:`, error);
+      console.error('❌ [VideoProcessor] 获取视频信息失败: ' + (filePath) + ':', error);
       throw error;
     }
   }
@@ -225,8 +225,8 @@ export class VideoProcessor implements IFileProcessor {
       try {
         this.ffmpeg.ffprobe(filePath, (err: any, metadata: any) => {
           if (err) {
-            console.error(`❌ [VideoProcessor] 获取视频元数据失败: ${filePath}:`, err);
-            reject(new Error(`无法读取视频元数据: ${err.message}`));
+            console.error('❌ [VideoProcessor] 获取视频元数据失败: ' + (filePath) + ':', err);
+            reject(new Error('无法读取视频元数据: ' + (err.message)));
             return;
           }
 
@@ -290,7 +290,7 @@ export class VideoProcessor implements IFileProcessor {
         // 设置质量
         if (options.quality) {
           command = this.setVideoQuality(command, options.quality);
-          logger.info(`🔧 [VideoProcessor] 设置视频质量: ${options.quality}`);
+          logger.info('🔧 [VideoProcessor] 设置视频质量: ' + (options.quality));
         }
 
         // 设置输出格式
@@ -299,19 +299,19 @@ export class VideoProcessor implements IFileProcessor {
         // 添加进度监听
         command.on('progress', (progress: any) => {
           if (progress.percent) {
-            logger.info(`🎬 [VideoProcessor] 处理进度: ${Math.round(progress.percent)}%`);
+            logger.info('🎬 [VideoProcessor] 处理进度: ' + (Math.round(progress.percent)) + '%');
           }
         });
 
         // 添加错误监听
         command.on('error', (err: any) => {
           console.error(`❌ [VideoProcessor] FFmpeg处理错误:`, err);
-          reject(new Error(`视频处理失败: ${err.message}`));
+          reject(new Error('视频处理失败: ' + (err.message)));
         });
 
         // 添加完成监听
         command.on('end', () => {
-          logger.info(`✅ [VideoProcessor] FFmpeg处理完成: ${outputPath}`);
+          logger.info('✅ [VideoProcessor] FFmpeg处理完成: ' + (outputPath));
           resolve();
         });
 
@@ -347,7 +347,7 @@ export class VideoProcessor implements IFileProcessor {
   private setVideoQuality(command: any, quality: number): any {
     // 质量范围：1-100，值越高质量越好
     const crf = Math.max(18, Math.min(51, 51 - Math.floor(quality * 0.33))); // 将1-100映射到51-18
-    return command.outputOptions([`-crf ${crf}`]);
+    return command.outputOptions(['-crf ' + (crf)]);
   }
 
   /**
@@ -389,11 +389,11 @@ export class VideoProcessor implements IFileProcessor {
           .frames(1)
           .size('320x240')
           .on('error', (err: any) => {
-            console.warn(`⚠️ [VideoProcessor] 缩略图生成失败: ${err.message}`);
+            console.warn('⚠️ [VideoProcessor] 缩略图生成失败: ' + (err.message));
             reject(err);
           })
           .on('end', () => {
-            logger.info(`🖼️ [VideoProcessor] 视频缩略图生成完成: ${thumbnailPath}`);
+            logger.info('🖼️ [VideoProcessor] 视频缩略图生成完成: ' + (thumbnailPath));
             resolve(thumbnailPath);
           })
           .save(thumbnailPath);
@@ -410,7 +410,7 @@ export class VideoProcessor implements IFileProcessor {
   private getThumbnailPath(originalPath: string): string {
     const ext = path.extname(originalPath);
     const basePath = originalPath.replace(ext, '');
-    return `${basePath}_thumb.jpg`;
+    return (basePath) + '_thumb.jpg';
   }
 
   /**
@@ -422,9 +422,9 @@ export class VideoProcessor implements IFileProcessor {
     const remainingSeconds = Math.floor(seconds % 60);
 
     if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+      return (hours) + ':' + (minutes.toString().padStart(2, '0')) + ':' + (remainingSeconds.toString().padStart(2, '0'));
     } else {
-      return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+      return (minutes) + ':' + (remainingSeconds.toString().padStart(2, '0'));
     }
   }
 
@@ -441,7 +441,7 @@ export class VideoProcessor implements IFileProcessor {
     } else if (width >= 640 && height >= 480) {
       return '480p SD';
     } else {
-      return `${width}x${height}`;
+      return (width) + 'x' + (height);
     }
   }
 
@@ -470,21 +470,21 @@ export class VideoProcessor implements IFileProcessor {
     logger.info('🧪 [VideoProcessor] 创建模拟FFmpeg处理器');
 
     const mockFFmpeg = (input: string) => {
-      logger.info(`🧪 [MockFFmpeg] 处理视频: ${input}`);
+      logger.info('🧪 [MockFFmpeg] 处理视频: ' + (input));
 
       return {
         videoCodec: (codec: string) => {
-          logger.info(`🧪 [MockFFmpeg] 设置视频编解码器: ${codec}`);
+          logger.info('🧪 [MockFFmpeg] 设置视频编解码器: ' + (codec));
           return mockFFmpeg(input);
         },
 
         audioCodec: (codec: string) => {
-          logger.info(`🧪 [MockFFmpeg] 设置音频编解码器: ${codec}`);
+          logger.info('🧪 [MockFFmpeg] 设置音频编解码器: ' + (codec));
           return mockFFmpeg(input);
         },
 
         format: (format: string) => {
-          logger.info(`🧪 [MockFFmpeg] 设置输出格式: ${format}`);
+          logger.info('🧪 [MockFFmpeg] 设置输出格式: ' + (format));
           return mockFFmpeg(input);
         },
 
@@ -494,22 +494,22 @@ export class VideoProcessor implements IFileProcessor {
         },
 
         seekInput: (time: number) => {
-          logger.info(`🧪 [MockFFmpeg] 跳转到时间: ${time}s`);
+          logger.info('🧪 [MockFFmpeg] 跳转到时间: ' + (time) + 's');
           return mockFFmpeg(input);
         },
 
         frames: (count: number) => {
-          logger.info(`🧪 [MockFFmpeg] 提取帧数: ${count}`);
+          logger.info('🧪 [MockFFmpeg] 提取帧数: ' + (count));
           return mockFFmpeg(input);
         },
 
         size: (size: string) => {
-          logger.info(`🧪 [MockFFmpeg] 设置尺寸: ${size}`);
+          logger.info('🧪 [MockFFmpeg] 设置尺寸: ' + (size));
           return mockFFmpeg(input);
         },
 
         on: (event: string, callback: Function) => {
-          logger.info(`🧪 [MockFFmpeg] 注册事件监听: ${event}`);
+          logger.info('🧪 [MockFFmpeg] 注册事件监听: ' + (event));
 
           if (event === 'progress') {
             // 模拟进度更新
@@ -526,19 +526,19 @@ export class VideoProcessor implements IFileProcessor {
         },
 
         save: async (outputPath: string) => {
-          logger.info(`🧪 [MockFFmpeg] 保存视频文件: ${outputPath}`);
+          logger.info('🧪 [MockFFmpeg] 保存视频文件: ' + (outputPath));
 
           // 创建模拟输出文件
           const outputDir = path.dirname(outputPath);
           await fs.mkdir(outputDir, { recursive: true });
-          await fs.writeFile(outputPath, `Mock processed video from ${input}`);
+          await fs.writeFile(outputPath, 'Mock processed video from ' + (input));
         },
       };
     };
 
     // 添加ffprobe方法
     mockFFmpeg.ffprobe = (filePath: string, callback: Function) => {
-      logger.info(`🧪 [MockFFmpeg] 获取视频元数据: ${filePath}`);
+      logger.info('🧪 [MockFFmpeg] 获取视频元数据: ' + (filePath));
 
       setTimeout(() => {
         const mockMetadata = {
@@ -577,7 +577,7 @@ export class VideoProcessor implements IFileProcessor {
   ): Promise<ProcessingResult[]> {
     this.ensureInitialized();
 
-    logger.info(`🎬 [VideoProcessor] 开始批量处理 ${inputPaths.length} 个视频文件`);
+    logger.info('🎬 [VideoProcessor] 开始批量处理 ' + (inputPaths.length) + ' 个视频文件');
 
     const results: ProcessingResult[] = [];
 
@@ -586,7 +586,7 @@ export class VideoProcessor implements IFileProcessor {
       const fileName = path.basename(inputPath);
       const nameWithoutExt = path.parse(fileName).name;
       const outputFormat = options.format || 'mp4';
-      const outputPath = path.join(outputDir, `${nameWithoutExt}.${outputFormat}`);
+      const outputPath = path.join(outputDir, (nameWithoutExt) + '.' + (outputFormat));
 
       try {
         const result = await this.process(inputPath, outputPath, options);
@@ -596,16 +596,16 @@ export class VideoProcessor implements IFileProcessor {
           onProgress(i + 1, inputPaths.length);
         }
       } catch (error) {
-        console.error(`❌ [VideoProcessor] 批量处理失败: ${inputPath}:`, error);
+        console.error('❌ [VideoProcessor] 批量处理失败: ' + (inputPath) + ':', error);
         results.push({
           success: false,
-          error: `处理失败: ${error instanceof Error ? error.message : '未知错误'}`,
+          error: '处理失败: ' + (error instanceof Error ? error.message : '未知错误'),
         });
       }
     }
 
     const successCount = results.filter((r) => r.success).length;
-    logger.info(`✅ [VideoProcessor] 批量处理完成，成功: ${successCount}/${inputPaths.length}`);
+    logger.info('✅ [VideoProcessor] 批量处理完成，成功: ' + (successCount) + '/' + (inputPaths.length));
 
     return results;
   }
@@ -626,7 +626,7 @@ export class VideoProcessor implements IFileProcessor {
 
     const { count = 10, interval, format = 'jpg' } = options;
 
-    logger.info(`🖼️ [VideoProcessor] 提取视频帧: ${inputPath}, 数量: ${count}`);
+    logger.info('🖼️ [VideoProcessor] 提取视频帧: ' + (inputPath) + ', 数量: ' + (count));
 
     return new Promise((resolve, reject) => {
       try {
@@ -634,29 +634,29 @@ export class VideoProcessor implements IFileProcessor {
 
         if (interval) {
           // 按间隔提取
-          command = command.outputOptions([`-vf fps=1/${interval}`]);
+          command = command.outputOptions(['-vf fps=1/' + (interval)]);
         } else {
           // 按数量提取
           command = command.frames(count);
         }
 
-        const outputPattern = path.join(outputDir, `frame_%03d.${format}`);
+        const outputPattern = path.join(outputDir, 'frame_%03d.' + (format));
 
         command
           .on('error', (err: any) => {
             console.error(`❌ [VideoProcessor] 提取帧失败:`, err);
-            reject(new Error(`提取帧失败: ${err.message}`));
+            reject(new Error('提取帧失败: ' + (err.message)));
           })
           .on('end', async () => {
             // 查找生成的帧文件
             try {
               const files = await fs.readdir(outputDir);
               const frameFiles = files
-                .filter((file) => file.startsWith('frame_') && file.endsWith(`.${format}`))
+                .filter((file) => file.startsWith('frame_') && file.endsWith('.' + (format)))
                 .sort()
                 .map((file) => path.join(outputDir, file));
 
-              logger.info(`✅ [VideoProcessor] 帧提取完成，共 ${frameFiles.length} 帧`);
+              logger.info('✅ [VideoProcessor] 帧提取完成，共 ' + (frameFiles.length) + ' 帧');
               resolve(frameFiles);
             } catch (error) {
               reject(error);
@@ -679,7 +679,7 @@ export class VideoProcessor implements IFileProcessor {
   ): Promise<ProcessingResult> {
     this.ensureInitialized();
 
-    logger.info(`🗜️ [VideoProcessor] 开始视频压缩: ${inputPath}, 级别: ${compressionLevel}`);
+    logger.info('🗜️ [VideoProcessor] 开始视频压缩: ' + (inputPath) + ', 级别: ' + (compressionLevel));
 
     const options: VideoProcessingOptions = {
       type: 'video',

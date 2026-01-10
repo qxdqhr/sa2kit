@@ -102,7 +102,7 @@ class LocalStorageAdapter implements IConfigStorage {
       configs[index] = { ...config, updatedAt: Date.now() };
       await this.saveAllConfigsData(configs);
     } else {
-      throw new Error(`配置不存在: ${id}`);
+      throw new Error('配置不存在: ' + (id));
     }
   }
 
@@ -111,7 +111,7 @@ class LocalStorageAdapter implements IConfigStorage {
     
     const config = await this.getConfig(id);
     if (!config) {
-      throw new Error(`配置不存在: ${id}`);
+      throw new Error('配置不存在: ' + (id));
     }
     
     // 清除其他配置的默认标记
@@ -170,14 +170,14 @@ class MemoryStorageAdapter implements IConfigStorage {
 
   async updateConfig(id: string, config: SavedConfig): Promise<void> {
     if (!this.configs.has(id)) {
-      throw new Error(`配置不存在: ${id}`);
+      throw new Error('配置不存在: ' + (id));
     }
     this.configs.set(id, { ...config, updatedAt: Date.now() });
   }
 
   async setDefaultConfig(id: string): Promise<void> {
     if (!this.configs.has(id)) {
-      throw new Error(`配置不存在: ${id}`);
+      throw new Error('配置不存在: ' + (id));
     }
     
     // 清除其他配置的默认标记
@@ -238,7 +238,7 @@ export class ConfigService {
    * 生成唯一ID
    */
   private generateId(): string {
-    return `config_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    return 'config_' + (Date.now()) + '_' + (Math.random().toString(36).substring(2, 9));
   }
 
   /**
@@ -343,7 +343,7 @@ export class ConfigService {
   ): Promise<SavedConfig> {
     const existing = await this.getConfig(id);
     if (!existing) {
-      throw new Error(`配置不存在: ${id}`);
+      throw new Error('配置不存在: ' + (id));
     }
 
     const updated: SavedConfig = {
@@ -408,7 +408,7 @@ export class ConfigService {
   async exportConfig(id: string): Promise<string> {
     const config = await this.getConfig(id);
     if (!config) {
-      throw new Error(`配置不存在: ${id}`);
+      throw new Error('配置不存在: ' + (id));
     }
     return JSON.stringify(config, null, 2);
   }
@@ -437,7 +437,7 @@ export class ConfigService {
 
       return newConfig;
     } catch (error) {
-      throw new Error(`导入配置失败: ${error}`);
+      throw new Error('导入配置失败: ' + (error));
     }
   }
 
@@ -447,13 +447,13 @@ export class ConfigService {
   async duplicateConfig(id: string, newName?: string): Promise<SavedConfig> {
     const original = await this.getConfig(id);
     if (!original) {
-      throw new Error(`配置不存在: ${id}`);
+      throw new Error('配置不存在: ' + (id));
     }
 
     const duplicated: SavedConfig = {
       ...original,
       id: this.generateId(),
-      name: newName || `${original.name} (副本)`,
+      name: newName || (original.name) + ' (副本)',
       createdAt: Date.now(),
       updatedAt: Date.now(),
       isDefault: false,

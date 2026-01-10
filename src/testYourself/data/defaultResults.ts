@@ -334,7 +334,7 @@ export const DEFAULT_RESULTS: TestResult[] = [
 
 // 验证数据集长度
 if (DEFAULT_RESULTS.length !== 45) {
-  console.warn(`结果数据集应包含45项，当前: ${DEFAULT_RESULTS.length}`);
+  console.warn('结果数据集应包含45项，当前: ' + (DEFAULT_RESULTS.length));
 }
 
 

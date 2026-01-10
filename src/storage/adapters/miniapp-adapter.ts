@@ -84,7 +84,7 @@ export class MiniAppStorageAdapter implements StorageAdapter {
       if (error.errMsg?.includes('data not found')) {
         return null;
       }
-      console.error(`[MiniAppStorage] Error getting item "${key}":`, error);
+      console.error('[MiniAppStorage] Error getting item "' + (key) + '":', error);
       return null;
     }
   }
@@ -104,7 +104,7 @@ export class MiniAppStorageAdapter implements StorageAdapter {
       await Taro.setStorage({ key, data: value });
       this.notifyListeners(key, value);
     } catch (error) {
-      console.error(`[MiniAppStorage] Error setting item "${key}":`, error);
+      console.error('[MiniAppStorage] Error setting item "' + (key) + '":', error);
       throw error;
     }
   }
@@ -124,7 +124,7 @@ export class MiniAppStorageAdapter implements StorageAdapter {
       await Taro.removeStorage({ key });
       this.notifyListeners(key, null);
     } catch (error) {
-      console.error(`[MiniAppStorage] Error removing item "${key}":`, error);
+      console.error('[MiniAppStorage] Error removing item "' + (key) + '":', error);
       throw error;
     }
   }

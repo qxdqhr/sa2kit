@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { clsx } from 'clsx';
 
 export interface StartScreenProps {
   /** 是否显示开始界面 */
@@ -127,7 +128,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({
 
   const content = (
     <div
-      className={`fixed inset-0 w-screen h-screen flex items-center justify-center overflow-hidden ${className}`}
+      className={clsx('fixed inset-0 w-screen h-screen flex items-center justify-center overflow-hidden', className)}
       style={{
         zIndex: 999999,
         pointerEvents: 'auto',
@@ -167,8 +168,8 @@ export const StartScreen: React.FC<StartScreenProps> = ({
                 top: Math.random() * 100 + '%',
                 left: Math.random() * 100 + '%',
                 boxShadow: '0 0 10px rgba(148, 163, 184, 0.3)',
-                animation: `floatParticle ${Math.random() * 10 + 10}s linear infinite`,
-                animationDelay: `-${Math.random() * 20}s`
+                animation: 'floatParticle ' + (Math.random() * 10 + 10) + 's linear infinite',
+                animationDelay: '-' + (Math.random() * 20) + 's'
               }}
             />
           ))}

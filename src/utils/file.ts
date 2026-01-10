@@ -30,8 +30,8 @@ export const fileUtils = {
     const timestamp = Date.now();
     const random = Math.random().toString(36).substring(2, 15);
     const extension = this.getFileExtension(originalName);
-    const baseName = originalName.replace(`.${extension}`, '');
-    return extension ? `${baseName}_${timestamp}_${random}.${extension}` : `${baseName}_${timestamp}_${random}`;
+    const baseName = originalName.replace('.' + (extension), '');
+    return extension ? (baseName) + '_' + (timestamp) + '_' + (random) + '.' + (extension) : (baseName) + '_' + (timestamp) + '_' + (random);
   },
 
   /**

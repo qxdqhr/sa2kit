@@ -62,7 +62,7 @@ export class MiniappRequestAdapter implements RequestAdapter {
       } else {
         return {
           success: false,
-          error: data.error || `请求失败: ${response.statusCode}`,
+          error: data.error || '请求失败: ' + (response.statusCode),
         } as T;
       }
     } catch (error) {

@@ -138,7 +138,7 @@ export function createRegisterHandler(config: RegisterRouteConfig) {
           path: config.cookieOptions?.path || '/',
         };
 
-        const cookieValue = `${cookieOptions.name}=${result.token}; HttpOnly=${cookieOptions.httpOnly}; Secure=${cookieOptions.secure}; SameSite=${cookieOptions.sameSite}; Max-Age=${cookieOptions.maxAge}; Path=${cookieOptions.path}`;
+        const cookieValue = (cookieOptions.name) + '=' + (result.token) + '; HttpOnly=' + (cookieOptions.httpOnly) + '; Secure=' + (cookieOptions.secure) + '; SameSite=' + (cookieOptions.sameSite) + '; Max-Age=' + (cookieOptions.maxAge) + '; Path=' + (cookieOptions.path);
         response.headers.set('Set-Cookie', cookieValue);
       }
 

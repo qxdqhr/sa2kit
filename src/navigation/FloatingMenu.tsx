@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { clsx } from 'clsx';
 
 export interface FloatingMenuProps {
   /**
@@ -251,25 +252,19 @@ const FloatingMenu: React.FC<FloatingMenuProps> = ({
   return createPortal(
     <div
       ref={containerRef}
-      className={`fixed select-none box-border ${className}`}
+      className={clsx('fixed select-none box-border', className)}
       style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
+        left: (position.x) + 'px',
+        top: (position.y) + 'px',
         zIndex,
       }}
     >
       {/* 触发器按钮 */}
       <div 
-        className={`
-          flex items-center justify-center 
-          w-12 h-12 md:w-12 md:h-12 
-          bg-white rounded-full 
-          shadow-md hover:shadow-lg 
-          cursor-grab active:cursor-grabbing 
-          transition-all duration-200 
-          hover:scale-105 active:scale-95
-          ${triggerClassName}
-        `}
+        className={clsx(
+          'flex items-center justify-center w-12 h-12 md:w-12 md:h-12 bg-white rounded-full shadow-md hover:shadow-lg cursor-grab active:cursor-grabbing transition-all duration-200 hover:scale-105 active:scale-95',
+          triggerClassName
+        )}
         onMouseDown={handleMouseDown}
         onClick={toggleMenu}
       >
@@ -279,16 +274,12 @@ const FloatingMenu: React.FC<FloatingMenuProps> = ({
       {/* 菜单内容 */}
       {isMenuOpen && (
         <div 
-          className={`
-            absolute top-0
-            bg-white rounded-lg shadow-xl 
-            p-3 min-w-[200px] md:min-w-[200px] max-w-[300px]
-            z-[1000] 
-            transition-all duration-200
-            ${isMenuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
-            ${menuDirection === 'left' ? 'right-[calc(100%+10px)]' : 'left-[calc(100%+10px)]'}
-            ${menuClassName}
-          `}
+          className={clsx(
+            'absolute top-0 bg-white rounded-lg shadow-xl p-3 min-w-[200px] md:min-w-[200px] max-w-[300px] z-[1000] transition-all duration-200',
+            isMenuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95',
+            menuDirection === 'left' ? 'right-[calc(100%+10px)]' : 'left-[calc(100%+10px)]',
+            menuClassName
+          )}
           onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
           onMouseUp={(e) => e.stopPropagation()}

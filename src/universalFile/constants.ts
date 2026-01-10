@@ -102,19 +102,19 @@ export const API_BASE_PATH = '/api/universal-file';
 /** API端点 */
 export const API_ENDPOINTS = {
   /** 上传文件 */
-  UPLOAD: `${API_BASE_PATH}/upload`,
+  UPLOAD: (API_BASE_PATH) + '/upload',
   /** 获取文件URL */
-  GET_URL: (fileId: string) => `${API_BASE_PATH}/files/${fileId}/url`,
+  GET_URL: (fileId: string) => (API_BASE_PATH) + '/files/' + (fileId) + '/url',
   /** 获取文件元数据 */
-  GET_METADATA: (fileId: string) => `${API_BASE_PATH}/files/${fileId}`,
+  GET_METADATA: (fileId: string) => (API_BASE_PATH) + '/files/' + (fileId),
   /** 删除文件 */
-  DELETE: (fileId: string) => `${API_BASE_PATH}/files/${fileId}`,
+  DELETE: (fileId: string) => (API_BASE_PATH) + '/files/' + (fileId),
   /** 查询文件列表 */
-  QUERY: `${API_BASE_PATH}/files`,
+  QUERY: (API_BASE_PATH) + '/files',
   /** 批量删除 */
-  BATCH_DELETE: `${API_BASE_PATH}/files/batch-delete`,
+  BATCH_DELETE: (API_BASE_PATH) + '/files/batch-delete',
   /** 获取上传进度 */
-  GET_PROGRESS: (fileId: string) => `${API_BASE_PATH}/upload/${fileId}/progress`,
+  GET_PROGRESS: (fileId: string) => (API_BASE_PATH) + '/upload/' + (fileId) + '/progress',
 } as const;
 
 // ============= 错误代码 =============

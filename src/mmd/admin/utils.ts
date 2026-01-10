@@ -344,7 +344,7 @@ export function generateMockFileUrls(fileIds: string[]): FileIdToUrlMap {
   const urls: FileIdToUrlMap = {};
   
   for (const id of fileIds) {
-    urls[id] = `/mock/files/${id}`;
+    urls[id] = '/mock/files/' + (id);
   }
   
   return urls;

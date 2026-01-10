@@ -338,7 +338,7 @@ export function createBatchDeleteEventsHandler(config: CalendarRouteConfig) {
       return NextResponse.json({
         success: true,
         data: { deletedCount },
-        message: `成功删除 ${deletedCount} 个事件`
+        message: '成功删除 ' + (deletedCount) + ' 个事件'
       });
     } catch (error) {
       console.error('批量删除事件失败：', error);

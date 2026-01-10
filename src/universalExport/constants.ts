@@ -68,19 +68,19 @@ export const API_BASE_PATH = '/api/universal-export';
 /** API端点 */
 export const API_ENDPOINTS = {
   /** 获取配置列表 */
-  GET_CONFIGS: `${API_BASE_PATH}/configs`,
+  GET_CONFIGS: (API_BASE_PATH) + '/configs',
   /** 创建配置 */
-  CREATE_CONFIG: `${API_BASE_PATH}/configs`,
+  CREATE_CONFIG: (API_BASE_PATH) + '/configs',
   /** 更新配置 */
-  UPDATE_CONFIG: (configId: string) => `${API_BASE_PATH}/configs/${configId}`,
+  UPDATE_CONFIG: (configId: string) => (API_BASE_PATH) + '/configs/' + (configId),
   /** 删除配置 */
-  DELETE_CONFIG: (configId: string) => `${API_BASE_PATH}/configs/${configId}`,
+  DELETE_CONFIG: (configId: string) => (API_BASE_PATH) + '/configs/' + (configId),
   /** 触发导出 */
-  EXPORT_DATA: `${API_BASE_PATH}/export`,
+  EXPORT_DATA: (API_BASE_PATH) + '/export',
   /** 查询导出进度 */
-  GET_PROGRESS: (exportId: string) => `${API_BASE_PATH}/export/${exportId}/progress`,
+  GET_PROGRESS: (exportId: string) => (API_BASE_PATH) + '/export/' + (exportId) + '/progress',
   /** 下载导出文件 */
-  DOWNLOAD_FILE: (exportId: string) => `${API_BASE_PATH}/export/${exportId}/download`,
+  DOWNLOAD_FILE: (exportId: string) => (API_BASE_PATH) + '/export/' + (exportId) + '/download',
 } as const;
 
 // ============= 错误代码 =============

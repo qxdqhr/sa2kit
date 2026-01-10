@@ -97,7 +97,7 @@ export class PMXEditor {
       action: 'add',
       target: newTexture.index,
       data: { path },
-    }, `添加纹理: ${path}`);
+    }, '添加纹理: ' + (path));
 
     return newTexture.index;
   }
@@ -107,7 +107,7 @@ export class PMXEditor {
    */
   updateTexture(index: number, newPath: string): boolean {
     if (index < 0 || index >= this.data.textures.length) {
-      throw new Error(`Invalid texture index: ${index}`);
+      throw new Error('Invalid texture index: ' + (index));
     }
 
     const oldPath = this.data.textures[index]!.path;
@@ -118,7 +118,7 @@ export class PMXEditor {
       action: 'update',
       target: index,
       data: { oldPath, newPath },
-    }, `更新纹理 #${index}: ${oldPath} → ${newPath}`);
+    }, '更新纹理 #' + (index) + ': ' + (oldPath) + ' → ' + (newPath));
 
     return true;
   }
@@ -128,7 +128,7 @@ export class PMXEditor {
    */
   deleteTexture(index: number): boolean {
     if (index < 0 || index >= this.data.textures.length) {
-      throw new Error(`Invalid texture index: ${index}`);
+      throw new Error('Invalid texture index: ' + (index));
     }
 
     // 检查是否有材质使用此纹理
@@ -139,7 +139,7 @@ export class PMXEditor {
     );
 
     if (usedByMaterials.length > 0) {
-      throw new Error(`纹理 #${index} 正在被 ${usedByMaterials.length} 个材质使用，无法删除`);
+      throw new Error('纹理 #' + (index) + ' 正在被 ' + (usedByMaterials.length) + ' 个材质使用，无法删除');
     }
 
     const deletedTexture = this.data.textures.splice(index, 1)[0];
@@ -167,7 +167,7 @@ export class PMXEditor {
       action: 'delete',
       target: index,
       data: { path: deletedTexture.path },
-    }, `删除纹理 #${index}: ${deletedTexture.path}`);
+    }, '删除纹理 #' + (index) + ': ' + (deletedTexture.path));
 
     return true;
   }
@@ -177,11 +177,11 @@ export class PMXEditor {
    */
   setMaterialMainTexture(materialIndex: number, textureIndex: number): boolean {
     if (materialIndex < 0 || materialIndex >= this.data.materials.length) {
-      throw new Error(`Invalid material index: ${materialIndex}`);
+      throw new Error('Invalid material index: ' + (materialIndex));
     }
 
     if (textureIndex !== -1 && (textureIndex < 0 || textureIndex >= this.data.textures.length)) {
-      throw new Error(`Invalid texture index: ${textureIndex}`);
+      throw new Error('Invalid texture index: ' + (textureIndex));
     }
 
     const material = this.data.materials[materialIndex]!;
@@ -200,7 +200,7 @@ export class PMXEditor {
         oldIndex,
         newIndex: textureIndex
       },
-    }, `材质 #${materialIndex} 主纹理: #${oldIndex} → #${textureIndex}`);
+    }, '材质 #' + (materialIndex) + ' 主纹理: #' + (oldIndex) + ' → #' + (textureIndex));
 
     return true;
   }
@@ -214,11 +214,11 @@ export class PMXEditor {
     mode: number = 1
   ): boolean {
     if (materialIndex < 0 || materialIndex >= this.data.materials.length) {
-      throw new Error(`Invalid material index: ${materialIndex}`);
+      throw new Error('Invalid material index: ' + (materialIndex));
     }
 
     if (textureIndex !== -1 && (textureIndex < 0 || textureIndex >= this.data.textures.length)) {
-      throw new Error(`Invalid texture index: ${textureIndex}`);
+      throw new Error('Invalid texture index: ' + (textureIndex));
     }
 
     const material = this.data.materials[materialIndex]!;
@@ -242,7 +242,7 @@ export class PMXEditor {
         oldMode,
         newMode: mode
       },
-    }, `材质 #${materialIndex} Sphere纹理: #${oldIndex} → #${textureIndex} (模式: ${mode})`);
+    }, '材质 #' + (materialIndex) + ' Sphere纹理: #' + (oldIndex) + ' → #' + (textureIndex) + ' (模式: ' + (mode) + ')');
 
     return true;
   }
@@ -256,12 +256,12 @@ export class PMXEditor {
     isShared: boolean = false
   ): boolean {
     if (materialIndex < 0 || materialIndex >= this.data.materials.length) {
-      throw new Error(`Invalid material index: ${materialIndex}`);
+      throw new Error('Invalid material index: ' + (materialIndex));
     }
 
     if (!isShared && textureIndex !== -1 &&
       (textureIndex < 0 || textureIndex >= this.data.textures.length)) {
-      throw new Error(`Invalid texture index: ${textureIndex}`);
+      throw new Error('Invalid texture index: ' + (textureIndex));
     }
 
     const material = this.data.materials[materialIndex]!;
@@ -285,7 +285,7 @@ export class PMXEditor {
         oldShared,
         isShared
       },
-    }, `材质 #${materialIndex} Toon纹理: #${oldIndex} → #${textureIndex} (共享: ${isShared})`);
+    }, '材质 #' + (materialIndex) + ' Toon纹理: #' + (oldIndex) + ' → #' + (textureIndex) + ' (共享: ' + (isShared) + ')');
 
     return true;
   }
@@ -295,7 +295,7 @@ export class PMXEditor {
    */
   updateMaterial(materialIndex: number, updates: Partial<PMXMaterial>): boolean {
     if (materialIndex < 0 || materialIndex >= this.data.materials.length) {
-      throw new Error(`Invalid material index: ${materialIndex}`);
+      throw new Error('Invalid material index: ' + (materialIndex));
     }
 
     const material = this.data.materials[materialIndex]!;
@@ -327,7 +327,7 @@ export class PMXEditor {
       action: 'update',
       target: materialIndex,
       data: { oldData, updates },
-    }, `更新材质 #${materialIndex}: ${material.name}`);
+    }, '更新材质 #' + (materialIndex) + ': ' + (material.name));
 
     return true;
   }
@@ -371,7 +371,7 @@ export class PMXEditor {
       if (material.isSharedToon) {
         mapping.toonTexture = {
           index: material.toonTextureIndex,
-          path: `toon${String(material.toonTextureIndex).padStart(2, '0')}.bmp`,
+          path: 'toon' + (String(material.toonTextureIndex).padStart(2, '0')) + '.bmp',
           isShared: true,
         };
       } else if (

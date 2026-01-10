@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { EventFormData, EventColor, EventPriority, RecurrenceType } from '../types';
+import { clsx } from 'clsx';
 
 interface EventFormProps {
   /** 初始事件数据（编辑模式） */
@@ -108,7 +109,7 @@ export default function EventForm({
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+    return (year) + '-' + (month) + '-' + (day) + 'T' + (hours) + ':' + (minutes);
   };
 
   // 解析本地日期时间
@@ -159,9 +160,7 @@ export default function EventForm({
               id="title"
               value={formData.title}
               onChange={(e) => handleInputChange('title', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.title ? 'border-red-300' : 'border-gray-300'
-              }`}
+              className={clsx('w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500', errors.title ? 'border-red-300' : 'border-gray-300')}
               placeholder="请输入事件标题"
             />
             {errors.title && (
@@ -258,9 +257,7 @@ export default function EventForm({
                   : parseDateTimeLocal(e.target.value);
                 handleInputChange('endTime', newDate);
               }}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.endTime ? 'border-red-300' : 'border-gray-300'
-              }`}
+              className={clsx('w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500', errors.endTime ? 'border-red-300' : 'border-gray-300')}
             />
             {errors.endTime && (
               <p className="mt-1 text-sm text-red-600">{errors.endTime}</p>
@@ -282,15 +279,11 @@ export default function EventForm({
                   key={option.value}
                   type="button"
                   onClick={() => handleInputChange('color', option.value)}
-                  className={`
-                    flex items-center px-3 py-2 rounded-lg border-2 transition-all
-                    ${formData.color === option.value 
+                  className={clsx('flex items-center px-3 py-2 rounded-lg border-2 transition-all', formData.color === option.value 
                       ? 'border-blue-500 ring-2 ring-blue-200' 
-                      : 'border-gray-200 hover:border-gray-300'
-                    }
-                  `}
+                      : 'border-gray-200 hover:border-gray-300')}
                 >
-                  <div className={`w-4 h-4 rounded-full ${option.class} mr-2`} />
+                  <div className={clsx('w-4 h-4 rounded-full', option.class, 'mr-2')} />
                   <span className="text-sm text-gray-700">{option.label}</span>
                 </button>
               ))}

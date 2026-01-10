@@ -54,17 +54,17 @@ export async function uploadMmdResource(
   const { file, resourceType, name, description, userId } = options;
 
   // 验证文件扩展名
-  const ext = `.${file.name.split('.').pop()?.toLowerCase()}`;
+  const ext = '.' + (file.name.split('.').pop()?.toLowerCase());
   const allowedExtensions = MMD_FILE_EXTENSIONS[resourceType];
 
   if (!allowedExtensions.includes(ext)) {
     throw new Error(
-      `不支持的文件扩展名: ${ext}。支持的格式: ${allowedExtensions.join(', ')}`
+      '不支持的文件扩展名: ' + (ext) + '。支持的格式: ' + (allowedExtensions.join(', '))
     );
   }
 
   // 确定模块ID
-  const moduleId = `mmd-${resourceType}s`;
+  const moduleId = 'mmd-' + (resourceType) + 's';
 
   // 上传文件
   const metadata = await fileService.uploadFile({
@@ -158,7 +158,7 @@ export async function batchUploadMmdResources(
       const result = await uploadMmdResource(fileService, uploadOptions);
       results.push(result);
     } catch (error) {
-      console.error(`上传失败: ${uploadOptions.file.name}`, error);
+      console.error('上传失败: ' + (uploadOptions.file.name), error);
       // 继续处理其他文件
     }
   }

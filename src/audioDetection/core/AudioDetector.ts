@@ -135,7 +135,7 @@ export class AudioDetector {
 
     // 调试日志：每2秒输出一次音量信息
     if (Date.now() % 2000 < 100) {
-      console.log(`[AudioDetector] 当前音量: ${volume.toFixed(6)}, 阈值: ${config.minVolume}, 状态: ${volume >= config.minVolume ? '✅ 有声音' : '❌ 音量太低'}`);
+      console.log('[AudioDetector] 当前音量: ' + (volume.toFixed(6)) + ', 阈值: ' + (config.minVolume) + ', 状态: ' + (volume >= config.minVolume ? '✅ 有声音' : '❌ 音量太低'));
     }
 
     // 检查是否有足够的音量

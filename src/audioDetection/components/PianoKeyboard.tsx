@@ -5,6 +5,7 @@
 
 import React, { useMemo } from 'react';
 import type { NoteInfo } from '../types';
+import { clsx } from 'clsx';
 
 export interface PianoKeyboardProps {
   /** 当前激活的音符 */
@@ -66,15 +67,15 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
   const blackKeys = keys.filter(k => k.isBlack);
 
   return (
-    <div className={`piano-keyboard ${className}`}>
+    <div className={clsx('piano-keyboard', className)}>
       <div className="piano-keys-container">
         {/* 白键 */}
         <div className="white-keys">
           {whiteKeys.map((key, index) => (
             <div
-              key={`white-${key.midi}`}
-              className={`piano-key white-key ${key.isActive ? 'active' : ''}`}
-              title={`${key.noteName}${key.octave}`}
+              key={'white-' + (key.midi)}
+              className={clsx('piano-key white-key', key.isActive ? 'active' : '')}
+              title={(key.noteName) + (key.octave)}
             >
               {showNoteNames && (
                 <span className="key-label">{key.noteName}{key.octave}</span>
@@ -93,10 +94,10 @@ export const PianoKeyboard: React.FC<PianoKeyboardProps> = ({
 
             return (
               <div
-                key={`black-${key.midi}`}
-                className={`piano-key black-key ${key.isActive ? 'active' : ''}`}
-                style={{ left: `${(position + 0.7) * (100 / whiteKeys.length)}%` }}
-                title={`${key.noteName}${key.octave}`}
+                key={'black-' + (key.midi)}
+                className={clsx('piano-key black-key', key.isActive ? 'active' : '')}
+                style={{ left: ((position + 0.7) * (100 / whiteKeys.length)) + '%' }}
+                title={(key.noteName) + (key.octave)}
               >
                 {showNoteNames && (
                   <span className="key-label">{key.noteName}{key.octave}</span>

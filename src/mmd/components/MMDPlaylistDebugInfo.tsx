@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MMDPlaylistNode } from '../types';
+import { clsx } from 'clsx';
 
 interface MMDPlaylistDebugInfoProps {
   playlistName: string;
@@ -118,11 +119,9 @@ export const MMDPlaylistDebugInfo: React.FC<MMDPlaylistDebugInfoProps> = ({
         <div className="space-y-1 pl-2">
           <div className="flex items-center justify-between">
             <span className="text-gray-400">策略:</span>
-            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-              preloadStrategy === 'all' ? 'bg-red-600 text-white' :
+            <span className={clsx('px-2 py-0.5 rounded text-[10px] font-bold uppercase', preloadStrategy === 'all' ? 'bg-red-600 text-white' :
               preloadStrategy === 'next' ? 'bg-yellow-600 text-white' :
-              'bg-gray-700 text-gray-400'
-            }`}>
+              'bg-gray-700 text-gray-400')}>
               {preloadStrategy}
             </span>
           </div>
@@ -137,11 +136,9 @@ export const MMDPlaylistDebugInfo: React.FC<MMDPlaylistDebugInfoProps> = ({
                 {preloadedNodes.map((idx) => (
                   <span
                     key={idx}
-                    className={`px-1.5 py-0.5 rounded text-[10px] ${
-                      idx === currentIndex
+                    className={clsx('px-1.5 py-0.5 rounded text-[10px]', idx === currentIndex
                         ? 'bg-green-600 text-white font-bold'
-                        : 'bg-gray-700 text-gray-300'
-                    }`}
+                        : 'bg-gray-700 text-gray-300')}
                   >
                     {idx}
                   </span>
@@ -188,15 +185,13 @@ export const MMDPlaylistDebugInfo: React.FC<MMDPlaylistDebugInfoProps> = ({
             <div className="mt-2">
               <div className="bg-gray-700 rounded-full h-2 overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-300 ${
-                    (parseFloat(memoryInfo.used) / parseFloat(memoryInfo.limit)) * 100 > 80
+                  className={clsx('h-full transition-all duration-300', (parseFloat(memoryInfo.used) / parseFloat(memoryInfo.limit)) * 100 > 80
                       ? 'bg-red-500'
                       : (parseFloat(memoryInfo.used) / parseFloat(memoryInfo.limit)) * 100 > 60
                       ? 'bg-yellow-500'
-                      : 'bg-green-500'
-                  }`}
+                      : 'bg-green-500')}
                   style={{
-                    width: `${Math.min(100, (parseFloat(memoryInfo.used) / parseFloat(memoryInfo.limit)) * 100)}%`,
+                    width: (Math.min(100, (parseFloat(memoryInfo.used) / parseFloat(memoryInfo.limit)) * 100)) + '%',
                   }}
                 />
               </div>
@@ -215,13 +210,11 @@ export const MMDPlaylistDebugInfo: React.FC<MMDPlaylistDebugInfoProps> = ({
           {Array.from({ length: totalNodes }).map((_, idx) => (
             <div
               key={idx}
-              className={`px-2 py-1 rounded text-[10px] flex items-center justify-between ${
-                idx === currentIndex
+              className={clsx('px-2 py-1 rounded text-[10px] flex items-center justify-between', idx === currentIndex
                   ? 'bg-blue-600 text-white font-bold'
                   : preloadedNodes.includes(idx)
                   ? 'bg-yellow-900/50 text-yellow-300'
-                  : 'bg-gray-800 text-gray-400'
-              }`}
+                  : 'bg-gray-800 text-gray-400')}
             >
               <span>节点 {idx}</span>
               {idx === currentIndex && <span>▶</span>}
@@ -244,11 +237,9 @@ export const MMDPlaylistDebugInfo: React.FC<MMDPlaylistDebugInfoProps> = ({
 // 辅助组件：状态徽章
 const StatusBadge: React.FC<{ active: boolean; label: string }> = ({ active, label }) => (
   <span
-    className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-      active
+    className={clsx('px-2 py-0.5 rounded text-[10px] font-bold', active
         ? 'bg-green-600 text-white'
-        : 'bg-gray-700 text-gray-400'
-    }`}
+        : 'bg-gray-700 text-gray-400')}
   >
     {label}
   </span>

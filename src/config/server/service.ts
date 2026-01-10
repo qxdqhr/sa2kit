@@ -51,9 +51,9 @@ export interface ConfigServiceOptions {
  * 默认日志记录器
  */
 const defaultLogger: Logger = {
-  info: (message: string, ...args: any[]) => console.log(`[ConfigService] ${message}`, ...args),
-  warn: (message: string, ...args: any[]) => console.warn(`[ConfigService] ${message}`, ...args),
-  error: (message: string, ...args: any[]) => console.error(`[ConfigService] ${message}`, ...args),
+  info: (message: string, ...args: any[]) => console.log('[ConfigService] ' + (message), ...args),
+  warn: (message: string, ...args: any[]) => console.warn('[ConfigService] ' + (message), ...args),
+  error: (message: string, ...args: any[]) => console.error('[ConfigService] ' + (message), ...args),
 };
 
 /**
@@ -109,7 +109,7 @@ export class ConfigService {
           defaultDescription: meta.defaultDescription || undefined,
         });
       });
-      this.logger.info(`已加载 ${metadata.length} 条配置元数据`);
+      this.logger.info('已加载 ' + (metadata.length) + ' 条配置元数据');
     } catch (error) {
       // 如果表不存在，使用模板作为后备
       this.logger.warn(
@@ -132,9 +132,9 @@ export class ConfigService {
         if (this.isSensitiveConfig(config.key)) {
           try {
             value = this.decrypt(config.value as string);
-            this.logger.info(`✅ 成功解密配置: ${config.key}`);
+            this.logger.info('✅ 成功解密配置: ' + (config.key));
           } catch (error) {
-            this.logger.error(`❌ 解密配置失败: ${config.key}`, error);
+            this.logger.error('❌ 解密配置失败: ' + (config.key), error);
             // 跳过该配置，不加入缓存
             return;
           }
@@ -143,7 +143,7 @@ export class ConfigService {
         this.configCache.set(config.key, value);
       });
 
-      this.logger.info(`已加载 ${configs.length} 个配置项`);
+      this.logger.info('已加载 ' + (configs.length) + ' 个配置项');
     } catch (error) {
       this.logger.error('加载配置失败', error instanceof Error ? error : new Error(String(error)));
     }
@@ -180,10 +180,10 @@ export class ConfigService {
         if (this.isSensitiveConfig(key)) {
           try {
             value = this.decrypt(config.value as string);
-            this.logger.info(`✅ 成功解密配置: ${key}, 长度: ${value?.length}`);
+            this.logger.info('✅ 成功解密配置: ' + (key) + ', 长度: ' + (value?.length));
           } catch (error) {
-            this.logger.error(`❌ 解密配置失败: ${key}`, error);
-            throw new Error(`配置 ${key} 解密失败`);
+            this.logger.error('❌ 解密配置失败: ' + (key), error);
+            throw new Error('配置 ' + (key) + ' 解密失败');
           }
         }
 
@@ -192,7 +192,7 @@ export class ConfigService {
       }
     } catch (error) {
       this.logger.error(
-        `获取配置 ${key} 失败`,
+        '获取配置 ' + (key) + ' 失败',
         error instanceof Error ? error : new Error(String(error))
       );
     }
@@ -243,10 +243,10 @@ export class ConfigService {
       // 更新缓存
       this.configCache.set(key, validatedValue);
 
-      this.logger.info(`配置 ${key} 已更新`);
+      this.logger.info('配置 ' + (key) + ' 已更新');
     } catch (error) {
       this.logger.error(
-        `设置配置 ${key} 失败`,
+        '设置配置 ' + (key) + ' 失败',
         error instanceof Error ? error : new Error(String(error))
       );
       throw error;
@@ -278,10 +278,10 @@ export class ConfigService {
       await this.db.delete(this.tables.systemConfigs).where(eq(this.tables.systemConfigs.key, key));
 
       this.configCache.delete(key);
-      this.logger.info(`配置 ${key} 已删除`);
+      this.logger.info('配置 ' + (key) + ' 已删除');
     } catch (error) {
       this.logger.error(
-        `删除配置 ${key} 失败`,
+        '删除配置 ' + (key) + ' 失败',
         error instanceof Error ? error : new Error(String(error))
       );
       throw error;
@@ -327,14 +327,14 @@ export class ConfigService {
     const isRequired = this.isRequiredConfig(key);
 
     if (isRequired && (value === undefined || value === null || value === '')) {
-      throw new Error(`配置 ${key} 是必需的`);
+      throw new Error('配置 ' + (key) + ' 是必需的');
     }
 
     try {
       this.validateValue(value, type);
       return true;
     } catch (error: any) {
-      throw new Error(`配置 ${key} 值无效: ${error.message}`);
+      throw new Error('配置 ' + (key) + ' 值无效: ' + (error.message));
     }
   }
 
@@ -494,10 +494,10 @@ export class ConfigService {
         defaultDescription: options.defaultDescription,
       });
 
-      this.logger.info(`配置元数据 ${key} 已更新`);
+      this.logger.info('配置元数据 ' + (key) + ' 已更新');
     } catch (error) {
       this.logger.error(
-        `设置配置元数据 ${key} 失败`,
+        '设置配置元数据 ' + (key) + ' 失败',
         error instanceof Error ? error : new Error(String(error))
       );
       throw error;

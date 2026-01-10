@@ -145,7 +145,7 @@ export class Uploader {
    * 添加到重试队列
    */
   private async addToRetryQueue(events: AnalyticsEvent[]): Promise<void> {
-    const key = `${Date.now()}_${Math.random()}`;
+    const key = (Date.now()) + '_' + (Math.random());
     this.retryQueue.set(key, {
       events,
       retryCount: 0,

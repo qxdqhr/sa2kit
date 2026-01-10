@@ -9,6 +9,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback } from 'react';
+import { clsx } from 'clsx';
 import {
   Upload,
   X,
@@ -112,12 +113,12 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   const validateFile = (file: File): string | null => {
     // 检查文件大小
     if (file.size > maxFileSize * 1024 * 1024) {
-      return `文件大小不能超过 ${maxFileSize}MB`;
+      return '文件大小不能超过 ' + (maxFileSize) + 'MB';
     }
 
     // 检查文件类型
     if (acceptedTypes.length > 0 && !acceptedTypes.includes(file.type)) {
-      return `不支持的文件类型: ${file.type}`;
+      return '不支持的文件类型: ' + (file.type);
     }
 
     return null;
@@ -127,7 +128,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
 
   const uploadFile = useCallback(
     async (file: File): Promise<void> => {
-      const fileId = `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const fileId = 'upload_' + (Date.now()) + '_' + (Math.random().toString(36).substr(2, 9));
 
       // 验证文件
       const error = validateFile(file);
@@ -220,7 +221,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
 
       // 检查文件数量限制
       if (completedFiles.length + uploadingFiles.length + fileArray.length > maxFiles) {
-        onUploadError?.(`最多只能上传 ${maxFiles} 个文件`);
+        onUploadError?.('最多只能上传 ' + (maxFiles) + ' 个文件');
         return;
       }
 
@@ -290,7 +291,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
       case 'pending':
         return '准备中...';
       case 'uploading':
-        return `上传中 ${progress.progress.toFixed(1)}%`;
+        return '上传中 ' + (progress.progress.toFixed(1)) + '%';
       case 'processing':
         return '处理中...';
       case 'completed':
@@ -304,21 +305,19 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
 
   // ============= 样式计算 =============
 
-  const containerClasses = `
-    border-2 border-dashed rounded-lg transition-all duration-200
-    ${
-      isDragOver
+  const containerClasses = clsx(
+    'border-2 border-dashed rounded-lg transition-all duration-200',
+    isDragOver
         ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20'
-        : 'border-gray-300 dark:border-gray-600'
-    }
-    ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-blue-400 cursor-pointer'}
-    ${className}
-  `;
+        : 'border-gray-300 dark:border-gray-600',
+    disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-blue-400 cursor-pointer',
+    className
+  );
 
-  const uploadAreaClasses = `
-    p-6 text-center
-    ${mode === 'compact' ? 'p-4' : mode === 'detailed' ? 'p-8' : 'p-6'}
-  `;
+  const uploadAreaClasses = clsx(
+    'p-6 text-center',
+    mode === 'compact' ? 'p-4' : mode === 'detailed' ? 'p-8' : 'p-6'
+  );
 
   // ============= 渲染 =============
 
@@ -334,7 +333,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
       >
         <div className={uploadAreaClasses}>
           <Upload
-            className={`mx-auto mb-4 text-gray-400 ${mode === 'compact' ? 'w-8 h-8 mb-2' : 'w-12 h-12'}`}
+            className={clsx('mx-auto mb-4 text-gray-400', mode === 'compact' ? 'w-8 h-8 mb-2' : 'w-12 h-12')}
           />
 
           {mode === 'compact' ? (
@@ -409,7 +408,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-1">
                       <div
                         className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${uploadingFile.progress.progress}%` }}
+                        style={{ width: (uploadingFile.progress.progress) + '%' }}
                       />
                     </div>
                     <p className="text-xs text-gray-500">

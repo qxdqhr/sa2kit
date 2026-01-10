@@ -7,6 +7,7 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { FileMetadata } from '../types';
+import { clsx } from 'clsx';
 
 export interface FolderNode {
   /** 文件夹ID */
@@ -189,7 +190,7 @@ const FolderManager: React.FC<FolderManagerProps> = ({
 
   // 删除文件夹
   const deleteFolder = useCallback(async (folderId: string, folderName: string) => {
-    if (!window.confirm(`确定要删除文件夹"${folderName}"吗？此操作将删除文件夹内的所有文件。`)) {
+    if (!window.confirm('确定要删除文件夹"' + (folderName) + '"吗？此操作将删除文件夹内的所有文件。')) {
       return;
     }
 
@@ -266,14 +267,12 @@ const FolderManager: React.FC<FolderManagerProps> = ({
       <div key={folder.id} className="select-none">
         {/* 文件夹项 */}
         <div
-          className={`flex items-center py-1 px-2 rounded-md cursor-pointer transition-colors ${
-            isSelected 
+          className={clsx('flex items-center py-1 px-2 rounded-md cursor-pointer transition-colors', isSelected 
               ? 'bg-blue-100 text-blue-800' 
               : isDragOver
               ? 'bg-green-100'
-              : 'hover:bg-gray-100'
-          }`}
-          style={{ paddingLeft: `${level * 16 + 8}px` }}
+              : 'hover:bg-gray-100')}
+          style={{ paddingLeft: (level * 16 + 8) + 'px' }}
           onClick={() => selectFolder(folder.id)}
           onContextMenu={(e) => handleContextMenu(e, folder.id)}
           onDragOver={allowDrag ? (e) => handleDragOver(e, folder.id) : undefined}
@@ -289,7 +288,7 @@ const FolderManager: React.FC<FolderManagerProps> = ({
               }}
               className="mr-1 p-1 hover:bg-gray-200 rounded"
             >
-              <span className={`text-xs transition-transform ${isExpanded ? 'rotate-90' : ''}`}>
+              <span className={clsx('text-xs transition-transform', isExpanded ? 'rotate-90' : '')}>
                 ▶
               </span>
             </button>
@@ -339,7 +338,7 @@ const FolderManager: React.FC<FolderManagerProps> = ({
         {state.creatingFolder === folder.id && (
           <div
             className="flex items-center py-1 px-2 ml-4"
-            style={{ paddingLeft: `${(level + 1) * 16 + 8}px` }}
+            style={{ paddingLeft: ((level + 1) * 16 + 8) + 'px' }}
           >
             <span className="mr-2 text-yellow-600">📁</span>
             <input

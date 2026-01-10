@@ -84,7 +84,7 @@ async function waitForMaterialsReady(
           };
 
           const onError = (e: any) => {
-            console.warn(`[MMDPlayerBase]   Texture ${index + 1}/${textures.length}: Failed to load`, e);
+            console.warn('[MMDPlayerBase]   Texture ' + (index + 1) + '/' + (textures.length) + ': Failed to load', e);
             image.removeEventListener('load', onLoad);
             image.removeEventListener('error', onError);
             resolve();
@@ -97,7 +97,7 @@ async function waitForMaterialsReady(
           setTimeout(() => {
             image.removeEventListener('load', onLoad);
             image.removeEventListener('error', onError);
-            console.warn(`[MMDPlayerBase]   Texture ${index + 1}/${textures.length}: Timeout`);
+            console.warn('[MMDPlayerBase]   Texture ' + (index + 1) + '/' + (textures.length) + ': Timeout');
             resolve();
           }, 5000);
         }
@@ -756,7 +756,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           if (mesh.skeleton) {
             const boneCount = mesh.skeleton.bones.length;
             if (boneCount > MAX_BONES) {
-              console.warn(`[MMDPlayerBase]   ⚠️ Model has ${boneCount} bones (max recommended: ${MAX_BONES})`);
+              console.warn('[MMDPlayerBase]   ⚠️ Model has ' + (boneCount) + ' bones (max recommended: ' + (MAX_BONES) + ')');
               console.warn(`[MMDPlayerBase]   This may cause performance issues on mobile devices`);
             }
           }
@@ -792,7 +792,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
                 (xhr) => {
                   if (xhr.lengthComputable) {
                     const percent = (xhr.loaded / xhr.total) * 100;
-                    if (Math.round(percent) % 20 === 0) console.log(`[MMDPlayerBase] Stage loading: ${percent.toFixed(1)}%`);
+                    if (Math.round(percent) % 20 === 0) console.log('[MMDPlayerBase] Stage loading: ' + (percent.toFixed(1)) + '%');
                   }
                 },
                 (err) => reject(err)
@@ -801,7 +801,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
 
             if (checkCancelled()) return;
 
-            console.log(`[MMDPlayerBase] Stage model loaded: ${stagePath}`, stageMesh);
+            console.log('[MMDPlayerBase] Stage model loaded: ' + (stagePath), stageMesh);
 
             // 🎯 核心修复：深度清理无效的变形目标数据，防止 Shader 编译错误
             console.log('[MMDPlayerBase] 🎨 Traversing stage mesh to apply FX, multiFX:', !!multiFXAdapterRef.current, 'singleFX:', !!fxAdapterRef.current);
@@ -907,7 +907,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
             try {
               await waitForMaterialsReady(stageMesh, renderer, scene, camera);
             } catch (e) {
-              console.warn(`[MMDPlayerBase] Warmup error for stage ${stagePath}:`, e);
+              console.warn('[MMDPlayerBase] Warmup error for stage ' + (stagePath) + ':', e);
             }
 
             if (checkCancelled()) return;
@@ -935,7 +935,7 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
               });
             }
           } catch (err) {
-            console.error(`Failed to load stage ${stagePath}:`, err);
+            console.error('Failed to load stage ' + (stagePath) + ':', err);
           }
         }
 
@@ -969,10 +969,10 @@ export const MMDPlayerBase = forwardRef<MMDPlayerBaseRef, MMDPlayerBaseProps>((p
           const seconds = Math.floor((runningTime % 60000) / 1000);
 
           const timeString = hours > 0
-            ? `${hours}小时${minutes}分${seconds}秒`
+            ? (hours) + '小时' + (minutes) + '分' + (seconds) + '秒'
             : minutes > 0
-              ? `${minutes}分${seconds}秒`
-              : `${seconds}秒`;
+              ? (minutes) + '分' + (seconds) + '秒'
+              : (seconds) + '秒';
 
           alert(`⚠️ 内存溢出错误 (OOM)
 
@@ -1085,7 +1085,7 @@ ${errorMessage}
                               physics.world.removeRigidBody(body.body);
                             }
                           } catch (e) {
-                            console.warn(`[MMDPlayerBase]     Error removing body ${i}:`, e);
+                            console.warn('[MMDPlayerBase]     Error removing body ' + (i) + ':', e);
                           }
                         }
                         physics.bodies.length = 0;
@@ -1100,7 +1100,7 @@ ${errorMessage}
                               physics.world.removeConstraint(constraint);
                             }
                           } catch (e) {
-                            console.warn(`[MMDPlayerBase]     Error removing constraint ${i}:`, e);
+                            console.warn('[MMDPlayerBase]     Error removing constraint ' + (i) + ':', e);
                           }
                         }
                         physics.constraints.length = 0;
@@ -1165,7 +1165,7 @@ ${errorMessage}
                 try {
                   Ammo.destroy(components.worlds[i]);
                 } catch (e) {
-                  console.error(`[MMDPlayerBase]   ❌ Error destroying world #${i}:`, e);
+                  console.error('[MMDPlayerBase]   ❌ Error destroying world #' + (i) + ':', e);
                 }
               }
               components.worlds.length = 0;
@@ -1177,7 +1177,7 @@ ${errorMessage}
                 try {
                   Ammo.destroy(components.solvers[i]);
                 } catch (e) {
-                  console.error(`[MMDPlayerBase]   ❌ Error destroying solver #${i}:`, e);
+                  console.error('[MMDPlayerBase]   ❌ Error destroying solver #' + (i) + ':', e);
                 }
               }
               components.solvers.length = 0;
@@ -1189,7 +1189,7 @@ ${errorMessage}
                 try {
                   Ammo.destroy(components.caches[i]);
                 } catch (e) {
-                  console.error(`[MMDPlayerBase]   ❌ Error destroying cache #${i}:`, e);
+                  console.error('[MMDPlayerBase]   ❌ Error destroying cache #' + (i) + ':', e);
                 }
               }
               components.caches.length = 0;
@@ -1201,7 +1201,7 @@ ${errorMessage}
                 try {
                   Ammo.destroy(components.dispatchers[i]);
                 } catch (e) {
-                  console.error(`[MMDPlayerBase]   ❌ Error destroying dispatcher #${i}:`, e);
+                  console.error('[MMDPlayerBase]   ❌ Error destroying dispatcher #' + (i) + ':', e);
                 }
               }
               components.dispatchers.length = 0;
@@ -1213,7 +1213,7 @@ ${errorMessage}
                 try {
                   Ammo.destroy(components.configs[i]);
                 } catch (e) {
-                  console.error(`[MMDPlayerBase]   ❌ Error destroying config #${i}:`, e);
+                  console.error('[MMDPlayerBase]   ❌ Error destroying config #' + (i) + ':', e);
                 }
               }
               components.configs.length = 0;

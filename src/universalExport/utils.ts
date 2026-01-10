@@ -20,7 +20,7 @@ export function generateExportFileName(template: string, format: ExportFormat): 
     template
       .replace('{date}', dateStr)
       .replace('{time}', timeStr)
-      .replace('{timestamp}', now.getTime().toString()) + `.${extension}`
+      .replace('{timestamp}', now.getTime().toString()) + '.' + (extension)
   );
 }
 
@@ -59,7 +59,7 @@ export function escapeCSVField(value: string, delimiter: string = ','): string {
 
   // 如果包含分隔符、双引号或换行符，需要用双引号包裹并转义内部的双引号
   if (valueStr.includes(delimiter) || valueStr.includes('"') || valueStr.includes('\n')) {
-    return `"${valueStr.replace(/"/g, '""')}"`;
+    return '"' + (valueStr.replace(/"/g, '""')) + '"';
   }
 
   return valueStr;
@@ -108,13 +108,13 @@ export const DEFAULT_FORMATTERS: Record<string, Formatter> = {
   // 货币格式化
   currency: (value: any) => {
     if (value === null || value === undefined) return '';
-    return `¥${Number(value).toFixed(2)}`;
+    return '¥' + (Number(value).toFixed(2));
   },
 
   // 百分比格式化
   percentage: (value: any) => {
     if (value === null || value === undefined) return '';
-    return `${(Number(value) * 100).toFixed(2)}%`;
+    return ((Number(value) * 100).toFixed(2)) + '%';
   },
 
   // 布尔值格式化
@@ -223,7 +223,7 @@ export function formatFileSize(bytes: number): string {
   const k = 1024;
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${(bytes / Math.pow(k, i)).toFixed(2)} ${units[i]}`;
+  return ((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + (units[i]);
 }
 
 // ============= 时间处理 =============
@@ -233,26 +233,26 @@ export function formatFileSize(bytes: number): string {
  */
 export function formatDuration(milliseconds: number): string {
   if (milliseconds < 1000) {
-    return `${milliseconds}ms`;
+    return (milliseconds) + 'ms';
   }
 
   const seconds = Math.floor(milliseconds / 1000);
 
   if (seconds < 60) {
-    return `${seconds}秒`;
+    return (seconds) + '秒';
   }
 
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
 
   if (minutes < 60) {
-    return remainingSeconds > 0 ? `${minutes}分${remainingSeconds}秒` : `${minutes}分钟`;
+    return remainingSeconds > 0 ? (minutes) + '分' + (remainingSeconds) + '秒' : (minutes) + '分钟';
   }
 
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
 
-  return remainingMinutes > 0 ? `${hours}小时${remainingMinutes}分钟` : `${hours}小时`;
+  return remainingMinutes > 0 ? (hours) + '小时' + (remainingMinutes) + '分钟' : (hours) + '小时';
 }
 
 /**

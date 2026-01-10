@@ -52,14 +52,14 @@ export const Modal: React.FC<ModalProps> = ({
       }
     }}>
       <DialogContent 
-        className={cn("sm:max-w-[425px]", className) + ` z-[${zIndex}]`}
+        className={cn("sm:max-w-[425px]", className) + ' z-[' + (zIndex) + ']'}
         onPointerDownOutside={(e) => {
           if (!maskClosable) e.preventDefault();
         }}
         onEscapeKeyDown={(e) => {
           if (!maskClosable) e.preventDefault();
         }}
-        style={width ? { maxWidth: typeof width === 'number' ? `${width}px` : width } : undefined}
+        style={width ? { maxWidth: typeof width === 'number' ? (width) + 'px' : width } : undefined}
       >
         {title ? (
           <DialogHeader>

@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import * as THREE from 'three';
+import { clsx } from 'clsx';
 
 /**
  * 3D粒子彩花效果组件
@@ -262,7 +263,7 @@ export const CheerParticles = forwardRef<CheerParticlesRef, CheerParticlesProps>
     return (
       <div
         ref={containerRef}
-        className={`pointer-events-none absolute inset-0 ${className}`}
+        className={clsx('pointer-events-none absolute inset-0', className)}
         style={{ zIndex: 999998 }}
       />
     );

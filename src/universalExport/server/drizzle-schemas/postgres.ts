@@ -28,7 +28,7 @@ export const exportConfigs = pgTable('ExportConfig', {
   /** 主键ID */
   id: text('id')
     .primaryKey()
-    .$defaultFn(() => `export_config_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`),
+    .$defaultFn(() => 'export_config_' + (Date.now()) + '_' + (Math.random().toString(36).substr(2, 9))),
 
   /** 配置名称 */
   name: text('name').notNull(),
@@ -92,7 +92,7 @@ export const exportHistory = pgTable('ExportHistory', {
   /** 主键ID */
   id: text('id')
     .primaryKey()
-    .$defaultFn(() => `export_history_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`),
+    .$defaultFn(() => 'export_history_' + (Date.now()) + '_' + (Math.random().toString(36).substr(2, 9))),
 
   /** 关联的配置ID */
   configId: text('configId').notNull(),

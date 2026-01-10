@@ -30,7 +30,7 @@ export function useStorage<T>(
           setValue(JSON.parse(stored));
         }
       } catch (error) {
-        console.error(`Error reading storage key "${key}":`, error);
+        console.error('Error reading storage key "' + (key) + '":', error);
       } finally {
         setLoading(false);
       }
@@ -51,7 +51,7 @@ export function useStorage<T>(
           (storage as any).dispatchChange(key, JSON.stringify(newValue));
         }
       } catch (error) {
-        console.error(`Error setting storage key "${key}":`, error);
+        console.error('Error setting storage key "' + (key) + '":', error);
       }
     },
     [storage, key]
@@ -68,7 +68,7 @@ export function useStorage<T>(
         (storage as any).dispatchChange(key, null);
       }
     } catch (error) {
-      console.error(`Error removing storage key "${key}":`, error);
+      console.error('Error removing storage key "' + (key) + '":', error);
     }
   }, [storage, key, defaultValue]);
 

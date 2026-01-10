@@ -10,7 +10,7 @@ export default {
     icon: '🎵',
     description: 'A powerful lyrics and notes management app',
     author: 'LyricNote Team',
-    copyright: `© ${new Date().getFullYear()} LyricNote`,
+    copyright: '© ' + (new Date().getFullYear()) + ' LyricNote',
     version: '1.0.0',
   },
 

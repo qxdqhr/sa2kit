@@ -23,7 +23,7 @@ export class ReactNativeStorageAdapter implements StorageAdapter {
     try {
       return await AsyncStorage.getItem(key);
     } catch (error) {
-      console.error(`[ReactNativeStorage] Error getting item "${key}":`, error);
+      console.error('[ReactNativeStorage] Error getting item "' + (key) + '":', error);
       return null;
     }
   }
@@ -37,7 +37,7 @@ export class ReactNativeStorageAdapter implements StorageAdapter {
       await AsyncStorage.setItem(key, value);
       this.notifyListeners(key, value);
     } catch (error) {
-      console.error(`[ReactNativeStorage] Error setting item "${key}":`, error);
+      console.error('[ReactNativeStorage] Error setting item "' + (key) + '":', error);
       throw error;
     }
   }
@@ -51,7 +51,7 @@ export class ReactNativeStorageAdapter implements StorageAdapter {
       await AsyncStorage.removeItem(key);
       this.notifyListeners(key, null);
     } catch (error) {
-      console.error(`[ReactNativeStorage] Error removing item "${key}":`, error);
+      console.error('[ReactNativeStorage] Error removing item "' + (key) + '":', error);
       throw error;
     }
   }

@@ -14,6 +14,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import JSZip from 'jszip';
+import { clsx } from 'clsx';
 import {
   Upload,
   FileText,
@@ -184,7 +185,7 @@ export const MmdResourceSelector: React.FC<ResourceSelectorProps> = ({
       console.error('文件上传失败:', error);
       const message = error instanceof Error ? error.message : '未知错误';
       setZipValidationError(message);
-      alert(`上传失败: ${message}`);
+      alert('上传失败: ' + (message));
     } finally {
       setUploading(false);
     }
@@ -259,7 +260,7 @@ export const MmdResourceSelector: React.FC<ResourceSelectorProps> = ({
               if (file) {
                 // 验证文件大小
                 if (file.size > config.maxFileSize * 1024 * 1024) {
-                  alert(`文件大小超过限制（最大 ${config.maxFileSize}MB）`);
+                  alert('文件大小超过限制（最大 ' + (config.maxFileSize) + 'MB）');
                   return;
                 }
                 handleFileUpload(file);
@@ -312,9 +313,7 @@ export const MmdResourceSelector: React.FC<ResourceSelectorProps> = ({
             <button
               key={file.id}
               onClick={() => handleFileSelect(file)}
-              className={`w-full p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
-                selectedFileId === file.id ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-              }`}
+              className={clsx('w-full p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors', selectedFileId === file.id ? 'bg-blue-50 dark:bg-blue-900/20' : '')}
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">

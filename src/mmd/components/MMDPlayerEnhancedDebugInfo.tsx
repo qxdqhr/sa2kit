@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { clsx } from 'clsx';
 
 interface MMDPlayerEnhancedDebugInfoProps {
   isPlaying: boolean;
@@ -128,15 +129,13 @@ export const MMDPlayerEnhancedDebugInfo: React.FC<MMDPlayerEnhancedDebugInfoProp
             <div className="mt-2">
               <div className="bg-gray-700 rounded-full h-2 overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-300 ${
-                    (parseFloat(memoryInfo.used) / parseFloat(memoryInfo.limit)) * 100 > 80
+                  className={clsx('h-full transition-all duration-300', (parseFloat(memoryInfo.used) / parseFloat(memoryInfo.limit)) * 100 > 80
                       ? 'bg-red-500'
                       : (parseFloat(memoryInfo.used) / parseFloat(memoryInfo.limit)) * 100 > 60
                       ? 'bg-yellow-500'
-                      : 'bg-green-500'
-                  }`}
+                      : 'bg-green-500')}
                   style={{
-                    width: `${Math.min(100, (parseFloat(memoryInfo.used) / parseFloat(memoryInfo.limit)) * 100)}%`,
+                    width: (Math.min(100, (parseFloat(memoryInfo.used) / parseFloat(memoryInfo.limit)) * 100)) + '%',
                   }}
                 />
               </div>
@@ -161,11 +160,9 @@ export const MMDPlayerEnhancedDebugInfo: React.FC<MMDPlayerEnhancedDebugInfoProp
 // 辅助组件：状态徽章
 const StatusBadge: React.FC<{ active: boolean; label: string }> = ({ active, label }) => (
   <span
-    className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-      active
+    className={clsx('px-2 py-0.5 rounded text-[10px] font-bold', active
         ? 'bg-green-600 text-white'
-        : 'bg-gray-700 text-gray-400'
-    }`}
+        : 'bg-gray-700 text-gray-400')}
   >
     {label}
   </span>

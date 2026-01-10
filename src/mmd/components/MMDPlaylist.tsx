@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MMDPlayerBase } from './MMDPlayerBase';
 import { ControlPanel } from './ControlPanel';
 import { MMDPlaylistDebugInfo } from './MMDPlaylistDebugInfo';
+import { clsx } from 'clsx';
 import {
   MMDPlaylistProps,
   MMDPlaylistNode,
@@ -60,7 +61,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
       const node = nodes[index];
       if (!node) return;
       
-      console.log(`[MMDPlaylist] Starting transition to node ${index}`);
+      console.log('[MMDPlaylist] Starting transition to node ' + (index));
       
       // 先暂停播放
       const wasPlaying = isPlaying;
@@ -74,7 +75,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
         requestAnimationFrame(() => {
           setTimeout(() => {
             // 第二阶段：挂载新播放器
-            console.log(`[MMDPlaylist] Loading new node ${index}`);
+            console.log('[MMDPlaylist] Loading new node ' + (index));
             setCurrentIndex(index);
             setIsLoading(true);
             onNodeChange?.(node, index);
@@ -90,7 +91,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
                     setIsPlaying(true);
                   }
                   
-                  console.log(`[MMDPlaylist] Transition to node ${index} completed`);
+                  console.log('[MMDPlaylist] Transition to node ' + (index) + ' completed');
                 }, 100);
               });
             });
@@ -144,7 +145,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
 
     if (!document.fullscreenElement) {
       containerRef.current.requestFullscreen().catch((err) => {
-        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+        console.error('Error attempting to enable fullscreen: ' + (err.message));
       });
       setIsFullscreen(true);
     } else {
@@ -184,7 +185,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
       nodes.forEach((node, idx) => {
         if (!preloadedRef.current.has(idx)) {
           preloadedRef.current.add(idx);
-          console.log(`[MMDPlaylist] Preload strategy: all - marked node ${idx} (${node.name})`);
+          console.log('[MMDPlaylist] Preload strategy: all - marked node ' + (idx) + ' (' + (node.name) + ')');
         }
       });
     } else if (preload === 'next') {
@@ -193,7 +194,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
       const nextNode = nodes[nextIndex];
       if (nextNode && !preloadedRef.current.has(nextIndex)) {
         preloadedRef.current.add(nextIndex);
-        console.log(`[MMDPlaylist] Preload strategy: next - marked node ${nextIndex} (${nextNode.name})`);
+        console.log('[MMDPlaylist] Preload strategy: next - marked node ' + (nextIndex) + ' (' + (nextNode.name) + ')');
       }
     }
   }, [currentIndex, nodes, preload]);
@@ -218,7 +219,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
     if (toRemove.length > 0) {
       toRemove.forEach((idx) => {
         preloadedRef.current.delete(idx);
-        console.log(`[MMDPlaylist] Memory cleanup: removed preload mark for node ${idx}`);
+        console.log('[MMDPlaylist] Memory cleanup: removed preload mark for node ' + (idx));
       });
     }
   }, [currentIndex, nodes.length, preload]);
@@ -245,7 +246,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative overflow-hidden bg-black group flex h-full ${className}`}
+      className={clsx('relative overflow-hidden bg-black group flex h-full', className)}
       style={style}
     >
       {/* 主播放器区域 */}
@@ -282,7 +283,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
           <div className="flex flex-col items-center gap-3">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-white/20 border-t-blue-500" />
             <div className="text-sm text-white/80">
-              {isTransitioning ? '切换中...' : `正在加载 ${currentIndex + 1} / ${nodes.length}`}
+              {isTransitioning ? '切换中...' : '正在加载 ' + (currentIndex + 1) + ' / ' + (nodes.length)}
             </div>
           </div>
         </div>
@@ -290,9 +291,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
 
       {/* 控制栏 */}
       <div
-        className={`transition-opacity duration-300 ${
-          isPlaying && !showPlaylist ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'
-        }`}
+        className={clsx('transition-opacity duration-300', isPlaying && !showPlaylist ? 'opacity-0 group-hover:opacity-100' : 'opacity-100')}
       >
         <ControlPanel
           isPlaying={isPlaying}
@@ -304,7 +303,7 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
           showAxes={showAxes}
           showPrevNext={showPrevNext}
           title={currentNode.name}
-          subtitle={`${currentIndex + 1} / ${nodes.length}`}
+          subtitle={(currentIndex + 1) + ' / ' + (nodes.length)}
           onPlayPause={handlePlayPause}
           onPrevious={handlePrevious}
           onNext={handleNext}
@@ -352,17 +351,13 @@ export const MMDPlaylist: React.FC<MMDPlaylistProps> = ({
                     goToNode(index);
                     setShowPlaylist(false);
                   }}
-                  className={`w-full flex items-center gap-3 p-3 rounded-lg mb-2 transition-all ${
-                    index === currentIndex
+                  className={clsx('w-full flex items-center gap-3 p-3 rounded-lg mb-2 transition-all', index === currentIndex
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                  }`}
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700')}
                 >
                   {/* 序号 */}
                   <div
-                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                      index === currentIndex ? 'bg-white/20' : 'bg-gray-700'
-                    }`}
+                    className={clsx('flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold', index === currentIndex ? 'bg-white/20' : 'bg-gray-700')}
                   >
                     {index + 1}
                   </div>

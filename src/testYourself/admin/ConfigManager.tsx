@@ -8,6 +8,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
+import { clsx } from 'clsx';
 import {
   Plus,
   Trash2,
@@ -78,7 +79,7 @@ export const ConfigManager: React.FC<ConfigManagerProps> = ({
       setConfigs(allConfigs);
       onConfigChange?.(allConfigs);
     } catch (err: any) {
-      setError(`加载配置失败: ${err.message}`);
+      setError('加载配置失败: ' + (err.message));
     } finally {
       setLoading(false);
     }
@@ -177,7 +178,7 @@ export const ConfigManager: React.FC<ConfigManagerProps> = ({
       // 3秒后清除成功提示
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      setError(`保存失败: ${err.message}`);
+      setError('保存失败: ' + (err.message));
     }
   };
 
@@ -191,7 +192,7 @@ export const ConfigManager: React.FC<ConfigManagerProps> = ({
       setSuccess('删除成功！');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      setError(`删除失败: ${err.message}`);
+      setError('删除失败: ' + (err.message));
     }
   };
 
@@ -203,7 +204,7 @@ export const ConfigManager: React.FC<ConfigManagerProps> = ({
       setSuccess('复制成功！');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      setError(`复制失败: ${err.message}`);
+      setError('复制失败: ' + (err.message));
     }
   };
 
@@ -215,7 +216,7 @@ export const ConfigManager: React.FC<ConfigManagerProps> = ({
       setSuccess('设置默认配置成功！');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      setError(`设置失败: ${err.message}`);
+      setError('设置失败: ' + (err.message));
     }
   };
 
@@ -227,7 +228,7 @@ export const ConfigManager: React.FC<ConfigManagerProps> = ({
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `config_${id}.json`;
+      a.download = 'config_' + (id) + '.json';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -235,7 +236,7 @@ export const ConfigManager: React.FC<ConfigManagerProps> = ({
       setSuccess('导出成功！');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      setError(`导出失败: ${err.message}`);
+      setError('导出失败: ' + (err.message));
     }
   };
 
@@ -255,7 +256,7 @@ export const ConfigManager: React.FC<ConfigManagerProps> = ({
         setSuccess('导入成功！');
         setTimeout(() => setSuccess(null), 3000);
       } catch (err: any) {
-        setError(`导入失败: ${err.message}`);
+        setError('导入失败: ' + (err.message));
       }
     };
     input.click();
@@ -264,8 +265,8 @@ export const ConfigManager: React.FC<ConfigManagerProps> = ({
   // 添加结果项
   const handleAddResult = () => {
     const newResult: EditingResult = {
-      id: `temp_${Date.now()}`,
-      _tempId: `temp_${Date.now()}`,
+      id: 'temp_' + (Date.now()),
+      _tempId: 'temp_' + (Date.now()),
       title: '新结果',
       description: '这是一个新的结果描述',
       image: '🎉',
@@ -314,7 +315,7 @@ export const ConfigManager: React.FC<ConfigManagerProps> = ({
         });
       }
     } catch (err: any) {
-      setError(`上传图片失败: ${err.message}`);
+      setError('上传图片失败: ' + (err.message));
     }
   };
 
@@ -655,7 +656,7 @@ export const ConfigManager: React.FC<ConfigManagerProps> = ({
 
   if (loading) {
     return (
-      <div className={`p-8 ${className}`}>
+      <div className={clsx('p-8', className)}>
         <div className="text-center">
           <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
           <p className="mt-2 text-gray-600 dark:text-gray-400">加载中...</p>
@@ -665,7 +666,7 @@ export const ConfigManager: React.FC<ConfigManagerProps> = ({
   }
 
   return (
-    <div className={`p-6 ${className}`}>
+    <div className={clsx('p-6', className)}>
       {/* 消息提示 */}
       {error && (
         <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-2 text-red-800 dark:text-red-200">

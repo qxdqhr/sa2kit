@@ -1,5 +1,6 @@
 import React from 'react';
 import { Play, Pause, Maximize, Minimize, Settings, Grid3x3, Repeat, Repeat1, SkipBack, SkipForward, Camera } from 'lucide-react';
+import { clsx } from 'clsx';
 
 interface ControlPanelProps {
   isPlaying: boolean;
@@ -94,7 +95,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
           {onToggleListLoop && (
             <button 
               onClick={onToggleListLoop}
-              className={`rounded-full p-2 transition-colors ${isListLooping ? 'bg-green-500/30 hover:bg-green-500/50' : 'hover:bg-white/20'}`}
+              className={clsx('rounded-full p-2 transition-colors', isListLooping ? 'bg-green-500/30 hover:bg-green-500/50' : 'hover:bg-white/20')}
               title={isListLooping ? '列表循环：开启' : '列表循环：关闭'}
             >
               <Repeat size={20} />
@@ -104,7 +105,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
           {/* 单节点循环切换 */}
           <button 
             onClick={onToggleLoop}
-            className={`rounded-full p-2 transition-colors ${isLooping ? 'bg-blue-500/30 hover:bg-blue-500/50' : 'hover:bg-white/20'}`}
+            className={clsx('rounded-full p-2 transition-colors', isLooping ? 'bg-blue-500/30 hover:bg-blue-500/50' : 'hover:bg-white/20')}
             title={isLooping ? '单曲循环：开启' : '单曲循环：关闭'}
           >
             <Repeat1 size={20} />
@@ -125,7 +126,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
           {onToggleAxes && (
             <button 
               onClick={onToggleAxes}
-              className={`rounded-full p-2 transition-colors ${showAxes ? 'bg-blue-500/30 hover:bg-blue-500/50' : 'hover:bg-white/20'}`}
+              className={clsx('rounded-full p-2 transition-colors', showAxes ? 'bg-blue-500/30 hover:bg-blue-500/50' : 'hover:bg-white/20')}
               title="显示/隐藏坐标轴"
             >
               <Grid3x3 size={20} />

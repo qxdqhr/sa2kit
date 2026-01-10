@@ -9,6 +9,7 @@
 import React from 'react';
 import { useAudioDetection, type UseAudioDetectionOptions } from '../hooks/useAudioDetection';
 import type { NoteInfo, ChordInfo } from '../types';
+import { clsx } from 'clsx';
 
 export interface AudioDetectionDisplayProps extends UseAudioDetectionOptions {
   /** 自定义类名 */
@@ -52,18 +53,18 @@ export const AudioDetectionDisplay: React.FC<AudioDetectionDisplayProps> = ({
   };
 
   return (
-    <div className={`audio-detection-display ${className}`}>
+    <div className={clsx('audio-detection-display', className)}>
       {/* 控制按钮 */}
       <div className="audio-detection-controls">
         <button
           onClick={handleToggle}
           disabled={state === 'initializing'}
-          className={`audio-detection-button ${isDetecting ? 'active' : ''}`}
+          className={clsx('audio-detection-button', isDetecting ? 'active' : '')}
         >
           {state === 'initializing' ? '初始化中...' : isDetecting ? stopButtonText : startButtonText}
         </button>
         
-        <div className={`audio-detection-status status-${state}`}>
+        <div className={clsx('audio-detection-status status-', state)}>
           状态: {getStateLabel(state)}
         </div>
       </div>

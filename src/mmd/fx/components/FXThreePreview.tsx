@@ -8,6 +8,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three-stdlib';
 import { FXToThreeAdapter } from '../FXToThreeAdapter';
 import type { FXEffect } from '../types';
+import { clsx } from 'clsx';
 
 export interface FXThreePreviewProps {
   /** FX效果 */
@@ -192,7 +193,7 @@ export const FXThreePreview: React.FC<FXThreePreviewProps> = ({
 
   if (loading) {
     return (
-      <div className={`fx-three-preview loading ${className}`}>
+      <div className={clsx('fx-three-preview loading', className)}>
         <div className="preview-loading">加载中...</div>
       </div>
     );
@@ -200,7 +201,7 @@ export const FXThreePreview: React.FC<FXThreePreviewProps> = ({
 
   if (error) {
     return (
-      <div className={`fx-three-preview error ${className}`}>
+      <div className={clsx('fx-three-preview error', className)}>
         <div className="preview-error">
           <h3>❌ 渲染失败</h3>
           <p>{error}</p>
@@ -210,7 +211,7 @@ export const FXThreePreview: React.FC<FXThreePreviewProps> = ({
   }
 
   return (
-    <div className={`fx-three-preview ${className}`}>
+    <div className={clsx('fx-three-preview', className)}>
       <div 
         ref={containerRef} 
         className="preview-container"

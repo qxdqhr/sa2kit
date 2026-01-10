@@ -28,7 +28,7 @@ export class MikuMusicService {
 
     // 组合关键词：用户关键词 + 初音未来
     // 如果用户没搜初音，我们就帮他搜初音
-    const mikuKeyword = hasMikuKeyword ? trimmedKeyword : `${trimmedKeyword} 初音未来`.trim();
+    const mikuKeyword = hasMikuKeyword ? trimmedKeyword : (trimmedKeyword) + ' 初音未来'.trim();
 
     return this.baseService.search({
       ...options,

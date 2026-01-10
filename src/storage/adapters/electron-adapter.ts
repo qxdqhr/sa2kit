@@ -24,7 +24,7 @@ export class ElectronStorageAdapter implements StorageAdapter {
     try {
       return localStorage.getItem(key);
     } catch (error) {
-      console.error(`[ElectronStorage] Error getting item "${key}":`, error);
+      console.error('[ElectronStorage] Error getting item "' + (key) + '":', error);
       return null;
     }
   }
@@ -48,7 +48,7 @@ export class ElectronStorageAdapter implements StorageAdapter {
         );
       }
     } catch (error) {
-      console.error(`[ElectronStorage] Error setting item "${key}":`, error);
+      console.error('[ElectronStorage] Error setting item "' + (key) + '":', error);
       throw error;
     }
   }
@@ -71,7 +71,7 @@ export class ElectronStorageAdapter implements StorageAdapter {
         );
       }
     } catch (error) {
-      console.error(`[ElectronStorage] Error removing item "${key}":`, error);
+      console.error('[ElectronStorage] Error removing item "' + (key) + '":', error);
       throw error;
     }
   }

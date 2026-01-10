@@ -14,7 +14,7 @@ export class AudioDetectorDebugger {
     this.detector = new AudioDetector(config, {
       onDetection: (result) => {
         if (result.isDetecting) {
-          console.log('🎵 检测到音符:', result.notes.map(n => `${n.name}(${n.frequency.toFixed(1)}Hz)`).join(', '));
+          console.log('🎵 检测到音符:', result.notes.map(n => (n.name) + '(' + (n.frequency.toFixed(1)) + 'Hz)').join(', '));
           if (result.chord) {
             console.log('🎹 检测到和弦:', result.chord.name);
           }

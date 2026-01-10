@@ -72,9 +72,9 @@ export const ProfileButton: React.FC<ProfileButtonProps> = ({
 
   const handleContactClick = (type: string, value: string) => {
     if (type === '邮箱') {
-      window.open(`mailto:${value}`);
+      window.open('mailto:' + (value));
     } else if (type === '电话') {
-      window.open(`tel:${value}`);
+      window.open('tel:' + (value));
     }
   };
 

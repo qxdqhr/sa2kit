@@ -126,7 +126,7 @@ export class MobileNetworkAdapter implements AnalyticsNetworkAdapter {
       } else {
         return {
           success: false,
-          message: `HTTP ${response.status}`,
+          message: 'HTTP ' + (response.status),
           code: response.status,
         };
       }
@@ -193,12 +193,12 @@ export class MobileDeviceAdapter implements AnalyticsDeviceAdapter {
     // 生成一个唯一的设备ID
     const timestamp = Date.now();
     const random = Math.random().toString(36).substring(2, 15);
-    return `mobile_${timestamp}_${random}`;
+    return 'mobile_' + (timestamp) + '_' + (random);
   }
 
   private getDefaultDeviceInfo(): DeviceInfo {
     return {
-      device_id: `mobile_${Date.now()}`,
+      device_id: 'mobile_' + (Date.now()),
       os_name: 'unknown',
       os_version: 'unknown',
       screen_width: 0,

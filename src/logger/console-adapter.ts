@@ -21,16 +21,16 @@ export class ConsoleLoggerAdapter implements LoggerAdapter {
 
     // 添加时间戳
     if (timestamp) {
-      logMessage += `[${this.formatTimestamp(timestamp)}] `;
+      logMessage += '[' + (this.formatTimestamp(timestamp)) + '] ';
     }
 
     // 添加日志级别
     const levelName = this.getLevelName(level);
-    logMessage += `${levelName}: `;
+    logMessage += (levelName) + ': ';
 
     // 添加上下文
     if (context) {
-      logMessage += `[${context}] `;
+      logMessage += '[' + (context) + '] ';
     }
 
     // 添加消息
@@ -68,7 +68,7 @@ export class ConsoleLoggerAdapter implements LoggerAdapter {
   private colorize(message: string, level: keyof typeof this.colors): string {
     // 只在支持颜色的环境中使用颜色
     if (typeof process !== 'undefined' && process.stdout?.isTTY) {
-      return `${this.colors[level]}${message}${this.colors.RESET}`;
+      return (this.colors[level]) + (message) + (this.colors.RESET);
     }
     return message;
   }

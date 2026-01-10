@@ -71,7 +71,7 @@ export class AudioInputService {
     } catch (error) {
       this.setState('error');
       console.error('AudioInputService 初始化失败:', error);
-      throw new Error(`麦克风初始化失败: ${error instanceof Error ? error.message : '未知错误'}`);
+      throw new Error('麦克风初始化失败: ' + (error instanceof Error ? error.message : '未知错误'));
     }
   }
 

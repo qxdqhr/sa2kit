@@ -1,5 +1,6 @@
 import React, { forwardRef, useRef, useEffect, useState, useCallback } from 'react';
 import * as THREE from 'three';
+import { clsx } from 'clsx';
 
 if (typeof window !== 'undefined') {
   (window as any).THREE = THREE;
@@ -363,7 +364,7 @@ export const MMDARPlayer = forwardRef<any, ARPlayerProps>(({
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `ar-photo-${Date.now()}.png`;
+          a.download = 'ar-photo-' + (Date.now()) + '.png';
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -901,10 +902,9 @@ export const MMDARPlayer = forwardRef<any, ARPlayerProps>(({
               <button
                 onClick={placeModel}
                 disabled={!state.markerDetected}
-                className={`px-6 py-2 rounded-lg transition-colors ${state.markerDetected
+                className={clsx('px-6 py-2 rounded-lg transition-colors', state.markerDetected
                   ? 'bg-green-600 hover:bg-green-700 text-white'
-                  : 'bg-gray-500 text-gray-300 cursor-not-allowed'
-                  }`}
+                  : 'bg-gray-500 text-gray-300 cursor-not-allowed')}
               >
                 📍 放置模型
               </button>
@@ -922,11 +922,11 @@ export const MMDARPlayer = forwardRef<any, ARPlayerProps>(({
 
           {/* Status Indicator */}
           <div className="absolute top-4 right-4 flex space-x-2">
-            <div className={`w-3 h-3 rounded-full ${state.cameraReady ? 'bg-green-400' : 'bg-red-400'}`} title="摄像头"></div>
-            <div className={`w-3 h-3 rounded-full ${state.arReady ? 'bg-green-400' : 'bg-red-400'}`} title="AR"></div>
-            <div className={`w-3 h-3 rounded-full ${window.DeviceOrientationEvent ? 'bg-purple-400' : 'bg-gray-400'}`} title="陀螺仪"></div>
-            <div className={`w-3 h-3 rounded-full ${state.markerDetected ? 'bg-blue-400' : 'bg-gray-400'}`} title="标记检测"></div>
-            <div className={`w-3 h-3 rounded-full ${state.modelPlaced && modelRootRef.current?.visible ? 'bg-green-400' : 'bg-yellow-400'}`} title="模型"></div>
+            <div className={clsx('w-3 h-3 rounded-full', state.cameraReady ? 'bg-green-400' : 'bg-red-400')} title="摄像头"></div>
+            <div className={clsx('w-3 h-3 rounded-full', state.arReady ? 'bg-green-400' : 'bg-red-400')} title="AR"></div>
+            <div className={clsx('w-3 h-3 rounded-full', window.DeviceOrientationEvent ? 'bg-purple-400' : 'bg-gray-400')} title="陀螺仪"></div>
+            <div className={clsx('w-3 h-3 rounded-full', state.markerDetected ? 'bg-blue-400' : 'bg-gray-400')} title="标记检测"></div>
+            <div className={clsx('w-3 h-3 rounded-full', state.modelPlaced && modelRootRef.current?.visible ? 'bg-green-400' : 'bg-yellow-400')} title="模型"></div>
           </div>
         </>
       )}

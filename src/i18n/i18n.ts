@@ -78,7 +78,7 @@ export function createI18n(config: I18nConfig): I18nInstance {
 
     // 处理复数
     if (count !== undefined) {
-      const pluralKey = count === 1 ? `${key}_one` : `${key}_other`;
+      const pluralKey = count === 1 ? (key) + '_one' : (key) + '_other';
       const pluralTranslation = getNestedValue(resources[currentLocale], pluralKey);
       if (pluralTranslation && typeof pluralTranslation === 'string') {
         translation = pluralTranslation;

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { CalendarEvent, useEvents, formatDate, formatTime } from '../index';
 import EventModal from '../components/EventModal';
 import { ConfirmModal } from '@/components';
+import { clsx } from 'clsx';
 
 interface EventDetailPageProps {
   eventId: number;
@@ -167,7 +168,7 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({
               <h2 className="text-2xl font-semibold text-gray-900">{event.title}</h2>
               <div className="flex items-center space-x-2">
                 <span
-                  className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(event.priority || 'normal')}`}
+                  className={clsx('px-2 py-1 text-xs font-medium rounded-full', getPriorityColor(event.priority || 'normal'))}
                 >
                   {getPriorityText(event.priority || 'normal')}
                 </span>
@@ -299,7 +300,7 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={handleDelete}
         title="确认删除"
-        message={`您确定要删除事件"${event.title}"吗？此操作无法撤销。`}
+        message={'您确定要删除事件"' + (event.title) + '"吗？此操作无法撤销。'}
         confirmText="删除"
         cancelText="取消"
         isLoading={isDeleting}

@@ -133,22 +133,22 @@ export function printDiagnosticReport(report: MMDDiagnosticReport): void {
 
   // 材质统计
   console.log('\n📊 材质统计:');
-  console.log(`  总材质数: ${report.totalMaterials}`);
-  console.log(`  MeshToonMaterial: ${report.toonMaterialCount}`);
-  console.log(`  MeshPhongMaterial: ${report.phongMaterialCount}`);
-  console.log(`  MeshStandardMaterial: ${report.standardMaterialCount}`);
+  console.log('  总材质数: ' + (report.totalMaterials));
+  console.log('  MeshToonMaterial: ' + (report.toonMaterialCount));
+  console.log('  MeshPhongMaterial: ' + (report.phongMaterialCount));
+  console.log('  MeshStandardMaterial: ' + (report.standardMaterialCount));
 
   // 纹理统计
   console.log('\n🎨 纹理统计:');
-  console.log(`  有Toon纹理: ${report.materialsWithToon} / ${report.totalMaterials} ${report.materialsWithToon > 0 ? '✅' : '❌'}`);
-  console.log(`  有Sphere纹理: ${report.materialsWithSphere} / ${report.totalMaterials} ${report.materialsWithSphere > 0 ? '✅' : '❌'}`);
-  console.log(`  有主纹理: ${report.materialsWithMainTexture} / ${report.totalMaterials}`);
+  console.log('  有Toon纹理: ' + (report.materialsWithToon) + ' / ' + (report.totalMaterials) + ' ' + (report.materialsWithToon > 0 ? '✅' : '❌'));
+  console.log('  有Sphere纹理: ' + (report.materialsWithSphere) + ' / ' + (report.totalMaterials) + ' ' + (report.materialsWithSphere > 0 ? '✅' : '❌'));
+  console.log('  有主纹理: ' + (report.materialsWithMainTexture) + ' / ' + (report.totalMaterials));
 
   // 问题列表
   if (report.issues.length > 0) {
     console.log('\n⚠️ 发现的问题:');
     report.issues.forEach((issue, i) => {
-      console.log(`  ${i + 1}. ${issue}`);
+      console.log('  ' + (i + 1) + '. ' + (issue));
     });
   } else {
     console.log('\n✅ 未发现明显问题');
@@ -158,7 +158,7 @@ export function printDiagnosticReport(report: MMDDiagnosticReport): void {
   if (report.suggestions.length > 0) {
     console.log('\n💡 改进建议:');
     report.suggestions.forEach((suggestion, i) => {
-      console.log(`  ${i + 1}. ${suggestion}`);
+      console.log('  ' + (i + 1) + '. ' + (suggestion));
     });
   }
 
@@ -250,7 +250,7 @@ export function listAllMaterials(scene: THREE.Scene): void {
       const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
 
       materials.forEach((mat) => {
-        console.log(`\n材质 #${index}:`, obj.name || 'unnamed');
+        console.log('\n材质 #' + (index) + ':', obj.name || 'unnamed');
         console.log(inspectMaterial(mat));
         index++;
       });

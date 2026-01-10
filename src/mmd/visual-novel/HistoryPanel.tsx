@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { DialogueHistoryItem, DialogueBoxTheme } from './types';
+import { clsx } from 'clsx';
 
 interface HistoryPanelProps {
   /** 历史记录列表 */
@@ -34,7 +35,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
   // 历史面板内容
   const historyContent = (
     <div
-      className={`fixed inset-0 flex flex-col ${className}`}
+      className={clsx('fixed inset-0 flex flex-col', className)}
       style={{
         zIndex: 1,
         pointerEvents: 'auto',
@@ -110,7 +111,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
           ) : (
             history.map((item, index) => (
               <div
-                key={`${item.nodeIndex}-${item.dialogueIndex}-${index}`}
+                key={(item.nodeIndex) + '-' + (item.dialogueIndex) + '-' + (index)}
                 className="p-6 rounded-2xl transition-all hover:scale-[1.01] relative overflow-hidden cursor-pointer"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1))',

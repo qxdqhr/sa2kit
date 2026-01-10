@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Play, Music, Search, Loader2 } from 'lucide-react';
 import { MusicTrack } from '../types';
+import { clsx } from 'clsx';
 
 export interface PlaylistPanelProps {
   tracks: MusicTrack[];
@@ -37,7 +38,7 @@ export const PlaylistPanel: React.FC<PlaylistPanelProps> = ({
 
   return (
     <div 
-      className={`fixed inset-y-0 right-0 w-80 bg-gray-900/90 backdrop-blur-2xl border-l border-white/10 shadow-2xl z-50 flex flex-col pointer-events-auto transform transition-transform duration-500 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'} ${className}`}
+      className={clsx('fixed inset-y-0 right-0 w-80 bg-gray-900/90 backdrop-blur-2xl border-l border-white/10 shadow-2xl z-50 flex flex-col pointer-events-auto transform transition-transform duration-500 ease-out', isOpen ? 'translate-x-0' : 'translate-x-full', className)}
     >
       <div className="flex flex-col p-6 border-b border-white/10 gap-4">
         <div className="flex items-center justify-between">
@@ -79,7 +80,7 @@ export const PlaylistPanel: React.FC<PlaylistPanelProps> = ({
             <button
               key={track.id}
               onClick={() => onSelectTrack(index)}
-              className={`w-full flex items-center gap-4 p-3 rounded-xl transition-all group ${isActive ? 'bg-blue-500/20 border border-blue-500/30' : 'hover:bg-white/5 border border-transparent'}`}
+              className={clsx('w-full flex items-center gap-4 p-3 rounded-xl transition-all group', isActive ? 'bg-blue-500/20 border border-blue-500/30' : 'hover:bg-white/5 border border-transparent')}
             >
               <div className="relative w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-gray-800">
                 {track.coverUrl ? (
@@ -101,7 +102,7 @@ export const PlaylistPanel: React.FC<PlaylistPanelProps> = ({
               </div>
 
               <div className="flex-1 text-left min-w-0">
-                <h4 className={`text-sm font-bold truncate ${isActive ? 'text-blue-400' : 'text-white/90'}`}>
+                <h4 className={clsx('text-sm font-bold truncate', isActive ? 'text-blue-400' : 'text-white/90')}>
                   {track.title}
                 </h4>
                 <p className="text-xs text-white/40 truncate mt-0.5">

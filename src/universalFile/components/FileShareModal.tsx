@@ -112,7 +112,7 @@ const FileShareModal: React.FC<FileShareModalProps> = ({
 
       // 模拟API调用
       const mockShareInfo: ShareInfo = {
-        shareUrl: `${window.location.origin}/share/${generateShareCode()}`,
+        shareUrl: (window.location.origin) + '/share/' + (generateShareCode()),
         password: shareOptions.requirePassword ? shareOptions.password : undefined,
         expiresAt,
         permission: shareOptions.permission,
@@ -162,7 +162,7 @@ const FileShareModal: React.FC<FileShareModalProps> = ({
     if (files.length === 1 && files[0]) {
       return files[0].originalName;
     }
-    return `${files.length} 个文件`;
+    return (files.length) + ' 个文件';
   }, [files]);
 
   // 渲染分享设置
@@ -426,10 +426,10 @@ const FileShareModal: React.FC<FileShareModalProps> = ({
           <button
             onClick={() => {
               const shareText = [
-                `文件分享：${formatFileList()}`,
-                `链接：${shareInfo.shareUrl}`,
-                shareInfo.password ? `密码：${shareInfo.password}` : '',
-                shareInfo.expiresAt ? `过期时间：${shareInfo.expiresAt.toLocaleString()}` : '永不过期'
+                '文件分享：' + (formatFileList()),
+                '链接：' + (shareInfo.shareUrl),
+                shareInfo.password ? '密码：' + (shareInfo.password) : '',
+                shareInfo.expiresAt ? '过期时间：' + (shareInfo.expiresAt.toLocaleString()) : '永不过期'
               ].filter(Boolean).join('\n');
               
               copyToClipboard(shareText);

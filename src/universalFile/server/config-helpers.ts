@@ -234,7 +234,7 @@ export function loadConfigFromEnv(): Partial<UniversalFileServiceConfig> {
   const storage: StorageConfig = ossConfig || getDefaultLocalStorage();
   const defaultStorage = ossConfig ? 'aliyun-oss' : 'local';
 
-  logger.info(`使用存储方式: ${defaultStorage}`);
+  logger.info('使用存储方式: ' + (defaultStorage));
 
   // 4. 构建完整配置
   const config: Partial<UniversalFileServiceConfig> = {

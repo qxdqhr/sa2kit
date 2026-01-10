@@ -45,7 +45,7 @@ export class ReminderService {
     reminderMinutes: number,
     reminderType: 'browser' | 'email' | 'sms' | 'sound' = 'browser'
   ): string {
-    const reminderId = `${event.id}_${Date.now()}`;
+    const reminderId = (event.id) + '_' + (Date.now());
     const eventStart = new Date(event.startTime);
     const reminderTime = new Date(eventStart.getTime() - (reminderMinutes * 60 * 1000));
 
@@ -140,7 +140,7 @@ export class ReminderService {
 
     const timeText = this.getTimeText(reminder.config.minutes);
     const notification = new Notification(`📅 事件提醒`, {
-      body: `${reminder.eventTitle}\n${timeText}`,
+      body: (reminder.eventTitle) + '\n' + (timeText),
       icon: '/favicon.ico',
       tag: reminder.id,
       requireInteraction: true,
@@ -240,7 +240,7 @@ export class ReminderService {
    */
   private static showVisualAlert(reminder: ScheduledReminder): void {
     const timeText = this.getTimeText(reminder.config.minutes);
-    alert(`📅 事件提醒\n\n${reminder.eventTitle}\n${timeText}`);
+    alert('📅 事件提醒\n\n' + (reminder.eventTitle) + '\n' + (timeText));
   }
 
   /**
@@ -250,19 +250,19 @@ export class ReminderService {
     if (minutes === 0) {
       return '事件即将开始';
     } else if (minutes < 60) {
-      return `${minutes}分钟后开始`;
+      return (minutes) + '分钟后开始';
     } else if (minutes < 1440) {
       const hours = Math.floor(minutes / 60);
       const remainingMinutes = minutes % 60;
       return remainingMinutes > 0 
-        ? `${hours}小时${remainingMinutes}分钟后开始`
-        : `${hours}小时后开始`;
+        ? (hours) + '小时' + (remainingMinutes) + '分钟后开始'
+        : (hours) + '小时后开始';
     } else {
       const days = Math.floor(minutes / 1440);
       const remainingHours = Math.floor((minutes % 1440) / 60);
       return remainingHours > 0
-        ? `${days}天${remainingHours}小时后开始`
-        : `${days}天后开始`;
+        ? (days) + '天' + (remainingHours) + '小时后开始'
+        : (days) + '天后开始';
     }
   }
 

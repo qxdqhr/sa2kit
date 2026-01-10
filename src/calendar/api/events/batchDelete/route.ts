@@ -65,7 +65,7 @@ export async function DELETE(request: NextRequest) {
         deletedIds: validEventIds,
         skippedCount: eventIds.length - validEventIds.length
       },
-      message: `成功删除 ${validEventIds.length} 个事件`
+      message: '成功删除 ' + (validEventIds.length) + ' 个事件'
     });
 
   } catch (error) {

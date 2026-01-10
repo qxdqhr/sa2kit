@@ -59,7 +59,7 @@ export class UniversalFileClient {
     fileInfo: UploadFileInfo,
     onProgress?: (progress: UploadProgress) => void
   ): Promise<FileMetadata> {
-    const url = `${this.config.baseUrl}${API_ENDPOINTS.UPLOAD}`;
+    const url = (this.config.baseUrl) + (API_ENDPOINTS.UPLOAD);
     const startTime = Date.now();
 
     // 创建FormData
@@ -165,7 +165,7 @@ export class UniversalFileClient {
             }
           } else {
             console.error('❌ [UniversalFileClient] 上传失败:', xhr.status, xhr.statusText, xhr.responseText);
-            reject(new Error(`上传失败: ${xhr.statusText}`));
+            reject(new Error('上传失败: ' + (xhr.statusText)));
           }
         });
 
@@ -219,7 +219,7 @@ export class UniversalFileClient {
     } catch (error) {
       throw createFileError(
         ERROR_CODES.FILE_UPLOAD_ERROR,
-        `文件上传失败: ${formatErrorMessage(error)}`,
+        '文件上传失败: ' + (formatErrorMessage(error)),
         { fileInfo, originalError: error }
       );
     }
@@ -231,9 +231,7 @@ export class UniversalFileClient {
    * 获取文件访问URL
    */
   async getFileUrl(fileId: string, expiresIn?: number): Promise<string> {
-    const url = `${this.config.baseUrl}${API_ENDPOINTS.GET_URL(fileId)}${
-      expiresIn ? `?expiresIn=${expiresIn}` : ''
-    }`;
+    const url = this.config.baseUrl + API_ENDPOINTS.GET_URL(fileId) + (expiresIn ? `?expiresIn=${expiresIn}` : '');
 
     try {
       const response = await this.fetchWithTimeout(url, {
@@ -242,7 +240,7 @@ export class UniversalFileClient {
       });
 
       if (!response.ok) {
-        throw new Error(`获取文件URL失败: ${response.statusText}`);
+        throw new Error('获取文件URL失败: ' + (response.statusText));
       }
 
       const data = await response.json();
@@ -250,7 +248,7 @@ export class UniversalFileClient {
     } catch (error) {
       throw createFileError(
         ERROR_CODES.NETWORK_ERROR,
-        `获取文件URL失败: ${formatErrorMessage(error)}`,
+        '获取文件URL失败: ' + (formatErrorMessage(error)),
         { fileId, expiresIn, originalError: error }
       );
     }
@@ -260,7 +258,7 @@ export class UniversalFileClient {
    * 获取文件元数据
    */
   async getFileMetadata(fileId: string): Promise<FileMetadata> {
-    const url = `${this.config.baseUrl}${API_ENDPOINTS.GET_METADATA(fileId)}`;
+    const url = (this.config.baseUrl) + (API_ENDPOINTS.GET_METADATA(fileId));
 
     try {
       const response = await this.fetchWithTimeout(url, {
@@ -272,7 +270,7 @@ export class UniversalFileClient {
         if (response.status === 404) {
           throw createFileError(ERROR_CODES.FILE_NOT_FOUND, '文件不存在', { fileId });
         }
-        throw new Error(`获取文件元数据失败: ${response.statusText}`);
+        throw new Error('获取文件元数据失败: ' + (response.statusText));
       }
 
       const data = await response.json();
@@ -280,7 +278,7 @@ export class UniversalFileClient {
     } catch (error) {
       throw createFileError(
         ERROR_CODES.NETWORK_ERROR,
-        `获取文件元数据失败: ${formatErrorMessage(error)}`,
+        '获取文件元数据失败: ' + (formatErrorMessage(error)),
         { fileId, originalError: error }
       );
     }
@@ -307,7 +305,7 @@ export class UniversalFileClient {
       pageSize: options.pageSize,
     });
 
-    const url = `${this.config.baseUrl}${API_ENDPOINTS.QUERY}${queryString}`;
+    const url = (this.config.baseUrl) + (API_ENDPOINTS.QUERY) + (queryString);
 
     try {
       const response = await this.fetchWithTimeout(url, {
@@ -317,7 +315,7 @@ export class UniversalFileClient {
 
       if (!response.ok) {
         console.error('❌ [UniversalFileClient] 查询文件列表失败:', response.status, response.statusText);
-        throw new Error(`查询文件列表失败: ${response.statusText}`);
+        throw new Error('查询文件列表失败: ' + (response.statusText));
       }
 
       const data = await response.json();
@@ -353,7 +351,7 @@ export class UniversalFileClient {
     } catch (error) {
       throw createFileError(
         ERROR_CODES.NETWORK_ERROR,
-        `查询文件列表失败: ${formatErrorMessage(error)}`,
+        '查询文件列表失败: ' + (formatErrorMessage(error)),
         { options, originalError: error }
       );
     }
@@ -365,7 +363,7 @@ export class UniversalFileClient {
    * 删除文件
    */
   async deleteFile(fileId: string): Promise<void> {
-    const url = `${this.config.baseUrl}${API_ENDPOINTS.DELETE(fileId)}`;
+    const url = (this.config.baseUrl) + (API_ENDPOINTS.DELETE(fileId));
 
     try {
       const response = await this.fetchWithTimeout(url, {
@@ -377,12 +375,12 @@ export class UniversalFileClient {
         if (response.status === 404) {
           throw createFileError(ERROR_CODES.FILE_NOT_FOUND, '文件不存在', { fileId });
         }
-        throw new Error(`删除文件失败: ${response.statusText}`);
+        throw new Error('删除文件失败: ' + (response.statusText));
       }
     } catch (error) {
       throw createFileError(
         ERROR_CODES.NETWORK_ERROR,
-        `删除文件失败: ${formatErrorMessage(error)}`,
+        '删除文件失败: ' + (formatErrorMessage(error)),
         { fileId, originalError: error }
       );
     }
@@ -392,7 +390,7 @@ export class UniversalFileClient {
    * 批量删除文件
    */
   async batchDeleteFiles(fileIds: string[]): Promise<BatchOperationResult> {
-    const url = `${this.config.baseUrl}${API_ENDPOINTS.BATCH_DELETE}`;
+    const url = (this.config.baseUrl) + (API_ENDPOINTS.BATCH_DELETE);
 
     try {
       const response = await this.fetchWithTimeout(url, {
@@ -405,7 +403,7 @@ export class UniversalFileClient {
       });
 
       if (!response.ok) {
-        throw new Error(`批量删除文件失败: ${response.statusText}`);
+        throw new Error('批量删除文件失败: ' + (response.statusText));
       }
 
       const data = await response.json();
@@ -413,7 +411,7 @@ export class UniversalFileClient {
     } catch (error) {
       throw createFileError(
         ERROR_CODES.NETWORK_ERROR,
-        `批量删除文件失败: ${formatErrorMessage(error)}`,
+        '批量删除文件失败: ' + (formatErrorMessage(error)),
         { fileIds, originalError: error }
       );
     }
@@ -425,7 +423,7 @@ export class UniversalFileClient {
    * 获取上传进度
    */
   async getUploadProgress(fileId: string): Promise<UploadProgress> {
-    const url = `${this.config.baseUrl}${API_ENDPOINTS.GET_PROGRESS(fileId)}`;
+    const url = (this.config.baseUrl) + (API_ENDPOINTS.GET_PROGRESS(fileId));
 
     try {
       const response = await this.fetchWithTimeout(url, {
@@ -434,7 +432,7 @@ export class UniversalFileClient {
       });
 
       if (!response.ok) {
-        throw new Error(`获取上传进度失败: ${response.statusText}`);
+        throw new Error('获取上传进度失败: ' + (response.statusText));
       }
 
       const data = await response.json();
@@ -442,7 +440,7 @@ export class UniversalFileClient {
     } catch (error) {
       throw createFileError(
         ERROR_CODES.NETWORK_ERROR,
-        `获取上传进度失败: ${formatErrorMessage(error)}`,
+        '获取上传进度失败: ' + (formatErrorMessage(error)),
         { fileId, originalError: error }
       );
     }

@@ -108,7 +108,7 @@ export async function cropGridCell(
 
   // 生成文件名
   const extension = format.split('/')[1] || 'png';
-  const filename = `${filenamePrefix}_r${cell.row}_c${cell.column}.${extension}`;
+  const filename = (filenamePrefix) + '_r' + (cell.row) + '_c' + (cell.column) + '.' + (extension);
 
   return {
     blob,
@@ -146,7 +146,7 @@ export async function cropMultipleCells(
         onProgress(i + 1, cells.length);
       }
     } catch (error) {
-      console.error(`裁剪单元格 (${cell.row}, ${cell.column}) 失败:`, error);
+      console.error('裁剪单元格 (' + (cell.row) + ', ' + (cell.column) + ') 失败:', error);
     }
   }
   

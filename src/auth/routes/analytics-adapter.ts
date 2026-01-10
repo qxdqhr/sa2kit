@@ -71,7 +71,7 @@ export function createAnalyticsAdapter(
     deviceId: options?.deviceId || 'server',
     generateId: options?.generateId || (() => {
       // 简单的 ID 生成器（仅用于浏览器环境）
-      return `${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+      return (Date.now()) + '_' + (Math.random().toString(36).substring(2, 15));
     }),
   };
 
@@ -98,7 +98,7 @@ export function createAnalyticsAdapter(
           timestamp: new Date().toISOString(),
           priority: 1,
           userId: properties.userId || 'anonymous',
-          sessionId: properties.sessionId || `session_${Date.now()}_${properties.userId || 'anonymous'}`,
+          sessionId: properties.sessionId || 'session_' + (Date.now()) + '_' + (properties.userId || 'anonymous'),
           deviceId: config.deviceId,
           platform: config.platform,
           appVersion: config.appVersion,

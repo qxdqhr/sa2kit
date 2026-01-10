@@ -218,23 +218,23 @@ export class RecurrenceService {
 
     switch (rule.type) {
       case 'daily':
-        description = rule.interval === 1 ? '每天' : `每${rule.interval}天`;
+        description = rule.interval === 1 ? '每天' : '每' + (rule.interval) + '天';
         break;
       case 'weekly':
-        description = rule.interval === 1 ? '每周' : `每${rule.interval}周`;
+        description = rule.interval === 1 ? '每周' : '每' + (rule.interval) + '周';
         break;
       case 'monthly':
-        description = rule.interval === 1 ? '每月' : `每${rule.interval}个月`;
+        description = rule.interval === 1 ? '每月' : '每' + (rule.interval) + '个月';
         break;
       case 'yearly':
-        description = rule.interval === 1 ? '每年' : `每${rule.interval}年`;
+        description = rule.interval === 1 ? '每年' : '每' + (rule.interval) + '年';
         break;
     }
 
     if (rule.endDate) {
-      description += `，直到${rule.endDate}`;
+      description += '，直到' + (rule.endDate);
     } else if (rule.count) {
-      description += `，共${rule.count}次`;
+      description += '，共' + (rule.count) + '次';
     }
 
     return description;

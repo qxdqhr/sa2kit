@@ -147,12 +147,12 @@ export class BaseApiClient<TUser = any> {
 
       // 添加认证 token
       if (this.token) {
-        headers['Authorization'] = `Bearer ${this.token}`;
+        headers['Authorization'] = 'Bearer ' + (this.token);
       }
 
       const response = await this.request.request<ApiResponse<T>>({
         ...config,
-        url: `${this.baseUrl}${config.url}`,
+        url: (this.baseUrl) + (config.url),
         headers,
       });
 

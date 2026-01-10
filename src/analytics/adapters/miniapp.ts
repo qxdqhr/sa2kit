@@ -148,7 +148,7 @@ export class MiniappNetworkAdapter implements AnalyticsNetworkAdapter {
       } else {
         return {
           success: false,
-          message: `HTTP ${response.statusCode}`,
+          message: 'HTTP ' + (response.statusCode),
           code: response.statusCode,
         };
       }
@@ -216,12 +216,12 @@ export class MiniappDeviceAdapter implements AnalyticsDeviceAdapter {
     // 可以结合 openid 或其他标识
     const timestamp = Date.now();
     const random = Math.random().toString(36).substring(2, 15);
-    return `miniapp_${timestamp}_${random}`;
+    return 'miniapp_' + (timestamp) + '_' + (random);
   }
 
   private getDefaultDeviceInfo(): DeviceInfo {
     return {
-      device_id: `miniapp_${Date.now()}`,
+      device_id: 'miniapp_' + (Date.now()),
       os_name: 'wechat',
       os_version: 'unknown',
       screen_width: 0,

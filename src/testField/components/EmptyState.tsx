@@ -1,6 +1,7 @@
 'use client';
 
 import React from "react";
+import { clsx } from 'clsx';
 
 export interface EmptyStateProps {
   searchQuery: string;
@@ -10,7 +11,7 @@ export interface EmptyStateProps {
 
 export const EmptyState: React.FC<EmptyStateProps> = ({ searchQuery, onClearSearch, className }) => {
   return (
-    <div className={`text-center py-12 ${className}`}>
+    <div className={clsx('text-center py-12', className)}>
       <svg 
         className="mx-auto h-12 w-12 text-gray-400" 
         fill="none" 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { clsx } from 'clsx';
 
 // ==================== 公共类型定义 ====================
 
@@ -29,10 +30,10 @@ export interface GridItem {
   export function buildGridColsClasses(columns: GridColumns): string {
     return [
       'grid-cols-1', // 默认单列
-      columns.sm ? `sm:grid-cols-${columns.sm}` : '',
-      columns.md ? `md:grid-cols-${columns.md}` : 'md:grid-cols-2',
-      columns.lg ? `lg:grid-cols-${columns.lg}` : 'lg:grid-cols-3',
-      columns.xl ? `xl:grid-cols-${columns.xl}` : ''
+      columns.sm ? 'sm:grid-cols-' + (columns.sm) : '',
+      columns.md ? 'md:grid-cols-' + (columns.md) : 'md:grid-cols-2',
+      columns.lg ? 'lg:grid-cols-' + (columns.lg) : 'lg:grid-cols-3',
+      columns.xl ? 'xl:grid-cols-' + (columns.xl) : ''
     ].filter(Boolean).join(' ');
   }
   
@@ -79,7 +80,7 @@ export interface GridItem {
   
     return (
       <div 
-        className={`grid ${gridColsClasses} ${gapClass} ${className}`.trim()}
+        className={clsx('grid', gridColsClasses, gapClass, className)}
         style={style}
       >
         {items.map((item, index) => (

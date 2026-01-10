@@ -9,7 +9,7 @@ export const formatTime = {
   toMinutesSeconds(seconds: number): string {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return minutes + ':' + remainingSeconds.toString().padStart(2, '0');
   },
 
   /**
@@ -21,9 +21,9 @@ export const formatTime = {
     const remainingSeconds = Math.floor(seconds % 60);
 
     if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+      return hours + ':' + minutes.toString().padStart(2, '0') + ':' + remainingSeconds.toString().padStart(2, '0');
     }
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return minutes + ':' + remainingSeconds.toString().padStart(2, '0');
   },
 
   /**
@@ -40,7 +40,7 @@ export const formatTime = {
     } else if (diffDays === 1) {
       return locale === 'zh-CN' ? '昨天' : 'Yesterday';
     } else if (diffDays < 7) {
-      return locale === 'zh-CN' ? `${diffDays}天前` : `${diffDays} days ago`;
+      return locale === 'zh-CN' ? diffDays + '天前' : diffDays + ' days ago';
     } else {
       return d.toLocaleDateString(locale);
     }

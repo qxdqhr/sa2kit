@@ -9,6 +9,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from '../hooks';
 import type { Locale } from '../types';
+import { clsx } from 'clsx';
 
 // ==================== 类型定义 ====================
 
@@ -51,21 +52,18 @@ export function LanguageSwitcherButtons({
 
   return (
     <div
-      className={`inline-flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg ${className}`}
+      className={clsx('inline-flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg', className)}
     >
       {LANGUAGE_OPTIONS.map((option) => (
         <button
           key={option.locale}
           onClick={() => handleChange(option.locale)}
-          className={`
-            inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium
-            transition-all duration-200
-            ${
-              locale === option.locale
+          className={clsx(
+            'inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200',
+            locale === option.locale
                 ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-            }
-          `}
+          )}
           aria-label={option.label}
         >
           <span className="text-base leading-none">{option.flag}</span>
@@ -94,7 +92,7 @@ export function LanguageSwitcherDropdown({
   };
 
   return (
-    <div className={`inline-flex flex-col gap-2 ${className}`}>
+    <div className={clsx('inline-flex flex-col gap-2', className)}>
       <label
         htmlFor="language-select"
         className="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -162,7 +160,7 @@ export function LanguageSwitcherIcon({ className = '', onLanguageChange }: Langu
   }, [isOpen]);
 
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
+    <div className={clsx('relative', className)} ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="
@@ -178,9 +176,7 @@ export function LanguageSwitcherIcon({ className = '', onLanguageChange }: Langu
       >
         <span className="text-lg leading-none">{currentOption?.flag}</span>
         <svg
-          className={`w-4 h-4 text-gray-600 dark:text-gray-400 transition-transform duration-200 ${
-            isOpen ? 'rotate-180' : ''
-          }`}
+          className={clsx('w-4 h-4 text-gray-600 dark:text-gray-400 transition-transform duration-200', isOpen ? 'rotate-180' : '')}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -205,15 +201,12 @@ export function LanguageSwitcherIcon({ className = '', onLanguageChange }: Langu
             <button
               key={option.locale}
               onClick={() => handleSelect(option.locale)}
-              className={`
-                w-full flex items-center gap-3 px-4 py-2.5 text-sm
-                transition-colors duration-150
-                ${
-                  locale === option.locale
+              className={clsx(
+                'w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-150',
+                locale === option.locale
                     ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                }
-              `}
+              )}
             >
               <span className="text-lg leading-none">{option.flag}</span>
               <span className="flex-1 text-left">{option.label}</span>

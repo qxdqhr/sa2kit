@@ -3,6 +3,7 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { SearchBox } from '../../components/SearchBox';
 import { ConfirmModal } from '@/components';
+import { clsx } from 'clsx';
 import { 
   CalendarEvent, 
   EventListProps, 
@@ -255,15 +256,11 @@ export default function EventList({
     return (
       <button
         onClick={() => handleSortChange(field)}
-        className={`flex items-center px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-          isActive ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-        }`}
+        className={clsx('flex items-center px-3 py-1.5 text-sm font-medium rounded-lg transition-colors', isActive ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100')}
       >
         {label}
         <svg 
-          className={`ml-1 w-4 h-4 transition-transform ${
-            isActive ? (isAsc ? 'rotate-180' : '') : 'opacity-50'
-          }`} 
+          className={clsx('ml-1 w-4 h-4 transition-transform', isActive ? (isAsc ? 'rotate-180' : '') : 'opacity-50')} 
           fill="none" 
           stroke="currentColor" 
           viewBox="0 0 24 24"
@@ -316,9 +313,7 @@ export default function EventList({
         return (
           <div
             key={event.id}
-            className={`p-4 rounded-lg border-l-4 cursor-pointer hover:shadow-md transition-all ${
-              getEventColorClass(event.color)
-            } ${isSelected ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}`}
+            className={clsx('p-4 rounded-lg border-l-4 cursor-pointer hover:shadow-md transition-all', getEventColorClass(event.color), isSelected ? 'ring-2 ring-blue-500 ring-opacity-50' : '')}
             onClick={() => !isSelectionMode && onEventClick(event)}
           >
             <div className="flex items-start justify-between">
@@ -333,7 +328,7 @@ export default function EventList({
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
-                    <span className={`px-2 py-1 text-xs font-medium rounded border ${priorityDisplay.color}`}>
+                    <span className={clsx('px-2 py-1 text-xs font-medium rounded border', priorityDisplay.color)}>
                       {priorityDisplay.text}
                     </span>
                   </div>
@@ -414,9 +409,7 @@ export default function EventList({
         return (
           <div
             key={event.id}
-            className={`p-4 rounded-lg border cursor-pointer hover:shadow-lg transition-all ${
-              getEventColorClass(event.color)
-            } border-l-4 ${isSelected ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}`}
+            className={clsx('p-4 rounded-lg border cursor-pointer hover:shadow-lg transition-all', getEventColorClass(event.color), 'border-l-4', isSelected ? 'ring-2 ring-blue-500 ring-opacity-50' : '')}
             onClick={() => !isSelectionMode && onEventClick(event)}
           >
             <div className="flex items-start justify-between mb-3">
@@ -428,7 +421,7 @@ export default function EventList({
               )}
               
               <h3 className="text-lg font-semibold text-gray-900 flex-1 pr-2">{event.title}</h3>
-              <span className={`px-2 py-1 text-xs font-medium rounded border flex-shrink-0 ${priorityDisplay.color}`}>
+              <span className={clsx('px-2 py-1 text-xs font-medium rounded border flex-shrink-0', priorityDisplay.color)}>
                 {priorityDisplay.text}
               </span>
             </div>
@@ -496,7 +489,7 @@ export default function EventList({
   );
   
   return (
-    <div className={`space-y-6 ${className}`}>
+    <div className={clsx('space-y-6', className)}>
       {/* 工具栏 */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -561,21 +554,17 @@ export default function EventList({
               <div className="flex items-center bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => handleDisplayModeChange(EventListDisplayMode.LIST)}
-                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                    config.displayMode === EventListDisplayMode.LIST
+                  className={clsx('px-3 py-1.5 text-sm font-medium rounded-md transition-colors', config.displayMode === EventListDisplayMode.LIST
                       ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
+                      : 'text-gray-600 hover:text-gray-900')}
                 >
                   列表
                 </button>
                 <button
                   onClick={() => handleDisplayModeChange(EventListDisplayMode.GRID)}
-                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                    config.displayMode === EventListDisplayMode.GRID
+                  className={clsx('px-3 py-1.5 text-sm font-medium rounded-md transition-colors', config.displayMode === EventListDisplayMode.GRID
                       ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
+                      : 'text-gray-600 hover:text-gray-900')}
                 >
                   网格
                 </button>
@@ -616,7 +605,7 @@ export default function EventList({
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-600">
           共 {sortedAndFilteredEvents.length} 个事件
-          {config.filter.searchText && ` (搜索: "${config.filter.searchText}")`}
+          {config.filter.searchText && ' (搜索: "' + (config.filter.searchText) + '")'}
         </div>
       </div>
       
@@ -681,7 +670,7 @@ export default function EventList({
         onClose={() => setShowBatchDeleteConfirm(false)}
         onConfirm={handleBatchDelete}
         title="确认批量删除"
-        message={`确定要删除选中的 ${selectedEventIds.size} 个事件吗？此操作无法撤销。`}
+        message={'确定要删除选中的 ' + (selectedEventIds.size) + ' 个事件吗？此操作无法撤销。'}
         confirmText="删除"
         cancelText="取消"
         isLoading={batchDeleteLoading}

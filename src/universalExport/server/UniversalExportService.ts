@@ -87,13 +87,13 @@ const DEFAULT_FORMATTERS: Record<string, Formatter> = {
   // 货币格式化
   currency: (value: any) => {
     if (value === null || value === undefined) return '';
-    return `¥${Number(value).toFixed(2)}`;
+    return '¥' + (Number(value).toFixed(2));
   },
 
   // 百分比格式化
   percentage: (value: any) => {
     if (value === null || value === undefined) return '';
-    return `${(Number(value) * 100).toFixed(2)}%`;
+    return ((Number(value) * 100).toFixed(2)) + '%';
   },
 
   // 布尔值格式化
@@ -181,7 +181,7 @@ export class UniversalExportService {
       return newConfig;
     } catch (error) {
       throw new ExportConfigError(
-        `创建导出配置失败: ${error instanceof Error ? error.message : '未知错误'}`,
+        '创建导出配置失败: ' + (error instanceof Error ? error.message : '未知错误'),
         { originalError: error }
       );
     }
@@ -207,7 +207,7 @@ export class UniversalExportService {
   async updateConfig(configId: string, updates: Partial<ExportConfig>): Promise<ExportConfig> {
     const existing = await this.getConfig(configId);
     if (!existing) {
-      throw new ExportConfigError(`配置不存在: ${configId}`);
+      throw new ExportConfigError('配置不存在: ' + (configId));
     }
 
     const updatedConfig: ExportConfig = {
@@ -242,7 +242,7 @@ export class UniversalExportService {
   async deleteConfig(configId: string): Promise<void> {
     const existing = await this.getConfig(configId);
     if (!existing) {
-      throw new ExportConfigError(`配置不存在: ${configId}`);
+      throw new ExportConfigError('配置不存在: ' + (configId));
     }
 
     // 从缓存删除
@@ -305,7 +305,7 @@ export class UniversalExportService {
         logger.info('🔍 [UniversalExportService] 从缓存获取配置:', request.configId);
         const cachedConfig = await this.getConfig(request.configId as string);
         if (!cachedConfig) {
-          throw new ExportConfigError(`导出配置不存在: ${request.configId}`);
+          throw new ExportConfigError('导出配置不存在: ' + (request.configId));
         }
         config = cachedConfig;
         logger.info('✅ [UniversalExportService] 成功获取缓存配置:', {
@@ -509,7 +509,7 @@ export class UniversalExportService {
    * 生成唯一ID
    */
   private generateId(): string {
-    return `export_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return 'export_' + (Date.now()) + '_' + (Math.random().toString(36).substr(2, 9));
   }
 
   /**
@@ -569,7 +569,7 @@ export class UniversalExportService {
     } catch (error) {
       console.error('❌ [UniversalExportService] 获取数据失败:', error);
       throw new ExportDataError(
-        `获取数据失败: ${error instanceof Error ? error.message : '未知错误'}`,
+        '获取数据失败: ' + (error instanceof Error ? error.message : '未知错误'),
         { originalError: error }
       );
     }
@@ -739,7 +739,7 @@ export class UniversalExportService {
       // 特殊处理：强制保留某些重要字段，即使所有行都为空值
       const forceKeepFields = ['pickupMethod', 'notes', 'adminNotes'];
       if (forceKeepFields.includes(field.key)) {
-        logger.info(`🔧 [UniversalExportService] 强制保留字段 "${field.key}" (${field.label})`);
+        logger.info('🔧 [UniversalExportService] 强制保留字段 "' + (field.key) + '" (' + (field.label) + ')');
         return true;
       }
 
@@ -751,7 +751,7 @@ export class UniversalExportService {
 
       if (!hasValue) {
         logger.info(
-          `🔍 [UniversalExportService] 字段 "${field.key}" (${field.label}) 被过滤掉 - 所有行都为空值`
+          '🔍 [UniversalExportService] 字段 "' + (field.key) + '" (' + (field.label) + ') 被过滤掉 - 所有行都为空值'
         );
       }
 
@@ -849,7 +849,7 @@ export class UniversalExportService {
           break;
         default:
           console.error('❌ [UniversalExportService] 不支持的格式:', config.format);
-          throw new ExportFileError(`不支持的导出格式: ${config.format}`);
+          throw new ExportFileError('不支持的导出格式: ' + (config.format));
       }
 
       // 创建Blob
@@ -857,7 +857,7 @@ export class UniversalExportService {
 
       // 检查文件大小
       if (blob.size > this.config.maxFileSize) {
-        throw new ExportFileError(`文件大小超过限制: ${blob.size} > ${this.config.maxFileSize}`);
+        throw new ExportFileError('文件大小超过限制: ' + (blob.size) + ' > ' + (this.config.maxFileSize));
       }
 
       const endTime = new Date();
@@ -881,7 +881,7 @@ export class UniversalExportService {
       };
     } catch (error) {
       throw new ExportFileError(
-        `生成文件失败: ${error instanceof Error ? error.message : '未知错误'}`,
+        '生成文件失败: ' + (error instanceof Error ? error.message : '未知错误'),
         { originalError: error }
       );
     }
@@ -998,7 +998,7 @@ export class UniversalExportService {
    */
   private escapeCSVField(value: string): string {
     if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-      return `"${value.replace(/"/g, '""')}"`;
+      return '"' + (value.replace(/"/g, '""')) + '"';
     }
     return value;
   }
@@ -1015,7 +1015,7 @@ export class UniversalExportService {
       template
         .replace('{date}', dateStr)
         .replace('{time}', timeStr)
-        .replace('{timestamp}', now.getTime().toString()) + `.${extension}`
+        .replace('{timestamp}', now.getTime().toString()) + '.' + (extension)
     );
   }
 
@@ -1192,7 +1192,7 @@ export class UniversalExportService {
 
     groupingFields.forEach((field, index) => {
       const value = groupValues[index] === '__NULL__' ? '' : groupValues[index];
-      const template = field.groupHeaderTemplate || `${field.label}: {value}`;
+      const template = field.groupHeaderTemplate || (field.label) + ': {value}';
       header[field.key] = template.replace('{value}', value);
     });
 
@@ -1240,8 +1240,8 @@ export class UniversalExportService {
 
     // 为每个分组字段标记
     groupFields.forEach((field) => {
-      firstItem[`__${field.key}_groupSize`] = groupItems.length;
-      firstItem[`__${field.key}_isGroupFirst`] = true;
+      firstItem['__' + (field.key) + '_groupSize'] = groupItems.length;
+      firstItem['__' + (field.key) + '_isGroupFirst'] = true;
     });
 
     result.push(firstItem);
@@ -1448,7 +1448,7 @@ export class UniversalExportService {
             const fieldIndex = fields.findIndex((f) => f.key === groupField.key);
             if (fieldIndex >= 0) {
               // 获取分组大小 - 优先使用字段特定的分组大小
-              const groupSize = item[`__${groupField.key}_groupSize`] || item.__groupSize;
+              const groupSize = item['__' + (groupField.key) + '_groupSize'] || item.__groupSize;
 
               // 创建合并区域
               const mergeRange = {

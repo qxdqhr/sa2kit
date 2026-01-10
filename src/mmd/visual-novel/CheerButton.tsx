@@ -1,4 +1,5 @@
 import React from 'react';
+import { clsx } from 'clsx';
 
 /**
  * 应援按钮组件
@@ -25,18 +26,10 @@ export const CheerButton: React.FC<CheerButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`
-        fixed bottom-32 right-8
-        px-6 py-3 rounded-full
-        bg-gradient-to-r from-pink-500 to-purple-500
-        hover:from-pink-600 hover:to-purple-600
-        active:scale-95
-        text-white font-bold text-lg
-        shadow-lg hover:shadow-xl
-        transition-all duration-200
-        flex items-center gap-2
-        ${className}
-      `}
+      className={clsx(
+        'fixed bottom-32 right-8 px-6 py-3 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 active:scale-95 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2',
+        className
+      )}
       style={{
         animation: 'cheer-pulse 2s ease-in-out infinite',
         zIndex: 1000000, // 高于对话框的 z-index (999999)

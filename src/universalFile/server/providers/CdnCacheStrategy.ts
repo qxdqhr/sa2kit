@@ -271,7 +271,7 @@ export class CdnCacheStrategy {
 
     // 添加ETag用于缓存验证
     if (strategy.browserCache) {
-      headers['ETag'] = `"${Date.now()}"`;
+      headers['ETag'] = '"' + (Date.now()) + '"';
     }
 
     // 添加Last-Modified头
@@ -379,7 +379,7 @@ export class CdnCacheStrategy {
         if (stats.hitRate < 60) {
           suggestions.push({
             type,
-            issue: `${type}类型文件缓存命中率过低 (${stats.hitRate.toFixed(1)}%)`,
+            issue: (type) + '类型文件缓存命中率过低 (' + (stats.hitRate.toFixed(1)) + '%)',
             suggestion: '考虑增加缓存时间或启用预热机制',
             severity: stats.hitRate < 30 ? 'high' : 'medium',
           });
@@ -390,7 +390,7 @@ export class CdnCacheStrategy {
           // 1GB
           suggestions.push({
             type,
-            issue: `${type}类型文件缓存占用空间过大 (${(stats.estimatedSize / 1024 / 1024 / 1024).toFixed(2)}GB)`,
+            issue: (type) + '类型文件缓存占用空间过大 (' + ((stats.estimatedSize / 1024 / 1024 / 1024).toFixed(2)) + 'GB)',
             suggestion: '考虑减少缓存时间或优化文件压缩',
             severity: 'medium',
           });

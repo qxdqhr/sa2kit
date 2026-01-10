@@ -187,7 +187,7 @@ export async function PUT(request: NextRequest) {
         for (const [key, color] of Object.entries(body.eventColors)) {
           if (typeof color === 'string' && !/^#[0-9A-Fa-f]{6}$/.test(color)) {
             return Response.json(
-              { success: false, error: `事件颜色 ${key} 格式无效，请使用十六进制格式` },
+              { success: false, error: '事件颜色 ' + (key) + ' 格式无效，请使用十六进制格式' },
               { status: 400 }
             );
           }

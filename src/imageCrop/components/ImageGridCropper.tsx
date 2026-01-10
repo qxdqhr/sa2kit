@@ -6,6 +6,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { clsx } from 'clsx';
 import {
   Download,
   Scissors,
@@ -94,7 +95,7 @@ export const ImageGridCropper: React.FC<ImageGridCropperProps> = ({
         const offsetY = row * cellHeight;
 
         cells.push({
-          id: `cell_${row}_${col}`,
+          id: 'cell_' + (row) + '_' + (col),
           row,
           column: col,
           x: offsetX,
@@ -190,7 +191,7 @@ export const ImageGridCropper: React.FC<ImageGridCropperProps> = ({
       // 绘制单元格编号
       ctx.fillStyle = cell.selected ? 'rgba(34, 197, 94, 0.9)' : 'rgba(156, 163, 175, 0.7)';
       ctx.font = '12px sans-serif';
-      ctx.fillText(`R${cell.row}C${cell.column}`, x + 5, y + 15);
+      ctx.fillText('R' + (cell.row) + 'C' + (cell.column), x + 5, y + 15);
     });
   }, [imageInfo, gridConfig, gridCells]);
 
@@ -272,7 +273,7 @@ export const ImageGridCropper: React.FC<ImageGridCropperProps> = ({
       }
 
       // 下载为ZIP
-      const zipFilename = options.zipFilename || `cropped_${Date.now()}.zip`;
+      const zipFilename = options.zipFilename || 'cropped_' + (Date.now()) + '.zip';
       await downloadAsZip(results, zipFilename);
 
       onExportSuccess?.(results);
@@ -311,7 +312,7 @@ export const ImageGridCropper: React.FC<ImageGridCropperProps> = ({
   const selectedCount = gridCells.filter((cell) => cell.selected).length;
 
   return (
-    <div className={`w-full space-y-6 ${className}`}>
+    <div className={clsx('w-full space-y-6', className)}>
       {/* 头部 */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -409,11 +410,9 @@ export const ImageGridCropper: React.FC<ImageGridCropperProps> = ({
               {gridCells.map((cell) => (
                 <div
                   key={cell.id}
-                  className={`p-3 rounded border ${
-                    cell.selected
+                  className={clsx('p-3 rounded border', cell.selected
                       ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
-                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-                  } cursor-pointer transition-colors`}
+                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800', 'cursor-pointer transition-colors')}
                   onClick={() => toggleCellSelection(cell.id)}
                 >
                   <div className="flex items-center justify-between mb-2">

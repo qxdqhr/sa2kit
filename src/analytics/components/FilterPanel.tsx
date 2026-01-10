@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import type { FilterOptions } from './types';
+import { clsx } from 'clsx';
 
 export interface FilterPanelProps {
   onFilterChange: (filters: FilterOptions) => void;
@@ -70,7 +71,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   };
 
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-gray-200 ${className}`}>
+    <div className={clsx('bg-white rounded-xl shadow-sm border border-gray-200', className)}>
       <div className="flex items-center justify-between mb-4 p-4 bg-gradient-to-r from-gray-50 to-gray-100 -m-6 mb-4 rounded-t-xl border-b border-gray-200">
         <div className="flex items-center gap-2">
           <svg
@@ -211,12 +212,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       <div className="px-4 py-3 bg-gray-50 -mx-6 -mb-6 mt-4 rounded-b-xl border-t border-gray-200">
         <div className="flex items-center gap-2">
           <div
-            className={`w-2 h-2 rounded-full ${Object.keys(filters).length > 0 ? 'bg-green-500' : 'bg-gray-300'}`}
+            className={clsx('w-2 h-2 rounded-full', Object.keys(filters).length > 0 ? 'bg-green-500' : 'bg-gray-300')}
           ></div>
           <p className="text-xs text-gray-600">
             {Object.keys(filters).length === 0
               ? '未应用筛选'
-              : `${Object.keys(filters).length} 个筛选`}
+              : (Object.keys(filters).length) + ' 个筛选'}
           </p>
         </div>
       </div>

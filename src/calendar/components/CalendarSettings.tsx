@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { clsx } from 'clsx';
 
 // 预设颜色主题
 const COLOR_THEMES = {
@@ -210,11 +211,9 @@ export default function CalendarSettings({ onSettingsChange }: CalendarSettingsP
             <button
               key={key}
               onClick={() => setActiveTab(key as any)}
-              className={`py-4 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === key
+              className={clsx('py-4 text-sm font-medium border-b-2 transition-colors', activeTab === key
                   ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300')}
             >
               <span className="mr-2">{icon}</span>
               {label}
@@ -235,11 +234,9 @@ export default function CalendarSettings({ onSettingsChange }: CalendarSettingsP
                   <div
                     key={key}
                     onClick={() => updateSettings({ theme: key as keyof typeof COLOR_THEMES })}
-                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                      settings.theme === key
+                    className={clsx('p-4 border-2 rounded-lg cursor-pointer transition-all', settings.theme === key
                         ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                        : 'border-gray-200 hover:border-gray-300')}
                   >
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="font-medium text-gray-900">{theme.name}</h4>
@@ -286,7 +283,7 @@ export default function CalendarSettings({ onSettingsChange }: CalendarSettingsP
                             style={{
                               backgroundColor: index === 3 ? theme.background.today : theme.background.cell,
                               color: index === 3 ? theme.text.today : theme.text.primary,
-                              border: `1px solid ${index === 3 ? theme.border.today : theme.border.cell}`
+                              border: '1px solid ' + (index === 3 ? theme.border.today : theme.border.cell)
                             }}
                           >
                             {index + 1}

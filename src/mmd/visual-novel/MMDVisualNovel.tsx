@@ -17,6 +17,7 @@ import { ChoiceMenu } from './ChoiceMenu';
 import { LoopConfirmDialog } from './LoopConfirmDialog';
 import { CheerButton } from './CheerButton';
 import { CheerParticles, CheerParticlesRef } from './CheerParticles';
+import { clsx } from 'clsx';
 import {
   MMDVisualNovelProps,
   MMDVisualNovelRef,
@@ -151,7 +152,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
           return;
         }
 
-        console.log(`[MMDVisualNovel] Transitioning to node ${nodeIndex}`);
+        console.log('[MMDVisualNovel] Transitioning to node ' + (nodeIndex));
 
         // 🔧 立即设置加载状态，确保遮罩覆盖整个切换过程
         setIsTransitioning(true);
@@ -184,7 +185,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
           // 注意：isLoading 和 isAnimationPlaying 会在 MMDPlayerBase 的回调中更新
           setTimeout(() => {
             setIsTransitioning(false);
-            console.log(`[MMDVisualNovel] Transition to node ${nodeIndex} completed, waiting for model load`);
+            console.log('[MMDVisualNovel] Transition to node ' + (nodeIndex) + ' completed, waiting for model load');
           }, 100);
         }, 300);
       },
@@ -203,7 +204,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         const val = variables[key];
         if (val !== undefined && map[val as string | number] !== undefined) {
           nextNodeIndex = map[val as string | number]!;
-          console.log(`[MMDVisualNovel] Branching: ${key}=${val} -> node ${nextNodeIndex}`);
+          console.log('[MMDVisualNovel] Branching: ' + (key) + '=' + (val) + ' -> node ' + (nextNodeIndex));
         } else {
           nextNodeIndex = defaultIndex;
         }
@@ -449,7 +450,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     return (
       <div
         ref={containerRef}
-        className={`relative bg-black ${className}`}
+        className={clsx('relative bg-black', className)}
         style={{ width: '100%', height: '100%', overflow: 'hidden', ...style }}
       >
         {/* MMD 播放器层 - 覆盖整个屏幕，明确在最底层 */}
@@ -529,7 +530,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
                 className="h-full w-full"
                 style={{
                   backgroundColor: activeEffect.color || 'white',
-                  animation: `flash-anim ${activeEffect.duration || 500}ms ease-out forwards`
+                  animation: 'flash-anim ' + (activeEffect.duration || 500) + 'ms ease-out forwards'
                 }}
               />
             )}
@@ -640,7 +641,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
               if (choice.setVariable) {
                 const { key, value } = choice.setVariable;
                 setVariables(prev => ({ ...prev, [key]: value }));
-                console.log(`[MMDVisualNovel] Variable set: ${key} = ${value}`);
+                console.log('[MMDVisualNovel] Variable set: ' + (key) + ' = ' + (value));
               }
 
               // 2. 执行回调

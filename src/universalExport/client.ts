@@ -46,7 +46,7 @@ export class UniversalExportClient {
       params.append('businessId', businessId);
     }
 
-    const url = `${this.config.baseUrl}${API_ENDPOINTS.GET_CONFIGS}?${params}`;
+    const url = (this.config.baseUrl) + (API_ENDPOINTS.GET_CONFIGS) + '?' + (params);
 
     try {
       const response = await this.fetchWithTimeout(url, {
@@ -55,7 +55,7 @@ export class UniversalExportClient {
       });
 
       if (!response.ok) {
-        throw new Error(`获取配置失败: ${response.statusText}`);
+        throw new Error('获取配置失败: ' + (response.statusText));
       }
 
       const data = await response.json();
@@ -63,7 +63,7 @@ export class UniversalExportClient {
     } catch (error) {
       throw createExportError(
         ERROR_CODES.NETWORK_ERROR,
-        `获取导出配置失败: ${formatErrorMessage(error)}`,
+        '获取导出配置失败: ' + (formatErrorMessage(error)),
         { moduleId, businessId, originalError: error }
       );
     }
@@ -75,7 +75,7 @@ export class UniversalExportClient {
   async createConfig(
     config: Omit<ExportConfig, 'id' | 'createdAt' | 'updatedAt'>
   ): Promise<ExportConfig> {
-    const url = `${this.config.baseUrl}${API_ENDPOINTS.CREATE_CONFIG}`;
+    const url = (this.config.baseUrl) + (API_ENDPOINTS.CREATE_CONFIG);
 
     try {
       const response = await this.fetchWithTimeout(url, {
@@ -88,7 +88,7 @@ export class UniversalExportClient {
       });
 
       if (!response.ok) {
-        throw new Error(`创建配置失败: ${response.statusText}`);
+        throw new Error('创建配置失败: ' + (response.statusText));
       }
 
       const data = await response.json();
@@ -96,7 +96,7 @@ export class UniversalExportClient {
     } catch (error) {
       throw createExportError(
         ERROR_CODES.NETWORK_ERROR,
-        `创建导出配置失败: ${formatErrorMessage(error)}`,
+        '创建导出配置失败: ' + (formatErrorMessage(error)),
         { config, originalError: error }
       );
     }
@@ -106,7 +106,7 @@ export class UniversalExportClient {
    * 更新导出配置
    */
   async updateConfig(configId: string, updates: Partial<ExportConfig>): Promise<ExportConfig> {
-    const url = `${this.config.baseUrl}${API_ENDPOINTS.UPDATE_CONFIG(configId)}`;
+    const url = (this.config.baseUrl) + (API_ENDPOINTS.UPDATE_CONFIG(configId));
 
     try {
       const response = await this.fetchWithTimeout(url, {
@@ -119,7 +119,7 @@ export class UniversalExportClient {
       });
 
       if (!response.ok) {
-        throw new Error(`更新配置失败: ${response.statusText}`);
+        throw new Error('更新配置失败: ' + (response.statusText));
       }
 
       const data = await response.json();
@@ -127,7 +127,7 @@ export class UniversalExportClient {
     } catch (error) {
       throw createExportError(
         ERROR_CODES.NETWORK_ERROR,
-        `更新导出配置失败: ${formatErrorMessage(error)}`,
+        '更新导出配置失败: ' + (formatErrorMessage(error)),
         { configId, updates, originalError: error }
       );
     }
@@ -137,7 +137,7 @@ export class UniversalExportClient {
    * 删除导出配置
    */
   async deleteConfig(configId: string): Promise<void> {
-    const url = `${this.config.baseUrl}${API_ENDPOINTS.DELETE_CONFIG(configId)}`;
+    const url = (this.config.baseUrl) + (API_ENDPOINTS.DELETE_CONFIG(configId));
 
     try {
       const response = await this.fetchWithTimeout(url, {
@@ -146,12 +146,12 @@ export class UniversalExportClient {
       });
 
       if (!response.ok) {
-        throw new Error(`删除配置失败: ${response.statusText}`);
+        throw new Error('删除配置失败: ' + (response.statusText));
       }
     } catch (error) {
       throw createExportError(
         ERROR_CODES.NETWORK_ERROR,
-        `删除导出配置失败: ${formatErrorMessage(error)}`,
+        '删除导出配置失败: ' + (formatErrorMessage(error)),
         { configId, originalError: error }
       );
     }
@@ -165,7 +165,7 @@ export class UniversalExportClient {
   async exportData(request: Omit<ExportRequest, 'callbacks' | 'dataSource'> & {
     dataSource: any[] | string;
   }): Promise<ExportResult> {
-    const url = `${this.config.baseUrl}${API_ENDPOINTS.EXPORT_DATA}`;
+    const url = (this.config.baseUrl) + (API_ENDPOINTS.EXPORT_DATA);
 
     try {
       // 如果 dataSource 是数组，我们需要将其作为请求体的一部分
@@ -205,7 +205,7 @@ export class UniversalExportClient {
         } catch {
           errorData = { message: errorText };
         }
-        throw new Error(errorData.message || `导出失败: ${response.statusText}`);
+        throw new Error(errorData.message || '导出失败: ' + (response.statusText));
       }
 
       const data = await response.json();
@@ -213,7 +213,7 @@ export class UniversalExportClient {
     } catch (error) {
       throw createExportError(
         ERROR_CODES.EXPORT_DATA_ERROR,
-        `数据导出失败: ${formatErrorMessage(error)}`,
+        '数据导出失败: ' + (formatErrorMessage(error)),
         { request, originalError: error }
       );
     }
@@ -223,7 +223,7 @@ export class UniversalExportClient {
    * 查询导出进度
    */
   async getExportProgress(exportId: string): Promise<ExportProgress> {
-    const url = `${this.config.baseUrl}${API_ENDPOINTS.GET_PROGRESS(exportId)}`;
+    const url = (this.config.baseUrl) + (API_ENDPOINTS.GET_PROGRESS(exportId));
 
     try {
       const response = await this.fetchWithTimeout(url, {
@@ -232,7 +232,7 @@ export class UniversalExportClient {
       });
 
       if (!response.ok) {
-        throw new Error(`获取导出进度失败: ${response.statusText}`);
+        throw new Error('获取导出进度失败: ' + (response.statusText));
       }
 
       const data = await response.json();
@@ -240,7 +240,7 @@ export class UniversalExportClient {
     } catch (error) {
       throw createExportError(
         ERROR_CODES.NETWORK_ERROR,
-        `获取导出进度失败: ${formatErrorMessage(error)}`,
+        '获取导出进度失败: ' + (formatErrorMessage(error)),
         { exportId, originalError: error }
       );
     }
@@ -250,7 +250,7 @@ export class UniversalExportClient {
    * 下载导出文件
    */
   async downloadExportFile(exportId: string): Promise<Blob> {
-    const url = `${this.config.baseUrl}${API_ENDPOINTS.DOWNLOAD_FILE(exportId)}`;
+    const url = (this.config.baseUrl) + (API_ENDPOINTS.DOWNLOAD_FILE(exportId));
 
     try {
       const response = await this.fetchWithTimeout(url, {
@@ -259,14 +259,14 @@ export class UniversalExportClient {
       });
 
       if (!response.ok) {
-        throw new Error(`下载文件失败: ${response.statusText}`);
+        throw new Error('下载文件失败: ' + (response.statusText));
       }
 
       return await response.blob();
     } catch (error) {
       throw createExportError(
         ERROR_CODES.NETWORK_ERROR,
-        `下载导出文件失败: ${formatErrorMessage(error)}`,
+        '下载导出文件失败: ' + (formatErrorMessage(error)),
         { exportId, originalError: error }
       );
     }

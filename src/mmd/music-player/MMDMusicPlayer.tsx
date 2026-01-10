@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { MMDPlayerBase } from '../components/MMDPlayerBase';
 import { MMDPlayerBaseRef } from '../types';
+import { clsx } from 'clsx';
 import {
   MMDMusicPlayerProps,
   MMDMusicPlayerRef,
@@ -281,7 +282,7 @@ export const MMDMusicPlayer = forwardRef<MMDMusicPlayerRef, MMDMusicPlayerProps>
     return (
       <div
         ref={containerRef}
-        className={`relative bg-black group ${className}`}
+        className={clsx('relative bg-black group', className)}
         style={{ width: '100%', height: '100%', overflow: 'hidden', ...style }}
         onMouseMove={resetUITimeout}
         onClick={resetUITimeout}
@@ -343,7 +344,7 @@ export const MMDMusicPlayer = forwardRef<MMDMusicPlayerRef, MMDMusicPlayerProps>
 
         {/* UI 交互层 */}
         <div 
-          className={`absolute inset-0 z-10 flex flex-col justify-between transition-opacity duration-700 pointer-events-none ${isUIVisible ? 'opacity-100' : 'opacity-0'}`}
+          className={clsx('absolute inset-0 z-10 flex flex-col justify-between transition-opacity duration-700 pointer-events-none', isUIVisible ? 'opacity-100' : 'opacity-0')}
         >
           {/* 顶部信息 */}
           <div className="pt-12 px-8 flex justify-center">

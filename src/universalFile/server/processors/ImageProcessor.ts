@@ -82,12 +82,12 @@ export class ImageProcessor implements IFileProcessor {
     const imageOptions = options as ImageProcessingOptions;
     const startTime = Date.now();
 
-    logger.info(`🖼️ [ImageProcessor] 开始处理图片: ${inputPath}`);
+    logger.info('🖼️ [ImageProcessor] 开始处理图片: ' + (inputPath));
 
     try {
       // 检查输入文件是否存在
       if (!existsSync(inputPath)) {
-        throw new Error(`输入文件不存在: ${inputPath}`);
+        throw new Error('输入文件不存在: ' + (inputPath));
       }
 
       // 确保输出目录存在
@@ -97,7 +97,7 @@ export class ImageProcessor implements IFileProcessor {
       // 获取图片元数据
       const metadata = await this.getImageMetadata(inputPath);
       logger.info(
-        `📊 [ImageProcessor] 图片信息: ${metadata.width}x${metadata.height}, 格式: ${metadata.format}`
+        '📊 [ImageProcessor] 图片信息: ' + (metadata.width) + 'x' + (metadata.height) + ', 格式: ' + (metadata.format)
       );
 
       // 创建Sharp处理实例
@@ -122,7 +122,7 @@ export class ImageProcessor implements IFileProcessor {
       }
 
       const processingTime = Date.now() - startTime;
-      logger.info(`✅ [ImageProcessor] 图片处理完成: ${outputPath}, 耗时: ${processingTime}ms`);
+      logger.info('✅ [ImageProcessor] 图片处理完成: ' + (outputPath) + ', 耗时: ' + (processingTime) + 'ms');
 
       return {
         success: true,
@@ -146,11 +146,11 @@ export class ImageProcessor implements IFileProcessor {
         },
       };
     } catch (error) {
-      console.error(`❌ [ImageProcessor] 图片处理失败: ${inputPath}:`, error);
+      console.error('❌ [ImageProcessor] 图片处理失败: ' + (inputPath) + ':', error);
 
       return {
         success: false,
-        error: `图片处理失败: ${error instanceof Error ? error.message : '未知错误'}`,
+        error: '图片处理失败: ' + (error instanceof Error ? error.message : '未知错误'),
         processingTime: Date.now() - startTime,
       };
     }
@@ -199,7 +199,7 @@ export class ImageProcessor implements IFileProcessor {
         megapixels: (metadata.width * metadata.height) / 1000000,
       };
     } catch (error) {
-      console.error(`❌ [ImageProcessor] 获取图片信息失败: ${filePath}:`, error);
+      console.error('❌ [ImageProcessor] 获取图片信息失败: ' + (filePath) + ':', error);
       throw error;
     }
   }
@@ -232,8 +232,8 @@ export class ImageProcessor implements IFileProcessor {
         orientation: metadata.orientation,
       };
     } catch (error) {
-      console.error(`❌ [ImageProcessor] 获取图片元数据失败: ${filePath}:`, error);
-      throw new Error(`无法读取图片元数据: ${error instanceof Error ? error.message : '未知错误'}`);
+      console.error('❌ [ImageProcessor] 获取图片元数据失败: ' + (filePath) + ':', error);
+      throw new Error('无法读取图片元数据: ' + (error instanceof Error ? error.message : '未知错误'));
     }
   }
 
@@ -255,7 +255,7 @@ export class ImageProcessor implements IFileProcessor {
 
       sharpInstance = sharpInstance.resize(resizeOptions);
       logger.info(
-        `🔧 [ImageProcessor] 应用尺寸调整: ${options.width || 'auto'}x${options.height || 'auto'}`
+        '🔧 [ImageProcessor] 应用尺寸调整: ' + (options.width || 'auto') + 'x' + (options.height || 'auto')
       );
     }
 
@@ -280,7 +280,7 @@ export class ImageProcessor implements IFileProcessor {
     try {
       if (watermarkOptions.text) {
         // 文字水印
-        logger.info(`💧 [ImageProcessor] 应用文字水印: ${watermarkOptions.text}`);
+        logger.info('💧 [ImageProcessor] 应用文字水印: ' + (watermarkOptions.text));
 
         // 创建文字水印SVG
         const textSvg = this.createTextWatermarkSvg(
@@ -298,7 +298,7 @@ export class ImageProcessor implements IFileProcessor {
         ]);
       } else if (watermarkOptions.image && existsSync(watermarkOptions.image)) {
         // 图片水印
-        logger.info(`💧 [ImageProcessor] 应用图片水印: ${watermarkOptions.image}`);
+        logger.info('💧 [ImageProcessor] 应用图片水印: ' + (watermarkOptions.image));
 
         let watermarkBuffer = await fs.readFile(watermarkOptions.image);
 
@@ -332,8 +332,7 @@ export class ImageProcessor implements IFileProcessor {
     const fontSize = 24;
     const padding = 10;
 
-    return `
-      <svg width="200" height="50" xmlns="http://www.w3.org/2000/svg">
+    return `<svg width="200" height="50" xmlns="http://www.w3.org/2000/svg">
         <text
           x="${padding}"
           y="${fontSize + padding}"
@@ -347,8 +346,7 @@ export class ImageProcessor implements IFileProcessor {
         >
           ${text}
         </text>
-      </svg>
-    `.trim();
+      </svg>`.trim();
   }
 
   /**
@@ -461,7 +459,7 @@ export class ImageProcessor implements IFileProcessor {
         .jpeg({ quality: 70 })
         .toFile(thumbnailPath);
 
-      logger.info(`🖼️ [ImageProcessor] 缩略图生成完成: ${thumbnailPath}`);
+      logger.info('🖼️ [ImageProcessor] 缩略图生成完成: ' + (thumbnailPath));
 
       return thumbnailPath;
     } catch (error) {
@@ -476,7 +474,7 @@ export class ImageProcessor implements IFileProcessor {
   private getThumbnailPath(originalPath: string): string {
     const ext = path.extname(originalPath);
     const basePath = originalPath.replace(ext, '');
-    return `${basePath}_thumb${ext}`;
+    return (basePath) + '_thumb' + (ext);
   }
 
   /**
@@ -486,7 +484,7 @@ export class ImageProcessor implements IFileProcessor {
     logger.info('🧪 [ImageProcessor] 创建模拟Sharp处理器');
 
     const mockSharp = (input: string) => {
-      logger.info(`🧪 [MockSharp] 处理图片: ${input}`);
+      logger.info('🧪 [MockSharp] 处理图片: ' + (input));
 
       return {
         metadata: async () => ({
@@ -534,12 +532,12 @@ export class ImageProcessor implements IFileProcessor {
         },
 
         toFile: async (outputPath: string) => {
-          logger.info(`🧪 [MockSharp] 保存到文件: ${outputPath}`);
+          logger.info('🧪 [MockSharp] 保存到文件: ' + (outputPath));
 
           // 创建一个模拟的输出文件
           const outputDir = path.dirname(outputPath);
           await fs.mkdir(outputDir, { recursive: true });
-          await fs.writeFile(outputPath, `Mock processed image from ${input}`);
+          await fs.writeFile(outputPath, 'Mock processed image from ' + (input));
 
           return {
             format: 'jpeg',
@@ -572,7 +570,7 @@ export class ImageProcessor implements IFileProcessor {
   ): Promise<ProcessingResult[]> {
     this.ensureInitialized();
 
-    logger.info(`🖼️ [ImageProcessor] 开始批量处理 ${inputPaths.length} 张图片`);
+    logger.info('🖼️ [ImageProcessor] 开始批量处理 ' + (inputPaths.length) + ' 张图片');
 
     const results: ProcessingResult[] = [];
 
@@ -589,16 +587,16 @@ export class ImageProcessor implements IFileProcessor {
           onProgress(i + 1, inputPaths.length);
         }
       } catch (error) {
-        console.error(`❌ [ImageProcessor] 批量处理失败: ${inputPath}:`, error);
+        console.error('❌ [ImageProcessor] 批量处理失败: ' + (inputPath) + ':', error);
         results.push({
           success: false,
-          error: `处理失败: ${error instanceof Error ? error.message : '未知错误'}`,
+          error: '处理失败: ' + (error instanceof Error ? error.message : '未知错误'),
         });
       }
     }
 
     const successCount = results.filter((r) => r.success).length;
-    logger.info(`✅ [ImageProcessor] 批量处理完成，成功: ${successCount}/${inputPaths.length}`);
+    logger.info('✅ [ImageProcessor] 批量处理完成，成功: ' + (successCount) + '/' + (inputPaths.length));
 
     return results;
   }

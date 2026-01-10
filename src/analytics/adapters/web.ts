@@ -123,7 +123,7 @@ export class WebNetworkAdapter implements AnalyticsNetworkAdapter {
       } else {
         return {
           success: false,
-          message: `HTTP ${response.status}`,
+          message: 'HTTP ' + (response.status),
           code: response.status,
         };
       }
@@ -168,14 +168,14 @@ export class WebDeviceAdapter implements AnalyticsDeviceAdapter {
       let deviceId = localStorage.getItem('analytics:device_id');
 
       if (!deviceId) {
-        deviceId = `web_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+        deviceId = 'web_' + (Date.now()) + '_' + (Math.random().toString(36).substring(2, 15));
         localStorage.setItem('analytics:device_id', deviceId);
       }
 
       return deviceId;
     }
 
-    return `web_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    return 'web_' + (Date.now()) + '_' + (Math.random().toString(36).substring(2, 15));
   }
 
   private getOSName(): string {

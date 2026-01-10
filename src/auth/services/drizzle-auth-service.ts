@@ -73,7 +73,7 @@ export class DrizzleAuthService {
       this.config.jwtSecret.length < 32
     ) {
       throw new Error(
-        `JWT_SECRET is too short (${this.config.jwtSecret.length} chars, minimum 32 required in production)`
+        'JWT_SECRET is too short (' + (this.config.jwtSecret.length) + ' chars, minimum 32 required in production)'
       );
     }
   }

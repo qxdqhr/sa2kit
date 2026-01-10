@@ -115,9 +115,9 @@ export interface ConfigEngineOptions {
  * 默认日志记录器
  */
 const defaultLogger: Logger = {
-  info: (message: string, ...args: any[]) => console.log(`[ConfigEngine] ${message}`, ...args),
-  warn: (message: string, ...args: any[]) => console.warn(`[ConfigEngine] ${message}`, ...args),
-  error: (message: string, ...args: any[]) => console.error(`[ConfigEngine] ${message}`, ...args),
+  info: (message: string, ...args: any[]) => console.log('[ConfigEngine] ' + (message), ...args),
+  warn: (message: string, ...args: any[]) => console.warn('[ConfigEngine] ' + (message), ...args),
+  error: (message: string, ...args: any[]) => console.error('[ConfigEngine] ' + (message), ...args),
 };
 
 /**
@@ -206,7 +206,7 @@ export class ConfigEngine {
         this.definitionsCache.set(def.key, definition);
       });
 
-      this.logger.info(`✅ 已加载 ${definitions.length} 个配置定义`);
+      this.logger.info('✅ 已加载 ' + (definitions.length) + ' 个配置定义');
     } catch (error) {
       this.logger.error('❌ 加载配置定义失败:', error);
       throw error;
@@ -310,7 +310,7 @@ export class ConfigEngine {
           // 掩码显示
           displayValue = this.maskValue(value);
         } catch (error) {
-          this.logger.warn(`解密配置 ${def.key} 失败:`, error);
+          this.logger.warn('解密配置 ' + (def.key) + ' 失败:', error);
         }
       }
 
@@ -350,7 +350,7 @@ export class ConfigEngine {
       try {
         value = this.decrypt(value);
       } catch (error) {
-        this.logger.warn(`解密配置 ${key} 失败:`, error);
+        this.logger.warn('解密配置 ' + (key) + ' 失败:', error);
       }
     }
 
@@ -373,7 +373,7 @@ export class ConfigEngine {
     // 验证配置值
     const validation = await this.validate(key, value);
     if (!validation.valid) {
-      throw new Error(`配置验证失败: ${validation.errors.join(', ')}`);
+      throw new Error('配置验证失败: ' + (validation.errors.join(', ')));
     }
 
     const definition = this.getDefinition(key);
@@ -430,7 +430,7 @@ export class ConfigEngine {
       userAgent: options?.userAgent,
     });
 
-    this.logger.info(`✅ 配置已${oldValue ? '更新' : '创建'}: ${key}`);
+    this.logger.info('✅ 配置已' + (oldValue ? '更新' : '创建') + ': ' + (key));
   }
 
   /**
@@ -486,7 +486,7 @@ export class ConfigEngine {
       // 重新加载定义缓存
       await this.loadDefinitions();
 
-      this.logger.info(`✅ 注册新配置定义: ${definition.key}`);
+      this.logger.info('✅ 注册新配置定义: ' + (definition.key));
     } catch (error) {
       this.logger.error(`❌ 注册配置定义失败:`, error);
       throw error;
@@ -591,19 +591,19 @@ export class ConfigEngine {
     const errors: string[] = [];
 
     if (rules.min !== undefined && value < rules.min) {
-      errors.push(`值不能小于 ${rules.min}`);
+      errors.push('值不能小于 ' + (rules.min));
     }
 
     if (rules.max !== undefined && value > rules.max) {
-      errors.push(`值不能大于 ${rules.max}`);
+      errors.push('值不能大于 ' + (rules.max));
     }
 
     if (rules.minLength !== undefined && String(value).length < rules.minLength) {
-      errors.push(`长度不能小于 ${rules.minLength}`);
+      errors.push('长度不能小于 ' + (rules.minLength));
     }
 
     if (rules.maxLength !== undefined && String(value).length > rules.maxLength) {
-      errors.push(`长度不能大于 ${rules.maxLength}`);
+      errors.push('长度不能大于 ' + (rules.maxLength));
     }
 
     if (rules.pattern && !new RegExp(rules.pattern).test(String(value))) {

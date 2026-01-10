@@ -5,6 +5,7 @@
 
 import React from 'react';
 import type { DashboardEvent } from './types';
+import { clsx } from 'clsx';
 
 export interface EventListProps {
   events: DashboardEvent[];
@@ -21,7 +22,7 @@ export const EventList: React.FC<EventListProps> = ({
 }) => {
   if (loading) {
     return (
-      <div className={`bg-white rounded-lg shadow-sm p-6 ${className}`}>
+      <div className={clsx('bg-white rounded-lg shadow-sm p-6', className)}>
         <div className="animate-pulse space-y-4">
           {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className="h-16 bg-gray-200 rounded"></div>
@@ -33,7 +34,7 @@ export const EventList: React.FC<EventListProps> = ({
 
   if (events.length === 0) {
     return (
-      <div className={`bg-white rounded-lg shadow-sm p-12 text-center ${className}`}>
+      <div className={clsx('bg-white rounded-lg shadow-sm p-12 text-center', className)}>
         <div className="text-gray-400 text-5xl mb-4">📊</div>
         <p className="text-gray-600 text-lg font-medium">暂无数据</p>
         <p className="text-gray-500 text-sm mt-2">尝试调整筛选条件</p>
@@ -71,14 +72,14 @@ export const EventList: React.FC<EventListProps> = ({
     const days = Math.floor(hours / 24);
 
     if (minutes < 1) return '刚刚';
-    if (minutes < 60) return `${minutes}分钟前`;
-    if (hours < 24) return `${hours}小时前`;
-    if (days < 7) return `${days}天前`;
+    if (minutes < 60) return (minutes) + '分钟前';
+    if (hours < 24) return (hours) + '小时前';
+    if (days < 7) return (days) + '天前';
     return date.toLocaleDateString('zh-CN');
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm overflow-hidden ${className}`}>
+    <div className={clsx('bg-white rounded-lg shadow-sm overflow-hidden', className)}>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -113,9 +114,9 @@ export const EventList: React.FC<EventListProps> = ({
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex flex-col">
                     <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getEventTypeColor(
+                      className={clsx('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', getEventTypeColor(
                         event.eventType
-                      )} w-fit mb-1`}
+                      ), 'w-fit mb-1')}
                     >
                       {event.eventType}
                     </span>
@@ -124,9 +125,9 @@ export const EventList: React.FC<EventListProps> = ({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPlatformColor(
+                    className={clsx('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', getPlatformColor(
                       event.platform
-                    )}`}
+                    ))}
                   >
                     {event.platform}
                   </span>

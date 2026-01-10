@@ -42,7 +42,7 @@ export class AliyunCDNProvider implements ICDNProvider {
 
     this.config = config as AliyunCDNConfig;
 
-    logger.info(`🌐 [AliyunCDNProvider] 初始化阿里云CDN，域名: ${this.config.domain}`);
+    logger.info('🌐 [AliyunCDNProvider] 初始化阿里云CDN，域名: ' + (this.config.domain));
 
     try {
       // 验证必需的配置项
@@ -75,7 +75,7 @@ export class AliyunCDNProvider implements ICDNProvider {
     } catch (error) {
       logger.error('❌ [AliyunCDNProvider] 阿里云CDN初始化失败:', error);
       throw new CDNProviderError(
-        `阿里云CDN初始化失败: ${error instanceof Error ? error.message : '未知错误'}`
+        '阿里云CDN初始化失败: ' + (error instanceof Error ? error.message : '未知错误')
       );
     }
   }
@@ -86,22 +86,22 @@ export class AliyunCDNProvider implements ICDNProvider {
   async generateUrl(originalUrl: string): Promise<string> {
     this.ensureInitialized();
 
-    logger.info(`🔗 [AliyunCDNProvider] 生成CDN URL: ${originalUrl}`);
+    logger.info('🔗 [AliyunCDNProvider] 生成CDN URL: ' + (originalUrl));
 
     try {
       // 解析原始URL
       const url = new URL(originalUrl);
 
       // 替换域名为CDN域名
-      const cdnUrl = `${url.protocol}//${this.config!.domain}${url.pathname}${url.search}${url.hash}`;
+      const cdnUrl = (url.protocol) + '//' + (this.config!.domain) + (url.pathname) + (url.search) + (url.hash);
 
-      logger.info(`✅ [AliyunCDNProvider] CDN URL生成完成: ${cdnUrl}`);
+      logger.info('✅ [AliyunCDNProvider] CDN URL生成完成: ' + (cdnUrl));
 
       return cdnUrl;
     } catch (error) {
-      logger.error(`❌ [AliyunCDNProvider] CDN URL生成失败: ${originalUrl}:`, error);
+      logger.error('❌ [AliyunCDNProvider] CDN URL生成失败: ' + (originalUrl) + ':', error);
       throw new CDNProviderError(
-        `CDN URL生成失败: ${error instanceof Error ? error.message : '未知错误'}`
+        'CDN URL生成失败: ' + (error instanceof Error ? error.message : '未知错误')
       );
     }
   }
@@ -112,7 +112,7 @@ export class AliyunCDNProvider implements ICDNProvider {
   async refreshCache(urls: string[]): Promise<CDNResult> {
     this.ensureInitialized();
 
-    logger.info(`🔄 [AliyunCDNProvider] 开始刷新CDN缓存，URL数量: ${urls.length}`);
+    logger.info('🔄 [AliyunCDNProvider] 开始刷新CDN缓存，URL数量: ' + (urls.length));
 
     try {
       // 将URL转换为CDN URL
@@ -126,7 +126,7 @@ export class AliyunCDNProvider implements ICDNProvider {
       });
 
       logger.info(
-        `✅ [AliyunCDNProvider] CDN缓存刷新完成，任务ID: ${result.RefreshTaskId || 'unknown'}`
+        '✅ [AliyunCDNProvider] CDN缓存刷新完成，任务ID: ' + (result.RefreshTaskId || 'unknown')
       );
 
       return {
@@ -142,7 +142,7 @@ export class AliyunCDNProvider implements ICDNProvider {
 
       return {
         success: false,
-        error: `CDN缓存刷新失败: ${error instanceof Error ? error.message : '未知错误'}`,
+        error: 'CDN缓存刷新失败: ' + (error instanceof Error ? error.message : '未知错误'),
       };
     }
   }
@@ -153,7 +153,7 @@ export class AliyunCDNProvider implements ICDNProvider {
   async preheatCache(urls: string[]): Promise<CDNResult> {
     this.ensureInitialized();
 
-    logger.info(`🔥 [AliyunCDNProvider] 开始预热CDN缓存，URL数量: ${urls.length}`);
+    logger.info('🔥 [AliyunCDNProvider] 开始预热CDN缓存，URL数量: ' + (urls.length));
 
     try {
       // 将URL转换为CDN URL
@@ -167,7 +167,7 @@ export class AliyunCDNProvider implements ICDNProvider {
       });
 
       logger.info(
-        `✅ [AliyunCDNProvider] CDN缓存预热完成，任务ID: ${result.PushTaskId || 'unknown'}`
+        '✅ [AliyunCDNProvider] CDN缓存预热完成，任务ID: ' + (result.PushTaskId || 'unknown')
       );
 
       return {
@@ -183,7 +183,7 @@ export class AliyunCDNProvider implements ICDNProvider {
 
       return {
         success: false,
-        error: `CDN缓存预热失败: ${error instanceof Error ? error.message : '未知错误'}`,
+        error: 'CDN缓存预热失败: ' + (error instanceof Error ? error.message : '未知错误'),
       };
     }
   }
@@ -195,7 +195,7 @@ export class AliyunCDNProvider implements ICDNProvider {
     this.ensureInitialized();
 
     logger.info(
-      `📊 [AliyunCDNProvider] 获取CDN访问统计: ${startTime.toISOString()} - ${endTime.toISOString()}`
+      '📊 [AliyunCDNProvider] 获取CDN访问统计: ' + (startTime.toISOString()) + ' - ' + (endTime.toISOString())
     );
 
     try {
@@ -228,7 +228,7 @@ export class AliyunCDNProvider implements ICDNProvider {
 
       return {
         success: false,
-        error: `CDN访问统计获取失败: ${error instanceof Error ? error.message : '未知错误'}`,
+        error: 'CDN访问统计获取失败: ' + (error instanceof Error ? error.message : '未知错误'),
       };
     }
   }
@@ -245,7 +245,7 @@ export class AliyunCDNProvider implements ICDNProvider {
   ): Promise<string> {
     this.ensureInitialized();
 
-    logger.info(`🔐 [AliyunCDNProvider] 生成防盗链签名URL: ${originalUrl}`);
+    logger.info('🔐 [AliyunCDNProvider] 生成防盗链签名URL: ' + (originalUrl));
 
     try {
       const cdnUrl = await this.generateUrl(originalUrl);
@@ -262,19 +262,19 @@ export class AliyunCDNProvider implements ICDNProvider {
 
       // 阿里云CDN防盗链签名算法
       // signString = "path-timestamp-rand-uid-authKey"
-      const signString = `${parsedUrl.pathname}-${timestamp}-0-0-${authKey}`;
+      const signString = (parsedUrl.pathname) + '-' + (timestamp) + '-0-0-' + (authKey);
       const authValue = createHash('md5').update(signString).digest('hex');
 
       // 构建签名URL
-      const signedUrl = `${cdnUrl}?auth_key=${timestamp}-0-0-${authValue}`;
+      const signedUrl = (cdnUrl) + '?auth_key=' + (timestamp) + '-0-0-' + (authValue);
 
       logger.info(`✅ [AliyunCDNProvider] 防盗链签名URL生成完成`);
 
       return signedUrl;
     } catch (error) {
-      logger.error(`❌ [AliyunCDNProvider] 防盗链签名URL生成失败: ${originalUrl}:`, error);
+      logger.error('❌ [AliyunCDNProvider] 防盗链签名URL生成失败: ' + (originalUrl) + ':', error);
       throw new CDNProviderError(
-        `防盗链签名URL生成失败: ${error instanceof Error ? error.message : '未知错误'}`
+        '防盗链签名URL生成失败: ' + (error instanceof Error ? error.message : '未知错误')
       );
     }
   }
@@ -300,7 +300,7 @@ export class AliyunCDNProvider implements ICDNProvider {
     } catch (error) {
       return {
         success: false,
-        error: `查询刷新任务状态失败: ${error instanceof Error ? error.message : '未知错误'}`,
+        error: '查询刷新任务状态失败: ' + (error instanceof Error ? error.message : '未知错误'),
       };
     }
   }
@@ -326,7 +326,7 @@ export class AliyunCDNProvider implements ICDNProvider {
     } catch (error) {
       return {
         success: false,
-        error: `查询预热任务状态失败: ${error instanceof Error ? error.message : '未知错误'}`,
+        error: '查询预热任务状态失败: ' + (error instanceof Error ? error.message : '未知错误'),
       };
     }
   }
@@ -352,7 +352,7 @@ export class AliyunCDNProvider implements ICDNProvider {
     } catch (error) {
       return {
         success: false,
-        error: `获取域名配置失败: ${error instanceof Error ? error.message : '未知错误'}`,
+        error: '获取域名配置失败: ' + (error instanceof Error ? error.message : '未知错误'),
       };
     }
   }
@@ -379,27 +379,27 @@ export class AliyunCDNProvider implements ICDNProvider {
       const params = new URLSearchParams(url.search);
 
       if (options.imageQuality) {
-        params.set('x-oss-process', `image/quality,q_${options.imageQuality}`);
+        params.set('x-oss-process', 'image/quality,q_' + (options.imageQuality));
       }
 
       if (options.imageFormat) {
         const formatParam = params.get('x-oss-process') || 'image';
-        params.set('x-oss-process', `${formatParam}/format,${options.imageFormat}`);
+        params.set('x-oss-process', (formatParam) + '/format,' + (options.imageFormat));
       }
 
       if (options.imageResize) {
         const resizeParam = params.get('x-oss-process') || 'image';
         let resize = 'resize';
-        if (options.imageResize.width) resize += `,w_${options.imageResize.width}`;
-        if (options.imageResize.height) resize += `,h_${options.imageResize.height}`;
-        params.set('x-oss-process', `${resizeParam}/${resize}`);
+        if (options.imageResize.width) resize += ',w_' + (options.imageResize.width);
+        if (options.imageResize.height) resize += ',h_' + (options.imageResize.height);
+        params.set('x-oss-process', (resizeParam) + '/' + (resize));
       }
 
       url.search = params.toString();
 
       return url.toString();
     } catch (error) {
-      logger.error(`❌ [AliyunCDNProvider] URL优化失败: ${originalUrl}:`, error);
+      logger.error('❌ [AliyunCDNProvider] URL优化失败: ' + (originalUrl) + ':', error);
       // 如果优化失败，返回原始CDN URL
       return this.generateUrl(originalUrl);
     }
@@ -428,12 +428,12 @@ export class AliyunCDNProvider implements ICDNProvider {
     const missing = required.filter((key) => !this.config![key as keyof AliyunCDNConfig]);
 
     if (missing.length > 0) {
-      throw new CDNProviderError(`CDN配置缺少必需项: ${missing.join(', ')}`);
+      throw new CDNProviderError('CDN配置缺少必需项: ' + (missing.join(', ')));
     }
 
     // 验证域名格式
     if (!this.isValidDomain(this.config.domain)) {
-      throw new CDNProviderError(`无效的CDN域名: ${this.config.domain}`);
+      throw new CDNProviderError('无效的CDN域名: ' + (this.config.domain));
     }
   }
 
@@ -471,16 +471,16 @@ export class AliyunCDNProvider implements ICDNProvider {
       async refreshObjectCaches(params: any) {
         logger.info('🔄 [MockCDN] 模拟刷新缓存:', params);
         return {
-          RefreshTaskId: `mock-refresh-${Date.now()}`,
-          RequestId: `mock-request-${Date.now()}`,
+          RefreshTaskId: 'mock-refresh-' + (Date.now()),
+          RequestId: 'mock-request-' + (Date.now()),
         };
       },
 
       async pushObjectCache(params: any) {
         logger.info('🔥 [MockCDN] 模拟预热缓存:', params);
         return {
-          PushTaskId: `mock-push-${Date.now()}`,
-          RequestId: `mock-request-${Date.now()}`,
+          PushTaskId: 'mock-push-' + (Date.now()),
+          RequestId: 'mock-request-' + (Date.now()),
         };
       },
 
@@ -497,7 +497,7 @@ export class AliyunCDNProvider implements ICDNProvider {
               },
             ],
           },
-          RequestId: `mock-request-${Date.now()}`,
+          RequestId: 'mock-request-' + (Date.now()),
         };
       },
 
@@ -514,7 +514,7 @@ export class AliyunCDNProvider implements ICDNProvider {
               },
             ],
           },
-          RequestId: `mock-request-${Date.now()}`,
+          RequestId: 'mock-request-' + (Date.now()),
         };
       },
 
@@ -530,7 +530,7 @@ export class AliyunCDNProvider implements ICDNProvider {
               },
             ],
           },
-          RequestId: `mock-request-${Date.now()}`,
+          RequestId: 'mock-request-' + (Date.now()),
         };
       },
 
@@ -540,7 +540,7 @@ export class AliyunCDNProvider implements ICDNProvider {
           DomainLogDetails: {
             DomainLogDetail: [],
           },
-          RequestId: `mock-request-${Date.now()}`,
+          RequestId: 'mock-request-' + (Date.now()),
         };
       },
 
@@ -556,7 +556,7 @@ export class AliyunCDNProvider implements ICDNProvider {
             ],
           },
           DataInterval: '60',
-          RequestId: `mock-request-${Date.now()}`,
+          RequestId: 'mock-request-' + (Date.now()),
         };
       },
     };
@@ -573,7 +573,7 @@ export class AliyunCDNProvider implements ICDNProvider {
     this.ensureInitialized();
 
     logger.info(
-      `🔄 [AliyunCDNProvider] 开始批量刷新缓存，总URL数: ${urls.length}，批次大小: ${batchSize}`
+      '🔄 [AliyunCDNProvider] 开始批量刷新缓存，总URL数: ' + (urls.length) + '，批次大小: ' + (batchSize)
     );
 
     try {
@@ -598,7 +598,7 @@ export class AliyunCDNProvider implements ICDNProvider {
       }
 
       const successCount = results.filter((r) => r.success).length;
-      logger.info(`✅ [AliyunCDNProvider] 批量刷新完成，成功: ${successCount}/${results.length}`);
+      logger.info('✅ [AliyunCDNProvider] 批量刷新完成，成功: ' + (successCount) + '/' + (results.length));
 
       return {
         success: successCount === results.length,
@@ -613,7 +613,7 @@ export class AliyunCDNProvider implements ICDNProvider {
 
       return {
         success: false,
-        error: `批量刷新失败: ${error instanceof Error ? error.message : '未知错误'}`,
+        error: '批量刷新失败: ' + (error instanceof Error ? error.message : '未知错误'),
       };
     }
   }

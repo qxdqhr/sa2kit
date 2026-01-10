@@ -97,7 +97,7 @@ export function configureMaterialsForMMD(
     }
   });
 
-  console.log(`[MMD Material Config] Processed ${materialCount} materials (Toon: ${toonMaterialCount}, Phong: ${phongMaterialCount})`);
+  console.log('[MMD Material Config] Processed ' + (materialCount) + ' materials (Toon: ' + (toonMaterialCount) + ', Phong: ' + (phongMaterialCount) + ')');
 }
 
 /**
@@ -241,9 +241,9 @@ export function configureRendererForMMD(
   }
 
   console.log('[MMD Renderer] Configured for MMD-style rendering');
-  console.log(`  - Tone Mapping: ${toneMapping === THREE.LinearToneMapping ? 'Linear' : 'Custom'}`);
+  console.log('  - Tone Mapping: ' + (toneMapping === THREE.LinearToneMapping ? 'Linear' : 'Custom'));
   console.log(`  - Color Space: sRGB`);
-  console.log(`  - Shadow: ${enableShadow ? 'Enabled (PCF Soft)' : 'Disabled'}`);
+  console.log('  - Shadow: ' + (enableShadow ? 'Enabled (PCF Soft)' : 'Disabled'));
 
   return renderer;
 }
@@ -265,8 +265,8 @@ export function generateToonTexture(index: number): HTMLCanvasElement {
   // index=1最亮, index=10最暗
   const brightness = 1 - (index - 1) / 9;
 
-  gradient.addColorStop(0, `rgb(${255 * brightness}, ${255 * brightness}, ${255 * brightness})`);
-  gradient.addColorStop(1, `rgb(${128 * brightness}, ${128 * brightness}, ${128 * brightness})`);
+  gradient.addColorStop(0, 'rgb(' + (255 * brightness) + ', ' + (255 * brightness) + ', ' + (255 * brightness) + ')');
+  gradient.addColorStop(1, 'rgb(' + (128 * brightness) + ', ' + (128 * brightness) + ', ' + (128 * brightness) + ')');
 
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, 256, 1);

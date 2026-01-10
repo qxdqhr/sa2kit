@@ -8,6 +8,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { clsx } from 'clsx';
 import {
   Eye,
   Edit,
@@ -138,7 +139,7 @@ export const ConfigList: React.FC<ConfigListProps> = ({
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `config_${id}.json`;
+      a.download = 'config_' + (id) + '.json';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -151,7 +152,7 @@ export const ConfigList: React.FC<ConfigListProps> = ({
 
   // 生成预览链接
   const getPreviewUrl = (id: string) => {
-    return `${previewBaseUrl}?configId=${id}`;
+    return (previewBaseUrl) + '?configId=' + (id);
   };
 
   // 过滤配置
@@ -172,7 +173,7 @@ export const ConfigList: React.FC<ConfigListProps> = ({
 
   if (loading) {
     return (
-      <div className={`p-8 ${className}`}>
+      <div className={clsx('p-8', className)}>
         <div className="text-center">
           <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
           <p className="mt-2 text-gray-600 dark:text-gray-400">加载中...</p>

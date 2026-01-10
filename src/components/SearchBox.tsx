@@ -1,4 +1,5 @@
 import React from 'react';
+import { clsx } from 'clsx';
 
 interface SearchBoxProps {
   searchQuery: string;
@@ -58,36 +59,34 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
         placeholder={placeholder}
         value={searchQuery}
         onChange={(e) => onSearchChange(e.target.value)}
-        className={`
-          w-full ${styles.container} ${styles.input}
-          ${isLarge ? 'border-2 border-gray-200 rounded-2xl shadow-lg' : 'border border-gray-300 rounded-lg shadow-sm'}
-          bg-white 
-          focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 
-          hover:border-gray-400 ${isLarge ? 'hover:shadow-xl' : 'hover:shadow-md'}
-          transition-all duration-300 ease-out
-          text-gray-800 placeholder-gray-500
-          ${isLarge ? 'font-medium' : 'font-normal'}
-        `}
+        className={clsx(
+          'w-full',
+          styles.container,
+          styles.input,
+          isLarge ? 'border-2 border-gray-200 rounded-2xl shadow-lg' : 'border border-gray-300 rounded-lg shadow-sm',
+          'bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 hover:border-gray-400',
+          isLarge ? 'hover:shadow-xl' : 'hover:shadow-md',
+          'transition-all duration-300 ease-out text-gray-800 placeholder-gray-500',
+          isLarge ? 'font-medium' : 'font-normal'
+        )}
       />
 
       {/* 清除按钮 */}
       {searchQuery && (
         <button
           onClick={() => onSearchChange('')}
-          className={`
-            absolute top-1/2 ${styles.clearButton} transform -translate-y-1/2
-            z-10 group/clear
-          `}
+          className={clsx(
+            'absolute top-1/2',
+            styles.clearButton,
+            'transform -translate-y-1/2 z-10 group/clear'
+          )}
         >
-          <div className={`
-            ${styles.clearButton} flex items-center justify-center
-            rounded-full 
-            bg-gray-100 hover:bg-gray-200 
-            transition-all duration-200 
-            group-hover/clear:scale-105
-          `}>
+          <div className={clsx(
+            styles.clearButton,
+            'flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200 group-hover/clear:scale-105'
+          )}>
             <svg 
-              className={`${styles.clearIcon} text-gray-500 group-hover/clear:text-gray-700`}
+              className={clsx(styles.clearIcon, 'text-gray-500 group-hover/clear:text-gray-700')}
               fill="none" 
               stroke="currentColor" 
               viewBox="0 0 24 24"

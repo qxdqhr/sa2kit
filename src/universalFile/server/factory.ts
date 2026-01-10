@@ -146,7 +146,7 @@ export function createFileServiceFromEnv(db?: any) {
       break;
 
     default:
-      throw new Error(`Unsupported storage type: ${storageType}`);
+      throw new Error('Unsupported storage type: ' + (storageType));
   }
 
   return createUniversalFileService({

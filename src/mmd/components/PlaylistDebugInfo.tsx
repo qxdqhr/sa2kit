@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MMDPlayerBaseRef, MMDPlaylistNode } from '../types';
+import { clsx } from 'clsx';
 
 interface PlaylistDebugInfoProps {
   /** 播放器引用 */
@@ -60,11 +61,11 @@ export const PlaylistDebugInfo: React.FC<PlaylistDebugInfoProps> = ({
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return (mins) + ':' + (secs.toString().padStart(2, '0'));
   };
 
   return (
-    <div className={`bg-gray-900/90 text-white p-4 rounded-lg space-y-3 ${className}`}>
+    <div className={clsx('bg-gray-900/90 text-white p-4 rounded-lg space-y-3', className)}>
       <div className="border-b border-gray-700 pb-2">
         <h3 className="text-lg font-semibold text-purple-400">Playlist 调试信息</h3>
       </div>
@@ -97,7 +98,7 @@ export const PlaylistDebugInfo: React.FC<PlaylistDebugInfoProps> = ({
         {/* 播放状态 */}
         <div>
           <div className="text-gray-400">播放状态</div>
-          <div className={`font-semibold ${isPlaying ? 'text-green-400' : 'text-yellow-400'}`}>
+          <div className={clsx('font-semibold', isPlaying ? 'text-green-400' : 'text-yellow-400')}>
             {isLoading ? '加载中...' : isPlaying ? '播放中' : '已暂停'}
           </div>
         </div>
@@ -113,7 +114,7 @@ export const PlaylistDebugInfo: React.FC<PlaylistDebugInfoProps> = ({
         {/* 节点循环 */}
         <div>
           <div className="text-gray-400">节点循环</div>
-          <div className={`font-semibold ${isLooping ? 'text-green-400' : 'text-gray-500'}`}>
+          <div className={clsx('font-semibold', isLooping ? 'text-green-400' : 'text-gray-500')}>
             {isLooping ? '开启' : '关闭'}
           </div>
         </div>
@@ -121,7 +122,7 @@ export const PlaylistDebugInfo: React.FC<PlaylistDebugInfoProps> = ({
         {/* 列表循环 */}
         <div>
           <div className="text-gray-400">列表循环</div>
-          <div className={`font-semibold ${playlistLoop ? 'text-green-400' : 'text-gray-500'}`}>
+          <div className={clsx('font-semibold', playlistLoop ? 'text-green-400' : 'text-gray-500')}>
             {playlistLoop ? '开启' : '关闭'}
           </div>
         </div>
@@ -138,7 +139,7 @@ export const PlaylistDebugInfo: React.FC<PlaylistDebugInfoProps> = ({
           <div className="w-full bg-gray-700 rounded-full h-2">
             <div
               className="bg-purple-500 h-2 rounded-full transition-all duration-100"
-              style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
+              style={{ width: (duration > 0 ? (currentTime / duration) * 100 : 0) + '%' }}
             />
           </div>
         </div>
@@ -150,11 +151,9 @@ export const PlaylistDebugInfo: React.FC<PlaylistDebugInfoProps> = ({
             {nodes.map((node, index) => (
               <div
                 key={node.id}
-                className={`text-xs px-2 py-1 rounded ${
-                  index === currentIndex
+                className={clsx('text-xs px-2 py-1 rounded', index === currentIndex
                     ? 'bg-purple-600 text-white font-semibold'
-                    : 'bg-gray-800 text-gray-400'
-                }`}
+                    : 'bg-gray-800 text-gray-400')}
               >
                 {index + 1}. {node.name}
               </div>

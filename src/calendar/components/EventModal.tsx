@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, ConfirmModal } from '@/components';
 import { CalendarEvent, CreateEventRequest, UpdateEventRequest, EventPriority } from '../types';
 import { toLocalISOString } from '../utils/dateUtils';
+import { clsx } from 'clsx';
 
 interface EventModalProps {
   isOpen: boolean;
@@ -103,7 +104,7 @@ const EventModal: React.FC<EventModalProps> = ({
     const day = String(date.getDate()).padStart(2, '0');
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+    return (year) + '-' + (month) + '-' + (day) + 'T' + (hours) + ':' + (minutes);
   };
 
   // 验证表单
@@ -250,9 +251,7 @@ const EventModal: React.FC<EventModalProps> = ({
             id="title"
             value={formData.title}
             onChange={(e) => handleInputChange('title', e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none ${
-              errors.title ? 'border-red-500' : 'border-gray-300'
-            }`}
+            className={clsx('w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none', errors.title ? 'border-red-500' : 'border-gray-300')}
             placeholder="输入事件标题"
           />
           {errors.title && (
@@ -286,13 +285,11 @@ const EventModal: React.FC<EventModalProps> = ({
               value={formData.isAllDay ? formData.startTime.split('T')[0] : formData.startTime}
               onChange={(e) => {
                 const value = formData.isAllDay 
-                  ? `${e.target.value}T00:00` 
+                  ? (e.target.value) + 'T00:00' 
                   : e.target.value;
                 handleInputChange('startTime', value);
               }}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none ${
-                errors.startTime ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={clsx('w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none', errors.startTime ? 'border-red-500' : 'border-gray-300')}
             />
             {errors.startTime && (
               <p className="text-red-500 text-sm mt-1">{errors.startTime}</p>
@@ -309,13 +306,11 @@ const EventModal: React.FC<EventModalProps> = ({
               value={formData.isAllDay ? formData.endTime.split('T')[0] : formData.endTime}
               onChange={(e) => {
                 const value = formData.isAllDay 
-                  ? `${e.target.value}T23:59` 
+                  ? (e.target.value) + 'T23:59' 
                   : e.target.value;
                 handleInputChange('endTime', value);
               }}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none ${
-                errors.endTime ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={clsx('w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none', errors.endTime ? 'border-red-500' : 'border-gray-300')}
             />
             {errors.endTime && (
               <p className="text-red-500 text-sm mt-1">{errors.endTime}</p>
@@ -669,7 +664,7 @@ const EventModal: React.FC<EventModalProps> = ({
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={handleDelete}
         title="确认删除"
-        message={`确定要删除事件"${formData.title}"吗？此操作无法撤销。`}
+        message={'确定要删除事件"' + (formData.title) + '"吗？此操作无法撤销。'}
         confirmText="删除"
         cancelText="取消"
         isLoading={isLoading}

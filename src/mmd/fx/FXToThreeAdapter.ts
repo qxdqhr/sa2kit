@@ -157,7 +157,7 @@ export class FXToThreeAdapter {
       
       // 🎯 跳过增量参数（Add开头的参数是增量值，不是绝对值）
       if (name.startsWith('add')) {
-        console.log(`[FXToThreeAdapter]   Skipping additive param "${param.name}" (not an absolute value)`);
+        console.log('[FXToThreeAdapter]   Skipping additive param "' + (param.name) + '" (not an absolute value)');
         return;
       }
       
@@ -170,7 +170,7 @@ export class FXToThreeAdapter {
             colorValue[1],
             colorValue[2]
           );
-          console.log(`[FXToThreeAdapter]   Found color param "${param.name}":`, colorValue);
+          console.log('[FXToThreeAdapter]   Found color param "' + (param.name) + '":', colorValue);
         }
       }
 
@@ -183,7 +183,7 @@ export class FXToThreeAdapter {
             emissiveValue[1],
             emissiveValue[2]
           );
-          console.log(`[FXToThreeAdapter]   Found emissive param "${param.name}":`, emissiveValue);
+          console.log('[FXToThreeAdapter]   Found emissive param "' + (param.name) + '":', emissiveValue);
         }
       }
 
@@ -196,7 +196,7 @@ export class FXToThreeAdapter {
             specularValue[1],
             specularValue[2]
           );
-          console.log(`[FXToThreeAdapter]   Found specular param "${param.name}":`, specularValue);
+          console.log('[FXToThreeAdapter]   Found specular param "' + (param.name) + '":', specularValue);
         }
       }
 
@@ -205,7 +205,7 @@ export class FXToThreeAdapter {
         const shininessValue = this.parseFloat(param.defaultValue);
         if (shininessValue !== null) {
           config.shininess = shininessValue;
-          console.log(`[FXToThreeAdapter]   Found shininess param "${param.name}":`, shininessValue);
+          console.log('[FXToThreeAdapter]   Found shininess param "' + (param.name) + '":', shininessValue);
         }
       }
 
@@ -287,14 +287,14 @@ export class FXToThreeAdapter {
    */
   async loadTextures(): Promise<Map<string, THREE.Texture>> {
     const promises = this.effect.textures.map(async (fxTexture) => {
-      const path = this.basePath ? `${this.basePath}/${fxTexture.path}` : fxTexture.path;
+      const path = this.basePath ? (this.basePath) + '/' + (fxTexture.path) : fxTexture.path;
       
       try {
         const texture = await this.loadTexture(path);
         this.loadedTextures.set(fxTexture.name, texture);
         return { name: fxTexture.name, texture };
       } catch (error) {
-        console.warn(`Failed to load texture ${fxTexture.name}:`, error);
+        console.warn('Failed to load texture ' + (fxTexture.name) + ':', error);
         return null;
       }
     });
@@ -481,7 +481,7 @@ export class FXToThreeAdapter {
     renderFeatures: string[];
   } {
     return {
-      materialParams: this.effect.parameters.map(p => `${p.type} ${p.name}`),
+      materialParams: this.effect.parameters.map(p => (p.type) + ' ' + (p.name)),
       textures: this.effect.textures.map(t => t.path),
       renderFeatures: this.effect.defines
         .filter(d => !d.isCommented && (d.name.startsWith('USE_') || d.name.includes('SHADOW')))

@@ -46,7 +46,7 @@ export class WebRequestAdapter implements RequestAdapter {
     if (!response.ok) {
       return {
         success: false,
-        error: data.error || `请求失败: ${response.status}`,
+        error: data.error || '请求失败: ' + (response.status),
       } as T;
     }
 

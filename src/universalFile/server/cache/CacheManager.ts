@@ -130,7 +130,7 @@ export class CacheManager {
    * 生成缓存键
    */
   private generateKey(key: string): string {
-    return `${this.options.keyPrefix}${key}`;
+    return (this.options.keyPrefix) + (key);
   }
 
   /**
@@ -276,7 +276,7 @@ export class CacheManager {
 
       // 清空Redis缓存（仅删除带前缀的键）
       if (this.redisClient && this.stats.redisConnected) {
-        const keys = await this.redisClient.keys(`${this.options.keyPrefix}*`);
+        const keys = await this.redisClient.keys((this.options.keyPrefix) + '*');
         if (keys.length > 0) {
           await this.redisClient.del(...keys);
         }
@@ -313,7 +313,7 @@ export class CacheManager {
    * 预热缓存
    */
   async warmup<T>(items: Array<{ key: string; data: T; ttl?: number }>): Promise<void> {
-    logger.info(`开始预热缓存，共 ${items.length} 项...`);
+    logger.info('开始预热缓存，共 ' + (items.length) + ' 项...');
 
     const promises = items.map((item) => this.set(item.key, item.data, item.ttl));
 
@@ -347,7 +347,7 @@ export class CacheManager {
     // 简单的通配符匹配，* 匹配任意字符
     const regexPattern = pattern.replace(/\*/g, '.*').replace(/\?/g, '.');
 
-    const regex = new RegExp(`^${regexPattern}$`);
+    const regex = new RegExp('^' + (regexPattern) + '$');
     return regex.test(key);
   }
 

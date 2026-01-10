@@ -89,7 +89,7 @@ export function getRedisConfig(): RedisConnectionConfig {
  */
 export function buildDatabaseUrl(config: DatabaseConnectionConfig): string {
   const { host, port, database, username, password, ssl } = config;
-  let url = `postgresql://${username}:${password}@${host}:${port}/${database}`;
+  let url = 'postgresql://' + (username) + ':' + (password) + '@' + (host) + ':' + (port) + '/' + (database);
 
   if (ssl) {
     url += '?sslmode=require';
@@ -106,13 +106,13 @@ export function buildRedisUrl(config: RedisConnectionConfig): string {
   let url = `redis://`;
 
   if (password) {
-    url += `:${password}@`;
+    url += ':' + (password) + '@';
   }
 
-  url += `${host}:${port}`;
+  url += (host) + ':' + (port);
 
   if (database && database !== 0) {
-    url += `/${database}`;
+    url += '/' + (database);
   }
 
   return url;
@@ -151,7 +151,7 @@ export function getDatabaseConfigForDisplay(): Record<string, any> {
     poolSize: config.poolSize,
     queryTimeout: config.queryTimeout,
     // 连接状态
-    connectionString: `postgresql://${config.username}:***@${config.host}:${config.port}/${config.database}`,
+    connectionString: 'postgresql://' + (config.username) + ':***@' + (config.host) + ':' + (config.port) + '/' + (config.database),
     source: process.env.DATABASE_URL ? 'DATABASE_URL' : 'Environment Variables',
   };
 }

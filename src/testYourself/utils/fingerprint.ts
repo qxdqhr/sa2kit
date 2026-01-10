@@ -47,7 +47,7 @@ function getWebGLFingerprint(): string {
     if (debugInfo) {
       const vendor = glContext.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
       const renderer = glContext.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-      return `${vendor}~${renderer}`;
+      return (vendor) + '~' + (renderer);
     }
 
     return 'webgl-no-debug';
@@ -78,7 +78,7 @@ function getAvailableFonts(): string {
 
   // 获取基础字体宽度
   baseFonts.forEach(font => {
-    ctx.font = `72px ${font}`;
+    ctx.font = '72px ' + (font);
     baseWidths[font] = ctx.measureText(testString).width;
   });
 
@@ -86,7 +86,7 @@ function getAvailableFonts(): string {
   testFonts.forEach(font => {
     let detected = false;
     baseFonts.forEach(baseFont => {
-      ctx.font = `72px ${font}, ${baseFont}`;
+      ctx.font = '72px ' + (font) + ', ' + (baseFont);
       const width = ctx.measureText(testString).width;
       if (width !== baseWidths[baseFont]) {
         detected = true;
@@ -107,7 +107,7 @@ export function getDeviceFingerprint(): DeviceFingerprint {
   const fingerprint: DeviceFingerprint = {
     // 基础信息
     userAgent: navigator.userAgent,
-    screenResolution: `${window.screen.width}x${window.screen.height}`,
+    screenResolution: (window.screen.width) + 'x' + (window.screen.height),
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     language: navigator.language,
     platform: navigator.platform,

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useOCR } from '../hooks/useOCR';
 import { Loader2, Upload, FileText, Image as ImageIcon, X } from 'lucide-react';
+import { clsx } from 'clsx';
 
 interface OCRScannerProps {
   onResult?: (text: string) => void;
@@ -62,9 +63,7 @@ export const OCRScanner: React.FC<OCRScannerProps> = ({
 
   return (
     <div 
-      className={`p-6 border-2 border-dashed rounded-xl transition-all ${
-        isProcessing ? 'border-blue-400 bg-blue-50/10' : 'border-gray-200 hover:border-blue-400'
-      } ${className}`}
+      className={clsx('p-6 border-2 border-dashed rounded-xl transition-all', isProcessing ? 'border-blue-400 bg-blue-50/10' : 'border-gray-200 hover:border-blue-400', className)}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
@@ -87,7 +86,7 @@ export const OCRScanner: React.FC<OCRScannerProps> = ({
             <img 
               src={imagePreview} 
               alt="Preview" 
-              className={`max-h-64 mx-auto object-contain transition-opacity ${isProcessing ? 'opacity-50' : 'opacity-100'}`}
+              className={clsx('max-h-64 mx-auto object-contain transition-opacity', isProcessing ? 'opacity-50' : 'opacity-100')}
             />
             {!isProcessing && (
               <button 
@@ -104,11 +103,11 @@ export const OCRScanner: React.FC<OCRScannerProps> = ({
                 <div className="w-48 bg-gray-200 rounded-full h-1.5 overflow-hidden">
                   <div 
                     className="bg-blue-500 h-full transition-all duration-300"
-                    style={{ width: `${progress * 100}%` }}
+                    style={{ width: (progress * 100) + '%' }}
                   />
                 </div>
                 <p className="text-xs font-medium text-blue-600 mt-2">
-                  {status === 'initializing' ? '正在加载引擎...' : `识别中 ${Math.round(progress * 100)}%`}
+                  {status === 'initializing' ? '正在加载引擎...' : '识别中 ' + (Math.round(progress * 100)) + '%'}
                 </p>
               </div>
             )}

@@ -7,6 +7,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { clsx } from 'clsx';
 import { 
   Settings, 
   Trash2, 
@@ -203,7 +204,7 @@ export const ExportConfigEditor: React.FC<ExportConfigEditorProps> = ({
         params.set('businessId', businessId);
       }
       
-      const response = await fetch(`/api/universal-export/configs?${params.toString()}`);
+      const response = await fetch('/api/universal-export/configs?' + (params.toString()));
       if (response.ok) {
         const data = await response.json();
         setSavedConfigs(data.configs || []);
@@ -219,7 +220,7 @@ export const ExportConfigEditor: React.FC<ExportConfigEditorProps> = ({
   const deleteConfig = useCallback(async (configId: string) => {
     setDeletingConfigId(configId);
     try {
-      const response = await fetch(`/api/universal-export/configs/${configId}`, {
+      const response = await fetch('/api/universal-export/configs/' + (configId), {
         method: 'DELETE'
       });
       if (response.ok) {
@@ -252,7 +253,7 @@ export const ExportConfigEditor: React.FC<ExportConfigEditorProps> = ({
     
     const scrollY = window.scrollY;
     document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
+    document.body.style.top = '-' + (scrollY) + 'px';
     document.body.style.left = '0';
     document.body.style.right = '0';
     document.body.style.overflow = 'hidden';
@@ -460,7 +461,7 @@ export const ExportConfigEditor: React.FC<ExportConfigEditorProps> = ({
 
   return (
     <div 
-      className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[50] p-4 ${className}`}
+      className={clsx('fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[50] p-4', className)}
       onClick={onCancel}
     >
       <div 
@@ -488,9 +489,7 @@ export const ExportConfigEditor: React.FC<ExportConfigEditorProps> = ({
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                  activeTab === tab.id ? 'bg-white text-blue-600 shadow-sm border border-gray-200' : 'text-gray-600 hover:text-gray-900'
-                }`}
+                className={clsx('flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-lg transition-colors', activeTab === tab.id ? 'bg-white text-blue-600 shadow-sm border border-gray-200' : 'text-gray-600 hover:text-gray-900')}
               >
                 {tab.icon}
                 <span>{tab.label}</span>

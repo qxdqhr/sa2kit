@@ -131,7 +131,7 @@ export class Analytics {
       // 监听调试配置变化
       if (typeof window !== 'undefined') {
         window.addEventListener('analytics-debug-changed', ((e: CustomEvent) => {
-          this.log(`Debug mode changed: ${e.detail.enabled ? 'enabled' : 'disabled'}`);
+          this.log('Debug mode changed: ' + (e.detail.enabled ? 'enabled' : 'disabled'));
         }) as EventListener);
       }
 
@@ -451,7 +451,7 @@ export class Analytics {
     } catch (error) {
       console.error('Failed to init device info:', error);
       // 使用临时ID
-      this.deviceId = `temp_${Date.now()}_${Math.random()}`;
+      this.deviceId = 'temp_' + (Date.now()) + '_' + (Math.random());
     }
   }
 
@@ -508,14 +508,14 @@ export class Analytics {
    * 生成事件ID
    */
   private generateEventId(): string {
-    return `${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    return (Date.now()) + '_' + (Math.random().toString(36).substring(2, 15));
   }
 
   /**
    * 生成会话ID
    */
   private generateSessionId(): string {
-    return `session_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    return 'session_' + (Date.now()) + '_' + (Math.random().toString(36).substring(2, 15));
   }
 
   /**
@@ -534,7 +534,7 @@ export class Analytics {
       typeof window !== 'undefined' ? localStorage.getItem('analytics-debug') === 'true' : false;
 
     if (this.config.debug || dynamicDebug) {
-      console.log(`[Analytics] ${message}`, data ?? '');
+      console.log('[Analytics] ' + (message), data ?? '');
     }
   }
 

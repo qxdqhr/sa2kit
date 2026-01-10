@@ -3,6 +3,7 @@
 import React from 'react';
 import NavigationItem from './NavigationItem';
 import { NavigationProps } from './types';
+import { clsx } from 'clsx';
 
 const Navigation: React.FC<NavigationProps> = ({
   config,
@@ -27,17 +28,17 @@ const Navigation: React.FC<NavigationProps> = ({
     if (direction === 'vertical') {
       const verticalClasses = 'h-screen w-64 flex flex-col';
       const positionClasses = position === 'left' 
-        ? `left-0 top-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`
-        : `right-0 top-0 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`;
+        ? 'left-0 top-0 ' + (isOpen ? 'translate-x-0' : '-translate-x-full')
+        : 'right-0 top-0 ' + (isOpen ? 'translate-x-0' : 'translate-x-full');
       
-      return `${baseClasses} ${verticalClasses} ${positionClasses}`;
+      return (baseClasses) + ' ' + (verticalClasses) + ' ' + (positionClasses);
     } else {
       const horizontalClasses = 'w-full h-16 flex items-center';
       const positionClasses = position === 'top'
-        ? `top-0 left-0 right-0 ${isOpen ? 'translate-y-0' : '-translate-y-full'}`
-        : `bottom-0 left-0 right-0 ${isOpen ? 'translate-y-0' : 'translate-y-full'}`;
+        ? 'top-0 left-0 right-0 ' + (isOpen ? 'translate-y-0' : '-translate-y-full')
+        : 'bottom-0 left-0 right-0 ' + (isOpen ? 'translate-y-0' : 'translate-y-full');
       
-      return `${baseClasses} ${horizontalClasses} ${positionClasses}`;
+      return (baseClasses) + ' ' + (horizontalClasses) + ' ' + (positionClasses);
     }
   };
 
@@ -82,7 +83,7 @@ const Navigation: React.FC<NavigationProps> = ({
   if (!isOpen) return null;
 
   return (
-    <nav className={`${getContainerClasses()} ${className}`}>
+    <nav className={clsx(getContainerClasses(), className)}>
       <div className={getContentClasses()}>
         {/* Logo 区域 */}
         {logo && (

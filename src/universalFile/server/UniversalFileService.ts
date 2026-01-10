@@ -94,9 +94,9 @@ export class UniversalFileService extends EventEmitter {
       try {
         const metadata = data.metadata || data;
         await repository.save(metadata);
-        logger.info(`💾 [Persistence] 文件元数据已自动保存: ${fileId}`);
+        logger.info('💾 [Persistence] 文件元数据已自动保存: ' + (fileId));
       } catch (error) {
-        logger.error(`❌ [Persistence] 保存失败: ${fileId}`, error);
+        logger.error('❌ [Persistence] 保存失败: ' + (fileId), error);
         // 不抛出错误，避免影响上传流程
       }
     });
@@ -105,9 +105,9 @@ export class UniversalFileService extends EventEmitter {
     this.on('file:deleted', async (fileId: string) => {
       try {
         await repository.delete(fileId);
-        logger.info(`🗑️ [Persistence] 文件元数据已自动删除: ${fileId}`);
+        logger.info('🗑️ [Persistence] 文件元数据已自动删除: ' + (fileId));
       } catch (error) {
-        logger.error(`❌ [Persistence] 删除失败: ${fileId}`, error);
+        logger.error('❌ [Persistence] 删除失败: ' + (fileId), error);
       }
     });
 
@@ -115,7 +115,7 @@ export class UniversalFileService extends EventEmitter {
     this.on('files:batch-deleted', async (fileIds: string[]) => {
       try {
         await repository.batchDelete(fileIds);
-        logger.info(`🗑️ [Persistence] 批量删除元数据: ${fileIds.length} 个文件`);
+        logger.info('🗑️ [Persistence] 批量删除元数据: ' + (fileIds.length) + ' 个文件');
       } catch (error) {
         logger.error(`❌ [Persistence] 批量删除失败`, error);
       }
@@ -161,18 +161,18 @@ export class UniversalFileService extends EventEmitter {
       for (const [type, provider] of this.storageProviders) {
         if ('reinitialize' in provider) {
           try {
-            logger.info(`🔄 [UniversalFileService] 重新初始化存储提供者: ${type}...`);
+            logger.info('🔄 [UniversalFileService] 重新初始化存储提供者: ' + (type) + '...');
 
             // 获取对应的配置（从原始配置中获取）
             const config = (this.config as any).storageProviders?.[type as string];
             if (config) {
               await (provider as any).reinitialize(config);
-              logger.info(`✅ [UniversalFileService] 存储提供者重新初始化完成: ${type}`);
+              logger.info('✅ [UniversalFileService] 存储提供者重新初始化完成: ' + (type));
             } else {
-              logger.warn(`⚠️ [UniversalFileService] 存储提供者配置不存在: ${type}`);
+              logger.warn('⚠️ [UniversalFileService] 存储提供者配置不存在: ' + (type));
             }
           } catch (error) {
-            logger.error(`❌ [UniversalFileService] 存储提供者重新初始化失败: ${type}`, error);
+            logger.error('❌ [UniversalFileService] 存储提供者重新初始化失败: ' + (type), error);
             // 继续处理其他提供者
           }
         }
@@ -190,7 +190,7 @@ export class UniversalFileService extends EventEmitter {
    */
   registerStorageProvider(provider: IStorageProvider): void {
     this.storageProviders.set(provider.type, provider);
-    logger.info(`📦 [UniversalFileService] 注册存储提供者: ${provider.type}`);
+    logger.info('📦 [UniversalFileService] 注册存储提供者: ' + (provider.type));
   }
 
   /**
@@ -198,7 +198,7 @@ export class UniversalFileService extends EventEmitter {
    */
   registerCDNProvider(provider: ICDNProvider): void {
     this.cdnProviders.set(provider.type, provider);
-    logger.info(`🌐 [UniversalFileService] 注册CDN提供者: ${provider.type}`);
+    logger.info('🌐 [UniversalFileService] 注册CDN提供者: ' + (provider.type));
   }
 
   /**
@@ -206,7 +206,7 @@ export class UniversalFileService extends EventEmitter {
    */
   registerFileProcessor(processor: IFileProcessor): void {
     this.fileProcessors.set(processor.type, processor);
-    logger.info(`⚙️ [UniversalFileService] 注册文件处理器: ${processor.type}`);
+    logger.info('⚙️ [UniversalFileService] 注册文件处理器: ' + (processor.type));
   }
 
   // ============= 核心文件操作方法 =============
@@ -222,7 +222,7 @@ export class UniversalFileService extends EventEmitter {
     const fileId = uuidv4();
     const startTime = Date.now();
 
-    logger.info(`📤 [UniversalFileService] 开始上传文件: ${fileInfo.file.name}, ID: ${fileId}`);
+    logger.info('📤 [UniversalFileService] 开始上传文件: ' + (fileInfo.file.name) + ', ID: ' + (fileId));
 
     try {
       // 验证文件
@@ -252,7 +252,7 @@ export class UniversalFileService extends EventEmitter {
       // 如果指定的存储提供者不可用，优先尝试OSS
       if (!storageProvider) {
         logger.info(
-          `⚠️ [UniversalFileService] 存储提供者 ${selectedStorageType} 不可用，尝试使用OSS`
+          '⚠️ [UniversalFileService] 存储提供者 ' + (selectedStorageType) + ' 不可用，尝试使用OSS'
         );
         storageProvider = this.storageProviders.get('aliyun-oss');
 
@@ -281,7 +281,7 @@ export class UniversalFileService extends EventEmitter {
       const uploadResult = await storageProvider.upload(fileInfo, storagePath);
 
       if (!uploadResult.success) {
-        throw new FileUploadError(`上传失败: ${uploadResult.error}`);
+        throw new FileUploadError('上传失败: ' + (uploadResult.error));
       }
 
       // 更新元数据
@@ -320,7 +320,7 @@ export class UniversalFileService extends EventEmitter {
       onProgress?.(progress);
 
       const uploadTime = Date.now() - startTime;
-      logger.info(`✅ [UniversalFileService] 文件上传完成: ${fileId}, 耗时: ${uploadTime}ms`);
+      logger.info('✅ [UniversalFileService] 文件上传完成: ' + (fileId) + ', 耗时: ' + (uploadTime) + 'ms');
 
       this.emitFileEvent('upload:complete', fileId, {
         fileName: fileInfo.file.name,
@@ -330,7 +330,7 @@ export class UniversalFileService extends EventEmitter {
 
       return metadata;
     } catch (error) {
-      console.error(`❌ [UniversalFileService] 文件上传失败: ${fileId}:`, error);
+      console.error('❌ [UniversalFileService] 文件上传失败: ' + (fileId) + ':', error);
 
       // 更新上传状态为失败
       const progress = this.uploadProgressMap.get(fileId);
@@ -364,7 +364,7 @@ export class UniversalFileService extends EventEmitter {
    * 下载文件
    */
   async downloadFile(fileId: string, userId?: string): Promise<Buffer> {
-    logger.info(`📥 [UniversalFileService] 开始下载文件: ${fileId}`);
+    logger.info('📥 [UniversalFileService] 开始下载文件: ' + (fileId));
 
     try {
       this.emitFileEvent('download:start', fileId);
@@ -373,7 +373,7 @@ export class UniversalFileService extends EventEmitter {
       const metadata = await this.getFileMetadata(fileId);
 
       if (!metadata) {
-        throw new FileUploadError(`文件不存在: ${fileId}`);
+        throw new FileUploadError('文件不存在: ' + (fileId));
       }
 
       // 检查权限
@@ -383,7 +383,7 @@ export class UniversalFileService extends EventEmitter {
       const storageProvider = this.storageProviders.get(metadata.storageProvider);
 
       if (!storageProvider) {
-        throw new StorageProviderError(`存储提供者不存在: ${metadata.storageProvider}`);
+        throw new StorageProviderError('存储提供者不存在: ' + (metadata.storageProvider));
       }
 
       // 下载文件
@@ -394,12 +394,12 @@ export class UniversalFileService extends EventEmitter {
         await this.updateAccessStats(fileId);
       }
 
-      logger.info(`✅ [UniversalFileService] 文件下载完成: ${fileId}`);
+      logger.info('✅ [UniversalFileService] 文件下载完成: ' + (fileId));
       this.emitFileEvent('download:complete', fileId, { size: fileBuffer.length });
 
       return fileBuffer;
     } catch (error) {
-      console.error(`❌ [UniversalFileService] 文件下载失败: ${fileId}:`, error);
+      console.error('❌ [UniversalFileService] 文件下载失败: ' + (fileId) + ':', error);
       this.emitFileEvent('download:error', fileId, undefined, error instanceof Error ? error.message : '下载失败');
       throw error;
     }
@@ -409,14 +409,14 @@ export class UniversalFileService extends EventEmitter {
    * 删除文件
    */
   async deleteFile(fileId: string, userId?: string): Promise<void> {
-    logger.info(`🗑️ [UniversalFileService] 开始删除文件: ${fileId}`);
+    logger.info('🗑️ [UniversalFileService] 开始删除文件: ' + (fileId));
 
     try {
       // 获取文件元数据
       const metadata = await this.getFileMetadata(fileId);
 
       if (!metadata) {
-        throw new FileUploadError(`文件不存在: ${fileId}`);
+        throw new FileUploadError('文件不存在: ' + (fileId));
       }
 
       // 检查删除权限
@@ -426,14 +426,14 @@ export class UniversalFileService extends EventEmitter {
       const storageProvider = this.storageProviders.get(metadata.storageProvider);
 
       if (!storageProvider) {
-        throw new StorageProviderError(`存储提供者不存在: ${metadata.storageProvider}`);
+        throw new StorageProviderError('存储提供者不存在: ' + (metadata.storageProvider));
       }
 
       // 从存储中删除文件
       const deleteResult = await storageProvider.delete(metadata.storagePath);
 
       if (!deleteResult.success) {
-        console.warn(`⚠️ [UniversalFileService] 存储文件删除失败: ${deleteResult.error}`);
+        console.warn('⚠️ [UniversalFileService] 存储文件删除失败: ' + (deleteResult.error));
       }
 
       // 从数据库中删除元数据 (通过事件触发)
@@ -444,11 +444,11 @@ export class UniversalFileService extends EventEmitter {
       // 清除缓存
       this.clearMetadataCache(fileId);
 
-      logger.info(`✅ [UniversalFileService] 文件删除完成: ${fileId}`);
+      logger.info('✅ [UniversalFileService] 文件删除完成: ' + (fileId));
       this.emitFileEvent('delete:complete', fileId);
       this.emit('file:deleted', fileId);
     } catch (error) {
-      console.error(`❌ [UniversalFileService] 文件删除失败: ${fileId}:`, error);
+      console.error('❌ [UniversalFileService] 文件删除失败: ' + (fileId) + ':', error);
       this.emitFileEvent('delete:error', fileId, undefined, error instanceof Error ? error.message : '删除失败');
       throw error;
     }
@@ -459,7 +459,7 @@ export class UniversalFileService extends EventEmitter {
    */
   async getFileUrl(fileId: string, userId?: string, expiresIn?: number): Promise<string> {
     // 检查缓存
-    const cacheKey = `${fileId}_${userId || 'public'}_${expiresIn || 0}`;
+    const cacheKey = (fileId) + '_' + (userId || 'public') + '_' + (expiresIn || 0);
     const cached = this.urlCache.get(cacheKey);
 
     if (cached && cached.expires > Date.now()) {
@@ -470,7 +470,7 @@ export class UniversalFileService extends EventEmitter {
     const metadata = await this.getFileMetadata(fileId);
 
     if (!metadata) {
-      throw new FileUploadError(`文件不存在: ${fileId}`);
+      throw new FileUploadError('文件不存在: ' + (fileId));
     }
 
     // 检查访问权限
@@ -486,7 +486,7 @@ export class UniversalFileService extends EventEmitter {
       const storageProvider = this.storageProviders.get(metadata.storageProvider);
 
       if (!storageProvider) {
-        throw new StorageProviderError(`存储提供者不存在: ${metadata.storageProvider}`);
+        throw new StorageProviderError('存储提供者不存在: ' + (metadata.storageProvider));
       }
 
       url = await storageProvider.getAccessUrl(metadata.storagePath, expiresIn);
@@ -525,7 +525,7 @@ export class UniversalFileService extends EventEmitter {
     }
 
     // 如果没有启用持久化,返回 null
-    logger.warn(`⚠️ [UniversalFileService] 持久化未启用,无法查询文件元数据: ${fileId}`);
+    logger.warn('⚠️ [UniversalFileService] 持久化未启用,无法查询文件元数据: ' + (fileId));
     return null;
   }
 
@@ -660,7 +660,7 @@ export class UniversalFileService extends EventEmitter {
             throw new Error('OSS配置加载超时：缺少必需的配置项 (accessKeyId, accessKeySecret, bucket, region)');
           }
 
-          logger.debug(`等待OSS配置加载中... (${i + 1}/${maxRetries})`);
+          logger.debug('等待OSS配置加载中... (' + (i + 1) + '/' + (maxRetries) + ')');
         }
       }
     }
@@ -688,17 +688,17 @@ export class UniversalFileService extends EventEmitter {
           if (provider) {
             try {
               await provider.initialize(config);
-              logger.info(`✅ [UniversalFileService] 存储提供者初始化完成: ${type}`);
+              logger.info('✅ [UniversalFileService] 存储提供者初始化完成: ' + (type));
           } catch (error) {
-            console.warn(`⚠️ [UniversalFileService] 存储提供者初始化失败: ${type}:`, error);
+            console.warn('⚠️ [UniversalFileService] 存储提供者初始化失败: ' + (type) + ':', error);
             // 如果默认存储提供者初始化失败，切换到本地存储
             // if (type === this.config.defaultStorage) {
-            //   console.warn(`⚠️ [UniversalFileService] 默认存储提供者 ${type} 初始化失败，切换到本地存储`);
+            //   console.warn('⚠️ [UniversalFileService] 默认存储提供者 ' + (type) + ' 初始化失败，切换到本地存储');
             //   this.config.defaultStorage = 'local';
             // }
           }
         } else {
-          console.warn(`⚠️ [UniversalFileService] 存储提供者未注册: ${type}`);
+          console.warn('⚠️ [UniversalFileService] 存储提供者未注册: ' + (type));
         }
       }
     }
@@ -740,21 +740,21 @@ export class UniversalFileService extends EventEmitter {
   private async initializeCDNProviders(): Promise<void> {
     // CDN 初始化暂时跳过，未来支持多个 CDN 提供者时实现
     if (this.config.cdn && this.config.cdn.enabled) {
-      logger.info(`✅ [UniversalFileService] CDN配置已启用: ${this.config.cdn.type}`);
+      logger.info('✅ [UniversalFileService] CDN配置已启用: ' + (this.config.cdn.type));
     }
   }
 
   private async initializeFileProcessors(): Promise<void> {
     for (const processor of Array.from(this.fileProcessors.values())) {
       await processor.initialize();
-      logger.info(`✅ [UniversalFileService] 文件处理器初始化完成: ${processor.type}`);
+      logger.info('✅ [UniversalFileService] 文件处理器初始化完成: ' + (processor.type));
     }
   }
 
   private async validateFile(file: File): Promise<void> {
     // 检查文件大小
     if (this.config.maxFileSize && file.size > this.config.maxFileSize) {
-      throw new FileUploadError(`文件大小超过限制: ${file.size} > ${this.config.maxFileSize}`);
+      throw new FileUploadError('文件大小超过限制: ' + (file.size) + ' > ' + (this.config.maxFileSize));
     }
 
     // 检查文件类型
@@ -765,7 +765,7 @@ export class UniversalFileService extends EventEmitter {
       this.config.allowedMimeTypes.length > 0 &&
       !this.config.allowedMimeTypes.includes(mimeType)
     ) {
-      throw new FileUploadError(`不支持的文件类型: ${mimeType}`);
+      throw new FileUploadError('不支持的文件类型: ' + (mimeType));
     }
   }
 
@@ -783,7 +783,7 @@ export class UniversalFileService extends EventEmitter {
     return {
       id: fileId,
       originalName: fileInfo.file.name,
-      storageName: `${fileId}${extension}`,
+      storageName: (fileId) + (extension),
       size: fileInfo.file.size,
       mimeType,
       extension,
@@ -806,7 +806,7 @@ export class UniversalFileService extends EventEmitter {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
 
-    return `${metadata.moduleId}/${year}/${month}/${day}/${metadata.storageName}`;
+    return (metadata.moduleId) + '/' + (year) + '/' + (month) + '/' + (day) + '/' + (metadata.storageName);
   }
 
   private async generateFileHash(file: File): Promise<string> {
@@ -823,7 +823,7 @@ export class UniversalFileService extends EventEmitter {
 
     const processor = this.fileProcessors.get(options.type);
     if (!processor) {
-      console.warn(`⚠️ [UniversalFileService] 文件处理器不存在: ${options.type}`);
+      console.warn('⚠️ [UniversalFileService] 文件处理器不存在: ' + (options.type));
       return;
     }
 
@@ -850,7 +850,7 @@ export class UniversalFileService extends EventEmitter {
     const extension = path.extname(basePath);
     const basename = basePath.replace(extension, '');
 
-    return `${basename}_processed${extension}`;
+    return (basename) + '_processed' + (extension);
   }
 
   private async processFileQueue(): Promise<void> {
@@ -875,7 +875,7 @@ export class UniversalFileService extends EventEmitter {
           this.emitFileEvent('processing:error', task.fileId, undefined, result.error);
         }
       } catch (error) {
-        console.error(`❌ [UniversalFileService] 文件处理失败: ${task.fileId}:`, error);
+        console.error('❌ [UniversalFileService] 文件处理失败: ' + (task.fileId) + ':', error);
         this.emitFileEvent(
           'processing:error',
           task.fileId,
@@ -927,7 +927,7 @@ export class UniversalFileService extends EventEmitter {
     } catch (error) {
       console.error('❌ [UniversalFileService] 保存文件元数据失败:', error);
       throw new FileUploadError(
-        `保存文件元数据失败: ${error instanceof Error ? error.message : '未知错误'}`
+        '保存文件元数据失败: ' + (error instanceof Error ? error.message : '未知错误')
       );
     }
   }
@@ -946,7 +946,7 @@ export class UniversalFileService extends EventEmitter {
     } catch (error) {
       console.error('❌ [UniversalFileService] 删除文件元数据失败:', error);
       throw new FileUploadError(
-        `删除文件元数据失败: ${error instanceof Error ? error.message : '未知错误'}`
+        '删除文件元数据失败: ' + (error instanceof Error ? error.message : '未知错误')
       );
     }
   }
@@ -1010,7 +1010,7 @@ export class UniversalFileService extends EventEmitter {
 
     while (!this.isFullyInitialized()) {
       if (Date.now() - startTime > timeoutMs) {
-        throw new Error(`服务初始化超时 (${timeoutMs}ms)`);
+        throw new Error('服务初始化超时 (' + (timeoutMs) + 'ms)');
       }
 
       // 等待100ms后重试

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { clsx } from 'clsx';
 
 export interface LoadingScreenProps {
   /** 是否显示加载状态 */
@@ -46,7 +47,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
 
   const content = (
     <div
-      className={`fixed inset-0 w-screen h-screen flex items-center justify-center ${className}`}
+      className={clsx('fixed inset-0 w-screen h-screen flex items-center justify-center', className)}
       style={{
         zIndex: 999998,
         pointerEvents: 'auto',

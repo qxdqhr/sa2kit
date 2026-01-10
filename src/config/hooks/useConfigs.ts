@@ -36,9 +36,9 @@ export function createUseConfigs(options: UseConfigsOptions) {
   const fetcher = async (url: string) => {
     const token = await getAuthToken();
 
-    const res = await fetch(`${apiBaseUrl}${url}`, {
+    const res = await fetch((apiBaseUrl) + (url), {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: 'Bearer ' + (token),
         'Content-Type': 'application/json',
       },
       credentials: 'include',
@@ -110,10 +110,10 @@ export function createUseConfigs(options: UseConfigsOptions) {
 
         try {
           // 发送到服务器
-          const res = await fetch(`${apiBaseUrl}/api/admin/config/${category}`, {
+          const res = await fetch((apiBaseUrl) + '/api/admin/config/' + (category), {
             method: 'POST',
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: 'Bearer ' + (token),
               'Content-Type': 'application/json',
             },
             credentials: 'include',
@@ -155,7 +155,7 @@ export function createUseConfigs(options: UseConfigsOptions) {
  * 预加载配置
  */
 export function prefetchConfigs(apiBaseUrl: string = '') {
-  mutate(`${apiBaseUrl}/api/admin/config`);
+  mutate((apiBaseUrl) + '/api/admin/config');
 }
 
 /**
@@ -163,7 +163,7 @@ export function prefetchConfigs(apiBaseUrl: string = '') {
  */
 export function invalidateAllConfigs(apiBaseUrl: string = '') {
   mutate(
-    (key: any) => typeof key === 'string' && key.startsWith(`${apiBaseUrl}/api/admin/config`),
+    (key: any) => typeof key === 'string' && key.startsWith((apiBaseUrl) + '/api/admin/config'),
     undefined,
     { revalidate: true }
   );

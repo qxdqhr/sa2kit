@@ -42,10 +42,10 @@ export function useEvents(): UseEventsReturn {
         endDate: toLocalISOString(endDate),
       });
 
-      const response = await fetch(`/api/calendar/events?${params}`);
+      const response = await fetch('/api/calendar/events?' + (params));
       
       if (!response.ok) {
-        throw new Error(`获取事件失败: ${response.status}`);
+        throw new Error('获取事件失败: ' + (response.status));
       }
 
       const data = await response.json();
@@ -104,7 +104,7 @@ export function useEvents(): UseEventsReturn {
       });
 
       if (!response.ok) {
-        throw new Error(`创建事件失败: ${response.status}`);
+        throw new Error('创建事件失败: ' + (response.status));
       }
 
       const data = await response.json();
@@ -155,7 +155,7 @@ export function useEvents(): UseEventsReturn {
       if (eventData.location !== undefined) updateRequest.location = eventData.location;
       if (eventData.color !== undefined) updateRequest.color = eventData.color;
 
-      const response = await fetch(`/api/calendar/events/${eventId}`, {
+      const response = await fetch('/api/calendar/events/' + (eventId), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -164,7 +164,7 @@ export function useEvents(): UseEventsReturn {
       });
 
       if (!response.ok) {
-        throw new Error(`更新事件失败: ${response.status}`);
+        throw new Error('更新事件失败: ' + (response.status));
       }
 
       const data = await response.json();
@@ -205,15 +205,15 @@ export function useEvents(): UseEventsReturn {
     
     try {
       const url = deleteAll 
-        ? `/api/calendar/events/${eventId}?deleteAll=true`
-        : `/api/calendar/events/${eventId}`;
+        ? '/api/calendar/events/' + (eventId) + '?deleteAll=true'
+        : '/api/calendar/events/' + (eventId);
 
       const response = await fetch(url, {
         method: 'DELETE',
       });
 
       if (!response.ok) {
-        throw new Error(`删除事件失败: ${response.status}`);
+        throw new Error('删除事件失败: ' + (response.status));
       }
 
       const data = await response.json();
@@ -249,7 +249,7 @@ export function useEvents(): UseEventsReturn {
       });
 
       if (!response.ok) {
-        throw new Error(`批量删除事件失败: ${response.status}`);
+        throw new Error('批量删除事件失败: ' + (response.status));
       }
 
       const data = await response.json();

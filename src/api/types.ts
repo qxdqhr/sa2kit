@@ -95,8 +95,8 @@ export const DEFAULT_API_ROUTES: ApiRoutes = {
   },
   users: {
     list: '/users',
-    detail: (id: string) => `/users/${id}`,
-    update: (id: string) => `/users/${id}`,
-    delete: (id: string) => `/users/${id}`,
+    detail: (id: string) => '/users/' + (id),
+    update: (id: string) => '/users/' + (id),
+    delete: (id: string) => '/users/' + (id),
   },
 };

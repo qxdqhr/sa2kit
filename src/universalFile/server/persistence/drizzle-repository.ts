@@ -174,14 +174,14 @@ export function createDrizzleRepository(config: DrizzleRepositoryConfig): IFileM
             .set(record)
             .where(eq(table[getField('id')], metadata.id));
 
-          logger.info(`✅ [DrizzleRepository] 文件元数据已更新: ${metadata.id}`);
+          logger.info('✅ [DrizzleRepository] 文件元数据已更新: ' + (metadata.id));
         } else {
           // 插入
           await db.insert(table).values(record);
-          logger.info(`✅ [DrizzleRepository] 文件元数据已插入: ${metadata.id}`);
+          logger.info('✅ [DrizzleRepository] 文件元数据已插入: ' + (metadata.id));
         }
       } catch (error) {
-        logger.error(`❌ [DrizzleRepository] 保存失败: ${metadata.id}`, error);
+        logger.error('❌ [DrizzleRepository] 保存失败: ' + (metadata.id), error);
         throw error;
       }
     },
@@ -200,7 +200,7 @@ export function createDrizzleRepository(config: DrizzleRepositoryConfig): IFileM
 
         return toFileMetadata(result[0]);
       } catch (error) {
-        logger.error(`❌ [DrizzleRepository] 查询失败: ${fileId}`, error);
+        logger.error('❌ [DrizzleRepository] 查询失败: ' + (fileId), error);
         throw error;
       }
     },
@@ -239,15 +239,15 @@ export function createDrizzleRepository(config: DrizzleRepositoryConfig): IFileM
           conditions.push(eq(table[getField('status')], status));
         }
         if (startDate) {
-          conditions.push(sql`${table[getField('uploadedAt')]} >= ${startDate}`);
+          conditions.push(sql(table[getField('uploadedAt')]) + ' >= ' + (startDate));
         }
         if (endDate) {
-          conditions.push(sql`${table[getField('uploadedAt')]} <= ${endDate}`);
+          conditions.push(sql(table[getField('uploadedAt')]) + ' <= ' + (endDate));
         }
         if (tags && tags.length > 0) {
           // 假设 tags 是 JSON 数组字段
           for (const tag of tags) {
-            conditions.push(sql`${table[getField('tags')]} @> ${JSON.stringify([tag])}`);
+            conditions.push(sql(table[getField('tags')]) + ' @> ' + (JSON.stringify([tag])));
           }
         }
 
@@ -290,9 +290,9 @@ export function createDrizzleRepository(config: DrizzleRepositoryConfig): IFileM
           .delete(table)
           .where(eq(table[getField('id')], fileId));
 
-        logger.info(`🗑️ [DrizzleRepository] 文件元数据已删除: ${fileId}`);
+        logger.info('🗑️ [DrizzleRepository] 文件元数据已删除: ' + (fileId));
       } catch (error) {
-        logger.error(`❌ [DrizzleRepository] 删除失败: ${fileId}`, error);
+        logger.error('❌ [DrizzleRepository] 删除失败: ' + (fileId), error);
         throw error;
       }
     },
@@ -304,9 +304,9 @@ export function createDrizzleRepository(config: DrizzleRepositoryConfig): IFileM
         // 批量删除
         await db
           .delete(table)
-          .where(sql`${table[getField('id')]} = ANY(${fileIds})`);
+          .where(sql(table[getField('id')]) + ' = ANY(' + (fileIds) + ')');
 
-        logger.info(`🗑️ [DrizzleRepository] 批量删除成功: ${fileIds.length} 个文件`);
+        logger.info('🗑️ [DrizzleRepository] 批量删除成功: ' + (fileIds.length) + ' 个文件');
       } catch (error) {
         logger.error(`❌ [DrizzleRepository] 批量删除失败`, error);
         throw error;

@@ -45,10 +45,10 @@ export function useEnhancedEvents(): UseEnhancedEventsReturn {
         endDate: toLocalISOString(endDate),
       });
 
-      const response = await fetch(`/api/calendar/events?${params}`);
+      const response = await fetch('/api/calendar/events?' + (params));
       
       if (!response.ok) {
-        throw new Error(`获取事件失败: ${response.status}`);
+        throw new Error('获取事件失败: ' + (response.status));
       }
 
       const data = await response.json();
@@ -67,7 +67,7 @@ export function useEnhancedEvents(): UseEnhancedEventsReturn {
       }));
 
       console.log('📥 获取到的事件数据:', {
-        requestRange: `${formatDate(startDate)} 到 ${formatDate(endDate)}`,
+        requestRange: (formatDate(startDate)) + ' 到 ' + (formatDate(endDate)),
         eventCount: eventsWithDates.length,
         eventIds: eventsWithDates.map((e: CalendarEvent) => e.id)
       });
@@ -129,7 +129,7 @@ export function useEnhancedEvents(): UseEnhancedEventsReturn {
       });
 
       if (!response.ok) {
-        throw new Error(`创建事件失败: ${response.status}`);
+        throw new Error('创建事件失败: ' + (response.status));
       }
 
       const data = await response.json();
@@ -269,7 +269,7 @@ export function useEnhancedEvents(): UseEnhancedEventsReturn {
            break;
          
          default:
-           throw new Error(`不支持的事件类型: ${(eventData as any).type}`);
+           throw new Error('不支持的事件类型: ' + ((eventData as any).type));
        }
 
       // 批量创建事件
@@ -306,7 +306,7 @@ export function useEnhancedEvents(): UseEnhancedEventsReturn {
         });
 
         if (!response.ok) {
-          throw new Error(`创建事件实例失败: ${response.status}`);
+          throw new Error('创建事件实例失败: ' + (response.status));
         }
 
         const data = await response.json();
@@ -359,7 +359,7 @@ export function useEnhancedEvents(): UseEnhancedEventsReturn {
       if (eventData.location !== undefined) updateRequest.location = eventData.location;
       if (eventData.color !== undefined) updateRequest.color = eventData.color;
 
-      const response = await fetch(`/api/calendar/events/${eventId}`, {
+      const response = await fetch('/api/calendar/events/' + (eventId), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -368,7 +368,7 @@ export function useEnhancedEvents(): UseEnhancedEventsReturn {
       });
 
       if (!response.ok) {
-        throw new Error(`更新事件失败: ${response.status}`);
+        throw new Error('更新事件失败: ' + (response.status));
       }
 
       const data = await response.json();
@@ -409,15 +409,15 @@ export function useEnhancedEvents(): UseEnhancedEventsReturn {
     
     try {
       const url = deleteAll 
-        ? `/api/calendar/events/${eventId}?deleteAll=true`
-        : `/api/calendar/events/${eventId}`;
+        ? '/api/calendar/events/' + (eventId) + '?deleteAll=true'
+        : '/api/calendar/events/' + (eventId);
 
       const response = await fetch(url, {
         method: 'DELETE',
       });
 
       if (!response.ok) {
-        throw new Error(`删除事件失败: ${response.status}`);
+        throw new Error('删除事件失败: ' + (response.status));
       }
 
       const data = await response.json();
@@ -453,7 +453,7 @@ export function useEnhancedEvents(): UseEnhancedEventsReturn {
       });
 
       if (!response.ok) {
-        throw new Error(`批量删除事件失败: ${response.status}`);
+        throw new Error('批量删除事件失败: ' + (response.status));
       }
 
       const data = await response.json();
@@ -499,7 +499,7 @@ export function useEnhancedEvents(): UseEnhancedEventsReturn {
 
       console.log('📤 发送API请求:', updateRequest);
 
-      const response = await fetch(`/api/calendar/events/${eventId}`, {
+      const response = await fetch('/api/calendar/events/' + (eventId), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -508,7 +508,7 @@ export function useEnhancedEvents(): UseEnhancedEventsReturn {
       });
 
       if (!response.ok) {
-        throw new Error(`更新事件时间失败: ${response.status}`);
+        throw new Error('更新事件时间失败: ' + (response.status));
       }
 
       const data = await response.json();

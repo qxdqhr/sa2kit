@@ -138,7 +138,7 @@ export class PitchDetector {
     const noteIndex = midi % 12;
     const octave = Math.floor(midi / 12) - 1;
     const noteName = PitchDetector.NOTE_NAMES[noteIndex] || 'C';
-    const name = `${noteName}${octave}`;
+    const name = (noteName) + (octave);
 
     // 计算标准频率（用于计算置信度）
     const standardFrequency = 440 * Math.pow(2, (midi - 69) / 12);

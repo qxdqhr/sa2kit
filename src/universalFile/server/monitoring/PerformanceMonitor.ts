@@ -496,7 +496,7 @@ export function measurePerformance(operation: string) {
     const method = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {
-      const requestId = `${operation}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const requestId = (operation) + '_' + (Date.now()) + '_' + (Math.random().toString(36).substr(2, 9));
 
       try {
         performanceMonitor.startRequest(requestId, operation, 'INTERNAL');

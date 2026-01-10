@@ -23,7 +23,7 @@ export const stringUtils = {
    * 驼峰转下划线
    */
   camelToSnake(text: string): string {
-    return text.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+    return text.replace(/[A-Z]/g, (letter) => '_' + (letter.toLowerCase()));
   },
 
   /**

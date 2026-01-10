@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import type { ExperimentItem } from '../types';
+import { clsx } from 'clsx';
 import { 
   DndContext, 
   closestCenter, 
@@ -111,7 +112,7 @@ export const DraggableExperimentGrid: React.FC<DraggableExperimentGridProps> = (
   }, [initialItems]);
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={clsx('relative', className)}>
       <div className="mb-4 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg border border-blue-200 text-sm">
         <div className="flex items-start sm:items-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5 sm:mt-0" viewBox="0 0 20 20" fill="currentColor">
@@ -135,10 +136,7 @@ export const DraggableExperimentGrid: React.FC<DraggableExperimentGridProps> = (
           items={items.map(item => item.id)}
           strategy={rectSortingStrategy}
         >
-          <div className={`
-            grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6
-            ${isDragging ? 'cursor-grabbing' : ''}
-          `}>
+          <div className={clsx('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6', isDragging ? 'cursor-grabbing' : '')}>
             {items.map((item, index) => (
               <SortableExperimentItem 
                 key={item.id} 

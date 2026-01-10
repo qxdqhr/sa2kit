@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, ConfirmModal } from '@/components';
 import { EventType, RecurrencePattern, EventData, EventTypeService } from '../services/eventTypeService';
 import { CalendarEvent, EventPriority } from '../types';
+import { clsx } from 'clsx';
 
 interface ImprovedEventModalProps {
   isOpen: boolean;
@@ -117,20 +118,20 @@ const ImprovedEventModal: React.FC<ImprovedEventModalProps> = ({
     const day = String(date.getDate()).padStart(2, '0');
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+    return (year) + '-' + (month) + '-' + (day) + 'T' + (hours) + ':' + (minutes);
   };
 
   const formatDateOnly = (date: Date): string => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    return (year) + '-' + (month) + '-' + (day);
   };
 
   const formatTimeOnly = (date: Date): string => {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
+    return (hours) + ':' + (minutes);
   };
 
   // 构建事件数据
@@ -185,7 +186,7 @@ const ImprovedEventModal: React.FC<ImprovedEventModalProps> = ({
         };
 
       default:
-        throw new Error(`不支持的事件类型: ${eventType}`);
+        throw new Error('不支持的事件类型: ' + (eventType));
     }
   };
 
@@ -275,21 +276,15 @@ const ImprovedEventModal: React.FC<ImprovedEventModalProps> = ({
         <button
           type="button"
           onClick={() => setEventType(EventType.SINGLE)}
-          className={`group relative p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
-            eventType === EventType.SINGLE
+          className={clsx('group relative p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105', eventType === EventType.SINGLE
               ? 'bg-gradient-to-br from-blue-50 to-blue-100 border-blue-300 shadow-lg ring-2 ring-blue-200'
-              : 'bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-sm hover:shadow-md'
-          }`}
+              : 'bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-sm hover:shadow-md')}
         >
           <div className="text-center">
-            <div className={`text-3xl mb-2 transition-transform duration-300 ${
-              eventType === EventType.SINGLE ? 'scale-110' : 'group-hover:scale-110'
-            }`}>
+            <div className={clsx('text-3xl mb-2 transition-transform duration-300', eventType === EventType.SINGLE ? 'scale-110' : 'group-hover:scale-110')}>
               📅
             </div>
-            <div className={`font-semibold mb-1 ${
-              eventType === EventType.SINGLE ? 'text-blue-700' : 'text-gray-900'
-            }`}>
+            <div className={clsx('font-semibold mb-1', eventType === EventType.SINGLE ? 'text-blue-700' : 'text-gray-900')}>
               单次事件
             </div>
             <div className="text-xs text-gray-500">
@@ -308,21 +303,15 @@ const ImprovedEventModal: React.FC<ImprovedEventModalProps> = ({
         <button
           type="button"
           onClick={() => setEventType(EventType.MULTI_DAY)}
-          className={`group relative p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
-            eventType === EventType.MULTI_DAY
+          className={clsx('group relative p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105', eventType === EventType.MULTI_DAY
               ? 'bg-gradient-to-br from-green-50 to-green-100 border-green-300 shadow-lg ring-2 ring-green-200'
-              : 'bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-sm hover:shadow-md'
-          }`}
+              : 'bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-sm hover:shadow-md')}
         >
           <div className="text-center">
-            <div className={`text-3xl mb-2 transition-transform duration-300 ${
-              eventType === EventType.MULTI_DAY ? 'scale-110' : 'group-hover:scale-110'
-            }`}>
+            <div className={clsx('text-3xl mb-2 transition-transform duration-300', eventType === EventType.MULTI_DAY ? 'scale-110' : 'group-hover:scale-110')}>
               🗓️
             </div>
-            <div className={`font-semibold mb-1 ${
-              eventType === EventType.MULTI_DAY ? 'text-green-700' : 'text-gray-900'
-            }`}>
+            <div className={clsx('font-semibold mb-1', eventType === EventType.MULTI_DAY ? 'text-green-700' : 'text-gray-900')}>
               多天事件
             </div>
             <div className="text-xs text-gray-500">
@@ -341,21 +330,15 @@ const ImprovedEventModal: React.FC<ImprovedEventModalProps> = ({
         <button
           type="button"
           onClick={() => setEventType(EventType.RECURRING)}
-          className={`group relative p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
-            eventType === EventType.RECURRING
+          className={clsx('group relative p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105', eventType === EventType.RECURRING
               ? 'bg-gradient-to-br from-purple-50 to-purple-100 border-purple-300 shadow-lg ring-2 ring-purple-200'
-              : 'bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-sm hover:shadow-md'
-          }`}
+              : 'bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-sm hover:shadow-md')}
         >
           <div className="text-center">
-            <div className={`text-3xl mb-2 transition-transform duration-300 ${
-              eventType === EventType.RECURRING ? 'scale-110' : 'group-hover:scale-110'
-            }`}>
+            <div className={clsx('text-3xl mb-2 transition-transform duration-300', eventType === EventType.RECURRING ? 'scale-110' : 'group-hover:scale-110')}>
               🔄
             </div>
-            <div className={`font-semibold mb-1 ${
-              eventType === EventType.RECURRING ? 'text-purple-700' : 'text-gray-900'
-            }`}>
+            <div className={clsx('font-semibold mb-1', eventType === EventType.RECURRING ? 'text-purple-700' : 'text-gray-900')}>
               重复事件
             </div>
             <div className="text-xs text-gray-500">
@@ -373,11 +356,9 @@ const ImprovedEventModal: React.FC<ImprovedEventModalProps> = ({
       </div>
       
       {/* 事件类型说明 */}
-      <div className={`p-4 rounded-lg transition-all duration-300 ${
-        eventType === EventType.SINGLE ? 'bg-blue-50 border border-blue-200' :
+      <div className={clsx('p-4 rounded-lg transition-all duration-300', eventType === EventType.SINGLE ? 'bg-blue-50 border border-blue-200' :
         eventType === EventType.MULTI_DAY ? 'bg-green-50 border border-green-200' :
-        'bg-purple-50 border border-purple-200'
-      }`}>
+        'bg-purple-50 border border-purple-200')}>
         <div className="flex items-start space-x-3">
           <div className="flex-shrink-0 mt-0.5">
             <span className="text-lg">
@@ -435,9 +416,7 @@ const ImprovedEventModal: React.FC<ImprovedEventModalProps> = ({
             placeholder="为你的事件起个名字..."
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-            <div className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-              formData.title.trim() ? 'bg-green-400' : 'bg-gray-300'
-            }`}></div>
+            <div className={clsx('w-2 h-2 rounded-full transition-colors duration-200', formData.title.trim() ? 'bg-green-400' : 'bg-gray-300')}></div>
           </div>
         </div>
         {errors.title && (
@@ -463,7 +442,7 @@ const ImprovedEventModal: React.FC<ImprovedEventModalProps> = ({
         />
         <div className="flex justify-between items-center mt-2">
           <div className="text-xs text-gray-500">
-            {formData.description.length > 0 && `已输入 ${formData.description.length} 个字符`}
+            {formData.description.length > 0 && '已输入 ' + (formData.description.length) + ' 个字符'}
           </div>
         </div>
       </div>
@@ -483,9 +462,7 @@ const ImprovedEventModal: React.FC<ImprovedEventModalProps> = ({
             placeholder="事件举办地点..."
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-            <div className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-              formData.location.trim() ? 'bg-green-400' : 'bg-gray-300'
-            }`}></div>
+            <div className={clsx('w-2 h-2 rounded-full transition-colors duration-200', formData.location.trim() ? 'bg-green-400' : 'bg-gray-300')}></div>
           </div>
         </div>
       </div>
@@ -508,12 +485,8 @@ const ImprovedEventModal: React.FC<ImprovedEventModalProps> = ({
               onChange={(e) => handleInputChange('allDay', e.target.checked)}
               className="sr-only"
             />
-            <div className={`w-12 h-6 rounded-full transition-colors duration-200 ${
-              formData.allDay ? 'bg-blue-500' : 'bg-gray-300'
-            }`}>
-              <div className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-200 ${
-                formData.allDay ? 'translate-x-6' : 'translate-x-0.5'
-              } translate-y-0.5`}></div>
+            <div className={clsx('w-12 h-6 rounded-full transition-colors duration-200', formData.allDay ? 'bg-blue-500' : 'bg-gray-300')}>
+              <div className={clsx('w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-200', formData.allDay ? 'translate-x-6' : 'translate-x-0.5', 'translate-y-0.5')}></div>
             </div>
           </div>
         </label>
@@ -554,9 +527,7 @@ const ImprovedEventModal: React.FC<ImprovedEventModalProps> = ({
                   key={color}
                   type="button"
                   onClick={() => handleInputChange('color', color)}
-                  className={`w-8 h-8 rounded-lg border-2 hover:scale-105 transition-all duration-200 ${
-                    formData.color === color ? 'border-gray-400 ring-2 ring-gray-200' : 'border-gray-200'
-                  }`}
+                  className={clsx('w-8 h-8 rounded-lg border-2 hover:scale-105 transition-all duration-200', formData.color === color ? 'border-gray-400 ring-2 ring-gray-200' : 'border-gray-200')}
                   style={{ backgroundColor: color }}
                 />
               ))}
@@ -586,11 +557,9 @@ const ImprovedEventModal: React.FC<ImprovedEventModalProps> = ({
                   onChange={(e) => handleInputChange('priority', e.target.value as EventPriority)}
                   className="sr-only"
                 />
-                <div className={`flex items-center space-x-3 px-3 py-2 rounded-lg border-2 transition-all duration-200 flex-1 ${
-                  formData.priority === priority.value 
+                <div className={clsx('flex items-center space-x-3 px-3 py-2 rounded-lg border-2 transition-all duration-200 flex-1', formData.priority === priority.value 
                     ? priority.color + ' ring-2 ring-opacity-20'
-                    : 'text-gray-600 bg-white border-gray-200 hover:bg-gray-50'
-                }`}>
+                    : 'text-gray-600 bg-white border-gray-200 hover:bg-gray-50')}>
                   <span className="text-lg">{priority.icon}</span>
                   <span className="text-sm font-medium">{priority.label}</span>
                   {formData.priority === priority.value && (

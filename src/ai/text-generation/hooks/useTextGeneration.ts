@@ -62,7 +62,7 @@ export const useTextGeneration = (options: TextGenerationOptions = {}) => {
         pipelineRef.current = await pipeline('text2text-generation', modelName, {
           progress_callback: (info: any) => {
             if (info.status === 'progress') {
-              setState((prev: TextGenerationState) => ({ ...prev, status: `loading model: ${Math.round(info.progress)}%` }));
+              setState((prev: TextGenerationState) => ({ ...prev, status: 'loading model: ' + (Math.round(info.progress)) + '%' }));
             }
           }
         });

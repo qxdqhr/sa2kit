@@ -5,6 +5,7 @@ import { useDroppable } from '@dnd-kit/core';
 import { CalendarEvent } from '../types';
 import { formatDate, isSameDay, isToday } from '../utils/dateUtils';
 import DraggableEvent from './DraggableEvent';
+import { clsx } from 'clsx';
 
 interface DroppableCalendarCellProps {
   date: Date;
@@ -39,7 +40,7 @@ export const DroppableCalendarCell: React.FC<DroppableCalendarCellProps> = ({
   disableDrop = false
 }) => {
   const dateStr = formatDate(date);
-  const dropId = `date-${dateStr}`;
+  const dropId = 'date-' + (dateStr);
   
   // 只在支持拖拽时启用可放置功能
   const {
@@ -109,12 +110,8 @@ export const DroppableCalendarCell: React.FC<DroppableCalendarCellProps> = ({
     >
       {/* 日期数字 */}
       <div className="flex items-center justify-between mb-2">
-        <span className={`
-          inline-flex items-center justify-center text-sm font-semibold w-6 h-6
-          ${!isCurrentMonth ? 'text-gray-400' : 
-            (date.getDay() === 0 || date.getDay() === 6) ? 'text-red-600' : 'text-gray-900'}
-          ${isToday(date) ? 'bg-blue-600 text-white rounded-full shadow-md' : ''}
-        `}>
+        <span className={clsx('inline-flex items-center justify-center text-sm font-semibold w-6 h-6', !isCurrentMonth ? 'text-gray-400' : 
+            (date.getDay() === 0 || date.getDay() === 6) ? 'text-red-600' : 'text-gray-900', isToday(date) ? 'bg-blue-600 text-white rounded-full shadow-md' : '')}>
           {date.getDate()}
         </span>
         

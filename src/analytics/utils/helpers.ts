@@ -154,7 +154,7 @@ export function mergeEventProperties(
 export function generateUniqueId(prefix: string = ''): string {
   const timestamp = Date.now();
   const random = Math.random().toString(36).substring(2, 15);
-  return prefix ? `${prefix}_${timestamp}_${random}` : `${timestamp}_${random}`;
+  return prefix ? (prefix) + '_' + (timestamp) + '_' + (random) : (timestamp) + '_' + (random);
 }
 
 /**

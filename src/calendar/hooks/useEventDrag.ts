@@ -118,7 +118,7 @@ export function useEventDrag(
             // 生成预览时间文本
             const previewTime = dragState.draggedEvent.allDay 
               ? '全天'
-              : `${formatTime(newStartTime)} - ${formatTime(newEndTime)}`;
+              : (formatTime(newStartTime)) + ' - ' + (formatTime(newEndTime));
             
             console.log('⏰ 计算新时间:', {
               originalStart: dragState.draggedEvent.startTime,

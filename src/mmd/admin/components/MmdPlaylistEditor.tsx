@@ -72,7 +72,7 @@ export const MmdPlaylistEditor: React.FC<PlaylistEditorProps> = ({
   // 添加新节点
   const addNode = () => {
     const newNode: NodeFormData = {
-      name: `节点 ${nodes.length + 1}`,
+      name: '节点 ' + (nodes.length + 1),
       description: '',
       loop: false,
       sortOrder: nodes.length,
@@ -163,11 +163,11 @@ export const MmdPlaylistEditor: React.FC<PlaylistEditorProps> = ({
     for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
       if (!node || !node.name?.trim()) {
-        alert(`节点 ${i + 1}: 请输入节点名称`);
+        alert('节点 ' + (i + 1) + ': 请输入节点名称');
         return false;
       }
       if (!node.modelFileId) {
-        alert(`节点 ${i + 1}: 请选择模型文件`);
+        alert('节点 ' + (i + 1) + ': 请选择模型文件');
         return false;
       }
     }
@@ -196,7 +196,7 @@ export const MmdPlaylistEditor: React.FC<PlaylistEditorProps> = ({
       onSave?.(null as any); // 实际应该返回保存后的数据
     } catch (error) {
       console.error('保存失败:', error);
-      alert(`保存失败: ${error instanceof Error ? error.message : '未知错误'}`);
+      alert('保存失败: ' + (error instanceof Error ? error.message : '未知错误'));
     } finally {
       setSaving(false);
     }

@@ -16,7 +16,7 @@ export function formatDate(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return (year) + '-' + (month) + '-' + (day);
 }
 
 /**
@@ -60,7 +60,7 @@ export function toLocalISOString(date: Date): string {
   const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
   
   // 不添加Z后缀，避免被误认为是UTC时间
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+  return (year) + '-' + (month) + '-' + (day) + 'T' + (hours) + ':' + (minutes) + ':' + (seconds) + '.' + (milliseconds);
 }
 
 /**
@@ -324,9 +324,9 @@ export function getRelativeTime(date: Date, locale: string = 'zh-CN'): string {
   } else if (diffInDays === -1) {
     return '昨天';
   } else if (diffInDays > 1 && diffInDays <= 7) {
-    return `${diffInDays}天后`;
+    return (diffInDays) + '天后';
   } else if (diffInDays < -1 && diffInDays >= -7) {
-    return `${Math.abs(diffInDays)}天前`;
+    return (Math.abs(diffInDays)) + '天前';
   }
   
   // 对于更远的日期，返回格式化的日期

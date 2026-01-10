@@ -22,7 +22,7 @@ export const FloatingMenuExample: React.FC = () => {
   ];
   
   const handleMenuItemClick = (id: number) => {
-    console.log(`点击了菜单项: ${id}`);
+    console.log('点击了菜单项: ' + (id));
   };
   
   return (

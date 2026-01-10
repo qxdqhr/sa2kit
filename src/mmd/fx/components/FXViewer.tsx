@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { FXParser } from '../FXParser';
 import type { FXEffect, FXSummary } from '../types';
 import { getConfigSummaryText, validateFXEffect } from '../utils';
+import { clsx } from 'clsx';
 
 export interface FXViewerProps {
   /** FX文件URL或内容 */
@@ -69,7 +70,7 @@ export const FXViewer: React.FC<FXViewerProps> = ({
 
   if (loading) {
     return (
-      <div className={`font-sans bg-white border border-gray-300 rounded-lg overflow-hidden p-8 text-center ${className}`}>
+      <div className={clsx('font-sans bg-white border border-gray-300 rounded-lg overflow-hidden p-8 text-center', className)}>
         <div className="text-xl text-gray-600">加载中...</div>
       </div>
     );
@@ -77,7 +78,7 @@ export const FXViewer: React.FC<FXViewerProps> = ({
 
   if (error || !effect || !summary) {
     return (
-      <div className={`font-sans bg-white border border-gray-300 rounded-lg overflow-hidden p-8 text-center ${className}`}>
+      <div className={clsx('font-sans bg-white border border-gray-300 rounded-lg overflow-hidden p-8 text-center', className)}>
         <div className="text-red-700">
           <h3 className="m-0 mb-4 text-2xl">❌ 解析错误</h3>
           <p>{error || '未知错误'}</p>
@@ -89,7 +90,7 @@ export const FXViewer: React.FC<FXViewerProps> = ({
   const validation = validateFXEffect(effect);
 
   return (
-    <div className={`font-sans bg-white border border-gray-300 rounded-lg overflow-hidden ${className}`}>
+    <div className={clsx('font-sans bg-white border border-gray-300 rounded-lg overflow-hidden', className)}>
       <div className="p-4 md:p-6 bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
         <h2 className="m-0 mb-2 text-xl md:text-2xl font-semibold">{effect.fileName}</h2>
         <p className="m-0 text-sm opacity-90">{getConfigSummaryText(effect)}</p>
@@ -97,51 +98,41 @@ export const FXViewer: React.FC<FXViewerProps> = ({
 
       <div className="flex bg-gray-100 border-b border-gray-300 overflow-x-auto">
         <button
-          className={`flex-1 min-w-[80px] md:min-w-[100px] px-3 md:px-4 py-2 md:py-3 border-none bg-transparent text-gray-600 text-xs md:text-sm cursor-pointer transition-all border-b-2 ${
-            activeTab === 'summary'
+          className={clsx('flex-1 min-w-[80px] md:min-w-[100px] px-3 md:px-4 py-2 md:py-3 border-none bg-transparent text-gray-600 text-xs md:text-sm cursor-pointer transition-all border-b-2', activeTab === 'summary'
               ? 'bg-white text-indigo-500 border-b-indigo-500 font-semibold'
-              : 'border-b-transparent hover:bg-gray-200 hover:text-gray-800'
-          }`}
+              : 'border-b-transparent hover:bg-gray-200 hover:text-gray-800')}
           onClick={() => setActiveTab('summary')}
         >
           摘要
         </button>
         <button
-          className={`flex-1 min-w-[80px] md:min-w-[100px] px-3 md:px-4 py-2 md:py-3 border-none bg-transparent text-gray-600 text-xs md:text-sm cursor-pointer transition-all border-b-2 ${
-            activeTab === 'defines'
+          className={clsx('flex-1 min-w-[80px] md:min-w-[100px] px-3 md:px-4 py-2 md:py-3 border-none bg-transparent text-gray-600 text-xs md:text-sm cursor-pointer transition-all border-b-2', activeTab === 'defines'
               ? 'bg-white text-indigo-500 border-b-indigo-500 font-semibold'
-              : 'border-b-transparent hover:bg-gray-200 hover:text-gray-800'
-          }`}
+              : 'border-b-transparent hover:bg-gray-200 hover:text-gray-800')}
           onClick={() => setActiveTab('defines')}
         >
           宏定义 ({summary.defineCount})
         </button>
         <button
-          className={`flex-1 min-w-[80px] md:min-w-[100px] px-3 md:px-4 py-2 md:py-3 border-none bg-transparent text-gray-600 text-xs md:text-sm cursor-pointer transition-all border-b-2 ${
-            activeTab === 'textures'
+          className={clsx('flex-1 min-w-[80px] md:min-w-[100px] px-3 md:px-4 py-2 md:py-3 border-none bg-transparent text-gray-600 text-xs md:text-sm cursor-pointer transition-all border-b-2', activeTab === 'textures'
               ? 'bg-white text-indigo-500 border-b-indigo-500 font-semibold'
-              : 'border-b-transparent hover:bg-gray-200 hover:text-gray-800'
-          }`}
+              : 'border-b-transparent hover:bg-gray-200 hover:text-gray-800')}
           onClick={() => setActiveTab('textures')}
         >
           纹理 ({summary.textureCount})
         </button>
         <button
-          className={`flex-1 min-w-[80px] md:min-w-[100px] px-3 md:px-4 py-2 md:py-3 border-none bg-transparent text-gray-600 text-xs md:text-sm cursor-pointer transition-all border-b-2 ${
-            activeTab === 'parameters'
+          className={clsx('flex-1 min-w-[80px] md:min-w-[100px] px-3 md:px-4 py-2 md:py-3 border-none bg-transparent text-gray-600 text-xs md:text-sm cursor-pointer transition-all border-b-2', activeTab === 'parameters'
               ? 'bg-white text-indigo-500 border-b-indigo-500 font-semibold'
-              : 'border-b-transparent hover:bg-gray-200 hover:text-gray-800'
-          }`}
+              : 'border-b-transparent hover:bg-gray-200 hover:text-gray-800')}
           onClick={() => setActiveTab('parameters')}
         >
           参数 ({summary.parameterCount})
         </button>
         <button
-          className={`flex-1 min-w-[80px] md:min-w-[100px] px-3 md:px-4 py-2 md:py-3 border-none bg-transparent text-gray-600 text-xs md:text-sm cursor-pointer transition-all border-b-2 ${
-            activeTab === 'validation'
+          className={clsx('flex-1 min-w-[80px] md:min-w-[100px] px-3 md:px-4 py-2 md:py-3 border-none bg-transparent text-gray-600 text-xs md:text-sm cursor-pointer transition-all border-b-2', activeTab === 'validation'
               ? 'bg-white text-indigo-500 border-b-indigo-500 font-semibold'
-              : 'border-b-transparent hover:bg-gray-200 hover:text-gray-800'
-          }`}
+              : 'border-b-transparent hover:bg-gray-200 hover:text-gray-800')}
           onClick={() => setActiveTab('validation')}
         >
           验证
@@ -193,19 +184,13 @@ const SummaryTab: React.FC<{ summary: FXSummary; effect: FXEffect }> = ({ summar
     <div className="mt-8">
       <h3 className="text-lg m-0 mb-4 text-gray-800 border-b-2 border-indigo-500 pb-2">功能特性</h3>
       <div className="flex flex-wrap gap-3">
-        <div className={`px-4 py-2 rounded-full text-sm font-medium ${
-          summary.hasLocalShadow ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-        }`}>
+        <div className={clsx('px-4 py-2 rounded-full text-sm font-medium', summary.hasLocalShadow ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')}>
           {summary.hasLocalShadow ? '✓' : '✗'} LocalShadow
         </div>
-        <div className={`px-4 py-2 rounded-full text-sm font-medium ${
-          summary.hasExcellentShadow ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-        }`}>
+        <div className={clsx('px-4 py-2 rounded-full text-sm font-medium', summary.hasExcellentShadow ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')}>
           {summary.hasExcellentShadow ? '✓' : '✗'} ExcellentShadow
         </div>
-        <div className={`px-4 py-2 rounded-full text-sm font-medium ${
-          summary.hasHgShadow ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-        }`}>
+        <div className={clsx('px-4 py-2 rounded-full text-sm font-medium', summary.hasHgShadow ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')}>
           {summary.hasHgShadow ? '✓' : '✗'} HgShadow
         </div>
       </div>
@@ -252,15 +237,13 @@ const DefinesTab: React.FC<{ effect: FXEffect }> = ({ effect }) => (
       </thead>
       <tbody>
         {effect.defines.map((define, idx) => (
-          <tr key={idx} className={`hover:bg-gray-50 ${define.isCommented ? 'opacity-50' : ''}`}>
+          <tr key={idx} className={clsx('hover:bg-gray-50', define.isCommented ? 'opacity-50' : '')}>
             <td className="px-2 md:px-3 py-2 md:py-3 border-b border-gray-200">
               <code className="bg-gray-100 px-2 py-1 rounded text-xs font-mono">{define.name}</code>
             </td>
             <td className="px-2 md:px-3 py-2 md:py-3 border-b border-gray-200">{define.value || '-'}</td>
             <td className="px-2 md:px-3 py-2 md:py-3 border-b border-gray-200">
-              <span className={`inline-block px-3 py-1 rounded-xl text-xs font-medium ${
-                define.isCommented ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-              }`}>
+              <span className={clsx('inline-block px-3 py-1 rounded-xl text-xs font-medium', define.isCommented ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800')}>
                 {define.isCommented ? '禁用' : '启用'}
               </span>
             </td>
@@ -294,7 +277,7 @@ const TexturesTab: React.FC<{ effect: FXEffect }> = ({ effect }) => (
               </td>
               <td className="px-2 md:px-3 py-2 md:py-3 border-b border-gray-200">{texture.path}</td>
               <td className="px-2 md:px-3 py-2 md:py-3 border-b border-gray-200">
-                {texture.width && texture.height ? `${texture.width}×${texture.height}` : '-'}
+                {texture.width && texture.height ? (texture.width) + '×' + (texture.height) : '-'}
               </td>
               <td className="px-2 md:px-3 py-2 md:py-3 border-b border-gray-200">{texture.purpose || '-'}</td>
             </tr>
@@ -338,9 +321,7 @@ const ParametersTab: React.FC<{ effect: FXEffect }> = ({ effect }) => (
 
 const ValidationTab: React.FC<{ validation: ReturnType<typeof validateFXEffect> }> = ({ validation }) => (
   <div>
-    <div className={`p-6 rounded-lg mb-6 text-center ${
-      validation.isValid ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-    }`}>
+    <div className={clsx('p-6 rounded-lg mb-6 text-center', validation.isValid ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')}>
       <h3 className="m-0 text-xl">{validation.isValid ? '✓ 验证通过' : '✗ 验证失败'}</h3>
     </div>
 

@@ -11,6 +11,7 @@ import { EventList } from './EventList';
 import { FilterPanel } from './FilterPanel';
 import { PieChart, BarChart } from './Charts';
 import type { DashboardEvent, DashboardStats, FilterOptions } from './types';
+import { clsx } from 'clsx';
 
 export interface AnalyticsDashboardProps {
   apiBaseUrl?: string;
@@ -44,7 +45,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         params.append('platform', filters.platform);
       }
 
-      const response = await fetch(`${apiBaseUrl}/stats?${params}`);
+      const response = await fetch((apiBaseUrl) + '/stats?' + (params));
       const data = await response.json();
 
       if (data.success) {
@@ -82,7 +83,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       params.append('orderBy', 'timestamp');
       params.append('orderDirection', 'desc');
 
-      const response = await fetch(`${apiBaseUrl}/query?${params}`);
+      const response = await fetch((apiBaseUrl) + '/query?' + (params));
       const data = await response.json();
 
       if (data.success) {
@@ -117,7 +118,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   const totalPages = Math.ceil(totalEvents / pageSize);
 
   return (
-    <div className={`space-y-6 ${className}`}>
+    <div className={clsx('space-y-6', className)}>
       {/* 顶部操作栏 */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

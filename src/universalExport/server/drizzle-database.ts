@@ -45,7 +45,7 @@ export class ExportConfigDatabaseService {
   async createConfig(
     config: Omit<NewExportConfig, 'id' | 'createdAt' | 'updatedAt'>
   ): Promise<ExportConfig> {
-    const id = `export_config_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const id = 'export_config_' + (Date.now()) + '_' + (Math.random().toString(36).substr(2, 9));
     const now = new Date();
 
     const [newConfig] = await this.db
@@ -140,7 +140,7 @@ export class ExportHistoryDatabaseService {
    * 创建导出历史记录
    */
   async createHistory(history: Omit<NewExportHistory, 'id' | 'createdAt'>): Promise<ExportHistory> {
-    const id = `export_history_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const id = 'export_history_' + (Date.now()) + '_' + (Math.random().toString(36).substr(2, 9));
 
     const [newHistory] = await this.db
       .insert(exportHistory)

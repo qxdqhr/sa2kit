@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { clsx } from 'clsx';
 
 export interface MusicPlayerState {
   isPlaying: boolean;
@@ -78,7 +79,7 @@ export default function MusicPlayer({
     if (!seconds || isNaN(seconds)) return '0:00';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return (mins) + ':' + (secs.toString().padStart(2, '0'));
   };
 
   // 播放控制
@@ -175,7 +176,7 @@ export default function MusicPlayer({
   if (ultraCompact) {
     return (
       <div 
-        className={`flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-xl p-2 shadow-lg border border-purple-200 ${className}`}
+        className={clsx('flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-xl p-2 shadow-lg border border-purple-200', className)}
         style={{ width: hideVolumeControl ? '120px' : '192px' }}
         onClick={stopPropagation}
         onMouseDown={stopPropagation}
@@ -186,7 +187,7 @@ export default function MusicPlayer({
         onPointerUp={stopPropagation}
       >
         {/* 控制按钮 */}
-        <div className={`flex items-center gap-1 ${hideVolumeControl ? 'w-full justify-center' : ''}`}>
+        <div className={clsx('flex items-center gap-1', hideVolumeControl ? 'w-full justify-center' : '')}>
           {/* 停止按钮 */}
           <button
             onClick={(e) => { stopPropagation(e); handleStop(); }}
@@ -211,11 +212,9 @@ export default function MusicPlayer({
             onTouchEnd={stopPropagation}
             onPointerDown={stopPropagation}
             onPointerUp={stopPropagation}
-            className={`w-8 h-8 rounded-lg border flex items-center justify-center transition-colors ${
-              isPlaying 
+            className={clsx('w-8 h-8 rounded-lg border flex items-center justify-center transition-colors', isPlaying 
                 ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-purple-400' 
-                : 'bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-green-400 cursor-pointer'
-            }`}
+                : 'bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-green-400 cursor-pointer')}
             title={isPlaying ? "暂停" : "播放"}
           >
             {isPlaying ? (
@@ -245,11 +244,11 @@ export default function MusicPlayer({
             >
               <div 
                 className="h-full bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"
-                style={{ width: `${volume * 100}%` }}
+                style={{ width: (volume * 100) + '%' }}
               ></div>
               <div 
                 className="absolute top-1/2 w-3 h-3 bg-white border-2 border-purple-400 rounded-full transform -translate-y-1/2 cursor-grab"
-                style={{ left: `${volume * 100}%`, transform: 'translateX(-50%) translateY(-50%)' }}
+                style={{ left: (volume * 100) + '%', transform: 'translateX(-50%) translateY(-50%)' }}
               ></div>
             </div>
           </div>
@@ -260,7 +259,7 @@ export default function MusicPlayer({
 
   return (
     <div 
-      className={`bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-purple-200 ${className}`}
+      className={clsx('bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-purple-200', className)}
       style={{ width: compact ? '280px' : '320px' }}
       onClick={stopPropagation}
       onMouseDown={stopPropagation}
@@ -293,12 +292,12 @@ export default function MusicPlayer({
           >
             <div 
               className="h-full bg-gradient-to-r from-purple-400 to-pink-400 rounded-full transition-all duration-100"
-              style={{ width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%' }}
+              style={{ width: duration > 0 ? ((currentTime / duration) * 100) + '%' : '0%' }}
             ></div>
             <div 
               className="absolute top-1/2 w-4 h-4 bg-white border-2 border-purple-400 rounded-full transform -translate-y-1/2 cursor-grab"
               style={{ 
-                left: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%',
+                left: duration > 0 ? ((currentTime / duration) * 100) + '%' : '0%',
                 transform: 'translateX(-50%) translateY(-50%)'
               }}
             ></div>
@@ -337,11 +336,9 @@ export default function MusicPlayer({
           onTouchEnd={stopPropagation}
           onPointerDown={stopPropagation}
           onPointerUp={stopPropagation}
-          className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-colors ${
-            isPlaying 
+          className={clsx('w-12 h-12 rounded-full border-2 flex items-center justify-center transition-colors', isPlaying 
               ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-purple-400' 
-              : 'bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-green-400 cursor-pointer'
-          }`}
+              : 'bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-green-400 cursor-pointer')}
           title={isPlaying ? "暂停" : "播放"}
         >
           {isLoading ? (
@@ -373,11 +370,11 @@ export default function MusicPlayer({
           >
             <div 
               className="h-full bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"
-              style={{ width: `${volume * 100}%` }}
+              style={{ width: (volume * 100) + '%' }}
             ></div>
             <div 
               className="absolute top-1/2 w-4 h-4 bg-white border-2 border-purple-400 rounded-full transform -translate-y-1/2 cursor-grab"
-              style={{ left: `${volume * 100}%`, transform: 'translateX(-50%) translateY(-50%)' }}
+              style={{ left: (volume * 100) + '%', transform: 'translateX(-50%) translateY(-50%)' }}
             ></div>
           </div>
           <div className="text-xs text-gray-500 w-8 text-right">

@@ -329,7 +329,7 @@ export class PMXExporter {
         this.view.setInt32(this.offset, value, true);
         break;
       default:
-        throw new Error(`Invalid index size: ${size}`);
+        throw new Error('Invalid index size: ' + (size));
     }
     this.offset += size;
   }

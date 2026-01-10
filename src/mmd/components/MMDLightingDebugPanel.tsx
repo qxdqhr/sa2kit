@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
+import { clsx } from 'clsx';
 
 /**
  * 光照参数接口
@@ -316,7 +317,7 @@ export const MMDLightingDebugPanel: React.FC<MMDLightingDebugPanelProps> = ({
     <>
       {/* 调试面板 */}
       <div 
-        className={`fixed top-0 ${positionClass} z-[9999] w-80 h-screen bg-white/95 backdrop-blur-md shadow-2xl overflow-y-auto transition-transform duration-300 ${translateClass} ${className}`}
+        className={clsx('fixed top-0', positionClass, 'z-[9999] w-80 h-screen bg-white/95 backdrop-blur-md shadow-2xl overflow-y-auto transition-transform duration-300', translateClass, className)}
       >
         <div className="p-4">
           {/* 头部 */}
@@ -838,7 +839,7 @@ export const MMDLightingDebugPanel: React.FC<MMDLightingDebugPanelProps> = ({
       {!showPanel && (
         <button
           onClick={() => setShowPanel(true)}
-          className={`fixed top-4 ${position === 'right' ? 'right-4' : 'left-4'} z-[9999] px-4 py-2 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 text-sm transition-colors`}
+          className={clsx('fixed top-4', position === 'right' ? 'right-4' : 'left-4', 'z-[9999] px-4 py-2 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 text-sm transition-colors')}
           aria-label="打开调试面板"
         >
           🎨 光照调试

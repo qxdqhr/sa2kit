@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTextGeneration } from '../hooks/useTextGeneration';
 import { Bot, User, Send, Loader2 } from 'lucide-react';
+import { clsx } from 'clsx';
 
 interface SmartAssistantProps {
   className?: string;
@@ -52,8 +53,8 @@ export const SmartAssistant: React.FC<SmartAssistantProps> = ({ className = '' }
 
     // --- 2. 调用模型生成 (针对非固定意图) ---
     const prompt = `对话。
-人说：“${userMessage}”
-AI回应：“`;
+人说："${userMessage}"
+AI回应："`;
 
     try {
       const response = await generate(prompt);
@@ -82,7 +83,7 @@ AI回应：“`;
   };
 
   return (
-    <div className={`flex flex-col h-[500px] bg-white dark:bg-gray-800 rounded-xl shadow-inner border border-gray-100 dark:border-gray-700 overflow-hidden ${className}`}>
+    <div className={clsx('flex flex-col h-[500px] bg-white dark:bg-gray-800 rounded-xl shadow-inner border border-gray-100 dark:border-gray-700 overflow-hidden', className)}>
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50 dark:bg-gray-900/50">
         {chatHistory.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-2">
@@ -94,16 +95,14 @@ AI回应：“`;
           </div>
         )}
         {chatHistory.map((msg, i) => (
-          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2`}>
-            <div className={`flex gap-3 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-              <div className={`p-2 rounded-lg h-fit ${msg.role === 'user' ? 'bg-blue-100 text-blue-600' : 'bg-white dark:bg-gray-700 shadow-sm border border-gray-100 dark:border-gray-600 text-gray-400'}`}>
+          <div key={i} className={clsx('flex', msg.role === 'user' ? 'justify-end' : 'justify-start', 'animate-in fade-in slide-in-from-bottom-2')}>
+            <div className={clsx('flex gap-3 max-w-[85%]', msg.role === 'user' ? 'flex-row-reverse' : '')}>
+              <div className={clsx('p-2 rounded-lg h-fit', msg.role === 'user' ? 'bg-blue-100 text-blue-600' : 'bg-white dark:bg-gray-700 shadow-sm border border-gray-100 dark:border-gray-600 text-gray-400')}>
                 {msg.role === 'user' ? <User size={18} /> : <Bot size={18} />}
               </div>
-              <div className={`p-3 rounded-2xl shadow-sm text-sm ${
-                msg.role === 'user' 
+              <div className={clsx('p-3 rounded-2xl shadow-sm text-sm', msg.role === 'user' 
                   ? 'bg-blue-600 text-white rounded-tr-none' 
-                  : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-tl-none border border-gray-100 dark:border-gray-600 leading-relaxed'
-              }`}>
+                  : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-tl-none border border-gray-100 dark:border-gray-600 leading-relaxed')}>
                 {msg.content}
               </div>
             </div>

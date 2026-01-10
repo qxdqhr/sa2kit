@@ -2,6 +2,7 @@
 
 import React from 'react';
 import type { SortMode } from '../types';
+import { clsx } from 'clsx';
 
 export interface SortModeToggleProps {
   sortMode: SortMode;
@@ -15,11 +16,9 @@ export const SortModeToggle: React.FC<SortModeToggleProps> = ({ sortMode, onSort
       
       <div className="flex w-full sm:w-auto p-1 bg-gray-100 rounded-lg">
         <button
-          className={`flex-1 sm:flex-initial px-3 py-1.5 text-sm rounded-md transition-colors ${
-            sortMode === 'auto'
+          className={clsx('flex-1 sm:flex-initial px-3 py-1.5 text-sm rounded-md transition-colors', sortMode === 'auto'
               ? 'bg-white text-blue-700 font-medium shadow-sm'
-              : 'text-gray-600 hover:bg-gray-200'
-          }`}
+              : 'text-gray-600 hover:bg-gray-200')}
           onClick={() => onSortModeChange('auto')}
         >
           <div className="flex items-center justify-center sm:justify-start space-x-1">
@@ -31,11 +30,9 @@ export const SortModeToggle: React.FC<SortModeToggleProps> = ({ sortMode, onSort
         </button>
         
         <button
-          className={`flex-1 sm:flex-initial px-3 py-1.5 text-sm rounded-md transition-colors ${
-            sortMode === 'manual'
+          className={clsx('flex-1 sm:flex-initial px-3 py-1.5 text-sm rounded-md transition-colors', sortMode === 'manual'
               ? 'bg-white text-blue-700 font-medium shadow-sm'
-              : 'text-gray-600 hover:bg-gray-200'
-          }`}
+              : 'text-gray-600 hover:bg-gray-200')}
           onClick={() => onSortModeChange('manual')}
         >
           <div className="flex items-center justify-center sm:justify-start space-x-1">

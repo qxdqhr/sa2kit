@@ -2,6 +2,7 @@
 
 import React from 'react';
 import type { TestFieldConfig } from '../types';
+import { clsx } from 'clsx';
 
 export interface SortControlProps {
   sortBy: TestFieldConfig['sortBy'];
@@ -33,11 +34,9 @@ export const SortControl: React.FC<SortControlProps> = ({
         {sortOptions.map((option) => (
           <button
             key={option.value}
-            className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
-              sortBy === option.value
+            className={clsx('px-3 py-1.5 text-sm rounded-full transition-colors', sortBy === option.value
                 ? 'bg-blue-100 text-blue-700 font-medium'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}
             onClick={() => onSortByChange(option.value)}
           >
             {option.label}

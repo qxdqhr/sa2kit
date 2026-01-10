@@ -5,6 +5,7 @@ import { DndContext, DragOverlay } from '@dnd-kit/core';
 import { CalendarEvent } from '../types';
 import { useEventDrag } from '../hooks/useEventDrag';
 import { useDeviceType } from '../utils/deviceUtils';
+import { clsx } from 'clsx';
 import { 
   getMonthViewDates, 
   formatDate, 
@@ -103,9 +104,7 @@ export const DraggableMonthView: React.FC<DraggableMonthViewProps> = ({
             {weekDays.map((day, index) => (
               <th 
                 key={day} 
-                className={`p-2 sm:p-3 text-center text-sm font-bold border-r border-gray-300 last:border-r-0 ${
-                  index === 5 || index === 6 ? 'text-red-600 bg-red-50' : 'text-gray-800'
-                }`}
+                className={clsx('p-2 sm:p-3 text-center text-sm font-bold border-r border-gray-300 last:border-r-0', index === 5 || index === 6 ? 'text-red-600 bg-red-50' : 'text-gray-800')}
               >
                 {day}
               </th>
@@ -132,9 +131,7 @@ export const DraggableMonthView: React.FC<DraggableMonthViewProps> = ({
                 return (
                   <td
                     key={dayIndex}
-                    className={`h-24 sm:h-32 border-b border-gray-300 border-r border-gray-300 last:border-r-0 relative ${
-                      isWeekend ? 'bg-red-50' : 'bg-white'
-                    } hover:bg-blue-50 transition-colors`}
+                    className={clsx('h-24 sm:h-32 border-b border-gray-300 border-r border-gray-300 last:border-r-0 relative', isWeekend ? 'bg-red-50' : 'bg-white', 'hover:bg-blue-50 transition-colors')}
                   >
                     <DroppableCalendarCell
                       date={dayData.date}
@@ -158,7 +155,7 @@ export const DraggableMonthView: React.FC<DraggableMonthViewProps> = ({
   );
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm ${className}`}>
+    <div className={clsx('bg-white rounded-lg shadow-sm', className)}>
       {/* 月份标题和导航 */}
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center space-x-4">

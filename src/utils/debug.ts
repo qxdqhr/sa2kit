@@ -13,7 +13,7 @@ export const debugUtils = {
     try {
       return JSON.stringify(obj, null, 2);
     } catch (error) {
-      return `[Circular Reference or Invalid JSON: ${error}]`;
+      return '[Circular Reference or Invalid JSON: ' + (error) + ']';
     }
   },
 
@@ -26,7 +26,7 @@ export const debugUtils = {
       end: () => {
         const end = typeof performance !== 'undefined' ? performance.now() : Date.now();
         const duration = end - start;
-        const message = `${label || 'Timer'}: ${duration.toFixed(2)}ms`;
+        const message = (label || 'Timer') + ': ' + (duration.toFixed(2)) + 'ms';
         logger.info(message);
         return duration;
       },

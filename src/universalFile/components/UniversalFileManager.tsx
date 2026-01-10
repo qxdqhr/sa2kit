@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { FileMetadata, FileQueryOptions, PaginatedResult, ProcessorType } from '../types';
+import { clsx } from 'clsx';
 
 // 文件管理相关类型定义
 export interface FileManagerProps {
@@ -235,7 +236,7 @@ export const UniversalFileManager: React.FC<FileManagerProps> = ({
 
   // 删除文件
   const handleDeleteFiles = useCallback(async (fileIds: string[]) => {
-    if (!window.confirm(`确定要删除选中的 ${fileIds.length} 个文件吗？`)) {
+    if (!window.confirm('确定要删除选中的 ' + (fileIds.length) + ' 个文件吗？')) {
       return;
     }
 
@@ -388,9 +389,7 @@ export const UniversalFileManager: React.FC<FileManagerProps> = ({
     return (
       <div
         key={file.id}
-        className={`relative border rounded-lg p-4 cursor-pointer transition-all duration-200 hover:shadow-md ${
-          isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
-        }`}
+        className={clsx('relative border rounded-lg p-4 cursor-pointer transition-all duration-200 hover:shadow-md', isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300')}
         onClick={() => handleFileSelect(file.id, !isSelected)}
       >
         {/* 选择复选框 */}
@@ -632,11 +631,9 @@ export const UniversalFileManager: React.FC<FileManagerProps> = ({
                     key={action.key}
                     onClick={() => action.onClick(selectedFileList)}
                     disabled={isDisabled}
-                    className={`px-3 py-1 text-sm border rounded ${
-                      isDisabled
+                    className={clsx('px-3 py-1 text-sm border rounded', isDisabled
                         ? 'text-gray-400 border-gray-200 cursor-not-allowed'
-                        : 'text-blue-600 border-blue-300 hover:bg-blue-50'
-                    }`}
+                        : 'text-blue-600 border-blue-300 hover:bg-blue-50')}
                   >
                     {action.icon && <span className="mr-1">{action.icon}</span>}
                     {action.label}
@@ -650,7 +647,7 @@ export const UniversalFileManager: React.FC<FileManagerProps> = ({
         <div className="flex items-center space-x-4">
           {/* 排序选择 */}
           <select
-            value={`${state.sortBy}-${state.sortOrder}`}
+            value={(state.sortBy) + '-' + (state.sortOrder)}
             onChange={(e) => {
               const [sortBy, sortOrder] = e.target.value.split('-') as [keyof FileMetadata, 'asc' | 'desc'];
               setState(prev => ({ ...prev, sortBy, sortOrder }));
@@ -714,11 +711,9 @@ export const UniversalFileManager: React.FC<FileManagerProps> = ({
             <button
               key={pageNum}
               onClick={() => handlePageChange(pageNum)}
-              className={`px-3 py-1 text-sm border rounded ${
-                pageNum === page
+              className={clsx('px-3 py-1 text-sm border rounded', pageNum === page
                   ? 'bg-blue-600 text-white border-blue-600'
-                  : 'hover:bg-gray-50'
-              }`}
+                  : 'hover:bg-gray-50')}
             >
               {pageNum}
             </button>
@@ -785,11 +780,9 @@ export const UniversalFileManager: React.FC<FileManagerProps> = ({
             </div>
           </div>
         ) : (
-          <div className={`grid gap-4 ${
-            mode === 'grid' 
+          <div className={clsx('grid gap-4', mode === 'grid' 
               ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
-              : 'grid-cols-1'
-          }`}>
+              : 'grid-cols-1')}>
             {state.files.map(renderFileItem)}
           </div>
         )}
@@ -836,7 +829,7 @@ const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClose }) =>
     if (file.mimeType.startsWith('image/')) {
       return (
         <img
-          src={file.cdnUrl || `/api/files/${file.id}/download`}
+          src={file.cdnUrl || '/api/files/' + (file.id) + '/download'}
           alt={file.originalName}
           className="max-w-full max-h-full object-contain"
         />
@@ -846,7 +839,7 @@ const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClose }) =>
     if (file.mimeType.startsWith('video/')) {
       return (
         <video
-          src={file.cdnUrl || `/api/files/${file.id}/download`}
+          src={file.cdnUrl || '/api/files/' + (file.id) + '/download'}
           controls
           className="max-w-full max-h-full"
         >
@@ -860,7 +853,7 @@ const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClose }) =>
         <div className="flex flex-col items-center space-y-4">
           <div className="text-6xl">🎵</div>
           <audio
-            src={file.cdnUrl || `/api/files/${file.id}/download`}
+            src={file.cdnUrl || '/api/files/' + (file.id) + '/download'}
             controls
             className="w-full max-w-md"
           >
@@ -873,7 +866,7 @@ const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClose }) =>
     if (file.mimeType.includes('pdf')) {
       return (
         <iframe
-          src={`${file.cdnUrl || `/api/files/${file.id}/download`}#toolbar=0`}
+          src={(file.cdnUrl || '/api/files/'+ (file.id) + '/download') + '#toolbar=0'}
           className="w-full h-full min-h-96"
           title={file.originalName}
         />
@@ -885,7 +878,7 @@ const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClose }) =>
         <div className="text-4xl mb-4">📄</div>
         <p>此文件类型暂不支持预览</p>
         <a
-          href={file.cdnUrl || `/api/files/${file.id}/download`}
+          href={file.cdnUrl || '/api/files/' + (file.id) + '/download'}
           download={file.originalName}
           className="mt-4 px-4 py-2 text-blue-600 border border-blue-300 rounded hover:bg-blue-50"
         >

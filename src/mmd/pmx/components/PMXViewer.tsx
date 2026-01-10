@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { PMXParser } from '../parser/PMXParser';
 import type { PMXParseResult, MaterialTextureMapping } from '../types';
+import { clsx } from 'clsx';
 
 export interface PMXViewerProps {
   /** PMX模型文件URL */
@@ -59,12 +60,12 @@ export const PMXViewer: React.FC<PMXViewerProps> = ({
     if (!basePath) return path;
     // 处理路径分隔符
     const normalizedPath = path.replace(/\\/g, '/');
-    return `${basePath}/${normalizedPath}`;
+    return (basePath) + '/' + (normalizedPath);
   };
 
   if (loading) {
     return (
-      <div className={`pmx-viewer loading ${className}`}>
+      <div className={clsx('pmx-viewer loading', className)}>
         <div className="flex items-center justify-center p-8">
           <div className="text-center">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-500 border-r-transparent"></div>
@@ -77,7 +78,7 @@ export const PMXViewer: React.FC<PMXViewerProps> = ({
 
   if (error || !result) {
     return (
-      <div className={`pmx-viewer error ${className}`}>
+      <div className={clsx('pmx-viewer error', className)}>
         <div className="rounded-lg bg-red-50 p-6 border border-red-200">
           <h3 className="text-lg font-semibold text-red-800 mb-2">❌ 解析错误</h3>
           <p className="text-red-600">{error || '未知错误'}</p>
@@ -89,7 +90,7 @@ export const PMXViewer: React.FC<PMXViewerProps> = ({
   const { header, modelInfo, textures, materials, materialTextureMappings, vertexCount, faceCount } = result;
 
   return (
-    <div className={`pmx-viewer ${className}`}>
+    <div className={clsx('pmx-viewer', className)}>
       {/* 标签页导航 */}
       <div className="border-b border-gray-200 mb-6">
         <nav className="flex space-x-4">
@@ -102,11 +103,9 @@ export const PMXViewer: React.FC<PMXViewerProps> = ({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`py-2 px-4 font-medium transition-colors ${
-                activeTab === tab.id
+              className={clsx('py-2 px-4 font-medium transition-colors', activeTab === tab.id
                   ? 'border-b-2 border-blue-500 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+                  : 'text-gray-600 hover:text-gray-900')}
             >
               {tab.label}
             </button>
@@ -208,11 +207,11 @@ export const PMXViewer: React.FC<PMXViewerProps> = ({
                   <div
                     className="flex-shrink-0 w-12 h-12 rounded border border-gray-300"
                     style={{
-                      backgroundColor: `rgba(${material.diffuse[0] * 255}, ${material.diffuse[1] * 255}, ${material.diffuse[2] * 255}, ${material.diffuse[3]})`,
+                      backgroundColor: 'rgba(' + (material.diffuse[0] * 255) + ', ' + (material.diffuse[1] * 255) + ', ' + (material.diffuse[2] * 255) + ', ' + (material.diffuse[3]) + ')',
                     }}
                   />
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">{material.name || `材质 #${index}`}</p>
+                    <p className="font-medium text-gray-900">{material.name || '材质 #' + (index)}</p>
                     {material.nameEnglish && (
                       <p className="text-sm text-gray-600">{material.nameEnglish}</p>
                     )}
@@ -232,7 +231,7 @@ export const PMXViewer: React.FC<PMXViewerProps> = ({
                       )}
                       {material.toonTextureIndex >= 0 && (
                         <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded">
-                          Toon: {material.isSharedToon ? `共享#${material.toonTextureIndex}` : `#${material.toonTextureIndex}`}
+                          Toon: {material.isSharedToon ? '共享#' + (material.toonTextureIndex) : '#' + (material.toonTextureIndex)}
                         </span>
                       )}
                     </div>

@@ -87,7 +87,7 @@ export class ChordRecognizer {
     }
 
     // 构建和弦信息
-    const chordName = `${bestMatch.root}${this.getChordSuffix(bestMatch.pattern)}`;
+    const chordName = (bestMatch.root) + (this.getChordSuffix(bestMatch.pattern));
     
     return {
       name: chordName,

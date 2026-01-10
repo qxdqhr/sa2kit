@@ -60,7 +60,7 @@ export const loadAmmo = (path: string = '/libs/ammo.wasm.js'): Promise<any> => {
 
     script.onerror = (err) => {
       console.error('Failed to load Ammo.js script:', err);
-      reject(new Error(`Failed to load Ammo.js from ${path}`));
+      reject(new Error('Failed to load Ammo.js from ' + (path)));
     };
 
     document.body.appendChild(script);

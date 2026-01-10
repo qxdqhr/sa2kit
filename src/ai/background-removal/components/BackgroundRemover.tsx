@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useBackgroundRemoval } from '../hooks/useBackgroundRemoval';
 import { Loader2, Upload, Download, Image as ImageIcon, X, Eraser } from 'lucide-react';
+import { clsx } from 'clsx';
 
 interface BackgroundRemoverProps {
   onResult?: (blob: Blob, url: string) => void;
@@ -48,9 +49,7 @@ export const BackgroundRemover: React.FC<BackgroundRemoverProps> = ({
   };
 
   return (
-    <div className={`p-6 border-2 border-dashed rounded-xl transition-all ${
-      isProcessing ? 'border-purple-400 bg-purple-50/10' : 'border-gray-200 hover:border-purple-400'
-    } ${className}`}>
+    <div className={clsx('p-6 border-2 border-dashed rounded-xl transition-all', isProcessing ? 'border-purple-400 bg-purple-50/10' : 'border-gray-200 hover:border-purple-400', className)}>
       {!imagePreview ? (
         <div 
           className="flex flex-col items-center justify-center cursor-pointer space-y-4"
@@ -86,7 +85,7 @@ export const BackgroundRemover: React.FC<BackgroundRemoverProps> = ({
                         <div className="w-32 bg-gray-200 rounded-full h-1.5 overflow-hidden">
                           <div 
                             className="bg-purple-500 h-full transition-all duration-300"
-                            style={{ width: `${progress * 100}%` }}
+                            style={{ width: (progress * 100) + '%' }}
                           />
                         </div>
                         <p className="text-[10px] mt-2 font-mono uppercase">{status.replace(/-/g, ' ')}</p>

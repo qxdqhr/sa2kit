@@ -116,7 +116,7 @@ export class MultiFXAdapter {
       const fileType = this.detectFileType(config.path, config.type);
       const desc = config.description || config.path;
       
-      console.log(`[MultiFXAdapter] Loading ${fileType.toUpperCase()} file:`, desc);
+      console.log('[MultiFXAdapter] Loading ' + (fileType.toUpperCase()) + ' file:', desc);
       
       // 解析效果文件（.fx和.x都可以用FXParser解析）
       const effect = await this.parser.loadAndParse(config.path);
@@ -128,7 +128,7 @@ export class MultiFXAdapter {
       
       // 加载纹理
       if (this.options.autoLoadTextures) {
-        console.log(`[MultiFXAdapter] Loading textures for ${fileType}:`, desc);
+        console.log('[MultiFXAdapter] Loading textures for ' + (fileType) + ':', desc);
         await adapter.loadTextures();
       }
       
@@ -148,9 +148,9 @@ export class MultiFXAdapter {
       this.configs.sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0));
       
       const lastConfig = this.configs[this.configs.length - 1];
-      console.log(`[MultiFXAdapter] ${fileType.toUpperCase()} loaded successfully:`, desc);
-      console.log(`[MultiFXAdapter]   - Priority: ${lastConfig?.priority ?? 0}`);
-      console.log(`[MultiFXAdapter]   - Target: ${lastConfig?.target ?? 'all'}`);
+      console.log('[MultiFXAdapter] ' + (fileType.toUpperCase()) + ' loaded successfully:', desc);
+      console.log('[MultiFXAdapter]   - Priority: ' + (lastConfig?.priority ?? 0));
+      console.log('[MultiFXAdapter]   - Target: ' + (lastConfig?.target ?? 'all'));
     } catch (error) {
       console.error('[MultiFXAdapter] Failed to load effect file:', config.path, error);
       throw error;
@@ -206,17 +206,17 @@ export class MultiFXAdapter {
       }
       
       if (!shouldApply) {
-        console.log(`[MultiFXAdapter]   - Skipping ${config.description || config.path} (target mismatch: ${config.target} !== ${target})`);
+        console.log('[MultiFXAdapter]   - Skipping ' + (config.description || config.path) + ' (target mismatch: ' + (config.target) + ' !== ' + (target) + ')');
         return;
       }
 
       const adapter = this.adapters.get(config.path);
       if (!adapter) {
-        console.log(`[MultiFXAdapter]   - Skipping ${config.description || config.path} (adapter not found)`);
+        console.log('[MultiFXAdapter]   - Skipping ' + (config.description || config.path) + ' (adapter not found)');
         return;
       }
 
-      console.log(`[MultiFXAdapter]   ✅ Applying ${config.description || config.path} (priority: ${config.priority})`);
+      console.log('[MultiFXAdapter]   ✅ Applying ' + (config.description || config.path) + ' (priority: ' + (config.priority) + ')');
       const materialConfig = adapter.extractMaterialConfig();
 
       // 根据合并策略应用
@@ -288,7 +288,7 @@ export class MultiFXAdapter {
 
       const renderConfig = adapter.extractRenderConfig();
       
-      console.log(`[MultiFXAdapter]   Processing ${config.description || config.path}:`);
+      console.log('[MultiFXAdapter]   Processing ' + (config.description || config.path) + ':');
       console.log('    - enableShadow:', renderConfig.enableShadow);
       console.log('    - shadowMapSize:', renderConfig.shadowMapSize);
       console.log('    - toneMapping:', renderConfig.toneMapping);
@@ -412,19 +412,19 @@ export class MultiFXAdapter {
     });
 
     if (!shaderConfig) {
-      console.log(`[MultiFXAdapter] No shader material config found for target: ${target}`);
+      console.log('[MultiFXAdapter] No shader material config found for target: ' + (target));
       return null;
     }
 
     const adapter = this.adapters.get(shaderConfig.path);
     if (!adapter) {
-      console.warn(`[MultiFXAdapter] Adapter not found for: ${shaderConfig.path}`);
+      console.warn('[MultiFXAdapter] Adapter not found for: ' + (shaderConfig.path));
       return null;
     }
 
     const material = adapter.createShaderMaterial();
     if (material) {
-      console.log(`[MultiFXAdapter] ✅ Created ShaderMaterial for target: ${target} from ${shaderConfig.description || shaderConfig.path}`);
+      console.log('[MultiFXAdapter] ✅ Created ShaderMaterial for target: ' + (target) + ' from ' + (shaderConfig.description || shaderConfig.path));
     }
 
     return material;
@@ -608,12 +608,12 @@ export class MultiFXAdapter {
     
     // 第一层：应用.x文件到整个场景
     const sceneEffects = this.getSceneEffects();
-    console.log(`[MultiFXAdapter] Applying ${sceneEffects.length} scene-level effects (.x files)`);
+    console.log('[MultiFXAdapter] Applying ' + (sceneEffects.length) + ' scene-level effects (.x files)');
     
     sceneEffects.forEach(config => {
       const adapter = this.adapters.get(config.path);
       if (adapter) {
-        console.log(`[MultiFXAdapter]   - Applying: ${config.description || config.path}`);
+        console.log('[MultiFXAdapter]   - Applying: ' + (config.description || config.path));
         
         // 应用渲染器配置（不添加光源）
         const renderConfig = adapter.extractRenderConfig();
@@ -638,10 +638,10 @@ export class MultiFXAdapter {
     
     // 第二层：应用.fx文件到模型
     const modelEffects = this.getModelEffects();
-    console.log(`[MultiFXAdapter] Applying ${modelEffects.length} model-level effects (.fx files)`);
+    console.log('[MultiFXAdapter] Applying ' + (modelEffects.length) + ' model-level effects (.fx files)');
     
     modelEffects.forEach(config => {
-      console.log(`[MultiFXAdapter]   - Applying: ${config.description || config.path}`);
+      console.log('[MultiFXAdapter]   - Applying: ' + (config.description || config.path));
       
       // 如果提供了具体的模型网格列表
       if (modelMeshes) {
@@ -681,17 +681,17 @@ export class MultiFXAdapter {
     console.log('═'.repeat(60));
     
     const summary = this.getSummary();
-    console.log(`Total Effects: ${summary.totalFX}`);
-    console.log(`  - Scene-level (.x): ${summary.xFiles}`);
-    console.log(`  - Model-level (.fx): ${summary.fxFiles}`);
+    console.log('Total Effects: ' + (summary.totalFX));
+    console.log('  - Scene-level (.x): ' + (summary.xFiles));
+    console.log('  - Model-level (.fx): ' + (summary.fxFiles));
     console.log('\nLoad Order (by priority):');
     
     summary.configs.forEach((config, index) => {
       const icon = config.type === 'x' ? '🌍' : '🎨';
-      console.log(`${index + 1}. ${icon} [${config.type.toUpperCase()}] ${config.description || config.path}`);
-      console.log(`   Priority: ${config.priority}, Target: ${config.target}`);
+      console.log((index + 1) + '. ' + (icon) + ' [' + (config.type.toUpperCase()) + '] ' + (config.description || config.path));
+      console.log('   Priority: ' + (config.priority) + ', Target: ' + (config.target));
       if (config.features.length > 0) {
-        console.log(`   Features: ${config.features.join(', ')}`);
+        console.log('   Features: ' + (config.features.join(', ')));
       }
     });
     

@@ -74,7 +74,7 @@ export class ApiErrorFactory {
   static fileTooLarge(maxSize: number, actualSize: number): ApiError {
     return new ApiError(
       ApiErrorCode.FILE_TOO_LARGE,
-      `文件大小 ${actualSize} 字节超过限制 ${maxSize} 字节`,
+      '文件大小 ' + (actualSize) + ' 字节超过限制 ' + (maxSize) + ' 字节',
       { maxSize, actualSize }
     );
   }
@@ -83,7 +83,7 @@ export class ApiErrorFactory {
    * 创建不支持的文件类型错误
    */
   static fileTypeNotSupported(mimeType: string, supportedTypes?: string[]): ApiError {
-    return new ApiError(ApiErrorCode.FILE_TYPE_NOT_SUPPORTED, `不支持的文件类型: ${mimeType}`, {
+    return new ApiError(ApiErrorCode.FILE_TYPE_NOT_SUPPORTED, '不支持的文件类型: ' + (mimeType), {
       mimeType,
       supportedTypes,
     });
@@ -95,7 +95,7 @@ export class ApiErrorFactory {
   static fileUploadFailed(reason?: string): ApiError {
     return new ApiError(
       ApiErrorCode.FILE_UPLOAD_FAILED,
-      reason ? `文件上传失败: ${reason}` : undefined,
+      reason ? '文件上传失败: ' + (reason) : undefined,
       { reason }
     );
   }
@@ -113,7 +113,7 @@ export class ApiErrorFactory {
   static folderNotEmpty(folderId: string, fileCount: number, subfolderCount: number): ApiError {
     return new ApiError(
       ApiErrorCode.FOLDER_NOT_EMPTY,
-      `文件夹包含 ${fileCount} 个文件和 ${subfolderCount} 个子文件夹`,
+      '文件夹包含 ' + (fileCount) + ' 个文件和 ' + (subfolderCount) + ' 个子文件夹',
       { folderId, fileCount, subfolderCount }
     );
   }
@@ -122,7 +122,7 @@ export class ApiErrorFactory {
    * 创建参数验证错误
    */
   static validationError(field: string, value: any, rule: string): ApiError {
-    return new ApiError(ApiErrorCode.VALIDATION_ERROR, `字段 ${field} 验证失败: ${rule}`, {
+    return new ApiError(ApiErrorCode.VALIDATION_ERROR, '字段 ' + (field) + ' 验证失败: ' + (rule), {
       field,
       value,
       rule,
@@ -135,7 +135,7 @@ export class ApiErrorFactory {
   static authenticationError(reason?: string): ApiError {
     return new ApiError(
       ApiErrorCode.AUTHENTICATION_ERROR,
-      reason ? `身份验证失败: ${reason}` : undefined,
+      reason ? '身份验证失败: ' + (reason) : undefined,
       { reason }
     );
   }
@@ -146,7 +146,7 @@ export class ApiErrorFactory {
   static authorizationError(resource?: string, action?: string): ApiError {
     return new ApiError(
       ApiErrorCode.AUTHORIZATION_ERROR,
-      resource && action ? `无权限对 ${resource} 执行 ${action} 操作` : undefined,
+      resource && action ? '无权限对 ' + (resource) + ' 执行 ' + (action) + ' 操作' : undefined,
       { resource, action }
     );
   }
@@ -157,7 +157,7 @@ export class ApiErrorFactory {
   static conflict(resource: string, reason?: string): ApiError {
     return new ApiError(
       ApiErrorCode.CONFLICT,
-      reason ? `${resource} 冲突: ${reason}` : `${resource} 已存在`,
+      reason ? (resource) + ' 冲突: ' + (reason) : (resource) + ' 已存在',
       { resource, reason }
     );
   }
@@ -168,7 +168,7 @@ export class ApiErrorFactory {
   static rateLimitExceeded(limit: number, windowMs: number): ApiError {
     return new ApiError(
       ApiErrorCode.RATE_LIMIT_EXCEEDED,
-      `请求频率超限，${windowMs}ms 内最多允许 ${limit} 次请求`,
+      '请求频率超限，' + (windowMs) + 'ms 内最多允许 ' + (limit) + ' 次请求',
       { limit, windowMs }
     );
   }
@@ -179,7 +179,7 @@ export class ApiErrorFactory {
   static storageProviderError(provider: string, reason?: string): ApiError {
     return new ApiError(
       ApiErrorCode.STORAGE_PROVIDER_ERROR,
-      reason ? `存储服务 ${provider} 错误: ${reason}` : `存储服务 ${provider} 不可用`,
+      reason ? '存储服务 ' + (provider) + ' 错误: ' + (reason) : '存储服务 ' + (provider) + ' 不可用',
       { provider, reason }
     );
   }
@@ -190,7 +190,7 @@ export class ApiErrorFactory {
   static storageQuotaExceeded(used: number, limit: number): ApiError {
     return new ApiError(
       ApiErrorCode.STORAGE_QUOTA_EXCEEDED,
-      `存储空间已满，已使用 ${used} 字节，限制 ${limit} 字节`,
+      '存储空间已满，已使用 ' + (used) + ' 字节，限制 ' + (limit) + ' 字节',
       { used, limit, remaining: Math.max(0, limit - used) }
     );
   }
@@ -206,7 +206,7 @@ export class ApiErrorFactory {
    * 创建分享已过期错误
    */
   static shareExpired(shareCode: string, expiredAt: string): ApiError {
-    return new ApiError(ApiErrorCode.SHARE_EXPIRED, `分享已于 ${expiredAt} 过期`, {
+    return new ApiError(ApiErrorCode.SHARE_EXPIRED, '分享已于 ' + (expiredAt) + ' 过期', {
       shareCode,
       expiredAt,
     });
@@ -225,7 +225,7 @@ export class ApiErrorFactory {
   static shareDownloadLimitExceeded(shareCode: string, maxDownloads: number): ApiError {
     return new ApiError(
       ApiErrorCode.SHARE_DOWNLOAD_LIMIT_EXCEEDED,
-      `分享下载次数已达上限 ${maxDownloads} 次`,
+      '分享下载次数已达上限 ' + (maxDownloads) + ' 次',
       { shareCode, maxDownloads }
     );
   }
@@ -413,10 +413,10 @@ export class ValidationHelper {
    */
   static stringLength(value: string, fieldName: string, min?: number, max?: number): void {
     if (min !== undefined && value.length < min) {
-      throw ApiErrorFactory.validationError(fieldName, value, `长度不能少于${min}个字符`);
+      throw ApiErrorFactory.validationError(fieldName, value, '长度不能少于' + (min) + '个字符');
     }
     if (max !== undefined && value.length > max) {
-      throw ApiErrorFactory.validationError(fieldName, value, `长度不能超过${max}个字符`);
+      throw ApiErrorFactory.validationError(fieldName, value, '长度不能超过' + (max) + '个字符');
     }
   }
 
@@ -425,10 +425,10 @@ export class ValidationHelper {
    */
   static numberRange(value: number, fieldName: string, min?: number, max?: number): void {
     if (min !== undefined && value < min) {
-      throw ApiErrorFactory.validationError(fieldName, value, `不能小于${min}`);
+      throw ApiErrorFactory.validationError(fieldName, value, '不能小于' + (min));
     }
     if (max !== undefined && value > max) {
-      throw ApiErrorFactory.validationError(fieldName, value, `不能大于${max}`);
+      throw ApiErrorFactory.validationError(fieldName, value, '不能大于' + (max));
     }
   }
 
@@ -437,10 +437,10 @@ export class ValidationHelper {
    */
   static arrayLength(value: any[], fieldName: string, min?: number, max?: number): void {
     if (min !== undefined && value.length < min) {
-      throw ApiErrorFactory.validationError(fieldName, value, `数组长度不能少于${min}`);
+      throw ApiErrorFactory.validationError(fieldName, value, '数组长度不能少于' + (min));
     }
     if (max !== undefined && value.length > max) {
-      throw ApiErrorFactory.validationError(fieldName, value, `数组长度不能超过${max}`);
+      throw ApiErrorFactory.validationError(fieldName, value, '数组长度不能超过' + (max));
     }
   }
 

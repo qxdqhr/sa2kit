@@ -5,6 +5,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { ExperimentCard } from '@/portfolio/ExperimentCard';
 import type { ExperimentItem } from '../types';
+import { clsx } from 'clsx';
 
 export interface SortableExperimentItemProps {
   item: ExperimentItem;
@@ -74,11 +75,10 @@ export const SortableExperimentItem: React.FC<SortableExperimentItemProps> = ({
             onMoveUp?.();
           }}
           disabled={isFirst}
-          className={`w-8 h-8 rounded-full flex items-center justify-center shadow-md
-                     ${isFirst ? 'bg-gray-200 cursor-not-allowed' : 'bg-white/80 hover:bg-white active:bg-gray-100'}`}
+          className={clsx('w-8 h-8 rounded-full flex items-center justify-center shadow-md', isFirst ? 'bg-gray-200 cursor-not-allowed' : 'bg-white/80 hover:bg-white active:bg-gray-100')}
           aria-label="向上移动"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isFirst ? 'text-gray-400' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className={clsx('h-5 w-5', isFirst ? 'text-gray-400' : 'text-gray-500')} fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
           </svg>
         </button>
@@ -90,18 +90,17 @@ export const SortableExperimentItem: React.FC<SortableExperimentItemProps> = ({
             onMoveDown?.();
           }}
           disabled={isLast}
-          className={`w-8 h-8 rounded-full flex items-center justify-center shadow-md
-                     ${isLast ? 'bg-gray-200 cursor-not-allowed' : 'bg-white/80 hover:bg-white active:bg-gray-100'}`}
+          className={clsx('w-8 h-8 rounded-full flex items-center justify-center shadow-md', isLast ? 'bg-gray-200 cursor-not-allowed' : 'bg-white/80 hover:bg-white active:bg-gray-100')}
           aria-label="向下移动"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isLast ? 'text-gray-400' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className={clsx('h-5 w-5', isLast ? 'text-gray-400' : 'text-gray-500')} fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
       </div>
 
       {/* 实验卡片 */}
-      <div className={`transition-all ${isDragging ? 'scale-105 shadow-xl' : ''}`}>
+      <div className={clsx('transition-all', isDragging ? 'scale-105 shadow-xl' : '')}>
         <ExperimentCard
           href={item.path}
           title={item.title}

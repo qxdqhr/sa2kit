@@ -62,7 +62,7 @@ export function validateStorageConfig(storage: StorageConfig): void {
 
     default:
       throw new ConfigValidationError(
-        `Unsupported storage type: ${storage.type}`,
+        'Unsupported storage type: ' + (storage.type),
         'storage.type'
       );
   }
@@ -109,7 +109,7 @@ export function validateEnvironment(requiredVars: string[]): void {
 
   if (missing.length > 0) {
     throw new ConfigValidationError(
-      `Missing required environment variables: ${missing.join(', ')}`,
+      'Missing required environment variables: ' + (missing.join(', ')),
       'environment'
     );
   }

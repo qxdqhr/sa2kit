@@ -21,7 +21,7 @@ export function formatFileSize(bytes: number): string {
   const k = 1024;
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${(bytes / Math.pow(k, i)).toFixed(2)} ${units[i]}`;
+  return ((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + (units[i]);
 }
 
 /**
@@ -183,7 +183,7 @@ export function sanitizeFileName(fileName: string): string {
  */
 export function generateUniqueFileName(originalName: string, fileId: string): string {
   const ext = getFileExtension(originalName);
-  return `${fileId}${ext}`;
+  return (fileId) + (ext);
 }
 
 // ============= 存储路径处理 =============
@@ -263,7 +263,7 @@ export function validateFileSize(file: File, maxSize: number): { valid: boolean;
   if (file.size > maxSize) {
     return {
       valid: false,
-      error: `文件大小超过限制: ${formatFileSize(file.size)} > ${formatFileSize(maxSize)}`,
+      error: '文件大小超过限制: ' + (formatFileSize(file.size)) + ' > ' + (formatFileSize(maxSize)),
     };
   }
 
@@ -282,7 +282,7 @@ export function validateFileType(
   if (!isMimeTypeSupported(mimeType, allowedTypes)) {
     return {
       valid: false,
-      error: `不支持的文件类型: ${mimeType}`,
+      error: '不支持的文件类型: ' + (mimeType),
     };
   }
 
@@ -347,7 +347,7 @@ export function buildQueryString(params: Record<string, any>): string {
   });
 
   const queryString = searchParams.toString();
-  return queryString ? `?${queryString}` : '';
+  return queryString ? '?' + (queryString) : '';
 }
 
 /**

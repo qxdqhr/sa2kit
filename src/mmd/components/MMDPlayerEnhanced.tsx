@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { clsx } from 'clsx';
 import { MMDPlayerBase } from './MMDPlayerBase';
 import { ControlPanel } from './ControlPanel';
 import { SettingsPanel } from './SettingsPanel';
@@ -112,7 +113,7 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
     
     if (!document.fullscreenElement) {
       containerRef.current.requestFullscreen().catch(err => {
-        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+        console.error('Error attempting to enable fullscreen: ' + (err.message));
       });
       setIsFullscreen(true);
     } else {
@@ -165,7 +166,7 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
   return (
     <div 
       ref={containerRef}
-      className={`relative overflow-hidden bg-black group flex ${className}`}
+      className={clsx('relative overflow-hidden bg-black group flex', className)}
       style={style}
     >
       {/* 主播放器区域 */}
@@ -211,7 +212,7 @@ export const MMDPlayerEnhanced: React.FC<MMDPlayerEnhancedProps> = ({
       )}
 
       {/* 控制栏 - 鼠标悬停或暂停时显示 */}
-      <div className={`transition-opacity duration-300 ${isPlaying && !showSettings ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}>
+      <div className={clsx('transition-opacity duration-300', isPlaying && !showSettings ? 'opacity-0 group-hover:opacity-100' : 'opacity-100')}>
         <ControlPanel
           isPlaying={isPlaying}
           isFullscreen={isFullscreen}
