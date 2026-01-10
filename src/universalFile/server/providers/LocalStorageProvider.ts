@@ -53,9 +53,7 @@ export class LocalStorageProvider implements IStorageProvider {
       logger.info('✅ [LocalStorageProvider] 本地存储初始化完成');
     } catch (error) {
       logger.error('❌ [LocalStorageProvider] 本地存储初始化失败:', error);
-      throw new StorageProviderError(
-        `本地存储初始化失败: ${error instanceof Error ? error.message : '未知错误'}`
-      );
+      throw new StorageProviderError(`本地存储初始化失败`);
     }
   }
 

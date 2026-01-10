@@ -596,10 +596,10 @@ export class AliyunOSSProvider implements IStorageProvider {
    * 格式化OSS错误信息
    */
   private formatOSSError(error: any): string {
-    if (this.isOSSError(error)) {
-      const requestId = error.requestId ? ` (RequestId: ${error.requestId})` : '';
-      return `${error.code}: ${error.message}${requestId}`;
-    }
+    // if (this.isOSSError(error)) {
+    //   const requestId = error.requestId ? ` (RequestId: ${error.requestId})` : '';
+    //   return `${error.code}: ${error.message}${requestId}`;
+    // }
     if (error instanceof Error) {
       return error.message;
     }
