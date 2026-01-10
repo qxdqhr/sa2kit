@@ -129,7 +129,7 @@ export interface ExportRequest {
   /** 导出配置ID或配置对象 */
   configId: string | ExportConfig;
   /** 数据源 */
-  dataSource: string | (() => Promise<any[]>);
+  dataSource: string | (() => Promise<any[]>) | any[];
   /** 查询参数 */
   queryParams?: Record<string, any>;
   /** 自定义字段映射 */

@@ -543,6 +543,15 @@ export class UniversalExportService {
   private async getData(request: ExportRequest): Promise<any[]> {
     logger.info('🔍 [UniversalExportService] getData 开始执行...');
     try {
+      // 支持直接传递数据数组（用于客户端直接导出）
+      if (Array.isArray(request.dataSource)) {
+        logger.info('📦 [UniversalExportService] 使用直接传递的数据数组:', {
+          length: request.dataSource.length,
+        });
+        return request.dataSource;
+      }
+
+      // 支持数据源函数（用于服务端导出）
       if (typeof request.dataSource === 'function') {
         logger.info('📞 [UniversalExportService] 调用数据源函数...');
         const data = await request.dataSource();
@@ -552,11 +561,11 @@ export class UniversalExportService {
           length: Array.isArray(data) ? data.length : 'N/A',
         });
         return data;
-      } else {
-        // 这里可以扩展支持从API获取数据
-        console.error('❌ [UniversalExportService] 数据源不是函数:', typeof request.dataSource);
-        throw new ExportDataError('暂不支持字符串数据源');
       }
+
+      // 这里可以扩展支持从API获取数据
+      console.error('❌ [UniversalExportService] 数据源类型不支持:', typeof request.dataSource);
+      throw new ExportDataError('不支持的数据源类型');
     } catch (error) {
       console.error('❌ [UniversalExportService] 获取数据失败:', error);
       throw new ExportDataError(

@@ -162,30 +162,50 @@ export class UniversalExportClient {
   /**
    * 触发数据导出
    */
-  async exportData(request: Omit<ExportRequest, 'callbacks'>): Promise<ExportResult> {
+  async exportData(request: Omit<ExportRequest, 'callbacks' | 'dataSource'> & {
+    dataSource: any[] | string;
+  }): Promise<ExportResult> {
     const url = `${this.config.baseUrl}${API_ENDPOINTS.EXPORT_DATA}`;
 
     try {
+      // 如果 dataSource 是数组，我们需要将其作为请求体的一部分
+      const isDataArray = Array.isArray(request.dataSource);
+
+      const requestBody: any = {
+        configId: request.configId,
+        queryParams: request.queryParams,
+        fieldMapping: request.fieldMapping,
+        filters: request.filters,
+        sortBy: request.sortBy,
+        pagination: request.pagination,
+        customFileName: request.customFileName,
+      };
+
+      // 如果是数组数据，直接包含在请求体中
+      if (isDataArray) {
+        requestBody.data = request.dataSource;
+      } else {
+        requestBody.dataSource = request.dataSource;
+      }
+
       const response = await this.fetchWithTimeout(url, {
         method: 'POST',
         headers: {
           ...this.getHeaders(),
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          configId: request.configId,
-          dataSource: typeof request.dataSource === 'string' ? request.dataSource : undefined,
-          queryParams: request.queryParams,
-          fieldMapping: request.fieldMapping,
-          filters: request.filters,
-          sortBy: request.sortBy,
-          pagination: request.pagination,
-          customFileName: request.customFileName,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
-        throw new Error(`导出失败: ${response.statusText}`);
+        const errorText = await response.text();
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { message: errorText };
+        }
+        throw new Error(errorData.message || `导出失败: ${response.statusText}`);
       }
 
       const data = await response.json();

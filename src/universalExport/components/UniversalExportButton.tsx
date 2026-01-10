@@ -141,55 +141,96 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
     setExportProgress(null);
 
     try {
-      const request: ExportRequest = {
+      // 获取数据
+      console.log('📊 [UniversalExportButton] 获取数据...');
+      const data = await dataSource();
+      console.log('✅ [UniversalExportButton] 数据获取成功:', {
+        dataType: typeof data,
+        isArray: Array.isArray(data),
+        length: Array.isArray(data) ? data.length : 'N/A',
+      });
+
+      // 创建导出请求（不包含回调，因为客户端不支持）
+      const request = {
         configId: config,
-        dataSource,
-        callbacks: {
-          onProgress: (progress) => {
-            console.log('📊 [UniversalExportButton] 导出进度:', progress);
-            setExportProgress(progress);
-          },
-          onSuccess: (result) => {
-            console.log('✅ [UniversalExportButton] 导出成功:', {
-              fileName: result.fileName,
-              fileSize: result.fileSize,
-              exportedRows: result.exportedRows,
-            });
-            setIsExporting(false);
-            setExportProgress(null);
-            
-            // 下载文件
-            if (result.fileBlob) {
-              console.log('📥 [UniversalExportButton] 开始下载文件...');
-              const url = window.URL.createObjectURL(result.fileBlob);
-              const link = document.createElement('a');
-              link.href = url;
-              link.download = result.fileName;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              window.URL.revokeObjectURL(url);
-              console.log('✅ [UniversalExportButton] 文件下载完成');
-            }
-            
-            onExportSuccess?.(result);
-          },
-          onError: (error) => {
-            console.error('❌ [UniversalExportButton] 导出失败:', error);
-            setIsExporting(false);
-            setExportProgress(null);
-            onExportError?.(error.message);
-          },
-        },
+        dataSource: data, // 传递实际数据而不是函数
+        queryParams: undefined,
+        fieldMapping: undefined,
+        filters: undefined,
+        sortBy: undefined,
+        pagination: undefined,
+        customFileName: undefined,
       };
 
       console.log('📞 [UniversalExportButton] 调用导出服务...');
-      await exportService.exportData(request);
+      const result = await exportService.exportData(request);
+
+      console.log('✅ [UniversalExportButton] 导出成功:', {
+        fileName: result.fileName,
+        fileSize: result.fileSize,
+        exportedRows: result.exportedRows,
+      });
+
+      // 由于客户端不支持进度回调，我们模拟一个完成状态
+      const progress: ExportProgress = {
+        exportId: result.exportId,
+        status: 'completed',
+        progress: 100,
+        processedRows: result.exportedRows,
+        totalRows: result.exportedRows,
+        startTime: result.startTime,
+        estimatedEndTime: result.endTime,
+      };
+      setExportProgress(progress);
+
+      // 下载文件
+      if (result.fileUrl) {
+        console.log('📥 [UniversalExportButton] 从URL下载文件...');
+        const link = document.createElement('a');
+        link.href = result.fileUrl;
+        link.download = result.fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        console.log('✅ [UniversalExportButton] 文件下载完成');
+      } else if (result.fileBlob) {
+        console.log('📥 [UniversalExportButton] 从Blob下载文件...');
+        const url = window.URL.createObjectURL(result.fileBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = result.fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        console.log('✅ [UniversalExportButton] 文件下载完成');
+      }
+
+      // 延迟清除进度状态
+      setTimeout(() => {
+        setIsExporting(false);
+        setExportProgress(null);
+      }, 1000);
+
+      onExportSuccess?.(result);
     } catch (error) {
       console.error('❌ [UniversalExportButton] 导出异常:', error);
       setIsExporting(false);
       setExportProgress(null);
-      onExportError?.(error instanceof Error ? error.message : '导出失败');
+
+      // 更好地处理错误信息
+      let errorMessage = '导出失败';
+      if (error && typeof error === 'object') {
+        if ('message' in error && typeof error.message === 'string') {
+          errorMessage = error.message;
+        } else if ('code' in error && 'message' in error) {
+          errorMessage = `${error.code}: ${error.message}`;
+        }
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+
+      onExportError?.(errorMessage);
     }
   }, [exportService, dataSource, onExportSuccess, onExportError]);
 
