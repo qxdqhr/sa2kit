@@ -7,6 +7,7 @@ if (typeof window !== 'undefined') {
 import Script from 'next/script';
 
 
+// @ts-ignore
 import * as THREEx from '@ar-js-org/ar.js/three.js/build/ar-threex-location-only.js'
 
 /**
