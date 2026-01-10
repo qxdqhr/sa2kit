@@ -27,6 +27,7 @@ export interface ModalProps {
   className?: string;
   maskClosable?: boolean;
   children: React.ReactNode;
+  zIndex?: number;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -37,6 +38,7 @@ export const Modal: React.FC<ModalProps> = ({
   className,
   maskClosable = true,
   children,
+  zIndex = 50,
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => {
@@ -50,7 +52,7 @@ export const Modal: React.FC<ModalProps> = ({
       }
     }}>
       <DialogContent 
-        className={cn("sm:max-w-[425px]", className)}
+        className={cn("sm:max-w-[425px]", className) + ` z-[${zIndex}]`}
         onPointerDownOutside={(e) => {
           if (!maskClosable) e.preventDefault();
         }}
