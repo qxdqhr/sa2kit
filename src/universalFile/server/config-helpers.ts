@@ -509,8 +509,16 @@ export async function createFileServiceWithFactory(
 
   // 5. 可选的自动初始化
   if (autoInitialize) {
-    await service.initialize();
-    logger.info('✅ 文件服务创建并初始化完成');
+    try {
+      await service.initialize();
+      logger.info('✅ 文件服务创建并初始化完成');
+    } catch (initError) {
+      logger.warn('⚠️ 文件服务初始化失败，将提供延迟初始化的支持:', initError);
+
+      // 返回服务实例，但标记为未完全初始化
+      // 调用者可以稍后调用 reinitializeStorageProviders 来完成初始化
+      logger.info('💡 提示：可调用 service.reinitializeStorageProviders() 来重新初始化存储提供者');
+    }
   } else {
     logger.info('✅ 文件服务创建完成');
   }

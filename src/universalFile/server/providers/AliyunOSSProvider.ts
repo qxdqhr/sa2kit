@@ -482,11 +482,6 @@ export class AliyunOSSProvider implements IStorageProvider {
    * 测试连接
    */
   private async testConnection(): Promise<void> {
-    // 确保配置已设置
-    if (!this.config) {
-      throw new StorageProviderError('OSS配置为空，无法测试连接');
-    }
-
     try {
       // 尝试列出少量对象来测试连接
       await this.client.list({
@@ -497,15 +492,21 @@ export class AliyunOSSProvider implements IStorageProvider {
       logger.error('❌ [AliyunOSSProvider] OSS连接测试失败，原始错误:', error);
 
       // 安全地检查错误类型，避免生产环境中的压缩问题
-      const errorCode = error?.code;
-      const errorMessage = error?.message || '未知错误';
-      const errorName = error?.name || 'UnknownError';
+      let errorCode: string | undefined;
+      let errorMessage: string = '未知错误';
 
-      logger.error(`❌ [AliyunOSSProvider] 错误详情: code=${errorCode}, name=${errorName}, message=${errorMessage}`);
+      try {
+        errorCode = error?.code;
+        errorMessage = error?.message || '未知错误';
+      } catch (accessError) {
+        // 如果访问错误属性失败，使用通用错误信息
+        logger.warn('无法访问错误对象的属性:', accessError);
+        errorMessage = '无法解析错误信息';
+      }
 
       if (typeof errorCode === 'string') {
         if (errorCode === 'NoSuchBucket') {
-          throw new StorageProviderError(`存储桶不存在: ${this.config.bucket}`);
+          throw new StorageProviderError(`存储桶不存在: ${this.config!.bucket}`);
         }
         else if (errorCode === 'InvalidAccessKeyId') {
           throw new StorageProviderError('Access Key ID 无效');

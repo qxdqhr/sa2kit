@@ -131,6 +131,9 @@ export class UniversalFileService extends EventEmitter {
     logger.info('🚀 [UniversalFileService] 开始初始化文件服务...');
 
     try {
+      // 验证配置是否完整
+      await this.validateConfiguration();
+
       // 初始化存储提供者
       await this.initializeStorageProviders();
 
@@ -154,12 +157,25 @@ export class UniversalFileService extends EventEmitter {
     logger.info('🔄 [UniversalFileService] 重新初始化存储提供者...');
 
     try {
-      // 重新初始化OSS提供者
-      const ossProvider = this.storageProviders.get('aliyun-oss');
-      if (ossProvider && 'reinitialize' in ossProvider) {
-        logger.info('🔄 [UniversalFileService] 重新初始化阿里云OSS提供者...');
-        // 这里应该从配置中获取新的 OSS 配置
-        // await (ossProvider as any).reinitialize(newConfig);
+      // 重新初始化所有存储提供者
+      for (const [type, provider] of this.storageProviders) {
+        if ('reinitialize' in provider) {
+          try {
+            logger.info(`🔄 [UniversalFileService] 重新初始化存储提供者: ${type}...`);
+
+            // 获取对应的配置（从原始配置中获取）
+            const config = (this.config as any).storageProviders?.[type as string];
+            if (config) {
+              await (provider as any).reinitialize(config);
+              logger.info(`✅ [UniversalFileService] 存储提供者重新初始化完成: ${type}`);
+            } else {
+              logger.warn(`⚠️ [UniversalFileService] 存储提供者配置不存在: ${type}`);
+            }
+          } catch (error) {
+            logger.error(`❌ [UniversalFileService] 存储提供者重新初始化失败: ${type}`, error);
+            // 继续处理其他提供者
+          }
+        }
       }
 
       logger.info('✅ [UniversalFileService] 存储提供者重新初始化完成');
@@ -602,6 +618,61 @@ export class UniversalFileService extends EventEmitter {
 
   // ============= 私有方法 =============
 
+  /**
+   * 验证配置是否完整
+   */
+  private async validateConfiguration(): Promise<void> {
+    logger.info('🔍 [UniversalFileService] 验证配置文件...');
+
+    // 检查基础配置
+    if (!this.config) {
+      throw new Error('文件服务配置为空');
+    }
+
+    // 检查存储配置
+    if (!this.config.storage) {
+      throw new Error('存储配置为空');
+    }
+
+    // 检查存储提供者配置
+    if (this.config.storage.type === 'aliyun-oss') {
+      const ossConfig = this.config.storage as any;
+
+      // 如果配置不完整，等待配置加载
+      if (!ossConfig.accessKeyId || !ossConfig.accessKeySecret || !ossConfig.bucket || !ossConfig.region) {
+        logger.warn('⚠️ [UniversalFileService] OSS配置不完整，等待配置加载...');
+
+        // 轮询检查配置是否加载完成，最多等待30秒
+        const maxRetries = 30;
+        const retryInterval = 1000; // 1秒
+
+        for (let i = 0; i < maxRetries; i++) {
+          await new Promise(resolve => setTimeout(resolve, retryInterval));
+
+          // 重新检查配置（这里假设配置可能会被外部更新）
+          const updatedConfig = this.config.storage as any;
+          if (updatedConfig.accessKeyId && updatedConfig.accessKeySecret && updatedConfig.bucket && updatedConfig.region) {
+            logger.info('✅ [UniversalFileService] OSS配置加载完成');
+            break;
+          }
+
+          if (i === maxRetries - 1) {
+            throw new Error('OSS配置加载超时：缺少必需的配置项 (accessKeyId, accessKeySecret, bucket, region)');
+          }
+
+          logger.debug(`等待OSS配置加载中... (${i + 1}/${maxRetries})`);
+        }
+      }
+    }
+
+    // 检查默认存储类型
+    if (!this.config.defaultStorage) {
+      this.config.defaultStorage = this.config.storage.type as any;
+    }
+
+    logger.info('✅ [UniversalFileService] 配置验证完成');
+  }
+
   private async initializeStorageProviders(): Promise<void> {
     logger.info('📦 [UniversalFileService] 开始初始化存储提供者...');
 
@@ -917,5 +988,35 @@ export class UniversalFileService extends EventEmitter {
     if (metadata.uploaderId !== userId) {
       throw new FileUploadError('无权限删除此文件');
     }
+  }
+
+  /**
+   * 检查服务是否完全可用（包括存储提供者）
+   */
+  isFullyInitialized(): boolean {
+    // 检查是否有可用的存储提供者
+    const hasStorageProvider = Array.from(this.storageProviders.values()).some(provider =>
+      provider.type === 'aliyun-oss' || provider.type === 'local'
+    );
+
+    return hasStorageProvider;
+  }
+
+  /**
+   * 等待服务完全初始化（带超时）
+   */
+  async waitForInitialization(timeoutMs: number = 30000): Promise<void> {
+    const startTime = Date.now();
+
+    while (!this.isFullyInitialized()) {
+      if (Date.now() - startTime > timeoutMs) {
+        throw new Error(`服务初始化超时 (${timeoutMs}ms)`);
+      }
+
+      // 等待100ms后重试
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    logger.info('✅ [UniversalFileService] 服务完全初始化就绪');
   }
 }
