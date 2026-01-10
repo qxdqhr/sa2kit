@@ -127,9 +127,7 @@ export class AliyunOSSProvider implements IStorageProvider {
       logger.info(`✅ [AliyunOSSProvider] 阿里云OSS${configChanged ? '重新' : ''}初始化完成`);
     } catch (error) {
       logger.error('❌ [AliyunOSSProvider] 阿里云OSS初始化失败:', error);
-      throw new StorageProviderError(
-        `阿里云OSS初始化失败: ${error instanceof Error ? error.message : '未知错误'}`
-      );
+      throw new StorageProviderError(`阿里云OSS初始化失败`);
     }
   }
 
@@ -232,10 +230,10 @@ export class AliyunOSSProvider implements IStorageProvider {
       logger.error(`❌ [AliyunOSSProvider] 文件下载失败: ${filePath}:`, error);
 
       if (this.isOSSError(error) && error.code === 'NoSuchKey') {
-        throw new StorageProviderError(`文件不存在: ${filePath}`);
+        throw new StorageProviderError(`文件不存在`);
       }
 
-      throw new StorageProviderError(`文件下载失败: ${this.formatOSSError(error)}`);
+      throw new StorageProviderError(`文件下载失败`);
     }
   }
 
@@ -339,7 +337,7 @@ export class AliyunOSSProvider implements IStorageProvider {
       }
     } catch (error) {
       logger.error(`❌ [AliyunOSSProvider] 生成访问URL失败: ${filePath}:`, error);
-      throw new StorageProviderError(`生成访问URL失败: ${this.formatOSSError(error)}`);
+      throw new StorageProviderError(`生成访问URL失败`);
     }
   }
 
@@ -359,7 +357,7 @@ export class AliyunOSSProvider implements IStorageProvider {
       return signedUrl || '' ;
     } catch (error) {
       logger.error(`❌ [AliyunOSSProvider] 生成上传URL失败: ${filePath}:`, error);
-      throw new StorageProviderError(`生成上传URL失败: ${this.formatOSSError(error)}`);
+      throw new StorageProviderError(`生成上传URL失败`);
     }
   }
 
@@ -426,7 +424,7 @@ export class AliyunOSSProvider implements IStorageProvider {
       };
     } catch (error) {
       logger.error(`❌ [AliyunOSSProvider] 列出文件失败: ${prefix}:`, error);
-      throw new StorageProviderError(`列出文件失败: ${this.formatOSSError(error)}`);
+      throw new StorageProviderError(`列出文件失败`);
     }
   }
 
@@ -474,7 +472,7 @@ export class AliyunOSSProvider implements IStorageProvider {
     const missing = required.filter((key) => !this.config![key as keyof AliyunOSSConfig]);
 
     if (missing.length > 0) {
-      throw new StorageProviderError(`OSS配置缺少必需项: ${missing.join(', ')}`);
+      throw new StorageProviderError(`OSS配置缺少必需项`);
     }
   }
 
@@ -506,7 +504,7 @@ export class AliyunOSSProvider implements IStorageProvider {
 
       if (typeof errorCode === 'string') {
         if (errorCode === 'NoSuchBucket') {
-          throw new StorageProviderError(`存储桶不存在: ${this.config!.bucket}`);
+          throw new StorageProviderError(`存储桶不存在`);
         }
         else if (errorCode === 'InvalidAccessKeyId') {
           throw new StorageProviderError('Access Key ID 无效');
@@ -515,12 +513,12 @@ export class AliyunOSSProvider implements IStorageProvider {
           throw new StorageProviderError('Access Key Secret 无效');
         }
         else {
-          throw new StorageProviderError(`OSS连接测试失败: ${errorCode} - ${errorMessage}`);
+          throw new StorageProviderError(`OSS连接测试失败`);
         }
       }
 
       // 如果不是标准的OSS错误，抛出通用错误
-      throw new StorageProviderError(`OSS连接测试失败: ${errorMessage}`);
+      throw new StorageProviderError(`OSS连接测试失败`);
     }
   }
 
