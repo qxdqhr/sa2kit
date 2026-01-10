@@ -75,6 +75,31 @@ export class AliyunOSSProvider implements IStorageProvider {
       // 验证必需的配置项
       this.validateConfig();
 
+      // 确保配置值是有效的字符串
+      if (!this.config.region || typeof this.config.region !== 'string') {
+        throw new Error('OSS region 必须是有效的字符串');
+      }
+      if (!this.config.bucket || typeof this.config.bucket !== 'string') {
+        throw new Error('OSS bucket 必须是有效的字符串');
+      }
+      if (!this.config.accessKeyId || typeof this.config.accessKeyId !== 'string') {
+        throw new Error('OSS accessKeyId 必须是有效的字符串');
+      }
+      if (!this.config.accessKeySecret || typeof this.config.accessKeySecret !== 'string') {
+        throw new Error('OSS accessKeySecret 必须是有效的字符串');
+      }
+
+      logger.info(`☁️ [AliyunOSSProvider] 创建OSS客户端配置:`, {
+        region: this.config.region,
+        bucket: this.config.bucket,
+        hasAccessKeyId: !!this.config.accessKeyId,
+        hasAccessKeySecret: !!this.config.accessKeySecret,
+        secure: this.config.secure !== false,
+        internal: this.config.internal || false,
+        cname: !!this.config.customDomain,
+        endpoint: this.config.customDomain || '默认端点',
+      });
+
       // 创建OSS客户端
       this.client = new OSS({
         region: this.config.region,
@@ -87,8 +112,14 @@ export class AliyunOSSProvider implements IStorageProvider {
         cname: !!this.config.customDomain, // 是否使用自定义域名
         endpoint: this.config.customDomain || undefined,
       });
-      logger.info(`☁️ [AliyunOSSProvider] this.client: ${this.client}`);
+
+      if (!this.client) {
+        throw new Error('OSS客户端创建失败');
+      }
+
+      logger.info(`☁️ [AliyunOSSProvider] OSS客户端创建成功`);
       logger.info(`☁️ [AliyunOSSProvider] 测试连接... testConnection`);
+
       // 测试连接
       await this.testConnection();
 
@@ -451,28 +482,44 @@ export class AliyunOSSProvider implements IStorageProvider {
    * 测试连接
    */
   private async testConnection(): Promise<void> {
+    // 确保配置已设置
+    if (!this.config) {
+      throw new StorageProviderError('OSS配置为空，无法测试连接');
+    }
+
     try {
       // 尝试列出少量对象来测试连接
       await this.client.list({
         'max-keys': '1',
       });
       logger.info(`✅ [AliyunOSSProvider] OSS连接测试成功`);
-    } catch (error) {
-      if (this.isOSSError(error)) {
-        if (error.code === 'NoSuchBucket') {
-          throw new StorageProviderError(`存储桶不存在: ${this.config!.bucket}`);
+    } catch (error: any) {
+      logger.error('❌ [AliyunOSSProvider] OSS连接测试失败，原始错误:', error);
+
+      // 安全地检查错误类型，避免生产环境中的压缩问题
+      const errorCode = error?.code;
+      const errorMessage = error?.message || '未知错误';
+      const errorName = error?.name || 'UnknownError';
+
+      logger.error(`❌ [AliyunOSSProvider] 错误详情: code=${errorCode}, name=${errorName}, message=${errorMessage}`);
+
+      if (typeof errorCode === 'string') {
+        if (errorCode === 'NoSuchBucket') {
+          throw new StorageProviderError(`存储桶不存在: ${this.config.bucket}`);
         }
-        else if (error.code === 'InvalidAccessKeyId') {
+        else if (errorCode === 'InvalidAccessKeyId') {
           throw new StorageProviderError('Access Key ID 无效');
         }
-        else if (error.code === 'SignatureDoesNotMatch') {
+        else if (errorCode === 'SignatureDoesNotMatch') {
           throw new StorageProviderError('Access Key Secret 无效');
         }
         else {
-          throw new StorageProviderError(`OSS连接测试失败: ${error.message}`);
+          throw new StorageProviderError(`OSS连接测试失败: ${errorCode} - ${errorMessage}`);
         }
       }
-      throw error;
+
+      // 如果不是标准的OSS错误，抛出通用错误
+      throw new StorageProviderError(`OSS连接测试失败: ${errorMessage}`);
     }
   }
 
@@ -536,7 +583,14 @@ export class AliyunOSSProvider implements IStorageProvider {
   private isOSSError(
     error: any
   ): error is { code: string; name: string; message: string; requestId?: string } {
-    return error && typeof error.code === 'string' && typeof error.name === 'string';
+    // 安全地检查错误属性，避免生产环境中的压缩问题
+    if (!error || typeof error !== 'object') {
+      return false;
+    }
+
+    return typeof error.code === 'string' &&
+           typeof (error.name || '') === 'string' &&
+           typeof (error.message || '') === 'string';
   }
 
   /**
@@ -544,9 +598,16 @@ export class AliyunOSSProvider implements IStorageProvider {
    */
   private formatOSSError(error: any): string {
     if (this.isOSSError(error)) {
-      return `${error.code}: ${error.message}${error.requestId ? ` (RequestId: ${error.requestId})` : ''}`;
+      const requestId = error.requestId ? ` (RequestId: ${error.requestId})` : '';
+      return `${error.code}: ${error.message}${requestId}`;
     }
-    return error instanceof Error ? error.message : '未知错误';
+    if (error instanceof Error) {
+      return error.message;
+    }
+    if (typeof error === 'string') {
+      return error;
+    }
+    return '未知错误';
   }
 
   /**
