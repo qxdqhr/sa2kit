@@ -35,7 +35,7 @@ const VNModal: React.FC<{
 
   return (
     <div 
-      className="fixed inset-0 flex items-center justify-center backdrop-blur-xl z-[1000000] pointer-events-auto transition-all animate-in fade-in zoom-in-95 duration-300 px-4"
+      className="fixed inset-0 flex items-center justify-center backdrop-blur-xl z-[1000] pointer-events-auto transition-all animate-in fade-in zoom-in-95 duration-300 px-4"
       style={{ background: 'rgba(100, 116, 139, 0.3)' }}
       onClick={onClose}
     >

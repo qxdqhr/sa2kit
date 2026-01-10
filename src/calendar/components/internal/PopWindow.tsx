@@ -34,13 +34,13 @@ export const Modal: React.FC<ModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[50] flex items-center justify-center p-4">
       <div 
         className="fixed inset-0 bg-black/50 transition-opacity" 
         onClick={() => maskClosable && onClose()}
       />
       <div 
-        className="bg-white rounded-xl shadow-2xl z-10 overflow-hidden flex flex-col transition-all transform scale-100"
+        className="bg-white rounded-xl shadow-2xl z-[10] overflow-hidden flex flex-col transition-all transform scale-100"
         style={{ width: typeof width === 'number' ? `${width}px` : width, maxWidth: '100%' }}
       >
         {title && (

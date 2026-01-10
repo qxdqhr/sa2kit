@@ -399,7 +399,7 @@ const FolderManager: React.FC<FolderManagerProps> = ({
 
     return (
       <div
-        className="fixed bg-white border border-gray-200 rounded-md shadow-lg z-50 py-1"
+        className="fixed bg-white border border-gray-200 rounded-md shadow-lg z-[50] py-1"
         style={{
           left: state.contextMenu.x,
           top: state.contextMenu.y

@@ -1,764 +1,934 @@
-import React, { 
-  useEffect, 
-  useRef, 
-  useState, 
-  useCallback, 
-  forwardRef, 
-  useImperativeHandle,
-  useMemo
-} from 'react';
-import { MMDPlayerBase } from '../components/MMDPlayerBase';
-import { MMDPlayerBaseRef, MMDResources } from '../types';
-import { MMDARPlayerProps, MMDARPlayerRef, ARMode } from './types';
-import { Camera, CameraOff, RefreshCw, AlertCircle, Settings, X as CloseIcon, Sparkles, RotateCcw, ChevronDown, Compass, Layers } from 'lucide-react';
+import React, { forwardRef, useRef, useEffect, useState, useCallback } from 'react';
+import * as THREE from 'three';
+
+if (typeof window !== 'undefined') {
+  (window as any).THREE = THREE;
+}
+import Script from 'next/script';
+
+
+import * as THREEx from './node_modules/@ar-js-org/ar.js/three.js/build/ar-threex-location-only.js'
 
 /**
- * 下拉选择组件
+ * ============================================================================
+ * MMD AR PLAYER - 功能规格文档
+ * ============================================================================
+ *
+ * 组件名称: MMDARPlayer
+ * 描述: 基于实时摄像头的 MMD 增强现实播放器
+ * 目标: 提供完整的 AR 体验，让用户能够在真实世界中放置和交互 MMD 模型
+ *
+ * ============================================================================
+ * 工作流程 (4个主要阶段)
+ * ============================================================================
+ *
+ * 阶段1: 初始化和摄像头启动
+ * --------------------------
+ * 1.1 初始化组件和状态管理
+ * 1.2 加载默认资源 (模型/动作/音频)
+ * 1.3 请求摄像头权限
+ * 1.4 启动摄像头并开始视频流
+ *
+ * 阶段2: AR模型放置
+ * ------------------
+ * 2.1 使用Threejs和ar.js 初始化AR场景,并显示AR标记点
+ * 2.2 显示AR标记点
+ * 2.3 用户点击放置模型,并固定模型在世界坐标系中的Ar标记点
+ * 2.4 模型固定在世界坐标系 (陀螺仪支持)
+ *
+ * 阶段3: 设置和资源管理
+ * ----------------------
+ * 3.1 设置弹窗UI结构
+ * 3.2 资源切换功能 (下拉菜单)
+ * 3.3 重新设置标记点功能
+ *
+ * 阶段4: 拍照和保存
+ * ------------------
+ * 4.1 拍照按钮UI
+ * 4.2 截图合成功能 (相机+3D模型)
+ * 4.3 保存到本地功能
+ *
+ * ============================================================================
+ * 技术实现要点
+ * ============================================================================
  */
-interface SelectProps<T extends { id: string; name: string }> {
-  label: string;
-  options: T[];
-  value: string;
-  onChange: (id: string) => void;
-  placeholder?: string;
-  allowEmpty?: boolean;
-  emptyLabel?: string;
+
+interface ARPlayerState {
+  isLoading: boolean;
+  cameraReady: boolean;
+  arReady: boolean;
+  error: string | null;
+  showSettings: boolean;
+  modelPlaced: boolean;
+  markerDetected: boolean;
+  selectedModel: string;
+  selectedMotion: string;
+  selectedAudio: string;
+  cameraFacing: 'environment' | 'user';
+  markerType: 'barcode' | 'pattern';
+  showWireframe: boolean;
+  lightingEnabled: boolean;
+  quality: 'low' | 'medium' | 'high';
 }
 
-function Select<T extends { id: string; name: string }>({ 
-  label, 
-  options, 
-  value, 
-  onChange,
-  placeholder = '请选择...',
-  allowEmpty = false,
-  emptyLabel = '无'
-}: SelectProps<T>) {
-  const selectedOption = options.find(opt => opt.id === value);
-  const showPlaceholder = !selectedOption && !allowEmpty && value !== '';
-  
-  return (
-    <div className="space-y-1.5">
-      <label className="block text-xs font-medium text-white/50 ml-1 uppercase tracking-wider">
-        {label}
-      </label>
-      <div className="relative">
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-10 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors cursor-pointer hover:bg-white/10"
-        >
-          {showPlaceholder && (
-            <option value="" disabled className="bg-gray-900 text-white/50">
-              {placeholder}
-            </option>
-          )}
-          {allowEmpty && (
-            <option value="" className="bg-gray-900 text-white/60">
-              {emptyLabel}
-            </option>
-          )}
-          {options.map((option) => (
-            <option 
-              key={option.id} 
-              value={option.id}
-              className="bg-gray-900 text-white"
-            >
-              {option.name}
-            </option>
-          ))}
-        </select>
-        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
-      </div>
-    </div>
-  );
+interface ARPlayerProps {
+  width?: number;
+  height?: number;
+  onReady?: () => void;
+  onError?: (error: string) => void;
 }
 
-/**
- * AR 模式切换组件
- */
-interface ARModeSwitchProps {
-  mode: ARMode;
-  onChange: (mode: ARMode) => void;
-  gyroSupported: boolean;
-}
-
-function ARModeSwitch({ mode, onChange, gyroSupported }: ARModeSwitchProps) {
-  return (
-    <div className="space-y-1.5">
-      <label className="block text-xs font-medium text-white/50 ml-1 uppercase tracking-wider">
-        AR 模式
-      </label>
-      <div className="grid grid-cols-2 gap-2">
-        <button
-          onClick={() => onChange(ARMode.Overlay)}
-          className={`p-3 rounded-xl border transition-all flex flex-col items-center gap-1.5 ${
-            mode === ARMode.Overlay
-              ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
-              : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
-          }`}
-        >
-          <Layers className="w-5 h-5" />
-          <span className="text-xs font-medium">叠加模式</span>
-        </button>
-        <button
-          onClick={() => gyroSupported && onChange(ARMode.WorldFixed)}
-          disabled={!gyroSupported}
-          className={`p-3 rounded-xl border transition-all flex flex-col items-center gap-1.5 ${
-            mode === ARMode.WorldFixed
-              ? 'bg-purple-500/20 border-purple-500/50 text-purple-400'
-              : gyroSupported 
-                ? 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
-                : 'bg-white/5 border-white/10 text-white/30 cursor-not-allowed'
-          }`}
-          title={gyroSupported ? '世界固定模式' : '设备不支持陀螺仪'}
-        >
-          <Compass className="w-5 h-5" />
-          <span className="text-xs font-medium">世界固定</span>
-          {!gyroSupported && <span className="text-[10px] text-red-400">不支持</span>}
-        </button>
-      </div>
-      <p className="text-[10px] text-white/40 ml-1 mt-1">
-        {mode === ARMode.Overlay 
-          ? '模型固定在屏幕上' 
-          : '模型固定在世界空间，移动设备查看'}
-      </p>
-    </div>
-  );
-}
-
-/**
- * MMDARPlayer - 基于实时摄像头的 MMD 增强现实播放器
- * 
- * 功能：
- * - 调用设备摄像头作为背景
- * - 点击放置模型交互
- * - 支持两种 AR 模式：叠加模式 / 世界固定模式
- * - 世界固定模式使用设备陀螺仪实现真正的 AR 体验
- */
-export const MMDARPlayer = forwardRef<MMDARPlayerRef, MMDARPlayerProps>((props, ref) => {
-  const {
-    stage = {},
-    mobileOptimization,
-    cameraConfig = { facingMode: 'user' },
-    mirrored,
-    showSettings = true,
-    modelPresets,
-    motionPresets,
-    audioPresets = [],
-    defaultModelId,
-    defaultMotionId,
-    defaultAudioId,
-    initialModelVisible = false,
-    placementText = 'TOUCH!',
-    defaultARMode = ARMode.Overlay,
-    autoPlay = true,
-    loop = true,
-    onCameraReady,
-    onCameraError,
-    onResourcesChange,
-    onModelPlaced,
-    onARModeChange,
-    onLoad,
-    onError,
-    className,
-    style,
-  } = props;
-
-  // 计算默认选中项
-  const initialModelId = defaultModelId || modelPresets[0]?.id || '';
-  const initialMotionId = defaultMotionId || motionPresets[0]?.id || '';
-  const initialAudioId = defaultAudioId || audioPresets[0]?.id || '';
-
-  // Refs
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const playerRef = useRef<MMDPlayerBaseRef>(null);
-  const streamRef = useRef<MediaStream | null>(null);
+export const MMDARPlayer = forwardRef<any, ARPlayerProps>(({
+  width = 800,
+  height = 600,
+  onReady,
+  onError
+}, ref) => {
+  // DOM 引用
   const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Three.js 相关
+  const sceneRef = useRef<THREE.Scene>();
+  const cameraRef = useRef<THREE.Camera>();
+  const rendererRef = useRef<THREE.WebGLRenderer>();
+  const arToolkitSourceRef = useRef<any>();
+  const arToolkitContextRef = useRef<any>();
+  const markerRootRef = useRef<THREE.Group>();
+  const markerControlsRef = useRef<any>();
+  const modelRootRef = useRef<THREE.Group>();
+  const modelRef = useRef<THREE.Object3D>();
+
+  // 状态管理
+  const [state, setState] = useState<ARPlayerState>({
+    isLoading: true,
+    cameraReady: false,
+    arReady: false,
+    error: null,
+    showSettings: false,
+    modelPlaced: false,
+    markerDetected: false,
+    selectedModel: 'sphere',
+    selectedMotion: 'idle',
+    selectedAudio: 'none',
+    cameraFacing: 'environment',
+    markerType: 'barcode',
+    showWireframe: false,
+    lightingEnabled: true,
+    quality: 'medium',
+  });
+
+  // 陀螺仪数据
   const gyroDataRef = useRef({ alpha: 0, beta: 0, gamma: 0 });
-  const initialOrientationRef = useRef<{ alpha: number; beta: number; gamma: number } | null>(null);
 
-  // States
-  const [isCameraStarted, setIsCameraStarted] = useState(false);
-  const [cameraError, setCameraError] = useState<string | null>(null);
-  const [facingMode, setFacingMode] = useState<'user' | 'environment'>(cameraConfig.facingMode || 'user');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [gyroSupported, setGyroSupported] = useState(false);
-  const [gyroPermissionDenied, setGyroPermissionDenied] = useState(false);
-  
-  // 选中的资源 ID
-  const [selectedModelId, setSelectedModelId] = useState(initialModelId);
-  const [selectedMotionId, setSelectedMotionId] = useState(initialMotionId);
-  const [selectedAudioId, setSelectedAudioId] = useState(initialAudioId);
-  
-  // 🎯 核心状态
-  const [isModelPlaced, setIsModelPlaced] = useState(initialModelVisible);
-  const [placementAnimation, setPlacementAnimation] = useState(false);
-  const [arMode, setARModeState] = useState<ARMode>(defaultARMode);
-  
-  // 世界固定模式下的模型旋转
-  const [modelRotation, setModelRotation] = useState({ x: 0, y: 0, z: 0 });
+  // 初始化 Three.js 场景
+  const initializeThreeJS = useCallback(() => {
+    try {
+      // 创建场景
+      const scene = new THREE.Scene();
+      sceneRef.current = scene;
 
-  // 根据选中的 ID 构建当前资源
-  const currentResources: MMDResources = useMemo(() => {
-    const model = modelPresets.find(m => m.id === selectedModelId);
-    const motion = motionPresets.find(m => m.id === selectedMotionId);
-    const audio = audioPresets.find(a => a.id === selectedAudioId);
-    
-    return {
-      modelPath: model?.modelPath || modelPresets[0]?.modelPath || '',
-      motionPath: motion?.motionPath || motionPresets[0]?.motionPath || '',
-      audioPath: audio?.audioPath,
-    };
-  }, [selectedModelId, selectedMotionId, selectedAudioId, modelPresets, motionPresets, audioPresets]);
+      // 创建相机
+      const camera = new THREE.Camera();
+      cameraRef.current = camera;
+      scene.add(camera);
 
-  // 镜像逻辑
-  const shouldMirror = mirrored !== undefined ? mirrored : facingMode === 'user';
+      // 创建渲染器
+      const renderer = new THREE.WebGLRenderer({
+        canvas: canvasRef.current!,
+        antialias: true,
+        alpha: true
+      });
+      renderer.setSize(width, height);
+      renderer.setClearColor(0x000000, 0);
+      rendererRef.current = renderer;
 
-  /**
-   * 检测陀螺仪支持
-   */
-  useEffect(() => {
-    const checkGyroSupport = async () => {
-      if (typeof window === 'undefined') return;
-      
-      // 检查 DeviceOrientationEvent 是否存在
-      if (!('DeviceOrientationEvent' in window)) {
-        setGyroSupported(false);
-        return;
+      console.log('Three.js initialized successfully');
+      return true;
+    } catch (error) {
+      console.error('Failed to initialize Three.js:', error);
+      setState(prev => ({ ...prev, error: 'Three.js 初始化失败' }));
+      return false;
+    }
+  }, [width, height]);
+
+  // 请求摄像头权限
+  const requestCameraPermission = useCallback(async (): Promise<boolean> => {
+    try {
+      console.log('Checking camera support...');
+
+      // 检查是否支持 getUserMedia
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('您的浏览器不支持摄像头访问');
       }
 
-      // iOS 13+ 需要请求权限
-      if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+      console.log('Camera API supported, checking permissions...');
+
+      // 检查权限状态 (如果支持) - 添加超时保护
+      if (navigator.permissions) {
         try {
-          const permission = await (DeviceOrientationEvent as any).requestPermission();
-          setGyroSupported(permission === 'granted');
-          setGyroPermissionDenied(permission === 'denied');
-        } catch {
-          setGyroSupported(false);
-        }
-      } else {
-        // 其他设备，假设支持
-        setGyroSupported(true);
-      }
-    };
+          console.log('Querying camera permission status...');
+          const permissionPromise = navigator.permissions.query({ name: 'camera' as PermissionName });
 
-    checkGyroSupport();
+          // 设置5秒超时
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Permission query timeout')), 5000);
+          });
+
+          const permissionStatus = await Promise.race([permissionPromise, timeoutPromise]) as PermissionStatus;
+
+          console.log('Permission status:', permissionStatus.state);
+
+          if (permissionStatus.state === 'denied') {
+            throw new Error('摄像头权限已被拒绝，请在浏览器设置中允许访问摄像头');
+          }
+        } catch (permissionError) {
+          console.warn('Permission query failed or timed out, proceeding with getUserMedia:', permissionError);
+          // 如果权限查询失败，继续尝试直接获取摄像头
+        }
+      }
+
+      console.log('Requesting camera access...');
+
+      // 测试摄像头访问 - 添加超时保护
+      const cameraPromise = navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: width },
+          height: { ideal: height },
+          facingMode: 'environment' // 优先使用后置摄像头
+        }
+      });
+
+      // 设置10秒超时
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Camera access timeout - 请检查摄像头权限')), 10000);
+      });
+
+      const testStream = await Promise.race([cameraPromise, timeoutPromise]);
+
+      console.log('Camera access granted, stopping test stream...');
+
+      // 立即停止测试流
+      testStream.getTracks().forEach(track => track.stop());
+
+      console.log('Camera permission granted successfully');
+      return true;
+    } catch (error) {
+      console.error('Camera permission denied:', error);
+      const errorMessage = error instanceof Error ? error.message : '无法访问摄像头';
+      setState(prev => ({ ...prev, error: errorMessage, isLoading: false }));
+      onError?.(errorMessage);
+      return false;
+    }
+  }, [width, height, onError]);
+
+  // 创建3D模型
+  const createModel = useCallback((modelType: string): THREE.Object3D => {
+    let geometry: THREE.BufferGeometry;
+    let material: THREE.Material;
+    let mesh: THREE.Object3D;
+
+    switch (modelType) {
+      case 'sphere':
+        geometry = new THREE.SphereGeometry(0.5, 32, 32);
+        material = new THREE.MeshPhongMaterial({
+          color: 0xff69b4,
+          shininess: 100,
+          specular: 0x111111
+        });
+        mesh = new THREE.Mesh(geometry, material);
+        break;
+
+      case 'cube':
+        geometry = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+        material = new THREE.MeshPhongMaterial({
+          color: 0x00ff7f,
+          shininess: 100,
+          specular: 0x111111
+        });
+        mesh = new THREE.Mesh(geometry, material);
+        break;
+
+      case 'torus':
+        geometry = new THREE.TorusGeometry(0.4, 0.2, 16, 100);
+        material = new THREE.MeshPhongMaterial({
+          color: 0xffa500,
+          shininess: 100,
+          specular: 0x111111
+        });
+        mesh = new THREE.Mesh(geometry, material);
+        break;
+
+      default:
+        // 默认使用球体
+        geometry = new THREE.SphereGeometry(0.5, 32, 32);
+        material = new THREE.MeshPhongMaterial({
+          color: 0xff69b4,
+          shininess: 100,
+          specular: 0x111111
+        });
+        mesh = new THREE.Mesh(geometry, material);
+    }
+
+    // 添加旋转动画
+    mesh.rotation.x = Math.PI / 4;
+    mesh.rotation.y = Math.PI / 4;
+
+    return mesh;
   }, []);
 
-  /**
-   * 陀螺仪数据处理 - 世界固定模式
-   */
-  useEffect(() => {
-    if (arMode !== ARMode.WorldFixed || !isModelPlaced || !gyroSupported) return;
+  // 放置模型
+  const placeModel = useCallback(() => {
+    if (!markerRootRef.current || !modelRootRef.current || !sceneRef.current) {
+      console.error('Cannot place model: missing required references');
+      return;
+    }
 
-    const handleOrientation = (event: DeviceOrientationEvent) => {
-      const { alpha, beta, gamma } = event;
-      if (alpha === null || beta === null || gamma === null) return;
-
-      // 记录初始方向
-      if (!initialOrientationRef.current) {
-        initialOrientationRef.current = { alpha, beta, gamma };
+    try {
+      // 清除现有的模型
+      if (modelRef.current) {
+        modelRootRef.current.remove(modelRef.current);
       }
 
-      // 计算相对于初始方向的偏移
-      const initial = initialOrientationRef.current;
-      const deltaAlpha = alpha - initial.alpha;
-      const deltaBeta = beta - initial.beta;
-      const deltaGamma = gamma - initial.gamma;
+      // 创建新的模型
+      const model = createModel(state.selectedModel);
+      modelRef.current = model;
 
-      gyroDataRef.current = { alpha: deltaAlpha, beta: deltaBeta, gamma: deltaGamma };
+      // 将模型放置在标记的位置
+      modelRootRef.current.position.copy(markerRootRef.current.position);
+      modelRootRef.current.quaternion.copy(markerRootRef.current.quaternion);
 
-      // 将设备方向转换为模型旋转（反向，使模型看起来固定在世界空间）
-      setModelRotation({
-        x: -deltaBeta * (Math.PI / 180) * 0.5, // 俯仰
-        y: -deltaAlpha * (Math.PI / 180) * 0.5, // 偏航
-        z: deltaGamma * (Math.PI / 180) * 0.3,  // 翻滚
-      });
-    };
+      // 添加模型到场景
+      modelRootRef.current.add(model);
+      modelRootRef.current.visible = true;
 
-    window.addEventListener('deviceorientation', handleOrientation, true);
-    
-    return () => {
-      window.removeEventListener('deviceorientation', handleOrientation, true);
-    };
-  }, [arMode, isModelPlaced, gyroSupported]);
+      setState(prev => ({ ...prev, modelPlaced: true }));
 
-  /**
-   * 请求陀螺仪权限 (iOS)
-   */
-  const requestGyroPermission = useCallback(async () => {
-    if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
-      try {
-        const permission = await (DeviceOrientationEvent as any).requestPermission();
-        setGyroSupported(permission === 'granted');
-        setGyroPermissionDenied(permission === 'denied');
-        return permission === 'granted';
-      } catch {
+      console.log('Model placed successfully at marker position');
+    } catch (error) {
+      console.error('Failed to place model:', error);
+      setState(prev => ({ ...prev, error: '放置模型失败' }));
+    }
+  }, [state.selectedModel, createModel]);
+
+  // 处理需要重启 AR 的设置变更
+  const handleARSettingChange = useCallback((setting: string, value: any) => {
+    setState(prev => ({ ...prev, [setting]: value }));
+
+    // 如果是需要重启 AR 的设置，显示提示
+    if (setting === 'cameraFacing' || setting === 'markerType' || setting === 'quality') {
+      setTimeout(() => {
+        alert('此设置变更需要重新启动 AR 系统。请刷新页面以应用新设置。');
+      }, 100);
+    }
+  }, []);
+
+  // 拍照功能
+  const takePhoto = useCallback(() => {
+    if (!rendererRef.current || !sceneRef.current || !cameraRef.current) {
+      console.error('Cannot take photo: missing required references');
+      return;
+    }
+
+    try {
+      // 创建一个离屏canvas用于渲染
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      if (!context) {
+        throw new Error('Cannot create canvas context');
+      }
+
+      // 设置canvas尺寸
+      canvas.width = width;
+      canvas.height = height;
+
+      // 渲染场景到canvas
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
+
+      // 获取渲染器的canvas数据
+      const rendererCanvas = rendererRef.current.domElement;
+      context.drawImage(rendererCanvas, 0, 0, width, height);
+
+      // 如果有摄像头视频流，也将其合成到图像中
+      if (arToolkitSourceRef.current && arToolkitSourceRef.current.domElement) {
+        const videoElement = arToolkitSourceRef.current.domElement;
+        context.globalCompositeOperation = 'source-over';
+        context.drawImage(videoElement, 0, 0, width, height);
+      }
+
+      // 将canvas转换为blob并下载
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `ar-photo-${Date.now()}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          console.log('Photo saved successfully');
+        }
+      }, 'image/png');
+
+    } catch (error) {
+      console.error('Failed to take photo:', error);
+      setState(prev => ({ ...prev, error: '拍照失败' }));
+    }
+  }, [width, height]);
+
+  // 初始化 AR.js
+  const initializeAR = useCallback(async () => {
+    try {
+      console.log('Starting AR initialization...');
+
+      // 等待 AR.js 完全加载和初始化
+      if (!(window as any).__arjs_ready) {
+        console.log("Waiting for AR.js initialization...");
+        await new Promise<void>((resolve, reject) => {
+          const check = setInterval(() => {
+            if ((window as any).__arjs_ready) {
+              clearInterval(check);
+              console.log('AR.js initialization complete!');
+              resolve();
+            }
+          }, 50);
+
+          // 超时保护
+          setTimeout(() => {
+            clearInterval(check);
+            reject(new Error('AR.js initialization timeout'));
+          }, 15000);
+        });
+      }
+
+      console.log('Getting THREEx...');
+      const THREEx = (window as any).THREEx;
+
+      if (!THREEx) {
+        console.error('THREEx not found, available window properties:', Object.keys(window).filter(key => key.toLowerCase().includes('ar') || key.toLowerCase().includes('three')));
+        throw new Error('THREEx not found after AR.js loaded');
+      }
+
+      console.log('THREEx loaded successfully:', Object.keys(THREEx));
+
+      console.log('THREEx loaded, requesting camera permission...');
+      // 首先请求摄像头权限
+      const hasPermission = await requestCameraPermission();
+      if (!hasPermission) {
+        console.log('Camera permission denied');
         return false;
       }
-    }
-    return true;
-  }, []);
 
-  /**
-   * 切换 AR 模式
-   */
-  const setARMode = useCallback(async (mode: ARMode) => {
-    if (mode === ARMode.WorldFixed) {
-      // 世界固定模式需要陀螺仪权限
-      const hasPermission = await requestGyroPermission();
-      if (!hasPermission) {
-        console.warn('[MMDARPlayer] Gyro permission denied, staying in Overlay mode');
-        return;
-      }
-      // 重置初始方向
-      initialOrientationRef.current = null;
-    }
-    
-    setARModeState(mode);
-    onARModeChange?.(mode);
-  }, [requestGyroPermission, onARModeChange]);
+      console.log('Camera permission granted, initializing AR Toolkit Source...');
 
-  /**
-   * 放置模型
-   */
-  const placeModel = useCallback(() => {
-    if (isModelPlaced) return;
-    
-    setPlacementAnimation(true);
-    setIsLoading(true);
-    
-    // 重置初始方向（世界固定模式）
-    initialOrientationRef.current = null;
-    
-    setTimeout(() => {
-      setIsModelPlaced(true);
-      setPlacementAnimation(false);
-      onModelPlaced?.();
-    }, 300);
-  }, [isModelPlaced, onModelPlaced]);
+      // 初始化 AR Toolkit Source
+      const arToolkitSource = new THREEx.ArToolkitSource({
+        sourceType: 'webcam',
+        sourceWidth: width,
+        sourceHeight: height,
+        // 使用用户选择的摄像头朝向
+        ...(state.cameraFacing && { facingMode: state.cameraFacing }),
+      } as any);
+      arToolkitSourceRef.current = arToolkitSource;
 
-  /**
-   * 移除模型
-   */
-  const removeModel = useCallback(() => {
-    setIsModelPlaced(false);
-    setIsLoading(false);
-    initialOrientationRef.current = null;
-  }, []);
+      // 初始化 AR Toolkit Context
+      const arToolkitContext = new THREEx.ArToolkitContext({
+        cameraParametersUrl: 'data/camera_para.dat', // 使用内建相机参数
+        detectionMode: 'mono',
+        // 根据质量设置调整检测参数
+        ...(state.quality && {
+          maxDetectionRate: state.quality === 'high' ? 60 : state.quality === 'medium' ? 30 : 15
+        }),
+      } as any);
+      arToolkitContextRef.current = arToolkitContext;
 
-  /**
-   * 切换模型
-   */
-  const switchModel = useCallback((newResources: MMDResources) => {
-    const matchedModel = modelPresets.find(m => m.modelPath === newResources.modelPath);
-    const matchedMotion = motionPresets.find(m => m.motionPath === newResources.motionPath);
-    const matchedAudio = audioPresets.find(a => a.audioPath === newResources.audioPath);
-    
-    if (matchedModel) setSelectedModelId(matchedModel.id);
-    if (matchedMotion) setSelectedMotionId(matchedMotion.id);
-    if (matchedAudio) setSelectedAudioId(matchedAudio.id);
-    
-    onResourcesChange?.(newResources);
-    if (isModelPlaced) {
-      setIsLoading(true);
-    }
-  }, [isModelPlaced, onResourcesChange, modelPresets, motionPresets, audioPresets]);
+      // 设置 AR 上下文
+      arToolkitContext.init(() => {
+        cameraRef.current!.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
 
-  /**
-   * 应用设置
-   */
-  const applySettings = useCallback(() => {
-    onResourcesChange?.(currentResources);
-    setIsSettingsOpen(false);
-    if (isModelPlaced) {
-      setIsLoading(true);
-    }
-  }, [currentResources, isModelPlaced, onResourcesChange]);
+        // 创建 AR 标记根对象
+        const markerRoot = new THREE.Group();
+        sceneRef.current!.add(markerRoot);
+        markerRootRef.current = markerRoot;
 
-  /**
-   * 重置位置
-   */
-  const resetPosition = useCallback(() => {
-    setIsModelPlaced(false);
-    setIsLoading(false);
-    setIsSettingsOpen(false);
-    initialOrientationRef.current = null;
-    setModelRotation({ x: 0, y: 0, z: 0 });
-  }, []);
+        // 创建标记几何体 (一个简单的立方体表示标记点)
+        const markerGeometry = new THREE.BoxGeometry(1, 1, 0.1);
+        const markerMaterial = new THREE.MeshBasicMaterial({
+          color: 0x00ff00,
+          transparent: true,
+          opacity: 0.7,
+          wireframe: state.showWireframe // 根据设置显示线框
+        });
+        const markerMesh = new THREE.Mesh(markerGeometry, markerMaterial);
+        markerMesh.position.set(0, 0, 0);
+        markerRoot.add(markerMesh);
 
-  /**
-   * 开启摄像头
-   */
-  const startCamera = useCallback(async (mode: 'user' | 'environment' = facingMode) => {
-    try {
-      setCameraError(null);
-      
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
+        // 添加标记边框线条 (如果不显示线框材质)
+        if (!state.showWireframe) {
+          const edges = new THREE.EdgesGeometry(markerGeometry);
+          const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+          const wireframe = new THREE.LineSegments(edges, lineMaterial);
+          markerRoot.add(wireframe);
+        }
 
-      const constraints: MediaStreamConstraints = {
-        video: {
-          facingMode: mode,
-          width: cameraConfig.width || { ideal: 1280 },
-          height: cameraConfig.height || { ideal: 720 },
-        },
-        audio: false
-      };
+        // 创建 AR 标记控制器 - 根据用户选择的标记类型
+        const markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+          type: state.markerType,
+          ...(state.markerType === 'barcode'
+            ? { barcodeValue: 0 } // 使用条码值 0 作为默认标记
+            : { patternUrl: 'data/patt.hiro' } // 使用 Hiro 图案作为默认
+          ),
+        });
+        markerControlsRef.current = markerControls;
 
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      streamRef.current = stream;
+        // 添加光照 (如果启用)
+        if (state.lightingEnabled) {
+          const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+          sceneRef.current!.add(ambientLight);
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
+          const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+          directionalLight.position.set(1, 1, 1);
+          sceneRef.current!.add(directionalLight);
+        }
 
-      setIsCameraStarted(true);
-      setFacingMode(mode);
-      onCameraReady?.(stream);
-    } catch (err: any) {
-      console.error('[MMDARPlayer] Camera access error:', err);
-      const errorMsg = err.name === 'NotAllowedError' ? '摄像头权限被拒绝' : `无法访问摄像头: ${err.message}`;
-      setCameraError(errorMsg);
-      onCameraError?.(err instanceof Error ? err : new Error(errorMsg));
-    }
-  }, [facingMode, cameraConfig, onCameraReady, onCameraError]);
+        // 创建模型根节点（用于放置实际的3D模型）
+        const modelRoot = new THREE.Group();
+        modelRoot.visible = false; // 默认隐藏，等待用户放置
+        sceneRef.current!.add(modelRoot);
+        modelRootRef.current = modelRoot;
 
-  /**
-   * 关闭摄像头
-   */
-  const stopCamera = useCallback(() => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-    setIsCameraStarted(false);
-  }, []);
+        setState(prev => ({
+          ...prev,
+          arReady: true,
+          isLoading: false
+        }));
 
-  /**
-   * 切换摄像头
-   */
-  const switchCamera = useCallback(async () => {
-    const newMode = facingMode === 'user' ? 'environment' : 'user';
-    await startCamera(newMode);
-  }, [facingMode, startCamera]);
-
-  /**
-   * 截图
-   */
-  const snapshot = useCallback(async (): Promise<string> => {
-    if (!videoRef.current || !playerRef.current) return '';
-
-    const canvas = document.createElement('canvas');
-    const video = videoRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return '';
-
-    if (shouldMirror) {
-      ctx.translate(canvas.width, 0);
-      ctx.scale(-1, 1);
-    }
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    if (shouldMirror) {
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-    }
-
-    if (isModelPlaced) {
-      const mmdBase64 = playerRef.current.snapshot();
-      const mmdImg = new Image();
-      mmdImg.src = mmdBase64;
-      
-      await new Promise((resolve) => {
-        mmdImg.onload = () => {
-          ctx.drawImage(mmdImg, 0, 0, canvas.width, canvas.height);
-          resolve(null);
-        };
+        onReady?.();
+        console.log('AR.js and marker system initialized successfully');
       });
+
+      // 启动摄像头
+      arToolkitSource.init(() => {
+        arToolkitSource.domElement.style.display = 'none'; // 隐藏原始视频元素
+        setState(prev => ({ ...prev, cameraReady: true }));
+        console.log('Camera initialized successfully');
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Failed to initialize AR.js:', error);
+      const errorMessage = error instanceof Error ? error.message : 'AR.js 初始化失败';
+      setState(prev => ({
+        ...prev,
+        error: errorMessage,
+        isLoading: false
+      }));
+      onError?.(errorMessage);
+      return false;
+    }
+  }, [width, height, requestCameraPermission, onReady, onError]);
+
+  // 渲染循环
+  const render = useCallback(() => {
+    if (!rendererRef.current || !sceneRef.current || !cameraRef.current) return;
+
+    requestAnimationFrame(render);
+
+    if (arToolkitSourceRef.current && arToolkitSourceRef.current.ready) {
+      arToolkitContextRef.current.update(arToolkitSourceRef.current.domElement);
+
+      // 检查标记检测状态
+      if (markerRootRef.current && markerRootRef.current.visible !== state.markerDetected) {
+        setState(prev => ({ ...prev, markerDetected: markerRootRef.current!.visible }));
+      }
     }
 
-    return canvas.toDataURL('image/png');
-  }, [shouldMirror, isModelPlaced]);
-
-  // 暴露接口
-  useImperativeHandle(ref, () => ({
-    startCamera,
-    stopCamera,
-    switchCamera,
-    snapshot,
-    placeModel,
-    removeModel,
-    switchModel,
-    setARMode,
-    getARMode: () => arMode,
-  }));
-
-  // 自动开启摄像头
-  useEffect(() => {
-    if (autoPlay) {
-      startCamera();
+    // 动画更新
+    if (modelRef.current && state.modelPlaced) {
+      modelRef.current.rotation.y += 0.01; // 缓慢旋转
     }
-    return () => stopCamera();
-  }, [autoPlay, startCamera, stopCamera]);
 
-  // 资源变化通知
+    rendererRef.current.render(sceneRef.current, cameraRef.current);
+  }, [state.markerDetected]);
+
+  // 初始化组件
   useEffect(() => {
-    onResourcesChange?.(currentResources);
-  }, [currentResources, onResourcesChange]);
+    const initialize = async () => {
+      try {
+        // Phase 1.1: 初始化组件和状态管理
+        setState(prev => ({ ...prev, isLoading: true, error: null }));
 
-  // 计算世界固定模式下的模型容器样式
-  const modelContainerStyle = useMemo(() => {
-    if (arMode !== ARMode.WorldFixed) return {};
-    
-    return {
-      transform: `rotateX(${modelRotation.x}rad) rotateY(${modelRotation.y}rad) rotateZ(${modelRotation.z}rad)`,
-      transformStyle: 'preserve-3d' as const,
-      transition: 'transform 0.1s ease-out',
+        // Phase 1.3: 初始化 Three.js
+        if (!initializeThreeJS()) return;
+
+        // Phase 1.4: 初始化 AR.js (包含摄像头权限检查)
+        await initializeAR();
+
+        // 设置陀螺仪监听器 (如果支持)
+        if (window.DeviceOrientationEvent) {
+          const handleOrientation = (event: DeviceOrientationEvent) => {
+            gyroDataRef.current = {
+              alpha: event.alpha || 0,
+              beta: event.beta || 0,
+              gamma: event.gamma || 0,
+            };
+
+            // 如果模型已放置且启用了陀螺仪，可以根据方向调整模型
+            if (state.modelPlaced && modelRef.current) {
+              // 根据陀螺仪数据调整模型旋转 (可选功能)
+              // modelRef.current.rotation.z = (gyroDataRef.current.gamma * Math.PI) / 180;
+            }
+          };
+
+          window.addEventListener('deviceorientation', handleOrientation);
+
+          // 存储清理函数
+          const cleanupGyro = () => {
+            window.removeEventListener('deviceorientation', handleOrientation);
+          };
+
+          // 保存清理函数供后续使用
+          (window as any).__gyroCleanup = cleanupGyro;
+        }
+
+        // 启动渲染循环
+        render();
+
+      } catch (error) {
+        console.error('Initialization failed:', error);
+        setState(prev => ({
+          ...prev,
+          error: '组件初始化失败',
+          isLoading: false
+        }));
+        onError?.('组件初始化失败');
+      }
     };
-  }, [arMode, modelRotation]);
+
+    initialize();
+
+    // 清理函数
+    return () => {
+      if (rendererRef.current) {
+        rendererRef.current.dispose();
+      }
+      if (arToolkitSourceRef.current) {
+        // 停止所有媒体轨道
+        if (arToolkitSourceRef.current.domElement?.srcObject) {
+          const stream = arToolkitSourceRef.current.domElement.srcObject as MediaStream;
+          stream.getTracks().forEach(track => track.stop());
+        }
+        arToolkitSourceRef.current.domElement?.remove();
+      }
+
+      // 清理陀螺仪监听器
+      if ((window as any).__gyroCleanup) {
+        (window as any).__gyroCleanup();
+      }
+    };
+  }, [initializeThreeJS, initializeAR, render, onError]);
 
   return (
-    <div 
-      ref={containerRef}
-      className={`relative w-full h-full bg-black overflow-hidden ${className}`} 
-      style={style}
-    >
-      {/* 1. 摄像头视频背景层 */}
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
-        className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 ${shouldMirror ? 'scale-x-[-1]' : ''}`}
-        style={{ zIndex: 0 }}
+    <div ref={containerRef} className="relative w-full h-full bg-gray-900 overflow-hidden">
+      <Script
+        src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          console.log("AR.js script loaded, checking THREEx...");
+
+          // 等待 THREEx 初始化
+          const checkTHREEx = () => {
+            if ((window as any).THREEx) {
+              console.log("THREEx found! Properties:", Object.keys((window as any).THREEx));
+              (window as any).__arjs_ready = true;
+              console.log("AR.js and THREEx ready!");
+            } else {
+              console.log("THREEx not ready yet, checking window object:", Object.keys(window).filter(key => key.includes('THREEx') || key.includes('AR')));
+              // 继续等待
+              setTimeout(checkTHREEx, 100);
+            }
+          };
+
+          checkTHREEx();
+        }}
+        onError={(error) => {
+          console.error("Failed to load AR.js:", error);
+          setState(prev => ({
+            ...prev,
+            error: 'AR.js 加载失败',
+            isLoading: false
+          }));
+        }}
+      />
+      {/* AR Canvas */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full"
+        style={{ display: state.arReady ? 'block' : 'none' }}
       />
 
-      {/* 2. MMD 模型层 */}
-      {isModelPlaced && (
-        <div 
-          className={`absolute inset-0 w-full h-full transition-all duration-500 ${placementAnimation ? 'scale-110 opacity-0' : 'scale-100 opacity-100'}`}
-          style={{ 
-            zIndex: 1,
-            ...modelContainerStyle,
-          }}
-        >
-          <MMDPlayerBase
-            key={`${selectedModelId}-${selectedMotionId}-${selectedAudioId}-${arMode}`}
-            ref={playerRef}
-            resources={currentResources}
-            stage={{
-              ...stage,
-              backgroundColor: 'transparent',
-              cameraPosition: stage.cameraPosition || { x: 0, y: 15, z: 40 },
-            }}
-            mobileOptimization={mobileOptimization}
-            autoPlay={true}
-            loop={loop}
-            onLoad={() => {
-              setIsLoading(false);
-              onLoad?.();
-            }}
-            onError={onError}
-          />
+      {/* Loading State */}
+      {state.isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900 text-white">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p>正在初始化 AR 环境...</p>
+          </div>
         </div>
       )}
 
-      {/* 3. 放置指示器 */}
-      {!isModelPlaced && isCameraStarted && (
-        <div 
-          className="absolute inset-0 z-5 flex items-center justify-center"
-          onClick={placeModel}
-        >
-          <button
-            onClick={placeModel}
-            className={`
-              relative group cursor-pointer
-              transition-all duration-300 ease-out
-              hover:scale-110 active:scale-95
-              ${placementAnimation ? 'scale-150 opacity-0' : 'scale-100 opacity-100'}
-            `}
-          >
-            <div className="absolute inset-0 -m-4 rounded-2xl bg-cyan-400/20 animate-ping" />
-            <div className="absolute inset-0 -m-2 rounded-xl bg-cyan-400/30 animate-pulse" />
-            
-            <div className="relative bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 p-1 rounded-2xl shadow-2xl shadow-cyan-500/50">
-              <div className="bg-black/80 backdrop-blur-xl px-8 py-6 rounded-xl flex flex-col items-center gap-3">
-                <div className="relative">
-                  <Sparkles className="w-10 h-10 text-cyan-400 animate-pulse" />
-                  <div className="absolute inset-0 w-10 h-10 bg-cyan-400/30 blur-xl" />
-                </div>
-                
-                <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 tracking-widest">
-                  {placementText}
-                </span>
-                
-                <span className="text-xs text-white/50 font-medium">
-                  {arMode === ARMode.WorldFixed ? '点击放置到世界空间 🌍' : '点击召唤 Miku ✨'}
-                </span>
-              </div>
-            </div>
-
-            <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 rounded-full animate-bounce shadow-lg shadow-yellow-400/50" />
-            <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-pink-400 rounded-full animate-bounce delay-100 shadow-lg shadow-pink-400/50" />
-          </button>
+      {/* Error State */}
+      {state.error && (
+        <div className="absolute inset-0 flex items-center justify-center bg-red-900 text-white">
+          <div className="text-center max-w-md">
+            <h2 className="text-xl font-bold mb-4">初始化失败</h2>
+            <p className="text-red-200 mb-4">{state.error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+            >
+              重新加载
+            </button>
+          </div>
         </div>
       )}
 
-      {/* 4. UI 交互层 */}
-      <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-between p-6">
-        <div className="flex justify-between items-start pointer-events-auto">
-          {cameraError ? (
-            <div className="bg-red-500/80 backdrop-blur-md text-white px-4 py-2 rounded-full flex items-center gap-2 text-sm">
-              <AlertCircle className="w-4 h-4" />
-              {cameraError}
-              <button onClick={() => startCamera()} className="ml-2 underline">重试</button>
-            </div>
-          ) : (
-            <div className={`backdrop-blur-md text-white px-4 py-2 rounded-full flex items-center gap-2 text-sm ${
-              arMode === ARMode.WorldFixed ? 'bg-purple-500/40' : 'bg-black/40'
-            }`}>
-              {arMode === ARMode.WorldFixed ? (
-                <Compass className="w-4 h-4 text-purple-400" />
-              ) : (
-                <Camera className="w-4 h-4 text-green-400" />
-              )}
-              {isCameraStarted 
-                ? (isModelPlaced 
-                    ? (arMode === ARMode.WorldFixed ? '世界固定 AR' : '叠加 AR 模式')
-                    : '点击放置模型')
-                : '等待摄像头...'
-              }
+      {/* AR Ready State - Show UI */}
+      {state.arReady && !state.error && (
+        <>
+          {/* AR Marker Instructions */}
+          {!state.modelPlaced && (
+            <div className="absolute top-4 left-4 right-4 bg-black/70 text-white p-4 rounded-lg">
+              <h3 className="font-bold mb-2">AR 放置说明</h3>
+              <p className="text-sm text-gray-300">
+                1. 允许摄像头访问权限<br />
+                2. 准备一个条码标记 (值: 0) 或 Hiro 标记图案<br />
+                3. 将摄像头对准标记，绿色立方体将出现在标记位置<br />
+                {state.markerDetected ? (
+                  <span className="text-green-400 font-bold">✓ 标记已检测到！</span>
+                ) : (
+                  <span className="text-yellow-400">等待标记检测...</span>
+                )}
+                <br />
+                4. 点击"放置模型"按钮固定模型位置
+              </p>
             </div>
           )}
-          
-          <div className="flex flex-col gap-2">
-            {showSettings && (
+
+          {/* Settings Panel */}
+          {state.showSettings && (
+            <div className="absolute top-4 right-4 bg-black/90 text-white p-4 rounded-lg min-w-80 max-w-sm max-h-96 overflow-y-auto">
+              <h3 className="font-bold mb-4 text-lg">⚙️ 设置面板</h3>
+
+              <div className="space-y-4">
+                {/* Camera Settings */}
+                <div className="border-b border-gray-600 pb-3">
+                  <h4 className="font-semibold mb-2 text-blue-300">📷 摄像头设置</h4>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">摄像头朝向</label>
+                    <select
+                      value={state.cameraFacing}
+                      onChange={(e) => handleARSettingChange('cameraFacing', e.target.value)}
+                      className="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm"
+                    >
+                      <option value="environment">后置摄像头</option>
+                      <option value="user">前置摄像头</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* AR Detection Settings */}
+                <div className="border-b border-gray-600 pb-3">
+                  <h4 className="font-semibold mb-2 text-green-300">🎯 AR 检测设置</h4>
+                  <div className="space-y-2">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">标记类型</label>
+                      <select
+                        value={state.markerType}
+                        onChange={(e) => handleARSettingChange('markerType', e.target.value)}
+                        className="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm"
+                      >
+                        <option value="barcode">条码 (Barcode)</option>
+                        <option value="pattern">图案 (Hiro)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">检测质量</label>
+                      <select
+                        value={state.quality}
+                        onChange={(e) => handleARSettingChange('quality', e.target.value)}
+                        className="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm"
+                      >
+                        <option value="low">低质量 (15fps)</option>
+                        <option value="medium">中等质量 (30fps)</option>
+                        <option value="high">高质量 (60fps)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Visual Settings */}
+                <div className="border-b border-gray-600 pb-3">
+                  <h4 className="font-semibold mb-2 text-purple-300">👁️ 视觉设置</h4>
+                  <div className="space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={state.showWireframe}
+                        onChange={(e) => setState(prev => ({ ...prev, showWireframe: e.target.checked }))}
+                        className="mr-2"
+                      />
+                      <span className="text-sm">显示线框</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={state.lightingEnabled}
+                        onChange={(e) => setState(prev => ({ ...prev, lightingEnabled: e.target.checked }))}
+                        className="mr-2"
+                      />
+                      <span className="text-sm">启用光照</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Model & Animation */}
+                <div className="border-b border-gray-600 pb-3">
+                  <h4 className="font-semibold mb-2 text-orange-300">🎭 模型与动画</h4>
+                  <div className="space-y-2">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">模型选择</label>
+                      <select
+                        value={state.selectedModel}
+                        onChange={(e) => setState(prev => ({ ...prev, selectedModel: e.target.value }))}
+                        className="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm"
+                      >
+                        <option value="sphere">🌐 球体</option>
+                        <option value="cube">⬜ 立方体</option>
+                        <option value="torus">⭕ 圆环</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">动作选择</label>
+                      <select
+                        value={state.selectedMotion}
+                        onChange={(e) => setState(prev => ({ ...prev, selectedMotion: e.target.value }))}
+                        className="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm"
+                      >
+                        <option value="idle">🧘 待机</option>
+                        <option value="dance">💃 舞蹈</option>
+                        <option value="wave">👋 挥手</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">音乐选择</label>
+                      <select
+                        value={state.selectedAudio}
+                        onChange={(e) => setState(prev => ({ ...prev, selectedAudio: e.target.value }))}
+                        className="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm"
+                      >
+                        <option value="none">🔇 无音乐</option>
+                        <option value="bgm1">🎵 背景音乐 1</option>
+                        <option value="bgm2">🎶 背景音乐 2</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Control Actions */}
+                <div>
+                  <h4 className="font-semibold mb-2 text-red-300">🎮 控制操作</h4>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => {
+                        if (modelRootRef.current) {
+                          modelRootRef.current.visible = false;
+                        }
+                        if (markerRootRef.current) {
+                          markerRootRef.current.visible = true;
+                        }
+                        setState(prev => ({ ...prev, modelPlaced: false, markerDetected: false }));
+                      }}
+                      className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded transition-colors text-sm"
+                    >
+                      🔄 重新设置标记点
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        // 清除所有模型和标记
+                        if (modelRootRef.current) {
+                          modelRootRef.current.clear();
+                          modelRootRef.current.visible = false;
+                        }
+                        if (markerRootRef.current) {
+                          markerRootRef.current.visible = true;
+                        }
+                        setState(prev => ({
+                          ...prev,
+                          modelPlaced: false,
+                          markerDetected: false,
+                          selectedModel: 'sphere',
+                          selectedMotion: 'idle',
+                          selectedAudio: 'none'
+                        }));
+                      }}
+                      className="w-full px-3 py-2 bg-red-600 hover:bg-red-700 rounded transition-colors text-sm"
+                    >
+                      🗑️ 清除所有
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Control Buttons */}
+          <div className="absolute bottom-4 left-4 right-4 flex justify-center space-x-4">
+            <button
+              onClick={() => setState(prev => ({ ...prev, showSettings: !prev.showSettings }))}
+              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+            >
+              ⚙️ 设置
+            </button>
+
+            {!state.modelPlaced && (
               <button
-                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                className={`p-3 backdrop-blur-md rounded-full text-white transition-all active:scale-95 ${isSettingsOpen ? 'bg-cyan-500' : 'bg-white/10 hover:bg-white/20'}`}
+                onClick={placeModel}
+                disabled={!state.markerDetected}
+                className={`px-6 py-2 rounded-lg transition-colors ${state.markerDetected
+                  ? 'bg-green-600 hover:bg-green-700 text-white'
+                  : 'bg-gray-500 text-gray-300 cursor-not-allowed'
+                  }`}
               >
-                <Settings className="w-5 h-5" />
+                📍 放置模型
               </button>
             )}
-            <button
-              onClick={switchCamera}
-              className="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white transition-all active:scale-95"
-            >
-              <RefreshCw className="w-5 h-5" />
-            </button>
-            <button
-              onClick={isCameraStarted ? stopCamera : () => startCamera()}
-              className={`p-3 backdrop-blur-md rounded-full text-white transition-all active:scale-95 ${isCameraStarted ? 'bg-red-500/20 hover:bg-red-500/40' : 'bg-green-500/20 hover:bg-green-500/40'}`}
-            >
-              {isCameraStarted ? <CameraOff className="w-5 h-5" /> : <Camera className="w-5 h-5" />}
-            </button>
-          </div>
-        </div>
 
-        {/* 5. 设置面板 */}
-        {isSettingsOpen && (
-          <div className="absolute top-20 right-6 w-72 max-h-[75vh] overflow-y-auto bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl p-5 pointer-events-auto shadow-2xl animate-in slide-in-from-right-4 duration-300">
-            <div className="flex items-center justify-between mb-5">
-              <h3 className="text-white font-bold flex items-center gap-2">
-                <Settings className="w-4 h-4 text-cyan-400" />
-                AR 设置
-              </h3>
-              <button 
-                onClick={() => setIsSettingsOpen(false)}
-                className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-white/60"
+            {state.modelPlaced && (
+              <button
+                onClick={takePhoto}
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
-                <CloseIcon className="w-4 h-4" />
+                📸 拍照
               </button>
-            </div>
-
-            <div className="space-y-4">
-              {/* AR 模式切换 */}
-              <ARModeSwitch 
-                mode={arMode} 
-                onChange={setARMode} 
-                gyroSupported={gyroSupported}
-              />
-
-              {gyroPermissionDenied && (
-                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-xs text-red-400">
-                  陀螺仪权限被拒绝，无法使用世界固定模式
-                </div>
-              )}
-
-              <div className="border-t border-white/10 pt-4" />
-
-              {/* 模型选择 */}
-              <Select
-                label="选择模型"
-                options={modelPresets}
-                value={selectedModelId}
-                onChange={setSelectedModelId}
-              />
-
-              {/* 动作选择 */}
-              <Select
-                label="选择动作"
-                options={motionPresets}
-                value={selectedMotionId}
-                onChange={setSelectedMotionId}
-              />
-
-              {/* 音乐选择 */}
-              {audioPresets.length > 0 && (
-                <Select
-                  label="选择音乐"
-                  options={audioPresets}
-                  value={selectedAudioId}
-                  onChange={setSelectedAudioId}
-                  allowEmpty={true}
-                  emptyLabel="🔇 不播放音乐"
-                />
-              )}
-
-              {/* 操作按钮 */}
-              <div className="pt-3 space-y-2">
-                {isModelPlaced && (
-                  <button
-                    onClick={applySettings}
-                    className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-cyan-500/20"
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    应用更改
-                  </button>
-                )}
-
-                <button
-                  onClick={resetPosition}
-                  className={`w-full ${isModelPlaced ? 'bg-white/5 hover:bg-white/10 text-white/70' : 'bg-cyan-500 hover:bg-cyan-600 text-white shadow-lg shadow-cyan-500/20'} font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 border border-white/10`}
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  {isModelPlaced ? '重置位置' : '开始放置'}
-                </button>
-              </div>
-            </div>
+            )}
           </div>
-        )}
 
-        {/* 6. 加载指示器 */}
-        {isLoading && isModelPlaced && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-12 h-12 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin" />
-              <div className="text-white text-sm font-medium bg-black/40 px-3 py-1 rounded-full backdrop-blur-sm">
-                {arMode === ARMode.WorldFixed ? '正在定位到世界空间...' : '正在召唤 Miku...'}
-              </div>
-            </div>
+          {/* Status Indicator */}
+          <div className="absolute top-4 right-4 flex space-x-2">
+            <div className={`w-3 h-3 rounded-full ${state.cameraReady ? 'bg-green-400' : 'bg-red-400'}`} title="摄像头"></div>
+            <div className={`w-3 h-3 rounded-full ${state.arReady ? 'bg-green-400' : 'bg-red-400'}`} title="AR"></div>
+            <div className={`w-3 h-3 rounded-full ${window.DeviceOrientationEvent ? 'bg-purple-400' : 'bg-gray-400'}`} title="陀螺仪"></div>
+            <div className={`w-3 h-3 rounded-full ${state.markerDetected ? 'bg-blue-400' : 'bg-gray-400'}`} title="标记检测"></div>
+            <div className={`w-3 h-3 rounded-full ${state.modelPlaced && modelRootRef.current?.visible ? 'bg-green-400' : 'bg-yellow-400'}`} title="模型"></div>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 });

@@ -247,7 +247,7 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
     const { status, progress, processedRows, totalRows } = exportProgress;
 
     return (
-      <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10">
+      <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-[10]">
         <div className="flex items-center gap-3 mb-2">
           <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
           <span className="text-sm font-medium text-gray-900">
@@ -278,7 +278,7 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
     if (!showDropdown) return null;
 
     return (
-      <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-10 min-w-48">
+      <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-[10] min-w-48">
         {/* 快速导出 */}
         <button
           onClick={() => {
@@ -371,7 +371,7 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
       {/* 点击外部关闭下拉菜单 */}
       {showDropdown && (
         <div
-          className="fixed inset-0 z-0"
+          className="fixed inset-0 z-[0]"
           onClick={() => setShowDropdown(false)}
         />
       )}

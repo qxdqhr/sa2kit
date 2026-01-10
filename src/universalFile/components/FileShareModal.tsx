@@ -453,7 +453,7 @@ const FileShareModal: React.FC<FileShareModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-[50] flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-hidden">
         {/* 头部 */}
         <div className="flex items-center justify-between p-4 border-b">

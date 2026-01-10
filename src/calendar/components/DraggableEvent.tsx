@@ -106,7 +106,7 @@ export const DraggableEvent: React.FC<DraggableEventProps> = ({
         ${dragSupported ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}
         transition-all duration-150 ease-in-out text-xs
         ${getEventColorClasses(event.color)}
-        ${isDragActive || isDragging ? 'opacity-60 shadow-md z-40' : 'opacity-100'}
+        ${isDragActive || isDragging ? 'opacity-60 shadow-md z-[40]' : 'opacity-100'}
         ${className}
       `}
       // 只在支持拖拽时应用拖拽事件监听器

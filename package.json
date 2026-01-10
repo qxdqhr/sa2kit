@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.6.18",
+  "version": "1.6.19",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -364,6 +364,7 @@
     "@meting/core": "^1.6.0",
     "adm-zip": "^0.5.16",
     "ali-oss": "^6.23.0",
+    "@ar-js-org/ar.js": "3.4.7",
     "bcryptjs": "^3.0.3",
     "framer-motion": "^12.23.24",
     "jsonwebtoken": "^9.0.2",

@@ -178,7 +178,7 @@ const DefaultContainer: React.FC<{ children: React.ReactNode }> = ({ children })
         }}
       ></div>
     </div>
-    <div className="relative z-10">
+    <div className="relative z-[10]">
       {children}
     </div>
     <style dangerouslySetInnerHTML={{__html: `

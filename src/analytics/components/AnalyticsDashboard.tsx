@@ -339,7 +339,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       {/* 事件详情弹窗 - 优化样式 */}
       {selectedEvent && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in"
+          className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-[50] p-4 animate-fade-in"
           onClick={closeEventDetail}
         >
           <div

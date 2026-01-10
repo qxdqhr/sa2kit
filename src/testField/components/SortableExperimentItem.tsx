@@ -48,7 +48,7 @@ export const SortableExperimentItem: React.FC<SortableExperimentItemProps> = ({
       <div
         {...attributes}
         {...listeners}
-        className="absolute right-2 top-2 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-md z-10
+        className="absolute right-2 top-2 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-md z-[10]
                   hidden sm:flex
                   opacity-0 group-hover:opacity-100 transition-opacity
                   cursor-grab active:cursor-grabbing
@@ -66,7 +66,7 @@ export const SortableExperimentItem: React.FC<SortableExperimentItemProps> = ({
       </div>
 
       {/* 移动端排序按钮组 */}
-      <div className="absolute right-2 top-2 flex flex-col gap-2 sm:hidden z-10">
+      <div className="absolute right-2 top-2 flex flex-col gap-2 sm:hidden z-[10]">
         {/* 向上按钮 */}
         <button
           onClick={(e) => {

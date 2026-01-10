@@ -229,7 +229,7 @@ export const DraggableMonthView: React.FC<DraggableMonthViewProps> = ({
 
       {/* 拖拽状态指示器 - 仅桌面端 */}
       {dragSupported && dragState.isDragging && (
-        <div className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50">
+        <div className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-[50]">
           <div className="flex items-center space-x-2">
             <svg className="w-4 h-4 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
               <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
