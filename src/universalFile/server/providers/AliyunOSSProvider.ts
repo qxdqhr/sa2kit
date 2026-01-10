@@ -69,6 +69,7 @@ export class AliyunOSSProvider implements IStorageProvider {
     this.config = newConfig;
 
     logger.info(`☁️ [AliyunOSSProvider] ${this.isInitialized ? '重新' : ''}初始化阿里云OSS`);
+    logger.info(`☁️ [AliyunOSSProvider] ${this.config ? JSON.stringify(this.config) : ''}`);
 
     try {
       // 验证必需的配置项
@@ -86,7 +87,8 @@ export class AliyunOSSProvider implements IStorageProvider {
         cname: !!this.config.customDomain, // 是否使用自定义域名
         endpoint: this.config.customDomain || undefined,
       });
-
+      logger.info(`☁️ [AliyunOSSProvider] this.client: ${this.client}`);
+      logger.info(`☁️ [AliyunOSSProvider] 测试连接... testConnection`);
       // 测试连接
       await this.testConnection();
 
@@ -460,11 +462,14 @@ export class AliyunOSSProvider implements IStorageProvider {
         if (error.code === 'NoSuchBucket') {
           throw new StorageProviderError(`存储桶不存在: ${this.config!.bucket}`);
         }
-        if (error.code === 'InvalidAccessKeyId') {
+        else if (error.code === 'InvalidAccessKeyId') {
           throw new StorageProviderError('Access Key ID 无效');
         }
-        if (error.code === 'SignatureDoesNotMatch') {
+        else if (error.code === 'SignatureDoesNotMatch') {
           throw new StorageProviderError('Access Key Secret 无效');
+        }
+        else {
+          throw new StorageProviderError(`OSS连接测试失败: ${error.message}`);
         }
       }
       throw error;
