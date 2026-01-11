@@ -28,10 +28,16 @@ export class AliyunOSSProvider implements IStorageProvider {
   private client: OSS | null = null;
   private isInitialized = false;
 
+  /**
+   * 初始化存储提供者
+   */
   async initialize(config: StorageConfig): Promise<void> {
     return this.reinitialize(config);
   }
 
+  /**
+   * 重新初始化存储提供者（支持配置热更新）
+   */
   async reinitialize(config: StorageConfig): Promise<void> {
     if (config.type !== 'aliyun-oss') {
       throw new StorageProviderError('配置类型不匹配：期望 aliyun-oss');
@@ -39,7 +45,9 @@ export class AliyunOSSProvider implements IStorageProvider {
 
     const newConfig = config as AliyunOSSConfig;
 
-    const configChanged = !this.config || 
+    // 检查配置是否发生变化
+    const configChanged =
+      !this.config ||
       this.config.region !== newConfig.region ||
       this.config.bucket !== newConfig.bucket ||
       this.config.accessKeyId !== newConfig.accessKeyId ||
@@ -50,102 +58,131 @@ export class AliyunOSSProvider implements IStorageProvider {
 
     if (configChanged) {
       logger.info('🔄 [AliyunOSSProvider] 检测到配置变化，重新初始化OSS客户端');
-      logger.info(`☁️ [AliyunOSSProvider] 新配置: bucket=${newConfig.bucket}, region=${newConfig.region}`);
+      logger.info(
+        '☁️ [AliyunOSSProvider] 新配置: bucket=' + (newConfig.bucket) + ', region=' + (newConfig.region)
+      );
     } else if (this.isInitialized) {
       logger.info('ℹ️ [AliyunOSSProvider] 配置未变化，跳过重新初始化');
       return;
     }
 
     this.config = newConfig;
-    
-    logger.info(`☁️ [AliyunOSSProvider] ${this.isInitialized ? '重新' : ''}初始化阿里云OSS`);
+
+    logger.info('☁️ [AliyunOSSProvider] ' + (this.isInitialized ? '重新' : '') + '初始化阿里云OSS');
+    logger.info('☁️ [AliyunOSSProvider] ' + (this.config ? JSON.stringify(this.config) : ''));
 
     try {
+      // 验证必需的配置项
       this.validateConfig();
 
-      const hasRealCustomDomain = this.config.customDomain && !this.config.customDomain.includes('.aliyuncs.com');
-      
-      logger.info(`🔧 [AliyunOSSProvider] OSS配置:`, {
+      // 确保配置值是有效的字符串
+      if (!this.config.region || typeof this.config.region !== 'string') {
+        throw new Error('OSS region 必须是有效的字符串');
+      }
+      if (!this.config.bucket || typeof this.config.bucket !== 'string') {
+        throw new Error('OSS bucket 必须是有效的字符串');
+      }
+      if (!this.config.accessKeyId || typeof this.config.accessKeyId !== 'string') {
+        throw new Error('OSS accessKeyId 必须是有效的字符串');
+      }
+      if (!this.config.accessKeySecret || typeof this.config.accessKeySecret !== 'string') {
+        throw new Error('OSS accessKeySecret 必须是有效的字符串');
+      }
+
+      logger.info(`☁️ [AliyunOSSProvider] 创建OSS客户端配置:`, {
         region: this.config.region,
         bucket: this.config.bucket,
-        customDomain: this.config.customDomain,
-        hasRealCustomDomain,
+        hasAccessKeyId: !!this.config.accessKeyId,
+        hasAccessKeySecret: !!this.config.accessKeySecret,
         secure: this.config.secure !== false,
+        internal: this.config.internal || false,
+        cname: !!this.config.customDomain,
+        endpoint: this.config.customDomain || '默认端点',
       });
-      
-      const ossConfig = {
+
+      // 创建OSS客户端
+      this.client = new OSS({
         region: this.config.region,
         bucket: this.config.bucket,
         accessKeyId: this.config.accessKeyId,
         accessKeySecret: this.config.accessKeySecret,
-        secure: this.config.secure !== false,
-        internal: this.config.internal || false,
-        timeout: 300000,
-        cname: !!hasRealCustomDomain,
-        endpoint: hasRealCustomDomain ? this.config.customDomain : undefined
-      };
-      
-      if (!hasRealCustomDomain) {
-         logger.info(`🌐 [AliyunOSSProvider] 使用标准OSS域名: ${this.config.region}`);
-      } else {
-         logger.info(`🌐 [AliyunOSSProvider] 使用自定义域名: ${this.config.customDomain}`);
-      }
-      
-      this.client = new OSS(ossConfig);
+        secure: this.config.secure !== false, // 默认使用HTTPS
+        internal: this.config.internal || false, // 默认使用公网
+        timeout: 300000, // 5分钟超时
+        cname: !!this.config.customDomain, // 是否使用自定义域名
+        endpoint: this.config.customDomain || undefined,
+      });
 
+      if (!this.client) {
+        throw new Error('OSS客户端创建失败');
+      }
+
+      logger.info(`☁️ [AliyunOSSProvider] OSS客户端创建成功`);
+      logger.info(`☁️ [AliyunOSSProvider] 测试连接... testConnection`);
+
+      // 测试连接
       await this.testConnection();
-      
+
       this.isInitialized = true;
-      logger.info(`✅ [AliyunOSSProvider] 阿里云OSS${configChanged ? '重新' : ''}初始化完成`);
-      
+      logger.info('✅ [AliyunOSSProvider] 阿里云OSS' + (configChanged ? '重新' : '') + '初始化完成');
     } catch (error) {
       logger.error('❌ [AliyunOSSProvider] 阿里云OSS初始化失败:', error);
-      this.isInitialized = false;
-      throw new StorageProviderError(
-        `阿里云OSS初始化失败: ${error instanceof Error ? error.message : '未知错误'}`
-      );
+      throw new StorageProviderError(`阿里云OSS初始化失败`);
     }
   }
 
+  /**
+   * 上传文件
+   */
   async upload(fileInfo: UploadFileInfo, filePath: string): Promise<StorageResult> {
     this.ensureInitialized();
-    
+
     const startTime = Date.now();
-    logger.info(`📤 [AliyunOSSProvider] 开始上传文件到OSS: ${filePath}`);
+    logger.info('📤 [AliyunOSSProvider] 开始上传文件到OSS: ' + (filePath));
 
     try {
+      // 将File对象转换为Buffer
       const buffer = Buffer.from(await fileInfo.file.arrayBuffer());
-      
-      const options = {
+
+      // 构建上传选项
+      const options: any = {
         headers: {
           'Content-Type': fileInfo.file.type || 'application/octet-stream',
           'Content-Length': fileInfo.file.size.toString(),
         },
         meta: {
-          uid: 0,
-          pid: 0,
+          uid: 0, // 必需字段
+          pid: 0, // 必需字段
           originalName: encodeURIComponent(fileInfo.file.name),
           moduleId: fileInfo.moduleId,
           businessId: fileInfo.businessId || '',
           uploadTime: new Date().toISOString(),
-          ...this.encodeMetadata(fileInfo.metadata || {})
-        }
+          // 对元数据进行编码处理，避免中文字符问题
+          ...this.encodeMetadata(fileInfo.metadata || {}),
+        },
       };
 
-      let result;
-      
+      // 根据文件大小选择上传方式
+      let result: any;
+
       if (fileInfo.file.size > 100 * 1024 * 1024) {
-        logger.info(`📦 [AliyunOSSProvider] 使用分片上传大文件: ${filePath}, 大小: ${fileInfo.file.size}`);
+        // 大于100MB使用分片上传
+        logger.info(
+          '📦 [AliyunOSSProvider] 使用分片上传大文件: ' + (filePath) + ', 大小: ' + (fileInfo.file.size)
+        );
         result = await this.multipartUpload(filePath, buffer, options);
       } else {
-        logger.info(`📤 [AliyunOSSProvider] 使用普通上传: ${filePath}, 大小: ${fileInfo.file.size}`);
-        result = await this.client.put(filePath, buffer, options);
+        logger.info(
+          '📤 [AliyunOSSProvider] 使用普通上传: ' + (filePath) + ', 大小: ' + (fileInfo.file.size)
+        );
+        result = await this.client?.put(filePath, buffer, options);
       }
 
+      // 生成访问URL
       const accessUrl = this.generateAccessUrl(filePath);
-      
+
       const uploadTime = Date.now() - startTime;
-      logger.info(`✅ [AliyunOSSProvider] 文件上传完成: ${filePath}, 耗时: ${uploadTime}ms`);
+      logger.info('✅ [AliyunOSSProvider] 文件上传完成: ' + (filePath) + ', 耗时: ' + (uploadTime) + 'ms');
 
       return {
         success: true,
@@ -156,366 +193,556 @@ export class AliyunOSSProvider implements IStorageProvider {
           etag: result.data ? JSON.stringify(result.data) : '',
           requestId: result.res?.rt || 0,
           uploadTime,
-          ossUrl: result.url || result.name || filePath
-        }
+          ossUrl: result.url || result.name,
+        },
       };
-
     } catch (error) {
-      logger.error(`❌ [AliyunOSSProvider] 文件上传失败: ${filePath}:`, error);
-      
+      logger.error('❌ [AliyunOSSProvider] 文件上传失败: ' + (filePath) + ':', error);
+
       return {
         success: false,
-        error: this.formatOSSError(error)
+        error: this.formatOSSError(error),
       };
     }
   }
 
+  /**
+   * 下载文件
+   */
   async download(filePath: string): Promise<Buffer> {
     this.ensureInitialized();
-    logger.info(`📥 [AliyunOSSProvider] 开始从OSS下载文件: ${filePath}`);
+
+    logger.info('📥 [AliyunOSSProvider] 开始从OSS下载文件: ' + (filePath));
 
     try {
-      const result = await this.client.get(filePath);
-      
-      if (!result?.content || !Buffer.isBuffer(result?.content)) {
+      const result = await this.client?.get(filePath) as any;
+
+      if (!result.content || !Buffer.isBuffer(result.content)) {
         throw new StorageProviderError('下载的文件内容格式错误');
       }
 
-      logger.info(`✅ [AliyunOSSProvider] 文件下载完成: ${filePath}, 大小: ${result.content.length}`);
-      
-      return result.content;
-
-    } catch (error) {
-      logger.error(`❌ [AliyunOSSProvider] 文件下载失败: ${filePath}:`, error);
-      
-      if (this.isOSSError(error) && error.code === 'NoSuchKey') {
-        throw new StorageProviderError(`文件不存在: ${filePath}`);
-      }
-      
-      throw new StorageProviderError(
-        `文件下载失败: ${this.formatOSSError(error)}`
+      logger.info(
+        '✅ [AliyunOSSProvider] 文件下载完成: ' + (filePath) + ', 大小: ' + (result.content.length)
       );
+
+      return result.content;
+    } catch (error) {
+      logger.error('❌ [AliyunOSSProvider] 文件下载失败: ' + (filePath) + ':', error);
+
+      if (this.isOSSError(error) && error.code === 'NoSuchKey') {
+        throw new StorageProviderError(`文件不存在`);
+      }
+
+      throw new StorageProviderError(`文件下载失败`);
     }
   }
 
+  /**
+   * 删除文件
+   */
   async delete(filePath: string): Promise<StorageResult> {
     this.ensureInitialized();
-    logger.info(`🗑️ [AliyunOSSProvider] 开始从OSS删除文件: ${filePath}`);
+
+    logger.info('🗑️ [AliyunOSSProvider] 开始从OSS删除文件: ' + (filePath));
 
     try {
-      const result = await this.client.delete(filePath);
-      logger.info(`✅ [AliyunOSSProvider] 文件删除完成: ${filePath}`);
-      
+      const result = await this.client?.delete(filePath) as any;
+
+      logger.info('✅ [AliyunOSSProvider] 文件删除完成: ' + (filePath));
+
       return {
         success: true,
         data: {
-          requestId: result?.res?.rt ?? 0,
-          deletedPath: filePath
-        }
+          requestId: result?.res?.rt || 0,
+          deletedPath: filePath,
+        },
       };
-
     } catch (error) {
-      logger.error(`❌ [AliyunOSSProvider] 文件删除失败: ${filePath}:`, error);
-      
+      logger.error('❌ [AliyunOSSProvider] 文件删除失败: ' + (filePath) + ':', error);
+
+      // OSS中删除不存在的文件不会报错，但我们统一处理
       if (this.isOSSError(error) && error.code === 'NoSuchKey') {
-        logger.warn(`⚠️ [AliyunOSSProvider] 文件不存在: ${filePath}`);
+        logger.warn('⚠️ [AliyunOSSProvider] 文件不存在: ' + (filePath));
         return {
           success: true,
-          data: { reason: 'file_not_exists' }
+          data: { reason: 'file_not_exists' },
         };
       }
-      
+
       return {
         success: false,
-        error: this.formatOSSError(error)
+        error: this.formatOSSError(error),
       };
     }
   }
 
+  /**
+   * 获取文件信息
+   */
   async getFileInfo(filePath: string): Promise<StorageResult> {
     this.ensureInitialized();
-    
+
     try {
-      const result = await this.client.head(filePath);
-      
+      const result = await this.client?.head(filePath) as any;
+
       return {
         success: true,
-        size: parseInt(String(result?.meta?.['content-length'] ?? '0')),
+        size: parseInt(String(result.meta['content-length'] || '0')),
         data: {
-          etag: result?.meta?.etag ?? '',
-          lastModified: result?.meta?.['last-modified'] ?? '',
-          contentType: result?.meta?.['content-type'],
-          meta: result?.meta,
-          size: parseInt(String(result?.meta?.['content-length'] ?? '0'))
-        }
+          etag: result.meta.etag || '',
+          lastModified: result.meta['last-modified'] || '',
+          contentType: result.meta['content-type'],
+          meta: result.meta,
+          size: parseInt(String(result.meta['content-length'] || '0')),
+        },
       };
-
     } catch (error) {
       if (this.isOSSError(error) && error.code === 'NoSuchKey') {
         return {
           success: false,
-          error: '文件不存在'
+          error: '文件不存在',
         };
       }
-      
+
       return {
         success: false,
-        error: this.formatOSSError(error)
+        error: this.formatOSSError(error),
       };
     }
   }
 
+  /**
+   * 生成访问URL
+   */
   async getAccessUrl(filePath: string, expiresIn?: number): Promise<string> {
     this.ensureInitialized();
-    
+
     try {
-      const isImage = /.(jpg|jpeg|png|gif|webp|svg|bmp|ico)$/i.test(filePath);
-      
+      // 对于图片文件，直接返回公开URL，避免CORS问题
+      // 对于其他文件，使用签名URL
+      const isImage = /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)$/i.test(filePath);
+
       if (isImage) {
+        // 图片文件使用公开URL
         return this.generateAccessUrl(filePath);
       } else {
-        const expires = expiresIn || 3600;
-        const signedUrl = this.client.signatureUrl(filePath, {
+        // 其他文件使用签名URL
+        const expires = expiresIn || 3600; // 默认1小时
+        const signedUrl = this.client?.signatureUrl(filePath, {
           expires,
-          method: 'GET'
+          method: 'GET',
         });
-        
-        return signedUrl ?? '';
-      }
 
+        return signedUrl || '' ;
+      }
     } catch (error) {
-      logger.error(`❌ [AliyunOSSProvider] 生成访问URL失败: ${filePath}:`, error);
-      throw new StorageProviderError(
-        `生成访问URL失败: ${this.formatOSSError(error)}`
-      );
+      logger.error('❌ [AliyunOSSProvider] 生成访问URL失败: ' + (filePath) + ':', error);
+      throw new StorageProviderError(`生成访问URL失败`);
     }
   }
 
+  /**
+   * 生成预签名上传URL
+   */
   async getUploadUrl(filePath: string, expiresIn?: number): Promise<string> {
     this.ensureInitialized();
-    
-    try {
-      const expires = expiresIn || 3600; 
-      const signedUrl = this.client.signatureUrl(filePath, {
-        expires,
-        method: 'PUT'
-      });
-      
-      return signedUrl ?? '' ;
 
+    try {
+      const expires = expiresIn || 3600; // 默认1小时
+      const signedUrl = this.client?.signatureUrl(filePath, {
+        expires,
+        method: 'PUT',
+      });
+
+      return signedUrl || '' ;
     } catch (error) {
-      logger.error(`❌ [AliyunOSSProvider] 生成上传URL失败: ${filePath}:`, error);
-      throw new StorageProviderError(
-        `生成上传URL失败: ${this.formatOSSError(error)}`
-      );
+      logger.error('❌ [AliyunOSSProvider] 生成上传URL失败: ' + (filePath) + ':', error);
+      throw new StorageProviderError(`生成上传URL失败`);
     }
   }
 
+  /**
+   * 检查文件是否存在
+   */
   async exists(filePath: string): Promise<boolean> {
     this.ensureInitialized();
-    
+
     try {
-      await this.client.head(filePath);
+      await this.client?.head(filePath);
       return true;
     } catch (error) {
       if (this.isOSSError(error) && error.code === 'NoSuchKey') {
         return false;
       }
-      logger.warn(`⚠️ [AliyunOSSProvider] 检查文件存在性时出错: ${filePath}:`, error);
+      // 其他错误也视为文件不存在
+      logger.warn('⚠️ [AliyunOSSProvider] 检查文件存在性时出错: ' + (filePath) + ':', error);
       return false;
     }
   }
-  
-  async list(prefix: string, maxKeys?: number): Promise<string[]> {
+
+  /**
+   * 列出文件（详细信息）
+   */
+  async listFiles(prefix: string, delimiter: string = '/', maxKeys: number = 1000): Promise<{
+    files: Array<{
+      name: string;
+      url: string;
+      size: number;
+      lastModified: string;
+      etag: string;
+      type: string;
+    }>;
+    folders: string[];
+    nextMarker?: string;
+  }> {
     this.ensureInitialized();
-    
+
     try {
-      const options = {
+      const options: any = {
         prefix,
-        'max-keys': String(maxKeys || 1000)
+        delimiter,
+        'max-keys': String(maxKeys),
       };
 
-      const result = await this.client.list(options, {});
-      
-      return result?.objects?.map((obj) => obj.name) ?? [];
+      const result = await this.client?.list(options, {}) as any;
 
+      const files = (result.objects || []).map((obj: any) => ({
+        name: obj.name,
+        url: this.generateAccessUrl(obj.name),
+        size: obj.size,
+        lastModified: obj.lastModified,
+        etag: obj.etag,
+        type: 'file',
+      }));
+
+      const folders = result.prefixes || [];
+
+      return {
+        files,
+        folders,
+        nextMarker: result.nextMarker,
+      };
     } catch (error) {
-      logger.error(`❌ [AliyunOSSProvider] 列出文件失败: ${prefix}:`, error);
+      logger.error('❌ [AliyunOSSProvider] 列出文件失败: ' + (prefix) + ':', error);
+      throw new StorageProviderError(`列出文件失败`);
+    }
+  }
+
+  /**
+   * 列出文件
+   */
+  async list(prefix: string, maxKeys?: number): Promise<string[]> {
+    this.ensureInitialized();
+
+    try {
+      const options: any = {
+        prefix,
+        'max-keys': String(maxKeys || 1000),
+      };
+
+      const result = await this.client?.list(options, {}) as any;
+
+      return result.objects?.map((obj: any) => obj.name) || [];
+    } catch (error) {
+      logger.error('❌ [AliyunOSSProvider] 列出文件失败: ' + (prefix) + ':', error);
       return [];
     }
   }
 
+  // ============= 私有方法 =============
+
+  /**
+   * 确保已初始化
+   */
   private ensureInitialized(): void {
     if (!this.isInitialized || !this.client || !this.config) {
-      logger.error('❌ [AliyunOSSProvider] OSS存储提供者未初始化');
       throw new StorageProviderError('OSS存储提供者未初始化');
     }
   }
 
+  /**
+   * 验证配置
+   */
   private validateConfig(): void {
     if (!this.config) {
       throw new StorageProviderError('OSS配置为空');
     }
 
     const required = ['region', 'bucket', 'accessKeyId', 'accessKeySecret'];
-    const missing = required.filter(key => !this.config[key]);
-    
+    const missing = required.filter((key) => !this.config![key as keyof AliyunOSSConfig]);
+
     if (missing.length > 0) {
-      throw new StorageProviderError('OSS配置缺少必需项');
+      throw new StorageProviderError(`OSS配置缺少必需项`);
     }
   }
 
+  /**
+   * 测试连接
+   */
   private async testConnection(): Promise<void> {
     try {
       // 尝试列出少量对象来测试连接
-      logger.info(`🔍 [AliyunOSSProvider] 测试OSS连接...`);
-      const result = await this.client.list({
-        'max-keys': '1'
-      }, {});
-      logger.info(`✅ [AliyunOSSProvider] OSS连接测试成功，找到 ${result?.objects?.length ?? 0} 个对象`);
-    } catch (error) {
-      logger.warn(`⚠️ [AliyunOSSProvider] OSS连接测试失败: ${this.formatOSSError(error)}`);
-      
-      // 记录详细信息但不崩溃，使用安全的属性访问
+      await this.client?.list({
+        'max-keys': '1',
+      }, {}) as any;
+      logger.info(`✅ [AliyunOSSProvider] OSS连接测试成功`);
+    } catch (error: any) {
+      logger.error('❌ [AliyunOSSProvider] OSS连接测试失败，原始错误:', error);
+
+      // 安全地检查错误类型，避免生产环境中的压缩问题
+      let errorCode: string | undefined;
+      let errorMessage: string = '未知错误';
+
       try {
-          const err = error as any;
-          // Avoid accessing 'name' if risky, mainly access code and message
-          logger.warn('OSS连接错误详情', {
-              code: err?.code,
-              message: err?.message,
-          });
-          
-          if (err && typeof err.code === 'string') {
-            if (err.code === 'NoSuchBucket') throw new StorageProviderError(`存储桶不存在`);
-            if (err.code === 'InvalidAccessKeyId') throw new StorageProviderError('Access Key ID 无效');
-            if (err.code === 'SignatureDoesNotMatch') throw new StorageProviderError('Access Key Secret 无效');
-          }
-      } catch (e) {
-          logger.warn('无法解析错误详情', e);
+        errorCode = error?.code;
+        errorMessage = error?.message || '未知错误';
+      } catch (accessError) {
+        // 如果访问错误属性失败，使用通用错误信息
+        logger.warn('无法访问错误对象的属性:', accessError);
+        errorMessage = '无法解析错误信息';
       }
+
+      if (typeof errorCode === 'string') {
+        if (errorCode === 'NoSuchBucket') {
+          throw new StorageProviderError(`存储桶不存在`);
+        }
+        else if (errorCode === 'InvalidAccessKeyId') {
+          throw new StorageProviderError('Access Key ID 无效');
+        }
+        else if (errorCode === 'SignatureDoesNotMatch') {
+          throw new StorageProviderError('Access Key Secret 无效');
+        }
+        else {
+          throw new StorageProviderError(`OSS连接测试失败`);
+        }
+      }
+
+      // 如果不是标准的OSS错误，抛出通用错误
+      throw new StorageProviderError(`OSS连接测试失败`);
     }
   }
 
+  /**
+   * 分片上传大文件
+   */
   private async multipartUpload(filePath: string, buffer: Buffer, options: any): Promise<any> {
     logger.info(`📦 [AliyunOSSProvider] 使用多分片上传`);
 
-    const result = await this.client.multipartUpload(filePath, buffer, {
-      partSize: 10 * 1024 * 1024,
-      parallel: 4,
-      progress: (p) => {
+    // 使用OSS的multipartUpload方法
+    const result = await this.client?.multipartUpload(filePath, buffer, {
+      partSize: 10 * 1024 * 1024, // 10MB per chunk
+      parallel: 4, // 并发数
+      progress: (p: number) => {
         if (p % 0.1 < 0.01) {
-          logger.info(`📦 [AliyunOSSProvider] 上传进度: ${(p * 100).toFixed(1)}%`);
+          // 每10%显示一次进度
+          logger.info('📦 [AliyunOSSProvider] 上传进度: ' + ((p * 100).toFixed(1)) + '%');
         }
       },
       meta: options.meta,
-      headers: options.headers
+      headers: options.headers,
     });
 
     return {
-      name: result?.name ?? filePath,
-      url: result?.name ?? filePath,
-      data: result?.data,
-      res: result?.res
+      name: result?.name || '',
+      url: result?.name || '', // OSS返回的是object名称
+      data: result?.data || {},
+      res: result?.res || {},
     };
   }
 
+  /**
+   * 生成公开访问URL
+   */
   private generateAccessUrl(filePath: string): string {
     if (!this.config) {
       throw new StorageProviderError('OSS配置为空');
     }
 
+    // 确保文件路径不以斜杠开头
     const normalizedPath = filePath.startsWith('/') ? filePath.substring(1) : filePath;
+
     if (this.config.customDomain) {
+      // 使用自定义域名
       const protocol = this.config.secure !== false ? 'https' : 'http';
-      const url = `${protocol}://${this.config.customDomain}/${normalizedPath}`;
-      logger.info(`🔗 [AliyunOSSProvider] 使用自定义域名: ${url}`);
+      const url = (protocol) + '://' + (this.config.customDomain) + '/' + (normalizedPath);
+      logger.info('🔗 [AliyunOSSProvider] 使用自定义域名: ' + (url));
       return url;
     } else {
+      // 使用默认OSS域名
       const protocol = this.config.secure !== false ? 'https' : 'http';
-      const url = `${protocol}://${this.config.bucket}.${this.config.region}.aliyuncs.com/${normalizedPath}`;
-      logger.info(`🔗 [AliyunOSSProvider] 使用默认OSS域名: ${url}`);
+      const url = (protocol) + '://' + (this.config.bucket) + '.' + (this.config.region) + '.aliyuncs.com/' + (normalizedPath);
+      logger.info('🔗 [AliyunOSSProvider] 使用默认OSS域名: ' + (url));
       return url;
     }
   }
 
-  private isOSSError(error: any): error is { code: string; name: string; message: string; requestId?: string } {
-    return error && typeof error.code === 'string' && typeof error.name === 'string';
+  /**
+   * 判断是否为OSS错误
+   */
+  private isOSSError(
+    error: any
+  ): error is { code: string; name: string; message: string; requestId?: string } {
+    // 安全地检查错误属性，避免生产环境中的压缩问题
+    if (!error || typeof error !== 'object') {
+      return false;
+    }
+
+    return typeof error.code === 'string' &&
+           typeof (error.name || '') === 'string' &&
+           typeof (error.message || '') === 'string';
   }
 
+  /**
+   * 格式化OSS错误信息
+   */
   private formatOSSError(error: any): string {
-    if (this.isOSSError(error)) {
-      return `${error.code}: ${error.message}${error.requestId ? ` (RequestId: ${error.requestId})` : ''}`;
+    // if (this.isOSSError(error)) {
+    //   const requestId = error.requestId ? ' (RequestId: ' + (error.requestId) + ')' : '';
+    //   return (error.code) + ': ' + (error.message) + (requestId);
+    // }
+    if (error instanceof Error) {
+      return error.message;
     }
-    return error instanceof Error ? error.message : '未知错误';
+    if (typeof error === 'string') {
+      return error;
+    }
+    return '未知错误';
   }
-    
-  private encodeMetadata(metadata: Record<string, any>): Record<string, string> {
-    const encoded: Record<string, string> = {};
-    for (const [key, value] of Object.entries(metadata)) {
-      if (value !== null && value !== undefined) {
-        encoded[key] = encodeURIComponent(String(value));
+
+  /**
+   * 流式上传（可选实现）
+   */
+  async uploadStream(
+    readableStream: NodeJS.ReadableStream,
+    filePath: string,
+    contentType?: string,
+    contentLength?: number
+  ): Promise<StorageResult> {
+    this.ensureInitialized();
+
+    const startTime = Date.now();
+    logger.info('📤 [AliyunOSSProvider] 开始流式上传文件到OSS: ' + (filePath));
+
+    try {
+      const options: any = {
+        timeout: 300000,
+        mime: contentType || 'application/octet-stream',
+        meta: { uid: 0, pid: 0 },
+        callback: { url: '', body: '' },
+        headers: {} as any,
+      };
+
+      if (contentLength) {
+        options.headers['Content-Length'] = contentLength.toString();
       }
+
+      const result = await this.client?.putStream(filePath, readableStream, options) as any;
+
+      const accessUrl = this.generateAccessUrl(filePath);
+
+      const uploadTime = Date.now() - startTime;
+      logger.info('✅ [AliyunOSSProvider] 流式上传完成: ' + (filePath) + ', 耗时: ' + (uploadTime) + 'ms');
+
+      return {
+        success: true,
+        path: filePath,
+        url: accessUrl,
+        size: contentLength,
+        data: {
+          name: result.name,
+          requestId: result.res?.rt || 0,
+          uploadTime,
+          ossUrl: result.url || result.name,
+        },
+      };
+    } catch (error) {
+      logger.error('❌ [AliyunOSSProvider] 流式上传失败: ' + (filePath) + ':', error);
+
+      return {
+        success: false,
+        error: this.formatOSSError(error),
+      };
     }
-    return encoded;
   }
-  
-  async uploadStream(readableStream: NodeJS.ReadableStream, filePath: string, contentType?: string, contentLength?: number): Promise<StorageResult> {
-     this.ensureInitialized();
-     const startTime = Date.now();
-     logger.info(`📤 [AliyunOSSProvider] 开始流式上传: ${filePath}`);
-     try {
-       const options = {
-         timeout: 300000,
-         mime: contentType || 'application/octet-stream',
-         meta: { uid: 0, pid: 0 },
-         callback: { url: '', body: '' },
-         headers: contentLength ? { 'Content-Length': contentLength.toString() } : {}
-       };
-       const result = await this.client.putStream(filePath, readableStream, options);
-       const accessUrl = this.generateAccessUrl(filePath);
-       const uploadTime = Date.now() - startTime;
-       logger.info(`✅ [AliyunOSSProvider] 流式上传完成: ${filePath}`);
-       return {
-         success: true,
-         path: filePath,
-         url: accessUrl,
-         size: contentLength,
-         data: {
-           name: result?.name,
-           requestId: result?.res?.rt,
-           uploadTime,
-           ossUrl: result?.name
-         }
-       };
-     } catch (error) {
-       logger.error(`❌ [AliyunOSSProvider] 流式上传失败: ${filePath}:`, error);
-       return { success: false, error: this.formatOSSError(error) };
-     }
-  }
-  
+
+  /**
+   * 批量删除文件
+   */
   async batchDelete(filePaths: string[]): Promise<StorageResult> {
     this.ensureInitialized();
-    logger.info(`🗑️ [AliyunOSSProvider] 批量删除: ${filePaths.length}`);
+
+    logger.info('🗑️ [AliyunOSSProvider] 开始批量删除文件，数量: ' + (filePaths.length));
+
     try {
-      const result = await this.client.deleteMulti(filePaths, { quiet: false });
-      logger.info(`✅ [AliyunOSSProvider] 批量删除完成: ${result?.deleted?.length}`);
-      return { success: true, data: { deleted: result?.deleted, requestId: result?.res?.rt } };
+      const result = await this.client?.deleteMulti(filePaths, {
+        quiet: false, // 返回删除结果
+      }) as any;
+
+      logger.info('✅ [AliyunOSSProvider] 批量删除完成，成功: ' + (result.deleted?.length || 0));
+
+      return {
+        success: true,
+        data: {
+          deleted: result.deleted,
+          requestId: result.res?.rt || 0,
+        },
+      };
     } catch (error) {
-       logger.error(`❌ [AliyunOSSProvider] 批量删除失败:`, error);
-       return { success: false, error: this.formatOSSError(error) };
+      logger.error(`❌ [AliyunOSSProvider] 批量删除失败:`, error);
+
+      return {
+        success: false,
+        error: this.formatOSSError(error),
+      };
     }
   }
 
+  /**
+   * 复制文件
+   */
   async copy(sourcePath: string, targetPath: string): Promise<StorageResult> {
     this.ensureInitialized();
-    logger.info(`📋 [AliyunOSSProvider] 复制: ${sourcePath} -> ${targetPath}`);
+
+    logger.info('📋 [AliyunOSSProvider] 开始复制文件: ' + (sourcePath) + ' -> ' + (targetPath));
+
     try {
-      const result = await this.client.copy(targetPath, sourcePath, {});
-      logger.info(`✅ [AliyunOSSProvider] 复制完成`);
-      return { success: true, data: { etag: result?.data?.etag, lastModified: result?.data?.lastModified, requestId: result?.res?.rt } };
+      const result = await this.client?.copy(targetPath, sourcePath) as any;
+
+      logger.info('✅ [AliyunOSSProvider] 文件复制完成: ' + (sourcePath) + ' -> ' + (targetPath));
+
+      return {
+        success: true,
+        data: {
+          etag: result.data?.etag,
+          lastModified: result.data?.lastModified,
+          requestId: result.res?.rt || 0,
+        },
+      };
     } catch (error) {
-       logger.error(`❌ [AliyunOSSProvider] 复制失败:`, error);
-       return { success: false, error: this.formatOSSError(error) };
+      logger.error('❌ [AliyunOSSProvider] 文件复制失败: ' + (sourcePath) + ' -> ' + (targetPath) + ':', error);
+
+      return {
+        success: false,
+        error: this.formatOSSError(error),
+      };
     }
   }
+
+  /**
+   * 编码元数据，避免中文字符在HTTP头部中的问题
+   */
+  private encodeMetadata(metadata: Record<string, any>): Record<string, string> {
+    const encoded: Record<string, string> = {};
+
+    for (const [key, value] of Object.entries(metadata)) {
+      if (value !== null && value !== undefined) {
+        // 将值转换为字符串并进行URL编码
+        const stringValue = String(value);
+        encoded[key] = encodeURIComponent(stringValue);
+      }
+    }
+
+    return encoded;
+  }
 }
+
