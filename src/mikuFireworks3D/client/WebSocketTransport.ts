@@ -131,6 +131,7 @@ export class WebSocketTransport {
       this.socket = this.config.protocols
         ? new window.WebSocket(this.config.serverUrl, this.config.protocols)
         : new window.WebSocket(this.config.serverUrl);
+      this.socket.binaryType = 'arraybuffer';
     } catch {
       this.callbacks.onError?.(new Error('Failed to create WebSocket connection.'));
       return;
@@ -230,22 +231,32 @@ export class WebSocketTransport {
     }
 
     if (message.type === 'room.user_joined' || message.type === 'room.user_left') {
-      this.updateState({ onlineCount: message.onlineCount, roomId: message.roomId });
+      this.updateState({ onlineCount: message.onlineCount, roomId: message.roomId, joined: true });
+      this.flushPendingQueue();
       return;
     }
 
     if (message.type === 'room.snapshot') {
-      this.updateState({ roomId: message.roomId, onlineCount: message.users.length });
+      this.updateState({ roomId: message.roomId, onlineCount: message.users.length, joined: true });
+      this.flushPendingQueue();
       this.callbacks.onSnapshot?.(message);
       return;
     }
 
     if (message.type === 'danmaku.broadcast') {
+      if (!this.state.joined) {
+        this.updateState({ joined: true, roomId: message.roomId });
+        this.flushPendingQueue();
+      }
       this.callbacks.onDanmakuBroadcast?.(message.event);
       return;
     }
 
     if (message.type === 'firework.broadcast') {
+      if (!this.state.joined) {
+        this.updateState({ joined: true, roomId: message.roomId });
+        this.flushPendingQueue();
+      }
       this.callbacks.onFireworkBroadcast?.(message.event);
       return;
     }
@@ -288,13 +299,30 @@ export class WebSocketTransport {
 }
 
 function parseServerMessage(raw: unknown): ServerMessage | null {
-  if (typeof raw !== 'string') {
+  const text = decodeMessage(raw);
+  if (!text) {
     return null;
   }
 
   try {
-    return JSON.parse(raw) as ServerMessage;
+    return JSON.parse(text) as ServerMessage;
   } catch {
     return null;
   }
+}
+
+function decodeMessage(raw: unknown): string | null {
+  if (typeof raw === 'string') {
+    return raw;
+  }
+
+  if (raw instanceof ArrayBuffer) {
+    return new TextDecoder().decode(new Uint8Array(raw));
+  }
+
+  if (ArrayBuffer.isView(raw)) {
+    return new TextDecoder().decode(raw);
+  }
+
+  return null;
 }

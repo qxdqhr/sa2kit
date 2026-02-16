@@ -124,4 +124,32 @@ describe('WebSocketTransport', () => {
     expect(socket?.sent[1]).toContain('"type":"danmaku.send"');
     expect(socket?.sent[2]).toContain('"type":"firework.launch"');
   });
+
+  it('flushes queued events after snapshot when joined message is missing', () => {
+    const transport = new WebSocketTransport({
+      serverUrl: 'ws://localhost:8080',
+      roomId: 'room-1',
+      user: { userId: 'u1' },
+    });
+
+    transport.connect();
+    const socket = MockWebSocket.instances[0];
+    socket?.emitOpen();
+
+    transport.sendDanmaku({ text: 'queued-before-joined' });
+    transport.sendFirework({ kind: 'normal' });
+    expect(socket?.sent.length).toBe(1); // only join sent
+
+    socket?.emitMessage({
+      type: 'room.snapshot',
+      roomId: 'room-1',
+      users: [{ userId: 'u1' }],
+      danmakuHistory: [],
+      fireworkHistory: [],
+    });
+
+    expect(socket?.sent.length).toBe(3);
+    expect(socket?.sent[1]).toContain('\"type\":\"danmaku.send\"');
+    expect(socket?.sent[2]).toContain('\"type\":\"firework.launch\"');
+  });
 });

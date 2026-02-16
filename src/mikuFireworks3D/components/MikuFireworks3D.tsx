@@ -4,10 +4,13 @@ import React, { useMemo, useRef, useState } from 'react';
 import { DanmakuPanel } from './DanmakuPanel';
 import { FireworksCanvas } from './FireworksCanvas';
 import { FireworksControlPanel } from './FireworksControlPanel';
+import { createLogger } from '../../logger';
 import { useDanmakuController } from '../hooks/useDanmakuController';
 import { useFireworksEngine } from '../hooks/useFireworksEngine';
 import { useFireworksRealtime } from '../hooks/useFireworksRealtime';
 import type { FireworkKind, MikuFireworks3DProps } from '../types';
+
+const syncLogger = createLogger('MikuFireworks3DSync');
 
 export function MikuFireworks3D({
   width = '100%',
@@ -31,7 +34,14 @@ export function MikuFireworks3D({
   const seenDanmakuIdsRef = useRef<Set<string>>(new Set());
   const seenFireworkIdsRef = useRef<Set<string>>(new Set());
 
-  const { containerRef, canvasRef, launch, fps } = useFireworksEngine({
+  const {
+    containerRef,
+    canvasRef,
+    launch,
+    fps,
+    engineReady,
+    pendingLaunchCount,
+  } = useFireworksEngine({
     maxParticles,
     maxActiveFireworks,
     onLaunch,
@@ -44,6 +54,23 @@ export function MikuFireworks3D({
   });
 
   const realtimeEnabled = Boolean(realtime && (realtime.enabled ?? true));
+  const debugSync = typeof window !== 'undefined' && (process.env.NODE_ENV !== 'production');
+
+  const logSync = (phase: string, eventId: string, extra?: Record<string, unknown>) => {
+    if (!debugSync) {
+      return;
+    }
+    syncLogger.info('sync_event', {
+      phase,
+      eventId,
+      engineReady,
+      pendingLaunchCount,
+      connected: realtimeApi.state.connected,
+      joined: realtimeApi.state.joined,
+      ...extra,
+    });
+  };
+
   const realtimeApi = useFireworksRealtime({
     enabled: realtimeEnabled,
     config: realtime,
@@ -63,11 +90,14 @@ export function MikuFireworks3D({
       });
     },
     onFireworkBroadcast: (event) => {
+      logSync('firework.broadcast.received', event.id, { kind: event.payload.kind });
       if (seenFireworkIdsRef.current.has(event.id)) {
+        logSync('firework.broadcast.deduped', event.id);
         return;
       }
       seenFireworkIdsRef.current.add(event.id);
       launch(event.payload);
+      logSync('firework.broadcast.dispatched', event.id, { kind: event.payload.kind });
     },
     onSnapshot: (snapshot) => {
       for (const danmaku of snapshot.danmakuHistory) {
@@ -84,11 +114,14 @@ export function MikuFireworks3D({
         });
       }
       for (const firework of snapshot.fireworkHistory) {
+        logSync('firework.snapshot.received', firework.id, { kind: firework.payload.kind });
         if (seenFireworkIdsRef.current.has(firework.id)) {
+          logSync('firework.snapshot.deduped', firework.id);
           continue;
         }
         seenFireworkIdsRef.current.add(firework.id);
         launch(firework.payload);
+        logSync('firework.snapshot.dispatched', firework.id, { kind: firework.payload.kind });
       }
     },
   });
@@ -99,7 +132,7 @@ export function MikuFireworks3D({
       avatarUrl: kind === 'avatar' ? avatarUrl || undefined : undefined,
     };
 
-    if (realtimeEnabled && realtimeApi.state.connected && realtimeApi.state.joined) {
+    if (realtimeEnabled) {
       realtimeApi.sendFirework(payload);
       return;
     }
@@ -109,14 +142,14 @@ export function MikuFireworks3D({
 
   const handleSendDanmaku = (text: string) => {
     const result = send(text, undefined, {
-      optimistic: !(realtimeEnabled && realtimeApi.state.connected && realtimeApi.state.joined),
+      optimistic: !realtimeEnabled,
     });
     if (!result) {
       return;
     }
 
     const launchKind = result.launchKind ?? selectedKind;
-    if (realtimeEnabled && realtimeApi.state.connected && realtimeApi.state.joined) {
+    if (realtimeEnabled) {
       realtimeApi.sendDanmaku({
         text: result.message.text,
         color: result.message.color,

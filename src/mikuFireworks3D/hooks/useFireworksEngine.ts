@@ -14,6 +14,8 @@ export function useFireworksEngine(options?: UseFireworksEngineOptions) {
   const engineRef = useRef<FireworksEngine | null>(null);
   const pendingLaunchesRef = useRef<FireworkLaunchPayload[]>([]);
   const [fps, setFps] = useState(60);
+  const [engineReady, setEngineReady] = useState(false);
+  const [pendingLaunchCount, setPendingLaunchCount] = useState(0);
   const { maxParticles, maxActiveFireworks, onError, onFpsReport, onLaunch } = options || {};
 
   useEffect(() => {
@@ -37,9 +39,11 @@ export function useFireworksEngine(options?: UseFireworksEngineOptions) {
 
     engine.start();
     engineRef.current = engine;
+    setEngineReady(true);
     if (pendingLaunchesRef.current.length > 0) {
       const pending = [...pendingLaunchesRef.current];
       pendingLaunchesRef.current = [];
+      setPendingLaunchCount(0);
       pending.forEach((payload) => {
         void engine.launch(payload);
       });
@@ -49,6 +53,8 @@ export function useFireworksEngine(options?: UseFireworksEngineOptions) {
       engineRef.current?.dispose();
       engineRef.current = null;
       pendingLaunchesRef.current = [];
+      setPendingLaunchCount(0);
+      setEngineReady(false);
     };
   }, [maxParticles, maxActiveFireworks, onError, onFpsReport]);
 
@@ -59,6 +65,7 @@ export function useFireworksEngine(options?: UseFireworksEngineOptions) {
         if (pendingLaunchesRef.current.length > 120) {
           pendingLaunchesRef.current.splice(0, pendingLaunchesRef.current.length - 120);
         }
+        setPendingLaunchCount(pendingLaunchesRef.current.length);
       } else {
         void engineRef.current.launch(payload);
       }
@@ -73,8 +80,10 @@ export function useFireworksEngine(options?: UseFireworksEngineOptions) {
       canvasRef,
       launch,
       fps,
+      engineReady,
+      pendingLaunchCount,
     }),
-    [fps, launch]
+    [engineReady, fps, launch, pendingLaunchCount]
   );
 
   return api;
