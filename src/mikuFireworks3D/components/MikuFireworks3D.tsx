@@ -60,7 +60,7 @@ export function MikuFireworks3D({
     if (!debugSync) {
       return;
     }
-    syncLogger.info('sync_event', {
+    const payload = {
       phase,
       eventId,
       engineReady,
@@ -68,7 +68,11 @@ export function MikuFireworks3D({
       connected: realtimeApi.state.connected,
       joined: realtimeApi.state.joined,
       ...extra,
-    });
+    };
+    syncLogger.info('sync_event', payload);
+
+    const rawConsole = (globalThis as { console?: Console }).console;
+    rawConsole?.info('[MikuFireworks3D][sync_event]', payload);
   };
 
   const realtimeApi = useFireworksRealtime({
