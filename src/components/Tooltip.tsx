@@ -12,7 +12,7 @@ const TooltipConfigContext = React.createContext<{ delayDuration: number }>({
 interface TooltipContextValue {
   open: boolean
   setOpen: (open: boolean) => void
-  triggerRef: React.RefObject<HTMLSpanElement | null>
+  triggerRef: React.RefObject<HTMLSpanElement>
 }
 
 const TooltipContext = React.createContext<TooltipContextValue | null>(null)
@@ -33,7 +33,7 @@ const TooltipProvider = ({
 
 const Tooltip = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = React.useState(false)
-  const triggerRef = React.useRef<HTMLElement | null>(null)
+  const triggerRef = React.useRef<HTMLSpanElement>(null)
   return (
     <TooltipContext.Provider value={{ open, setOpen, triggerRef }}>
       {children}

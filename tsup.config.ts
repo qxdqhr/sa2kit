@@ -39,6 +39,7 @@ export default defineConfig({
     'testYourself/server/index': 'src/testYourself/server/index.ts',
     'music/index': 'src/music/index.ts',
     'music/server/index': 'src/music/server/index.ts',
+    'mikuFusionGame/index': 'src/mikuFusionGame/index.ts',
   },
 
   // Output formats: ESM and CJS

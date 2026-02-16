@@ -11,8 +11,8 @@ interface SelectContextValue {
   setOpen: (open: boolean) => void
   value?: string
   setValue: (value: string) => void
-  triggerRef: React.RefObject<HTMLButtonElement | null>
-  contentRef: React.RefObject<HTMLDivElement | null>
+  triggerRef: React.RefObject<HTMLButtonElement>
+  contentRef: React.RefObject<HTMLDivElement>
   itemsRef: React.MutableRefObject<Map<string, React.ReactNode>>
 }
 
@@ -48,10 +48,14 @@ const Select = ({
   const [currentValue, setCurrentValue] = useControllableState<string | undefined>({
     value,
     defaultValue,
-    onChange: onValueChange,
+    onChange: (next) => {
+      if (next !== undefined) {
+        onValueChange?.(next)
+      }
+    },
   })
-  const triggerRef = React.useRef<HTMLButtonElement | null>(null)
-  const contentRef = React.useRef<HTMLDivElement | null>(null)
+  const triggerRef = React.useRef<HTMLButtonElement>(null)
+  const contentRef = React.useRef<HTMLDivElement>(null)
   const itemsRef = React.useRef<Map<string, React.ReactNode>>(new Map())
 
   return (

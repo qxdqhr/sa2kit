@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.6.31",
+  "version": "1.6.33",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -247,6 +247,11 @@
       "types": "./dist/music/server/index.d.ts",
       "import": "./dist/music/server/index.mjs",
       "require": "./dist/music/server/index.js"
+    },
+    "./mikuFusionGame": {
+      "types": "./dist/mikuFusionGame/index.d.ts",
+      "import": "./dist/mikuFusionGame/index.mjs",
+      "require": "./dist/mikuFusionGame/index.js"
     }
   },
   "files": [

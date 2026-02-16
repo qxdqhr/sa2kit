@@ -9,8 +9,8 @@ import { mergeRefs, Portal, useControllableState, useOnClickOutside } from "./in
 interface DialogContextValue {
   open: boolean
   setOpen: (open: boolean) => void
-  triggerRef: React.RefObject<HTMLButtonElement | null>
-  contentRef: React.RefObject<HTMLDivElement | null>
+  triggerRef: React.RefObject<HTMLButtonElement>
+  contentRef: React.RefObject<HTMLDivElement>
 }
 
 const DialogContext = React.createContext<DialogContextValue | null>(null)
@@ -28,8 +28,8 @@ const Dialog = ({ open, defaultOpen = false, onOpenChange, children }: DialogPro
     defaultValue: defaultOpen,
     onChange: onOpenChange,
   })
-  const triggerRef = React.useRef<HTMLElement | null>(null)
-  const contentRef = React.useRef<HTMLDivElement | null>(null)
+  const triggerRef = React.useRef<HTMLButtonElement>(null)
+  const contentRef = React.useRef<HTMLDivElement>(null)
 
   return (
     <DialogContext.Provider value={{ open: isOpen, setOpen: setIsOpen, triggerRef, contentRef }}>
@@ -50,7 +50,7 @@ const DialogTrigger = React.forwardRef<HTMLButtonElement, TriggerProps>(
 
     const mergedRef = mergeRefs<HTMLButtonElement>(ctx.triggerRef, ref)
 
-    const handleClick = (e: React.MouseEvent) => {
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       ctx.setOpen(true)
       onClick?.(e)
     }
@@ -105,7 +105,7 @@ const DialogOverlay = React.forwardRef<
 })
 DialogOverlay.displayName = "DialogOverlay"
 
-interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
   onPointerDownOutside?: (event: PointerEvent) => void
   onEscapeKeyDown?: (event: KeyboardEvent) => void
   showCloseButton?: boolean

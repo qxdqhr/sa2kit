@@ -8,9 +8,9 @@ import { mergeRefs, Portal, useControllableState, useOnClickOutside } from "./in
 interface PopoverContextValue {
   open: boolean
   setOpen: (open: boolean) => void
-  triggerRef: React.RefObject<HTMLButtonElement | null>
-  anchorRef: React.RefObject<HTMLElement | null>
-  contentRef: React.RefObject<HTMLDivElement | null>
+  triggerRef: React.RefObject<HTMLButtonElement>
+  anchorRef: React.RefObject<HTMLSpanElement>
+  contentRef: React.RefObject<HTMLDivElement>
 }
 
 const PopoverContext = React.createContext<PopoverContextValue | null>(null)
@@ -28,9 +28,9 @@ const Popover = ({ open, defaultOpen = false, onOpenChange, children }: PopoverP
     defaultValue: defaultOpen,
     onChange: onOpenChange,
   })
-  const triggerRef = React.useRef<HTMLElement | null>(null)
-  const anchorRef = React.useRef<HTMLElement | null>(null)
-  const contentRef = React.useRef<HTMLDivElement | null>(null)
+  const triggerRef = React.useRef<HTMLButtonElement>(null)
+  const anchorRef = React.useRef<HTMLSpanElement>(null)
+  const contentRef = React.useRef<HTMLDivElement>(null)
 
   return (
     <PopoverContext.Provider value={{ open: isOpen, setOpen: setIsOpen, triggerRef, anchorRef, contentRef }}>
@@ -51,7 +51,7 @@ const PopoverTrigger = React.forwardRef<HTMLButtonElement, PopoverTriggerProps>(
 
     const mergedRef = mergeRefs<HTMLButtonElement>(ctx.triggerRef, ref)
 
-    const handleClick = (e: React.MouseEvent) => {
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       ctx.setOpen(!ctx.open)
       onClick?.(e)
     }
@@ -68,15 +68,10 @@ PopoverTrigger.displayName = "PopoverTrigger"
 const PopoverAnchor = React.forwardRef<HTMLSpanElement, React.HTMLAttributes<HTMLSpanElement>>(
   ({ ...props }, ref) => {
     const ctx = React.useContext(PopoverContext)
+    if (!ctx) return null
+
     return (
-      <span
-        ref={(node) => {
-          if (ctx) ctx.anchorRef.current = node
-          if (typeof ref === "function") ref(node)
-          else if (ref) ref.current = node
-        }}
-        {...(props as any)}
-      />
+      <span ref={mergeRefs(ctx.anchorRef, ref)} {...(props as any)} />
     )
   }
 )

@@ -9,8 +9,8 @@ import { mergeRefs, Portal, useControllableState, useOnClickOutside } from "./in
 interface DropdownMenuContextValue {
   open: boolean
   setOpen: (open: boolean) => void
-  triggerRef: React.RefObject<HTMLButtonElement | null>
-  contentRef: React.RefObject<HTMLDivElement | null>
+  triggerRef: React.RefObject<HTMLButtonElement>
+  contentRef: React.RefObject<HTMLDivElement>
 }
 
 const DropdownMenuContext = React.createContext<DropdownMenuContextValue | null>(null)
@@ -32,8 +32,8 @@ const DropdownMenu = ({ open, defaultOpen = false, onOpenChange, children }: Dro
     defaultValue: defaultOpen,
     onChange: onOpenChange,
   })
-  const triggerRef = React.useRef<HTMLElement | null>(null)
-  const contentRef = React.useRef<HTMLDivElement | null>(null)
+  const triggerRef = React.useRef<HTMLButtonElement>(null)
+  const contentRef = React.useRef<HTMLDivElement>(null)
 
   return (
     <DropdownMenuContext.Provider value={{ open: isOpen, setOpen: setIsOpen, triggerRef, contentRef }}>
@@ -51,7 +51,7 @@ const DropdownMenuTrigger = React.forwardRef<
 
   const mergedRef = mergeRefs<HTMLButtonElement>(ctx.triggerRef, ref)
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     ctx.setOpen(!ctx.open)
     onClick?.(e)
   }
