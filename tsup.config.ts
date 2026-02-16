@@ -40,6 +40,7 @@ export default defineConfig({
     'music/index': 'src/music/index.ts',
     'music/server/index': 'src/music/server/index.ts',
     'mikuFusionGame/index': 'src/mikuFusionGame/index.ts',
+    'mikuFireworks3D/index': 'src/mikuFireworks3D/index.ts',
   },
 
   // Output formats: ESM and CJS

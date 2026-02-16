@@ -1,4 +1,5 @@
 export type MikuFusionGameStatus = 'ready' | 'playing' | 'paused' | 'gameOver';
+export type OrbImageMapping = Partial<Record<number, string>>;
 
 export interface FusionOrb {
   id: string;
@@ -45,4 +46,3 @@ export interface MergeResult {
   scoreGain: number;
   mergeCount: number;
 }
-

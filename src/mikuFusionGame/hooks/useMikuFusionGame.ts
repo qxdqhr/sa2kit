@@ -13,10 +13,12 @@ import type {
   MikuFusionGameCallbacks,
   MikuFusionGameConfig,
   MikuFusionGameStatus,
+  OrbImageMapping,
 } from '../types';
 
 export interface UseMikuFusionGameOptions extends Partial<MikuFusionGameConfig>, MikuFusionGameCallbacks {
   storageKey?: string;
+  orbImageMapping?: OrbImageMapping;
 }
 
 export interface UseMikuFusionGameResult {
@@ -63,7 +65,8 @@ function drawScene(
   orbs: FusionOrb[],
   aimX: number,
   nextLevel: number,
-  status: MikuFusionGameStatus
+  status: MikuFusionGameStatus,
+  imageCache: Record<number, HTMLImageElement>
 ): void {
   const gradient = context.createLinearGradient(0, 0, 0, height);
   gradient.addColorStop(0, config.theme.backgroundTop);
@@ -88,16 +91,53 @@ function drawScene(
   context.stroke();
 
   const previewRadius = getRadiusByLevel(nextLevel);
-  context.fillStyle = getOrbColor(nextLevel, config);
+  const previewY = config.spawnY - previewRadius - 4;
+  const previewImage = imageCache[nextLevel];
   context.beginPath();
-  context.arc(aimX, config.spawnY - previewRadius - 4, previewRadius, 0, Math.PI * 2);
-  context.fill();
+  context.arc(aimX, previewY, previewRadius, 0, Math.PI * 2);
+  context.closePath();
+  if (previewImage && previewImage.complete && previewImage.naturalWidth > 0) {
+    context.save();
+    context.clip();
+    context.drawImage(
+      previewImage,
+      aimX - previewRadius,
+      previewY - previewRadius,
+      previewRadius * 2,
+      previewRadius * 2
+    );
+    context.restore();
+  } else {
+    context.fillStyle = getOrbColor(nextLevel, config);
+    context.fill();
+  }
 
   orbs.forEach((orb) => {
     context.beginPath();
-    context.fillStyle = getOrbColor(orb.level, config);
     context.arc(orb.x, orb.y, orb.radius, 0, Math.PI * 2);
-    context.fill();
+    context.closePath();
+
+    const orbImage = imageCache[orb.level];
+    if (orbImage && orbImage.complete && orbImage.naturalWidth > 0) {
+      context.save();
+      context.clip();
+      context.drawImage(
+        orbImage,
+        orb.x - orb.radius,
+        orb.y - orb.radius,
+        orb.radius * 2,
+        orb.radius * 2
+      );
+      context.restore();
+      context.beginPath();
+      context.strokeStyle = 'rgba(15, 23, 42, 0.15)';
+      context.lineWidth = 1;
+      context.arc(orb.x, orb.y, orb.radius, 0, Math.PI * 2);
+      context.stroke();
+    } else {
+      context.fillStyle = getOrbColor(orb.level, config);
+      context.fill();
+    }
 
     context.fillStyle = '#0f172a';
     context.font = 'bold 12px system-ui';
@@ -143,11 +183,28 @@ export function useMikuFusionGame(options: UseMikuFusionGameOptions = {}): UseMi
   const config = configRef.current;
   const onScoreChangeRef = useRef(options.onScoreChange);
   const onGameOverRef = useRef(options.onGameOver);
+  const orbImageMappingRef = useRef<OrbImageMapping>(options.orbImageMapping ?? {});
+  const imageCacheRef = useRef<Record<number, HTMLImageElement>>({});
 
   useEffect(() => {
     onScoreChangeRef.current = options.onScoreChange;
     onGameOverRef.current = options.onGameOver;
   }, [options.onGameOver, options.onScoreChange]);
+
+  useEffect(() => {
+    orbImageMappingRef.current = options.orbImageMapping ?? {};
+    const nextCache: Record<number, HTMLImageElement> = {};
+    Object.entries(orbImageMappingRef.current).forEach(([levelText, src]) => {
+      const level = Number(levelText);
+      if (!src || Number.isNaN(level)) {
+        return;
+      }
+      const image = new window.Image();
+      image.src = src;
+      nextCache[level] = image;
+    });
+    imageCacheRef.current = nextCache;
+  }, [options.orbImageMapping]);
 
   const [bestScore, setBestScore] = useLocalStorage<number>(
     options.storageKey || 'sa2kit:mikuFusionGame:bestScore',
@@ -186,7 +243,8 @@ export function useMikuFusionGame(options: UseMikuFusionGameOptions = {}): UseMi
         orbsRef.current,
         aimXRef.current,
         nextLevel,
-        nextStatus
+        nextStatus,
+        imageCacheRef.current
       );
     },
     [config, nextLevel, status]

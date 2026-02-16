@@ -36,3 +36,7 @@ export { SearchResultHint } from './SearchResultHint';
 export type { SearchResultHintProps } from './SearchResultHint';
 export { Modal, ConfirmModal } from './PopWindow';
 export type { ModalProps, ConfirmModalProps } from './PopWindow';
+export { ImageMappingPanel } from './ImageMappingPanel';
+export type { ImageMappingPanelProps, ImageMappingItem, ImageMappingValue } from './ImageMappingPanel';
+export { LocalImageMappingPanel } from './LocalImageMappingPanel';
+export type { LocalImageMappingPanelProps } from './LocalImageMappingPanel';

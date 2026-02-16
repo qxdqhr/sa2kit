@@ -26,6 +26,7 @@ export * from './profile';
 export * from './portfolio';
 export * from './navigation';
 export * from './testField';
+export * from './mikuFireworks3D';
 
 // Storage - Only export types and hooks, not platform adapters
 // Platform adapters should be imported from '@qhr123/sa2kit/storage' subpath

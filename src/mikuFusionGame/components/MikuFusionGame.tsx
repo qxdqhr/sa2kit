@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useMemo, useRef } from 'react';
-import type { MikuFusionGameCallbacks, MikuFusionGameConfig } from '../types';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { LocalImageMappingPanel } from '../../components/LocalImageMappingPanel';
+import type { MikuFusionGameCallbacks, MikuFusionGameConfig, OrbImageMapping } from '../types';
 import { useMikuFusionGame } from '../hooks/useMikuFusionGame';
 import { useResponsiveCanvas } from '../hooks/useResponsiveCanvas';
 import { GameCanvas } from './GameCanvas';
@@ -12,10 +13,30 @@ import { GameResultModal } from './GameResultModal';
 export interface MikuFusionGameProps extends Partial<MikuFusionGameConfig>, MikuFusionGameCallbacks {
   className?: string;
   storageKey?: string;
+  orbImageStorageKey?: string;
+  enableImageConfigPanel?: boolean;
+  presetOrbImageMapping?: OrbImageMapping;
 }
 
-export function MikuFusionGame({ className, storageKey, ...options }: MikuFusionGameProps) {
+export function MikuFusionGame({
+  className,
+  storageKey,
+  orbImageStorageKey = 'sa2kit:mikuFusionGame:orbImages',
+  enableImageConfigPanel = true,
+  presetOrbImageMapping = {},
+  ...options
+}: MikuFusionGameProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [orbImageMapping, setOrbImageMapping] = useState<OrbImageMapping>({});
+  const [isUserDefineMode] = useState(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    const value = new URLSearchParams(window.location.search).get('userDefine');
+    return value === 'true';
+  });
+
+  const activeOrbImageMapping = isUserDefineMode ? orbImageMapping : presetOrbImageMapping;
   const {
     canvasRef,
     status,
@@ -27,7 +48,51 @@ export function MikuFusionGame({ className, storageKey, ...options }: MikuFusion
     handleDrop,
     togglePause,
     restart,
-  } = useMikuFusionGame({ ...options, storageKey });
+  } = useMikuFusionGame({ ...options, storageKey, orbImageMapping: activeOrbImageMapping });
+
+  const panelItems = useMemo(
+    () =>
+      Array.from({ length: config.maxLevel }, (_, index) => ({
+        id: String(index + 1),
+        label: `M${index + 1}`,
+      })),
+    [config.maxLevel]
+  );
+
+  const panelValue = useMemo<Record<string, string>>(
+    () =>
+      Object.entries(orbImageMapping).reduce<Record<string, string>>((acc, [key, value]) => {
+        if (value) {
+          acc[String(key)] = value;
+        }
+        return acc;
+      }, {}),
+    [orbImageMapping]
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    try {
+      const raw = window.localStorage.getItem(orbImageStorageKey);
+      if (!raw) {
+        setOrbImageMapping({});
+        return;
+      }
+      const parsed = JSON.parse(raw) as Record<string, string>;
+      const normalized: OrbImageMapping = {};
+      Object.entries(parsed).forEach(([key, value]) => {
+        const level = Number(key);
+        if (!Number.isNaN(level) && typeof value === 'string' && value) {
+          normalized[level] = value;
+        }
+      });
+      setOrbImageMapping(normalized);
+    } catch {
+      setOrbImageMapping({});
+    }
+  }, [orbImageStorageKey]);
 
   const { displayWidth, displayHeight } = useResponsiveCanvas(
     config.width,
@@ -74,6 +139,17 @@ export function MikuFusionGame({ className, storageKey, ...options }: MikuFusion
     }
   };
 
+  const handlePanelValueChange = (next: Record<string, string>) => {
+    const normalized: OrbImageMapping = {};
+    Object.entries(next).forEach(([key, value]) => {
+      const level = Number(key);
+      if (!Number.isNaN(level) && value) {
+        normalized[level] = value;
+      }
+    });
+    setOrbImageMapping(normalized);
+  };
+
   return (
     <div
       ref={containerRef}
@@ -106,7 +182,16 @@ export function MikuFusionGame({ className, storageKey, ...options }: MikuFusion
         onTogglePause={togglePause}
         onRestart={restart}
       />
+
+      {enableImageConfigPanel && isUserDefineMode ? (
+        <LocalImageMappingPanel
+          storageKey={orbImageStorageKey}
+          title="球体图片配置（保存到本地）"
+          items={panelItems}
+          defaultValue={panelValue}
+          onValueChange={handlePanelValueChange}
+        />
+      ) : null}
     </div>
   );
 }
-

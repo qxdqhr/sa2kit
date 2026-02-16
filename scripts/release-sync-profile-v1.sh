@@ -15,6 +15,7 @@ Options:
   --profile-dir <path>                        profile-v1 directory (default: ../profile-v1)
   --profile-dep <name>                        Dependency name in profile-v1 (default: auto detect)
   --publish-tag <latest|beta|next>            npm publish tag (default: latest)
+  --registry <url>                            npm/pnpm registry (default: https://registry.npmjs.org/)
   --profile-build-cmd "<command>"            profile-v1 build command (default: pnpm build)
   --profile-run-cmd "<command>"              profile-v1 run command (default: pnpm dev)
   --no-tests                                  Skip pnpm test before publish
@@ -34,6 +35,7 @@ PROFILE_DEP=""
 PUBLISH_TAG="latest"
 PROFILE_BUILD_CMD="pnpm build"
 PROFILE_RUN_CMD="pnpm dev"
+NPM_REGISTRY="https://registry.npmjs.org/"
 SKIP_TESTS=0
 SKIP_BUILD=0
 AUTO_YES=0
@@ -66,6 +68,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --profile-run-cmd)
       PROFILE_RUN_CMD="$2"
+      shift 2
+      ;;
+    --registry)
+      NPM_REGISTRY="$2"
       shift 2
       ;;
     --no-tests)
@@ -147,10 +153,25 @@ fi
 
 echo "[3/5] Publishing sa2kit to npm"
 if [[ "$PUBLISH_TAG" == "latest" ]]; then
-  npm publish --access public
+  npm publish --registry "$NPM_REGISTRY" --access public
 else
-  npm publish --tag "$PUBLISH_TAG" --access public
+  npm publish --registry "$NPM_REGISTRY" --tag "$PUBLISH_TAG" --access public
 fi
+
+echo "[3/5] Waiting for $PACKAGE_NAME@$NEW_VERSION to become available on registry"
+for i in {1..24}; do
+  published_version="$(npm view "${PACKAGE_NAME}@${NEW_VERSION}" version --registry "$NPM_REGISTRY" 2>/dev/null || true)"
+  if [[ "$published_version" == "$NEW_VERSION" ]]; then
+    echo "Confirmed on npm registry: $PACKAGE_NAME@$NEW_VERSION"
+    break
+  fi
+  if [[ "$i" -eq 24 ]]; then
+    echo "Version $PACKAGE_NAME@$NEW_VERSION not visible on $NPM_REGISTRY after waiting 120s" >&2
+    echo "You can retry step 4 manually after a short delay." >&2
+    exit 1
+  fi
+  sleep 5
+done
 
 echo "[3/5] Pushing release commit + tag to git"
 git add -A
@@ -179,7 +200,7 @@ fi
 echo "profile-v1 dependency key: $PROFILE_DEP"
 (
   cd "$PROFILE_DIR"
-  pnpm add "${PROFILE_DEP}@${NEW_VERSION}"
+  pnpm add "${PROFILE_DEP}@${NEW_VERSION}" --registry "$NPM_REGISTRY"
 )
 
 echo "[5/5] Rebuild and run profile-v1"
