@@ -42,15 +42,14 @@ export const Modal: React.FC<ModalProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => {
-      if (!open) {
-        if (maskClosable) {
-          onClose();
-        } else {
+        if (!open) {
+          if (maskClosable) {
+            onClose();
+          } else {
           // If maskClosable is false, we don't allow closing via backdrop/ESC
-          // This is a bit tricky with Radix UI Dialog, but we can manage it
+          }
         }
-      }
-    }}>
+      }}>
       <DialogContent 
         className={cn("sm:max-w-[425px]", className) + ' z-[' + (zIndex) + ']'}
         onPointerDownOutside={(e) => {
@@ -122,4 +121,3 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
     </AlertDialog>
   );
 };
-

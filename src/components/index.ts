@@ -1,4 +1,4 @@
-// UI Components (Atomic - based on Radix UI)
+// UI Components (Atomic - internal implementation)
 export * from './Button';
 export * from './Card';
 export * from './Badge';

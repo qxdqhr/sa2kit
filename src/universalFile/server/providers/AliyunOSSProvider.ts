@@ -39,6 +39,7 @@ export class AliyunOSSProvider implements IStorageProvider {
    * 重新初始化存储提供者（支持配置热更新）
    */
   async reinitialize(config: StorageConfig): Promise<void> {
+    logger.info('🔄 [AliyunOSSProvider] 重新初始化OSS客户端', config);
     if (config.type !== 'aliyun-oss') {
       throw new StorageProviderError('配置类型不匹配：期望 aliyun-oss');
     }
@@ -116,13 +117,7 @@ export class AliyunOSSProvider implements IStorageProvider {
       if (!this.client) {
         throw new Error('OSS客户端创建失败');
       }
-
       logger.info(`☁️ [AliyunOSSProvider] OSS客户端创建成功`);
-      logger.info(`☁️ [AliyunOSSProvider] 测试连接... testConnection`);
-
-      // 测试连接
-      await this.testConnection();
-
       this.isInitialized = true;
       logger.info('✅ [AliyunOSSProvider] 阿里云OSS' + (configChanged ? '重新' : '') + '初始化完成');
     } catch (error) {
@@ -480,46 +475,7 @@ export class AliyunOSSProvider implements IStorageProvider {
    * 测试连接
    */
   private async testConnection(): Promise<void> {
-    try {
-      // 尝试列出少量对象来测试连接
-      await this.client?.list({
-        'max-keys': '1',
-      }, {}) as any;
-      logger.info(`✅ [AliyunOSSProvider] OSS连接测试成功`);
-    } catch (error: any) {
-      logger.error('❌ [AliyunOSSProvider] OSS连接测试失败，原始错误:', error);
-
-      // 安全地检查错误类型，避免生产环境中的压缩问题
-      let errorCode: string | undefined;
-      let errorMessage: string = '未知错误';
-
-      try {
-        errorCode = error?.code;
-        errorMessage = error?.message || '未知错误';
-      } catch (accessError) {
-        // 如果访问错误属性失败，使用通用错误信息
-        logger.warn('无法访问错误对象的属性:', accessError);
-        errorMessage = '无法解析错误信息';
-      }
-
-      if (typeof errorCode === 'string') {
-        if (errorCode === 'NoSuchBucket') {
-          throw new StorageProviderError(`存储桶不存在`);
-        }
-        else if (errorCode === 'InvalidAccessKeyId') {
-          throw new StorageProviderError('Access Key ID 无效');
-        }
-        else if (errorCode === 'SignatureDoesNotMatch') {
-          throw new StorageProviderError('Access Key Secret 无效');
-        }
-        else {
-          throw new StorageProviderError(`OSS连接测试失败`);
-        }
-      }
-
-      // 如果不是标准的OSS错误，抛出通用错误
-      throw new StorageProviderError(`OSS连接测试失败`);
-    }
+  
   }
 
   /**
