@@ -104,6 +104,7 @@ export class WebSocketTransport {
   private socket: WebSocket | null = null;
   private reconnectTimer: number | null = null;
   private isManualClose = false;
+  private readonly pendingQueue: ClientMessage[] = [];
   private readonly config: FireworksRealtimeConfig;
   private readonly callbacks: WebSocketTransportCallbacks;
   private state: FireworksRealtimeState;
@@ -113,6 +114,7 @@ export class WebSocketTransport {
     this.callbacks = callbacks || {};
     this.state = {
       connected: false,
+      joined: false,
       onlineCount: 0,
       roomId: config.roomId,
     };
@@ -135,7 +137,7 @@ export class WebSocketTransport {
     }
 
     this.socket.onopen = () => {
-      this.updateState({ connected: true });
+      this.updateState({ connected: true, joined: false });
       this.send({
         type: 'join',
         roomId: this.config.roomId,
@@ -156,13 +158,14 @@ export class WebSocketTransport {
     };
 
     this.socket.onclose = () => {
-      this.updateState({ connected: false });
+      this.updateState({ connected: false, joined: false });
       this.scheduleReconnect();
     };
   }
 
   disconnect(): void {
     this.isManualClose = true;
+    this.pendingQueue.length = 0;
     if (this.reconnectTimer != null) {
       window.clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
@@ -197,6 +200,14 @@ export class WebSocketTransport {
 
   private send(message: ClientMessage): void {
     if (!this.socket || this.socket.readyState !== window.WebSocket.OPEN) {
+      if (message.type === 'danmaku.send' || message.type === 'firework.launch') {
+        this.pendingQueue.push(message);
+      }
+      return;
+    }
+
+    if ((message.type === 'danmaku.send' || message.type === 'firework.launch') && !this.state.joined) {
+      this.pendingQueue.push(message);
       return;
     }
 
@@ -213,7 +224,8 @@ export class WebSocketTransport {
 
   private handleServerMessage(message: ServerMessage): void {
     if (message.type === 'joined') {
-      this.updateState({ roomId: message.roomId, onlineCount: message.onlineCount });
+      this.updateState({ roomId: message.roomId, onlineCount: message.onlineCount, joined: true });
+      this.flushPendingQueue();
       return;
     }
 
@@ -258,6 +270,20 @@ export class WebSocketTransport {
       this.reconnectTimer = null;
       this.connect();
     }, delay);
+  }
+
+  private flushPendingQueue(): void {
+    if (!this.socket || this.socket.readyState !== window.WebSocket.OPEN || !this.state.joined) {
+      return;
+    }
+
+    while (this.pendingQueue.length > 0) {
+      const message = this.pendingQueue.shift();
+      if (!message) {
+        break;
+      }
+      this.socket.send(JSON.stringify(message));
+    }
   }
 }
 

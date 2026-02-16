@@ -20,17 +20,40 @@ interface UseFireworksRealtimeOptions {
     timestamp: number;
     id: string;
   }) => void;
-  onFireworkBroadcast?: (payload: FireworkLaunchPayload) => void;
+  onFireworkBroadcast?: (event: {
+    id: string;
+    payload: FireworkLaunchPayload;
+    userId: string;
+    timestamp: number;
+  }) => void;
+  onSnapshot?: (snapshot: {
+    roomId: string;
+    danmakuHistory: Array<{
+      id: string;
+      text: string;
+      color?: string;
+      kind?: FireworkKind;
+      userId: string;
+      timestamp: number;
+    }>;
+    fireworkHistory: Array<{
+      id: string;
+      payload: FireworkLaunchPayload;
+      userId: string;
+      timestamp: number;
+    }>;
+  }) => void;
   onError?: (error: Error) => void;
   onStateChange?: (state: FireworksRealtimeState) => void;
 }
 
 export function useFireworksRealtime(options: UseFireworksRealtimeOptions) {
-  const { config, enabled, onDanmakuBroadcast, onFireworkBroadcast, onError, onStateChange } = options;
+  const { config, enabled, onDanmakuBroadcast, onFireworkBroadcast, onSnapshot, onError, onStateChange } = options;
   const transportRef = useRef<WebSocketTransport | null>(null);
   const callbackRef = useRef({
     onDanmakuBroadcast,
     onFireworkBroadcast,
+    onSnapshot,
     onError,
     onStateChange,
   });
@@ -43,6 +66,7 @@ export function useFireworksRealtime(options: UseFireworksRealtimeOptions) {
   const reconnectIntervalMs = config?.reconnectIntervalMs ?? 1500;
   const [state, setState] = useState<FireworksRealtimeState>({
     connected: false,
+    joined: false,
     onlineCount: 0,
     roomId,
   });
@@ -51,10 +75,11 @@ export function useFireworksRealtime(options: UseFireworksRealtimeOptions) {
     callbackRef.current = {
       onDanmakuBroadcast,
       onFireworkBroadcast,
+      onSnapshot,
       onError,
       onStateChange,
     };
-  }, [onDanmakuBroadcast, onError, onFireworkBroadcast, onStateChange]);
+  }, [onDanmakuBroadcast, onError, onFireworkBroadcast, onSnapshot, onStateChange]);
 
   const normalizedConfig = useMemo(() => {
     if (!serverUrl || !roomId || !userId) {
@@ -84,6 +109,7 @@ export function useFireworksRealtime(options: UseFireworksRealtimeOptions) {
       transportRef.current = null;
       setState({
         connected: false,
+        joined: false,
         onlineCount: 0,
         roomId: normalizedConfig?.roomId,
       });
@@ -106,7 +132,31 @@ export function useFireworksRealtime(options: UseFireworksRealtimeOptions) {
         });
       },
       onFireworkBroadcast: (event) => {
-        callbackRef.current.onFireworkBroadcast?.(event.payload);
+        callbackRef.current.onFireworkBroadcast?.({
+          id: event.id,
+          payload: event.payload,
+          userId: event.user.userId,
+          timestamp: event.timestamp,
+        });
+      },
+      onSnapshot: (snapshot) => {
+        callbackRef.current.onSnapshot?.({
+          roomId: snapshot.roomId,
+          danmakuHistory: snapshot.danmakuHistory.map((item) => ({
+            id: item.id,
+            text: item.text,
+            color: item.color,
+            kind: item.kind,
+            userId: item.user.userId,
+            timestamp: item.timestamp,
+          })),
+          fireworkHistory: snapshot.fireworkHistory.map((item) => ({
+            id: item.id,
+            payload: item.payload,
+            userId: item.user.userId,
+            timestamp: item.timestamp,
+          })),
+        });
       },
       onError: (error) => {
         callbackRef.current.onError?.(error);

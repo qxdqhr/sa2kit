@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { DanmakuPanel } from './DanmakuPanel';
 import { FireworksCanvas } from './FireworksCanvas';
 import { FireworksControlPanel } from './FireworksControlPanel';
@@ -28,6 +28,8 @@ export function MikuFireworks3D({
   const [selectedKind, setSelectedKind] = useState<FireworkKind>(defaultKind);
   const [avatarUrl, setAvatarUrl] = useState(defaultAvatarUrl);
   const [autoLaunch, setAutoLaunch] = useState(autoLaunchOnDanmaku);
+  const seenDanmakuIdsRef = useRef<Set<string>>(new Set());
+  const seenFireworkIdsRef = useRef<Set<string>>(new Set());
 
   const { containerRef, canvasRef, launch, fps } = useFireworksEngine({
     maxParticles,
@@ -48,6 +50,10 @@ export function MikuFireworks3D({
     onStateChange: onRealtimeStateChange,
     onError,
     onDanmakuBroadcast: (event) => {
+      if (seenDanmakuIdsRef.current.has(event.id)) {
+        return;
+      }
+      seenDanmakuIdsRef.current.add(event.id);
       addIncoming({
         id: event.id,
         userId: event.userId,
@@ -56,8 +62,34 @@ export function MikuFireworks3D({
         timestamp: event.timestamp,
       });
     },
-    onFireworkBroadcast: (payload) => {
-      launch(payload);
+    onFireworkBroadcast: (event) => {
+      if (seenFireworkIdsRef.current.has(event.id)) {
+        return;
+      }
+      seenFireworkIdsRef.current.add(event.id);
+      launch(event.payload);
+    },
+    onSnapshot: (snapshot) => {
+      for (const danmaku of snapshot.danmakuHistory) {
+        if (seenDanmakuIdsRef.current.has(danmaku.id)) {
+          continue;
+        }
+        seenDanmakuIdsRef.current.add(danmaku.id);
+        addIncoming({
+          id: danmaku.id,
+          userId: danmaku.userId,
+          text: danmaku.text,
+          color: danmaku.color,
+          timestamp: danmaku.timestamp,
+        });
+      }
+      for (const firework of snapshot.fireworkHistory) {
+        if (seenFireworkIdsRef.current.has(firework.id)) {
+          continue;
+        }
+        seenFireworkIdsRef.current.add(firework.id);
+        launch(firework.payload);
+      }
     },
   });
 
@@ -67,7 +99,7 @@ export function MikuFireworks3D({
       avatarUrl: kind === 'avatar' ? avatarUrl || undefined : undefined,
     };
 
-    if (realtimeEnabled && realtimeApi.state.connected) {
+    if (realtimeEnabled && realtimeApi.state.connected && realtimeApi.state.joined) {
       realtimeApi.sendFirework(payload);
       return;
     }
@@ -77,14 +109,14 @@ export function MikuFireworks3D({
 
   const handleSendDanmaku = (text: string) => {
     const result = send(text, undefined, {
-      optimistic: !(realtimeEnabled && realtimeApi.state.connected),
+      optimistic: !(realtimeEnabled && realtimeApi.state.connected && realtimeApi.state.joined),
     });
     if (!result) {
       return;
     }
 
     const launchKind = result.launchKind ?? selectedKind;
-    if (realtimeEnabled && realtimeApi.state.connected) {
+    if (realtimeEnabled && realtimeApi.state.connected && realtimeApi.state.joined) {
       realtimeApi.sendDanmaku({
         text: result.message.text,
         color: result.message.color,

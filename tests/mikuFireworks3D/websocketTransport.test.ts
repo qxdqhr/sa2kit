@@ -110,6 +110,12 @@ describe('WebSocketTransport', () => {
     transport.connect();
     const socket = MockWebSocket.instances[0];
     socket?.emitOpen();
+    socket?.emitMessage({
+      type: 'joined',
+      roomId: 'room-1',
+      onlineCount: 1,
+      self: { userId: 'u1' },
+    });
 
     transport.sendDanmaku({ text: 'miku', kind: 'miku' });
     transport.sendFirework({ kind: 'miku' });

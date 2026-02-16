@@ -73,6 +73,7 @@ export interface FireworksRealtimeConfig {
 
 export interface FireworksRealtimeState {
   connected: boolean;
+  joined: boolean;
   onlineCount: number;
   roomId?: string;
 }
