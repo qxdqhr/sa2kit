@@ -6,6 +6,7 @@ import { FireworksCanvas } from './FireworksCanvas';
 import { FireworksControlPanel } from './FireworksControlPanel';
 import { useDanmakuController } from '../hooks/useDanmakuController';
 import { useFireworksEngine } from '../hooks/useFireworksEngine';
+import { useFireworksRealtime } from '../hooks/useFireworksRealtime';
 import type { FireworkKind, MikuFireworks3DProps } from '../types';
 
 export function MikuFireworks3D({
@@ -21,6 +22,8 @@ export function MikuFireworks3D({
   onDanmakuSend,
   onError,
   onFpsReport,
+  onRealtimeStateChange,
+  realtime,
 }: MikuFireworks3DProps) {
   const [selectedKind, setSelectedKind] = useState<FireworkKind>(defaultKind);
   const [avatarUrl, setAvatarUrl] = useState(defaultAvatarUrl);
@@ -34,25 +37,71 @@ export function MikuFireworks3D({
     onFpsReport,
   });
 
-  const { items, send, removeItem } = useDanmakuController({
+  const { items, send, addIncoming, removeItem } = useDanmakuController({
     onSend: onDanmakuSend,
   });
 
+  const realtimeEnabled = Boolean(realtime && (realtime.enabled ?? true));
+  const realtimeApi = useFireworksRealtime({
+    enabled: realtimeEnabled,
+    config: realtime,
+    onStateChange: onRealtimeStateChange,
+    onError,
+    onDanmakuBroadcast: (event) => {
+      addIncoming({
+        id: event.id,
+        userId: event.userId,
+        text: event.text,
+        color: event.color,
+        timestamp: event.timestamp,
+      });
+    },
+    onFireworkBroadcast: (payload) => {
+      launch(payload);
+    },
+  });
+
   const handleLaunch = (kind: FireworkKind) => {
-    launch({
+    const payload = {
       kind,
       avatarUrl: kind === 'avatar' ? avatarUrl || undefined : undefined,
-    });
+    };
+
+    if (realtimeEnabled && realtimeApi.state.connected) {
+      realtimeApi.sendFirework(payload);
+      return;
+    }
+
+    launch(payload);
   };
 
   const handleSendDanmaku = (text: string) => {
-    const result = send(text);
+    const result = send(text, undefined, {
+      optimistic: !(realtimeEnabled && realtimeApi.state.connected),
+    });
     if (!result) {
       return;
     }
 
     const launchKind = result.launchKind ?? selectedKind;
-    if (autoLaunch) {
+    if (realtimeEnabled && realtimeApi.state.connected) {
+      realtimeApi.sendDanmaku({
+        text: result.message.text,
+        color: result.message.color,
+        kind: result.launchKind,
+      });
+
+      if (autoLaunch) {
+        realtimeApi.sendFirework({
+          kind: launchKind,
+          avatarUrl: launchKind === 'avatar' ? avatarUrl || undefined : undefined,
+          message: result.message,
+        });
+      }
+      return;
+    }
+
+    if (autoLaunch || result.launchKind) {
       launch({
         kind: launchKind,
         avatarUrl: launchKind === 'avatar' ? avatarUrl || undefined : undefined,
@@ -102,6 +151,8 @@ export function MikuFireworks3D({
         onAvatarUrlChange={setAvatarUrl}
         onLaunch={() => handleLaunch(selectedKind)}
         fps={fps}
+        realtimeConnected={realtimeEnabled ? realtimeApi.state.connected : undefined}
+        onlineCount={realtimeEnabled ? realtimeApi.state.onlineCount : undefined}
       />
 
       <DanmakuPanel onSend={handleSendDanmaku} />

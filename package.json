@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.6.34",
+  "version": "1.6.35",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -257,6 +257,11 @@
       "types": "./dist/mikuFireworks3D/index.d.ts",
       "import": "./dist/mikuFireworks3D/index.mjs",
       "require": "./dist/mikuFireworks3D/index.js"
+    },
+    "./mikuFireworks3D/server": {
+      "types": "./dist/mikuFireworks3D/server/index.d.ts",
+      "import": "./dist/mikuFireworks3D/server/index.mjs",
+      "require": "./dist/mikuFireworks3D/server/index.js"
     }
   },
   "files": [

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { DANMAKU_MAX_LENGTH, DANMAKU_TRACK_COUNT } from '../constants';
 import type { DanmakuControllerOptions, DanmakuMessage, DanmakuSendResult, FireworkKind } from '../types';
 
@@ -9,16 +9,33 @@ export interface DanmakuOverlayItem extends DanmakuMessage {
   durationMs: number;
 }
 
+interface SendDanmakuOptions {
+  optimistic?: boolean;
+}
+
 export function useDanmakuController(options?: DanmakuControllerOptions) {
   const [items, setItems] = useState<DanmakuOverlayItem[]>([]);
-  const [cursor, setCursor] = useState(0);
+  const cursorRef = useRef(0);
 
   const removeItem = useCallback((id: string) => {
     setItems((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
+  const addIncoming = useCallback((message: DanmakuMessage) => {
+    setItems((prev) => {
+      const track = cursorRef.current % DANMAKU_TRACK_COUNT;
+      const item: DanmakuOverlayItem = {
+        ...message,
+        track,
+        durationMs: 8000 + Math.floor(Math.random() * 2800),
+      };
+      return [...prev.slice(-40), item];
+    });
+    cursorRef.current += 1;
+  }, []);
+
   const send = useCallback(
-    (text: string, color?: string): DanmakuSendResult | null => {
+    (text: string, color?: string, sendOptions?: SendDanmakuOptions): DanmakuSendResult | null => {
       const trimmed = text.trim();
       if (!trimmed) {
         return null;
@@ -37,16 +54,10 @@ export function useDanmakuController(options?: DanmakuControllerOptions) {
         timestamp: Date.now(),
       };
 
-      setItems((prev) => {
-        const track = cursor % DANMAKU_TRACK_COUNT;
-        const item: DanmakuOverlayItem = {
-          ...message,
-          track,
-          durationMs: 8000 + Math.floor(Math.random() * 2800),
-        };
-        return [...prev.slice(-40), item];
-      });
-      setCursor((prev) => prev + 1);
+      const optimistic = sendOptions?.optimistic ?? true;
+      if (optimistic) {
+        addIncoming(message);
+      }
 
       options?.onSend?.(message);
 
@@ -55,16 +66,17 @@ export function useDanmakuController(options?: DanmakuControllerOptions) {
         launchKind,
       };
     },
-    [cursor, options]
+    [addIncoming, options]
   );
 
   return useMemo(
     () => ({
       items,
       send,
+      addIncoming,
       removeItem,
     }),
-    [items, removeItem, send]
+    [addIncoming, items, removeItem, send]
   );
 }
 

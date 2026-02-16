@@ -13,6 +13,8 @@ interface FireworksControlPanelProps {
   onAvatarUrlChange: (value: string) => void;
   onLaunch: () => void;
   fps: number;
+  realtimeConnected?: boolean;
+  onlineCount?: number;
 }
 
 export function FireworksControlPanel({
@@ -24,6 +26,8 @@ export function FireworksControlPanel({
   onAvatarUrlChange,
   onLaunch,
   fps,
+  realtimeConnected,
+  onlineCount,
 }: FireworksControlPanelProps) {
   return (
     <div className="rounded-xl border border-slate-600/40 bg-slate-900/70 p-3 text-slate-100 backdrop-blur-sm">
@@ -64,6 +68,12 @@ export function FireworksControlPanel({
         </label>
 
         <div className="text-sm text-slate-300">FPS: {fps}</div>
+        {typeof realtimeConnected === 'boolean' ? (
+          <div className="text-sm text-slate-300">
+            实时状态: {realtimeConnected ? '已连接' : '未连接'}
+            {typeof onlineCount === 'number' ? ` · 在线 ${onlineCount}` : ''}
+          </div>
+        ) : null}
       </div>
 
       {selectedKind === 'avatar' ? (

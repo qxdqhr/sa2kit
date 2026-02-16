@@ -38,10 +38,12 @@ export interface MikuFireworks3DProps {
   maxParticles?: number;
   maxActiveFireworks?: number;
   defaultAvatarUrl?: string;
+  realtime?: FireworksRealtimeConfig;
   onLaunch?: (payload: FireworkLaunchPayload) => void;
   onDanmakuSend?: (message: DanmakuMessage) => void;
   onError?: (error: Error) => void;
   onFpsReport?: (fps: number) => void;
+  onRealtimeStateChange?: (state: FireworksRealtimeState) => void;
 }
 
 export interface DanmakuSendResult {
@@ -51,4 +53,26 @@ export interface DanmakuSendResult {
 
 export interface DanmakuControllerOptions {
   onSend?: (message: DanmakuMessage) => void;
+}
+
+export interface FireworksRealtimeUser {
+  userId: string;
+  nickname?: string;
+  avatarUrl?: string;
+}
+
+export interface FireworksRealtimeConfig {
+  enabled?: boolean;
+  serverUrl: string;
+  roomId: string;
+  user: FireworksRealtimeUser;
+  protocols?: string | string[];
+  reconnect?: boolean;
+  reconnectIntervalMs?: number;
+}
+
+export interface FireworksRealtimeState {
+  connected: boolean;
+  onlineCount: number;
+  roomId?: string;
 }
