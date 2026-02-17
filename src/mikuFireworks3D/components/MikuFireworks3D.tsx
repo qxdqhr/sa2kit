@@ -66,8 +66,8 @@ export function MikuFireworks3D({
       joined: realtimeApi.state.joined,
       ...extra,
     };
-    const rawConsole = (globalThis as { console?: Console }).console;
-    rawConsole?.log('[MikuFireworks3D][sync_event]', payload);
+
+    console.log('[MikuFireworks3D][sync_event]', payload);
   };
 
   const realtimeApi = useFireworksRealtime({

@@ -10,7 +10,7 @@ Usage:
   scripts/release-sync-profile-v1.sh [options]
 
 Options:
-  --version <patch|minor|major|x.y.z|pre*>   Version bump spec for npm version (default: patch)
+  --version <patch|minor|major|x.y.z|pre*>   Version bump spec for npm version
   --change-cmd "<command>"                   Optional command to modify sa2kit before release
   --profile-dir <path>                        profile-v1 directory (default: ../profile-v1)
   --profile-dep <name>                        Dependency name in profile-v1 (default: auto detect)
@@ -28,7 +28,8 @@ Examples:
 USAGE
 }
 
-VERSION_SPEC="patch"
+VERSION_SPEC=""
+HAS_VERSION_SPEC=0
 CHANGE_CMD=""
 PROFILE_DIR="../profile-v1"
 PROFILE_DEP=""
@@ -44,6 +45,7 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --version)
       VERSION_SPEC="$2"
+      HAS_VERSION_SPEC=1
       shift 2
       ;;
     --change-cmd)
@@ -113,6 +115,22 @@ require_cmd node
 PACKAGE_NAME="$(node -p "require('./package.json').name")"
 CURRENT_VERSION="$(node -p "require('./package.json').version")"
 PROFILE_DIR="$(cd "$ROOT_DIR" && cd "$PROFILE_DIR" && pwd)"
+
+if [[ $HAS_VERSION_SPEC -eq 0 ]]; then
+  VERSION_SPEC="$(node -e '
+const version = process.argv[1];
+const match = version.match(/^(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/);
+if (!match) {
+  console.error("Invalid semver version in package.json:", version);
+  process.exit(1);
+}
+const major = Number(match[1]);
+const minor = Number(match[2]);
+const patch = Number(match[3]) + 1;
+process.stdout.write(`${major}.${minor}.${patch}`);
+' "$CURRENT_VERSION")"
+  echo "No --version provided; auto bump target: $CURRENT_VERSION -> $VERSION_SPEC"
+fi
 
 if [[ ! -d "$PROFILE_DIR" ]]; then
   echo "profile-v1 directory not found: $PROFILE_DIR" >&2
