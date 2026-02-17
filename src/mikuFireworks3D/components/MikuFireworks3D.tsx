@@ -51,12 +51,8 @@ export function MikuFireworks3D({
   });
 
   const realtimeEnabled = Boolean(realtime && (realtime.enabled ?? true));
-  const debugSync = typeof window !== 'undefined' && (process.env.NODE_ENV !== 'production');
 
   const logSync = (phase: string, eventId: string, extra?: Record<string, unknown>) => {
-    // if (!debugSync) {
-    //   return;
-    // }
     const payload = {
       phase,
       eventId,
@@ -66,8 +62,7 @@ export function MikuFireworks3D({
       joined: realtimeApi.state.joined,
       ...extra,
     };
-
-    console.log('[MikuFireworks3D][sync_event]', payload);
+    globalThis.console?.log('[MikuFireworks3D][sync_event]', payload);
   };
 
   const realtimeApi = useFireworksRealtime({
