@@ -4,13 +4,10 @@ import React, { useMemo, useRef, useState } from 'react';
 import { DanmakuPanel } from './DanmakuPanel';
 import { FireworksCanvas } from './FireworksCanvas';
 import { FireworksControlPanel } from './FireworksControlPanel';
-import { createLogger } from '../../logger';
 import { useDanmakuController } from '../hooks/useDanmakuController';
 import { useFireworksEngine } from '../hooks/useFireworksEngine';
 import { useFireworksRealtime } from '../hooks/useFireworksRealtime';
 import type { FireworkKind, MikuFireworks3DProps } from '../types';
-
-const syncLogger = createLogger('MikuFireworks3DSync');
 
 export function MikuFireworks3D({
   width = '100%',
@@ -69,10 +66,8 @@ export function MikuFireworks3D({
       joined: realtimeApi.state.joined,
       ...extra,
     };
-    syncLogger.info('sync_event', payload);
-
     const rawConsole = (globalThis as { console?: Console }).console;
-    rawConsole?.info('[MikuFireworks3D][sync_event]', payload);
+    rawConsole?.log('[MikuFireworks3D][sync_event]', payload);
   };
 
   const realtimeApi = useFireworksRealtime({
