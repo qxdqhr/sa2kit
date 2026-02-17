@@ -54,9 +54,9 @@ export function MikuFireworks3D({
   const debugSync = typeof window !== 'undefined' && (process.env.NODE_ENV !== 'production');
 
   const logSync = (phase: string, eventId: string, extra?: Record<string, unknown>) => {
-    if (!debugSync) {
-      return;
-    }
+    // if (!debugSync) {
+    //   return;
+    // }
     const payload = {
       phase,
       eventId,
