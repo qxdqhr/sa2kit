@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.6.44",
+  "version": "1.6.45",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -262,6 +262,41 @@
       "types": "./dist/mikuFireworks3D/server/index.d.ts",
       "import": "./dist/mikuFireworks3D/server/index.mjs",
       "require": "./dist/mikuFireworks3D/server/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.mjs",
+      "require": "./dist/components/index.js"
+    },
+    "./navigation": {
+      "types": "./dist/navigation/index.d.ts",
+      "import": "./dist/navigation/index.mjs",
+      "require": "./dist/navigation/index.js"
+    },
+    "./portfolio": {
+      "types": "./dist/portfolio/index.d.ts",
+      "import": "./dist/portfolio/index.mjs",
+      "require": "./dist/portfolio/index.js"
+    },
+    "./showmasterpiece": {
+      "types": "./dist/showmasterpiece/index.d.ts",
+      "import": "./dist/showmasterpiece/index.mjs",
+      "require": "./dist/showmasterpiece/index.js"
+    },
+    "./showmasterpiece/server": {
+      "types": "./dist/showmasterpiece/server/index.d.ts",
+      "import": "./dist/showmasterpiece/server/index.mjs",
+      "require": "./dist/showmasterpiece/server/index.js"
+    },
+    "./showmasterpiece/scripts": {
+      "types": "./dist/showmasterpiece/scripts/index.d.ts",
+      "import": "./dist/showmasterpiece/scripts/index.mjs",
+      "require": "./dist/showmasterpiece/scripts/index.js"
+    },
+    "./showmasterpiece/migration": {
+      "types": "./dist/showmasterpiece/migration/index.d.ts",
+      "import": "./dist/showmasterpiece/migration/index.mjs",
+      "require": "./dist/showmasterpiece/migration/index.js"
     }
   },
   "files": [

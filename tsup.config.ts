@@ -42,6 +42,13 @@ export default defineConfig({
     'mikuFusionGame/index': 'src/mikuFusionGame/index.ts',
     'mikuFireworks3D/index': 'src/mikuFireworks3D/index.ts',
     'mikuFireworks3D/server/index': 'src/mikuFireworks3D/server/index.ts',
+    'components/index': 'src/components/index.ts',
+    'navigation/index': 'src/navigation/index.ts',
+    'portfolio/index': 'src/portfolio/index.ts',
+    'showmasterpiece/index': 'src/showmasterpiece/index.ts',
+    'showmasterpiece/server/index': 'src/showmasterpiece/server/index.ts',
+    'showmasterpiece/scripts/index': 'src/showmasterpiece/scripts/index.ts',
+    'showmasterpiece/migration/index': 'src/showmasterpiece/migration/index.ts',
   },
 
   // Output formats: ESM and CJS

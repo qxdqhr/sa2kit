@@ -80,12 +80,12 @@ export { getMimeType } from './utils/mime';
 export { UniversalFileService } from './UniversalFileService';
 
 // 缓存和监控
-export { CacheManager } from './cache/CacheManager';
-export { PerformanceMonitor } from './monitoring/PerformanceMonitor';
+export { CacheManager, cacheManager } from './cache/CacheManager';
+export { PerformanceMonitor, performanceMonitor } from './monitoring/PerformanceMonitor';
 export { CdnCacheStrategy } from './cdn/CdnCacheStrategy';
 
 // API 错误处理
-export { ApiError } from './errors/ApiError';
+export { ApiError, ApiErrorFactory, ApiResponseHelper, ValidationHelper } from './errors/ApiError';
 export * from './types/api';
 
 // ============= Persistence =============
@@ -96,6 +96,14 @@ export {
   type DrizzleDb,
   type FieldMapping,
 } from './persistence/drizzle-repository';
+
+export { createDrizzleFileRepository } from './adapters/drizzleAdapter';
+
+export { FileDbService } from './db/services/fileDbService';
+export { QueryOptimizer, queryOptimizer } from './db/middleware/queryOptimizer';
+
+export { FileServiceConfigManager, createFileServiceConfigWithConfigManager } from './config-manager';
+export { createUniversalFileServiceWithConfigManager } from './service-helpers';
 
 // ============= Configuration Helpers =============
 export {
@@ -125,4 +133,3 @@ export {
 
 // ============= Drizzle Schemas =============
 export * from './drizzle-schemas';
-
