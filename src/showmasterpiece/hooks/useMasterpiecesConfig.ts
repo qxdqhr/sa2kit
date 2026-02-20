@@ -54,7 +54,7 @@ export const useMasterpiecesConfig = () => {
       const timestamp = Date.now();
       const [configData, collectionsResponse, categoriesData, tagsData] = await Promise.all([
         getConfig(),
-        fetch(`/api/masterpieces/collections?_t=${timestamp}&nocache=true&includeImages=true`, {
+        fetch(`/api/showmasterpiece/collections?_t=${timestamp}&nocache=true&includeImages=true`, {
           headers: {
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache'

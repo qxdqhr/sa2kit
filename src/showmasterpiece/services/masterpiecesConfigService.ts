@@ -19,7 +19,7 @@ export const getConfig = async (): Promise<MasterpiecesConfig> => {
     return configCache;
   }
 
-  const response = await fetch('/api/masterpieces/config');
+  const response = await fetch('/api/showmasterpiece/config');
   if (!response.ok) {
     throw new Error('获取配置失败');
   }
@@ -34,7 +34,7 @@ export const getConfig = async (): Promise<MasterpiecesConfig> => {
 };
 
 export const updateConfig = async (configData: Partial<MasterpiecesConfig>): Promise<MasterpiecesConfig> => {
-  const response = await fetch('/api/masterpieces/config', {
+  const response = await fetch('/api/showmasterpiece/config', {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ export const updateConfig = async (configData: Partial<MasterpiecesConfig>): Pro
 };
 
 export const resetConfig = async (): Promise<MasterpiecesConfig> => {
-  const response = await fetch('/api/masterpieces/config', {
+  const response = await fetch('/api/showmasterpiece/config', {
     method: 'DELETE',
   });
   
@@ -80,7 +80,7 @@ export const getAllCollections = async (): Promise<ArtCollection[]> => {
   try {
     // 添加时间戳参数防止缓存
     const timestamp = new Date().getTime();
-    const response = await fetch(`/api/masterpieces/collections?_t=${timestamp}`, {
+    const response = await fetch(`/api/showmasterpiece/collections?_t=${timestamp}`, {
       method: 'GET',
       headers: {
         'Cache-Control': 'no-cache',
@@ -124,7 +124,7 @@ export const getAllCollections = async (): Promise<ArtCollection[]> => {
 export const createCollection = async (collectionData: CollectionFormData): Promise<ArtCollection> => {
   const requestBody = collectionData;
     
-  const response = await fetch('/api/masterpieces/collections', {
+  const response = await fetch('/api/showmasterpiece/collections', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -142,7 +142,7 @@ export const createCollection = async (collectionData: CollectionFormData): Prom
 };
 
 export const updateCollection = async (id: number, collectionData: CollectionFormData): Promise<ArtCollection> => {
-  const response = await fetch(`/api/masterpieces/collections/${id}`, {
+  const response = await fetch(`/api/showmasterpiece/collections/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ export const deleteCollection = async (id: number): Promise<void> => {
 
 // 画集顺序管理
 export const updateCollectionOrder = async (collectionOrders: { id: number; displayOrder: number }[]): Promise<void> => {
-  const response = await fetch('/api/masterpieces/collections?action=reorder', {
+  const response = await fetch('/api/showmasterpiece/collections?action=reorder', {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -189,7 +189,7 @@ export const updateCollectionOrder = async (collectionOrders: { id: number; disp
 };
 
 export const moveCollection = async (collectionId: number, targetOrder: number): Promise<void> => {
-  const response = await fetch('/api/masterpieces/collections?action=move', {
+  const response = await fetch('/api/showmasterpiece/collections?action=move', {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -204,7 +204,7 @@ export const moveCollection = async (collectionId: number, targetOrder: number):
 };
 
 export const moveCollectionUp = async (collectionId: number): Promise<void> => {
-  const response = await fetch('/api/masterpieces/collections?action=up', {
+  const response = await fetch('/api/showmasterpiece/collections?action=up', {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -219,7 +219,7 @@ export const moveCollectionUp = async (collectionId: number): Promise<void> => {
 };
 
 export const moveCollectionDown = async (collectionId: number): Promise<void> => {
-  const response = await fetch('/api/masterpieces/collections?action=down', {
+  const response = await fetch('/api/showmasterpiece/collections?action=down', {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -245,10 +245,8 @@ export const addArtworkToCollection = async (collectionId: number, artworkData: 
   const requestBody = JSON.stringify(artworkData);
   console.log('📦 [服务] 请求体大小:', `${requestBody.length} chars (${(requestBody.length / 1024).toFixed(1)} KB)`);
   
-  try {
-    console.log('🚀 [服务] 发送HTTP POST请求到:', `/api/masterpieces/collections/${collectionId}/artworks`);
-    
-    const response = await fetch(`/api/masterpieces/collections/${collectionId}/artworks`, {
+  try {    
+    const response = await fetch(`/api/showmasterpiece/collections/${collectionId}/artworks`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -296,7 +294,7 @@ export const addArtworkToCollection = async (collectionId: number, artworkData: 
 };
 
 export const updateArtwork = async (collectionId: number, artworkId: number, artworkData: ArtworkFormData): Promise<ArtworkPage> => {
-  const response = await fetch(`/api/masterpieces/collections/${collectionId}/artworks/${artworkId}`, {
+  const response = await fetch(`/api/showmasterpiece/collections/${collectionId}/artworks/${artworkId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -330,7 +328,7 @@ export const deleteArtwork = async (collectionId: number, artworkId: number): Pr
 export const getArtworksByCollection = async (collectionId: number): Promise<(ArtworkPage & { pageOrder: number })[]> => {
   // 添加时间戳参数防止缓存
   const timestamp = new Date().getTime();
-  const response = await fetch(`/api/masterpieces/collections/${collectionId}/artworks?_t=${timestamp}`, {
+  const response = await fetch(`/api/showmasterpiece/collections/${collectionId}/artworks?_t=${timestamp}`, {
     headers: {
       'Cache-Control': 'no-cache',
       'Pragma': 'no-cache'
@@ -343,7 +341,7 @@ export const getArtworksByCollection = async (collectionId: number): Promise<(Ar
 };
 
 export const updateArtworkOrder = async (collectionId: number, artworkOrders: { id: number; pageOrder: number }[]): Promise<void> => {
-  const response = await fetch(`/api/masterpieces/collections/${collectionId}/artworks?action=reorder`, {
+  const response = await fetch(`/api/showmasterpiece/collections/${collectionId}/artworks?action=reorder`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -358,7 +356,7 @@ export const updateArtworkOrder = async (collectionId: number, artworkOrders: { 
 };
 
 export const moveArtwork = async (collectionId: number, artworkId: number, targetOrder: number): Promise<void> => {
-  const response = await fetch(`/api/masterpieces/collections/${collectionId}/artworks?action=move`, {
+  const response = await fetch(`/api/showmasterpiece/collections/${collectionId}/artworks?action=move`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -373,7 +371,7 @@ export const moveArtwork = async (collectionId: number, artworkId: number, targe
 };
 
 export const moveArtworkUp = async (collectionId: number, artworkId: number): Promise<void> => {
-  const response = await fetch(`/api/masterpieces/collections/${collectionId}/artworks?action=up`, {
+  const response = await fetch(`/api/showmasterpiece/collections/${collectionId}/artworks?action=up`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -388,7 +386,7 @@ export const moveArtworkUp = async (collectionId: number, artworkId: number): Pr
 };
 
 export const moveArtworkDown = async (collectionId: number, artworkId: number): Promise<void> => {
-  const response = await fetch(`/api/masterpieces/collections/${collectionId}/artworks?action=down`, {
+  const response = await fetch(`/api/showmasterpiece/collections/${collectionId}/artworks?action=down`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -404,7 +402,7 @@ export const moveArtworkDown = async (collectionId: number, artworkId: number): 
 
 // 分类和标签
 export const getCategories = async (): Promise<string[]> => {
-  const response = await fetch('/api/masterpieces/categories');
+  const response = await fetch('/api/showmasterpiece/categories');
   if (!response.ok) {
     throw new Error('获取分类失败');
   }
@@ -417,7 +415,7 @@ export const getCategories = async (): Promise<string[]> => {
 };
 
 export const createCategory = async (name: string, description?: string): Promise<void> => {
-  const response = await fetch('/api/masterpieces/categories', {
+  const response = await fetch('/api/showmasterpiece/categories', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -432,7 +430,7 @@ export const createCategory = async (name: string, description?: string): Promis
 };
 
 export const getTags = async (): Promise<string[]> => {
-  const response = await fetch('/api/masterpieces/tags');
+  const response = await fetch('/api/showmasterpiece/tags');
   if (!response.ok) {
     throw new Error('获取标签失败');
   }
@@ -441,7 +439,7 @@ export const getTags = async (): Promise<string[]> => {
 
 // 获取画集概览（不包含作品详情，用于列表展示）
 export async function getCollectionsOverview(): Promise<Omit<ArtCollection, 'pages'>[]> {
-  const response = await fetch('/api/masterpieces/collections?overview=true');
+  const response = await fetch('/api/showmasterpiece/collections?overview=true');
   if (!response.ok) {
     throw new Error('获取画集概览失败');
   }
