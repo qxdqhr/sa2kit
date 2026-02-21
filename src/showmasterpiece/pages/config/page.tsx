@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Settings, Database, Image, Tag, Save, RotateCcw, Plus, Edit, Trash2, ArrowUpDown, Calendar, RefreshCw, Bell, Cog } from 'lucide-react';
 import { useMasterpiecesConfig, useBookingAdmin } from '../../hooks';
-import { ConfigFormData, CollectionFormData, ArtworkFormData, CollectionCategory, CollectionCategoryType, getAvailableCategories, buildDefaultHomeTabConfig, normalizeHomeTabConfig, getCategoryDisplayName } from '../../types';
+import { ConfigFormData, CollectionFormData, ArtworkFormData, CollectionCategory, CollectionCategoryType, buildDefaultHomeTabConfig, normalizeHomeTabConfig, getCategoryDisplayName } from '../../types';
 import { 
   UniversalImageUpload, 
   CollectionOrderManagerV2 as CollectionOrderManager,
@@ -166,13 +166,7 @@ function ConfigPageContent() {
   }, [config]);
 
   React.useEffect(() => {
-    const merged = Array.from(
-      new Set([
-        ...getAvailableCategories(),
-        ...categories,
-      ]),
-    ) as CollectionCategoryType[];
-    setCategoryOptions(merged);
+    setCategoryOptions(categories);
   }, [categories]);
 
   const handleHomeTabMove = (index: number, direction: -1 | 1) => {

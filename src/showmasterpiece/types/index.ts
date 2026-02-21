@@ -232,26 +232,18 @@ export const defaultHomeTabCategoryOrder: CollectionCategoryType[] = [
 ];
 
 export function buildDefaultHomeTabConfig(): HomeTabConfigItem[] {
-  const config: HomeTabConfigItem[] = [];
-  let order = 0;
-
-  defaultHomeTabCategoryOrder.forEach((category) => {
-    config.push({ category, visible: true, order });
-    order += 1;
-  });
-
-  return config;
+  return [];
 }
 
 export function normalizeHomeTabConfig(
   input?: HomeTabConfigItem[] | null,
 ): HomeTabConfigItem[] {
   if (!input || input.length === 0) {
-    return buildDefaultHomeTabConfig();
+    return [];
   }
 
   const filtered = input
-    .filter((item) => item && isValidCategory(item.category))
+    .filter((item) => item && typeof item.category === 'string' && item.category.trim().length > 0)
     .map((item) => ({
       category: item.category,
       visible: item.visible ?? true,
@@ -259,7 +251,7 @@ export function normalizeHomeTabConfig(
     }));
 
   if (filtered.length === 0) {
-    return buildDefaultHomeTabConfig();
+    return [];
   }
 
   filtered.sort((a, b) => a.order - b.order);
@@ -387,7 +379,7 @@ export interface ConfigFormData {
  * @returns 分类枚举值数组
  */
 export function getAvailableCategories(): CollectionCategoryType[] {
-  return Object.values(CollectionCategory);
+  return [];
 }
 
 /**
