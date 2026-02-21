@@ -124,7 +124,7 @@ function ConfigPageContent() {
     language: config?.language || 'zh',
   });
 
-  // 画集表单状态
+  // 商品表单状态
   const [collectionForm, setCollectionForm] = useState<CollectionFormData>({
     title: '',
     number: '',
@@ -137,7 +137,7 @@ function ConfigPageContent() {
     price: undefined,
   });
 
-  // 作品表单状态
+  // 商品详情图表单状态
   const [artworkForm, setArtworkForm] = useState<ArtworkFormData>({
     title: '',
     number: '',
@@ -282,32 +282,32 @@ function ConfigPageContent() {
     });
   };
 
-  // 作品管理tab自动选择画集逻辑
+  // 商品详情图管理tab自动选择商品逻辑
   React.useEffect(() => {
     if (activeTab === 'artworks' && collections.length > 0) {
-      // 检查当前选择的画集是否还存在
+      // 检查当前选择的商品是否还存在
       if (selectedCollection && !collections.find(c => c.id === selectedCollection)) {
-        console.log('⚠️ [配置页面] 当前选择的画集已不存在，重置选择');
+        console.log('⚠️ [配置页面] 当前选择的商品已不存在，重置选择');
         setSelectedCollection(null);
         setShowArtworkOrder(false);
         setShowArtworkForm(false);
         setEditingArtwork(null);
       }
-      // 如果用户未选择画集，自动选择第一个
+      // 如果用户未选择商品，自动选择第一个
       else if (!selectedCollection) {
         const firstCollection = collections[0];
         if (firstCollection) {
-          console.log('🎯 [配置页面] 作品管理tab首次进入，自动选择第一个画集:', {
+          console.log('🎯 [配置页面] 商品详情图管理tab首次进入，自动选择第一个商品:', {
             selectedCollection: firstCollection.id,
             title: firstCollection.title
           });
           setSelectedCollection(firstCollection.id);
         }
       }
-      // 如果用户已选择且画集存在，保留用户选择
+      // 如果用户已选择且商品存在，保留用户选择
       else {
         const currentCollection = collections.find(c => c.id === selectedCollection);
-        console.log('✅ [配置页面] 保留用户选择的画集:', {
+        console.log('✅ [配置页面] 保留用户选择的商品:', {
           selectedCollection: selectedCollection,
           title: currentCollection?.title
         });
@@ -315,12 +315,12 @@ function ConfigPageContent() {
     }
   }, [activeTab, collections, selectedCollection]);
 
-  // 当离开作品管理tab时，重置相关UI状态但保留用户选择的画集
+  // 当离开商品详情图管理tab时，重置相关UI状态但保留用户选择的商品
   React.useEffect(() => {
     if (activeTab !== 'artworks') {
-      // 只重置UI状态，保留selectedCollection让用户下次进入时还能看到之前选择的画集
+      // 只重置UI状态，保留selectedCollection让用户下次进入时还能看到之前选择的商品
       if (showArtworkOrder || showArtworkForm || editingArtwork) {
-        console.log('🔄 [配置页面] 离开作品管理tab，重置UI状态但保留用户选择');
+        console.log('🔄 [配置页面] 离开商品详情图管理tab，重置UI状态但保留用户选择');
         setShowArtworkOrder(false);
         setShowArtworkForm(false);
         setEditingArtwork(null);
@@ -350,7 +350,7 @@ function ConfigPageContent() {
     }
   };
 
-  // 处理画集保存
+  // 处理商品保存
   const handleSaveCollection = async () => {
     try {
       if (editingCollection) {
@@ -372,17 +372,17 @@ function ConfigPageContent() {
         isPublished: true,
         price: undefined,
       });
-      alert('画集保存成功！');
+      alert('商品保存成功！');
     } catch (err) {
-      alert('画集保存失败！');
+      alert('商品保存失败！');
     }
   };
 
-  // 处理作品保存
+  // 处理商品详情图保存
   const handleSaveArtwork = async () => {
     if (!selectedCollection) return;
     
-    console.log('📝 [配置页面] 开始保存作品:', {
+    console.log('📝 [配置页面] 开始保存商品详情图:', {
       isEditing: !!editingArtwork,
       selectedCollection,
       title: artworkForm.title,
@@ -393,19 +393,19 @@ function ConfigPageContent() {
     
     try {
       if (editingArtwork) {
-        console.log('✏️ [配置页面] 执行作品更新...', {
+        console.log('✏️ [配置页面] 执行商品详情图更新...', {
           collectionId: editingArtwork.collectionId,
           artworkId: editingArtwork.artworkId
         });
         await updateArtwork(editingArtwork.collectionId, editingArtwork.artworkId, artworkForm);
         setEditingArtwork(null);
-        console.log('✅ [配置页面] 作品更新完成');
+        console.log('✅ [配置页面] 商品详情图更新完成');
       } else {
-        console.log('➕ [配置页面] 执行作品创建...', {
+        console.log('➕ [配置页面] 执行商品详情图创建...', {
           collectionId: selectedCollection
         });
         await addArtworkToCollection(selectedCollection, artworkForm);
-        console.log('✅ [配置页面] 作品创建完成');
+        console.log('✅ [配置页面] 商品详情图创建完成');
       }
       
       console.log('🧹 [配置页面] 清理表单状态...');
@@ -420,11 +420,11 @@ function ConfigPageContent() {
         theme: '',
       });
       
-      alert('作品保存成功！');
-      console.log('🎉 [配置页面] 作品保存流程完成');
+      alert('商品详情图保存成功！');
+      console.log('🎉 [配置页面] 商品详情图保存流程完成');
       
     } catch (err) {
-      console.error('❌ [配置页面] 保存作品时发生错误:', err);
+      console.error('❌ [配置页面] 保存商品详情图时发生错误:', err);
       console.error('错误上下文:', {
         isEditing: !!editingArtwork,
         selectedCollection,
@@ -433,12 +433,12 @@ function ConfigPageContent() {
         stack: err instanceof Error ? err.stack : undefined
       });
       
-      const errorMessage = err instanceof Error ? err.message : '作品保存失败';
-      alert(`作品保存失败：${errorMessage}`);
+      const errorMessage = err instanceof Error ? err.message : '商品详情图保存失败';
+      alert(`商品详情图保存失败：${errorMessage}`);
     }
   };
 
-  // 编辑画集
+  // 编辑商品
   const handleEditCollection = (collection: any) => {
     setCollectionForm({
       title: collection.title,
@@ -455,7 +455,7 @@ function ConfigPageContent() {
     setShowCollectionForm(true);
   };
 
-  // 编辑作品
+  // 编辑商品详情图
   const handleEditArtwork = (collectionId: number, artwork: any) => {
     setArtworkForm({
       title: artwork.title,
@@ -470,27 +470,27 @@ function ConfigPageContent() {
     setShowArtworkForm(true);
   };
 
-  // 切换作品排序显示
+  // 切换商品详情图排序显示
   const handleToggleArtworkOrder = async () => {
     if (!selectedCollection) {
-      alert('请先选择一个画集');
+      alert('请先选择一个商品');
       return;
     }
     
     // 如果当前是排序模式，关闭时需要重新加载数据
     if (showArtworkOrder) {
-      console.log('🔄 [配置页面] 关闭作品排序，重新加载数据...');
+      console.log('🔄 [配置页面] 关闭商品详情图排序，重新加载数据...');
       await refreshData();
     }
     
     setShowArtworkOrder(!showArtworkOrder);
   };
 
-  // 切换画集排序显示
+  // 切换商品排序显示
   const handleToggleCollectionOrder = async () => {
     // 如果当前是排序模式，关闭时需要重新加载数据
     if (showCollectionOrder) {
-      console.log('🔄 [配置页面] 关闭画集排序，重新加载数据...');
+      console.log('🔄 [配置页面] 关闭商品排序，重新加载数据...');
       await refreshData();
     }
     
@@ -539,8 +539,8 @@ function ConfigPageContent() {
               返回
             </Button>
             <div>
-              <h1 className="text-2xl font-bold">画集展览配置管理</h1>
-              <p className="text-sm text-muted-foreground">管理展览的所有配置、画集和作品</p>
+              <h1 className="text-2xl font-bold">商品展览配置管理</h1>
+              <p className="text-sm text-muted-foreground">管理展览的所有配置、商品和商品详情图</p>
             </div>
 
           </div>
@@ -563,11 +563,11 @@ function ConfigPageContent() {
             </TabsTrigger>
             <TabsTrigger value="collections" className="flex items-center gap-2">
               <Database size={16} />
-              画集管理
+              商品管理
             </TabsTrigger>
             <TabsTrigger value="artworks" className="flex items-center gap-2">
               <Image size={16} />
-              作品管理
+              商品详情管理
             </TabsTrigger>
             <TabsTrigger value="bookings" className="flex items-center gap-2">
               <Calendar size={16} />
@@ -657,7 +657,7 @@ function ConfigPageContent() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="maxCollections">每页显示画集数量</Label>
+                    <Label htmlFor="maxCollections">每页显示商品数量</Label>
                     <Input
                       id="maxCollections"
                       type="number"
@@ -845,8 +845,8 @@ function ConfigPageContent() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>画集管理</CardTitle>
-                    <CardDescription>管理画集</CardDescription>
+                    <CardTitle>商品管理</CardTitle>
+                    <CardDescription>管理商品</CardDescription>
                   </div>
                   <div className="flex gap-3">
                     <Button
@@ -867,7 +867,7 @@ function ConfigPageContent() {
                       className="gap-2"
                     >
                       <Plus size={16} />
-                      添加画集
+                      添加商品
                     </Button>
                     <Button
                       variant="outline"
@@ -875,7 +875,7 @@ function ConfigPageContent() {
                       className="gap-2"
                     >
                       <ArrowUpDown size={16} />
-                      {showCollectionOrder ? '关闭排序' : '画集排序'}
+                      {showCollectionOrder ? '关闭排序' : '商品排序'}
                     </Button>
                   </div>
                 </div>
@@ -885,9 +885,9 @@ function ConfigPageContent() {
             {showCollectionOrder && (
               <div className="mb-6 p-6 bg-white rounded-lg shadow-sm border border-slate-200">
                 <div className="mb-4">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-2">画集排序管理</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-2">商品排序管理</h3>
                   <p className="text-slate-600">
-                    拖拽或使用按钮调整画集在前台的显示顺序
+                    拖拽或使用按钮调整商品在前台的显示顺序
                   </p>
                 </div>
                 <CollectionOrderManager
@@ -895,7 +895,7 @@ function ConfigPageContent() {
                   moveCollectionDown={moveCollectionDown}
                   updateCollectionOrder={updateCollectionOrder}
                   onOrderChanged={async () => {
-                    console.log('🔄 [配置页面] 画集顺序已更新（排序组件内部已处理数据更新）');
+                    console.log('🔄 [配置页面] 商品顺序已更新（排序组件内部已处理数据更新）');
                     // 排序组件内部已经更新了数据，这里不需要额外操作
                   }}
                 />
@@ -923,7 +923,7 @@ function ConfigPageContent() {
                       <p className="text-slate-600 text-sm mb-1">编号：{collection.number}</p>
                       <p className="text-slate-600 text-sm mb-1">分类：{collection.category.displayName}</p>
                       <p className="text-slate-600 text-sm mb-1">价格：{collection.price ? `¥${collection.price}` : '免费'}</p>
-                      <p className="text-slate-600 text-sm mb-1">作品数量：{collection.pages.length}</p>
+                      <p className="text-slate-600 text-sm mb-1">商品详情图数量：{collection.pages.length}</p>
                       <p className="text-slate-600 text-sm mb-3">状态：{collection.isPublished ? '已发布' : '草稿'}</p>
                       <div className="flex gap-2">
                         <button
@@ -935,7 +935,7 @@ function ConfigPageContent() {
                         </button>
                         <button
                           onClick={async () => {
-                            if (confirm('确定要删除这个画集吗？')) {
+                            if (confirm('确定要删除这个商品吗？')) {
                               await deleteCollection(collection.id);
                             }
                           }}
@@ -957,14 +957,14 @@ function ConfigPageContent() {
 
           <TabsContent value="artworks" className="space-y-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-slate-800">作品管理</h2>
+              <h2 className="text-2xl font-bold text-slate-800">商品详情图管理</h2>
               <div className="flex gap-3">
                 <select
                   value={selectedCollection || ''}
                   onChange={(e) => setSelectedCollection(e.target.value ? parseInt(e.target.value) : null)}
                   className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">选择画集</option>
+                  <option value="">选择商品</option>
                   {collections.map((collection) => (
                     <option key={collection.id} value={collection.id}>
                       {collection.title}
@@ -989,14 +989,14 @@ function ConfigPageContent() {
                       className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg font-medium hover:bg-blue-700 transition-colors"
                     >
                       <Plus size={16} />
-                      添加作品
+                      添加商品详情图
                     </button>
                     <button
                       onClick={handleToggleArtworkOrder}
                       className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 border border-slate-300 rounded-lg font-medium hover:bg-slate-200 transition-colors"
                     >
                       <ArrowUpDown size={16} />
-                      {showArtworkOrder ? '关闭排序' : '作品排序'}
+                      {showArtworkOrder ? '关闭排序' : '商品详情图排序'}
                     </button>
                   </>
                 )}
@@ -1006,9 +1006,9 @@ function ConfigPageContent() {
             {selectedCollection && showArtworkOrder && (
               <div className="mb-6 p-6 bg-white rounded-lg shadow-sm border border-slate-200">
                 <div className="mb-4">
-                  <h3 className="text-xl font-semibold text-slate-800 mb-2">作品排序管理</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-2">商品详情图排序管理</h3>
                   <p className="text-slate-600">
-                    拖拽或使用按钮调整作品在画集中的显示顺序
+                    拖拽或使用按钮调整商品详情图在商品中的显示顺序
                   </p>
                 </div>
                 <ArtworkOrderManager
@@ -1017,7 +1017,7 @@ function ConfigPageContent() {
                   moveArtworkDown={moveArtworkDown}
                   updateArtworkOrder={updateArtworkOrder}
                   onOrderChanged={async () => {
-                    console.log('🔄 [配置页面] 作品顺序已更新（排序组件内部已处理数据更新）');
+                    console.log('🔄 [配置页面] 商品详情图顺序已更新（排序组件内部已处理数据更新）');
                     // 排序组件内部已经更新了数据，这里不需要额外操作
                   }}
                 />
@@ -1055,7 +1055,7 @@ function ConfigPageContent() {
                           </button>
                           <button
                             onClick={() => {
-                              if (confirm('确定要删除这个作品吗？')) {
+                              if (confirm('确定要删除这个商品详情图吗？')) {
                                 deleteArtwork(selectedCollection, artwork.id);
                               }
                             }}
@@ -1137,12 +1137,12 @@ function ConfigPageContent() {
         </Tabs>
       </div>
 
-      {/* 画集表单弹窗 */}
+      {/* 商品表单弹窗 */}
       {showCollectionForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
             <div className="flex items-center justify-between p-6 border-b border-slate-200">
-              <h3 className="text-xl font-semibold text-slate-800">{editingCollection ? '编辑画集' : '添加画集'}</h3>
+              <h3 className="text-xl font-semibold text-slate-800">{editingCollection ? '编辑商品' : '添加商品'}</h3>
               <button
                 onClick={() => setShowCollectionForm(false)}
                 className="text-slate-400 hover:text-slate-600 text-2xl font-bold leading-none"
@@ -1158,7 +1158,7 @@ function ConfigPageContent() {
                     type="text"
                     value={collectionForm.title}
                     onChange={(e) => setCollectionForm(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="输入画集标题"
+                    placeholder="输入商品标题"
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -1191,7 +1191,7 @@ function ConfigPageContent() {
                   <textarea
                     value={collectionForm.description}
                     onChange={(e) => setCollectionForm(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="输入画集描述"
+                    placeholder="输入商品描述"
                     rows={3}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
@@ -1233,7 +1233,7 @@ function ConfigPageContent() {
                       onChange={(e) => setCollectionForm(prev => ({ ...prev, isPublished: e.target.checked }))}
                       className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
                     />
-                    <span className="text-sm font-medium text-slate-700">发布画集</span>
+                    <span className="text-sm font-medium text-slate-700">发布商品</span>
                   </label>
                 </div>
               </div>
@@ -1256,12 +1256,12 @@ function ConfigPageContent() {
         </div>
       )}
 
-      {/* 作品表单弹窗 */}
+      {/* 商品详情图表单弹窗 */}
       {showArtworkForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
             <div className="flex items-center justify-between p-6 border-b border-slate-200">
-              <h3 className="text-xl font-semibold text-slate-800">{editingArtwork ? '编辑作品' : '添加作品'}</h3>
+              <h3 className="text-xl font-semibold text-slate-800">{editingArtwork ? '编辑商品详情图' : '添加商品详情图'}</h3>
               <button
                 onClick={() => setShowArtworkForm(false)}
                 className="text-slate-400 hover:text-slate-600 text-2xl font-bold leading-none"
@@ -1277,7 +1277,7 @@ function ConfigPageContent() {
                     type="text"
                     value={artworkForm.title}
                     onChange={(e) => setArtworkForm(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="输入作品标题"
+                    placeholder="输入商品详情图标题"
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -1293,7 +1293,7 @@ function ConfigPageContent() {
                 </div>
                 <div>
                   <UniversalImageUpload
-                    label="作品图片"
+                    label="商品详情图图片"
                     value={artworkForm.image}
                     fileId={artworkForm.fileId}
                     onChange={(data: { image?: string; fileId?: string }) => setArtworkForm(prev => ({ 
@@ -1301,7 +1301,7 @@ function ConfigPageContent() {
                       image: data.image,
                       fileId: data.fileId
                     }))}
-                    placeholder="上传作品图片"
+                    placeholder="上传商品详情图图片"
                     businessType="artwork"
                   />
                 </div>
@@ -1310,7 +1310,7 @@ function ConfigPageContent() {
                   <textarea
                     value={artworkForm.description}
                     onChange={(e) => setArtworkForm(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="输入作品描述"
+                    placeholder="输入商品详情图描述"
                     rows={3}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
@@ -1331,7 +1331,7 @@ function ConfigPageContent() {
                     type="text"
                     value={artworkForm.theme}
                     onChange={(e) => setArtworkForm(prev => ({ ...prev, theme: e.target.value }))}
-                    placeholder="输入作品主题"
+                    placeholder="输入商品详情图主题"
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>

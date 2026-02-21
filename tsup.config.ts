@@ -49,6 +49,8 @@ export default defineConfig({
     'showmasterpiece/server/index': 'src/showmasterpiece/server/index.ts',
     'showmasterpiece/scripts/index': 'src/showmasterpiece/scripts/index.ts',
     'showmasterpiece/migration/index': 'src/showmasterpiece/migration/index.ts',
+    'iflytek/index': 'src/iflytek/index.ts',
+    'iflytek/server': 'src/iflytek/server.ts',
   },
 
   // Output formats: ESM and CJS
@@ -93,7 +95,9 @@ export default defineConfig({
     '@imgly/background-removal',
     'tesseract.js',
     'onnxruntime-node',
-    'onnxruntime-web'
+    'onnxruntime-web',
+    'ws',
+    'crypto'
   ],
 
   // Skip node_modules
