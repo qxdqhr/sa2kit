@@ -28,7 +28,7 @@ import { ArrowLeft, Settings, History } from 'lucide-react';
 import Link from 'next/link';
 import { useMasterpieces, useDeadlinePopup } from '../hooks';
 import { getConfig } from '../services';
-import { MasterpiecesConfig, CollectionCategory, CollectionCategoryType ,CategoryDescription, normalizeHomeTabConfig, getCategoryDisplayName } from '../types';
+import { MasterpiecesConfig, CollectionCategory, CollectionCategoryType, normalizeHomeTabConfig, getCategoryDisplayName } from '../types';
 import { CollectionCard, ArtworkViewer, ThumbnailSidebar, MobileAlbumViewer, CartModal, CartButton, DeadlinePopupManager} from '../components';
 import { CartProvider } from '../contexts/CartContext';
 import { AuthProvider, useAuth, UserMenu, CustomMenuItem } from '@/auth/legacy';

@@ -16,6 +16,8 @@ Options:
   --profile-dep <name>                        Dependency name in profile-v1 (default: auto detect)
   --publish-tag <latest|beta|next>            npm publish tag (default: latest)
   --registry <url>                            npm/pnpm registry (default: https://registry.npmjs.org/)
+  --registry-retry <count>                    Retry attempts for registry visibility (default: 24)
+  --registry-wait <seconds>                   Wait seconds between retries (default: 5)
   --profile-build-cmd "<command>"            profile-v1 build command (default: pnpm build)
   --profile-run-cmd "<command>"              profile-v1 run command (default: pnpm dev)
   --no-tests                                  Skip pnpm test before publish
@@ -40,6 +42,8 @@ NPM_REGISTRY="https://registry.npmjs.org/"
 SKIP_TESTS=0
 SKIP_BUILD=0
 AUTO_YES=0
+REGISTRY_RETRY_COUNT=24
+REGISTRY_RETRY_WAIT=5
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -74,6 +78,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --registry)
       NPM_REGISTRY="$2"
+      shift 2
+      ;;
+    --registry-retry)
+      REGISTRY_RETRY_COUNT="$2"
+      shift 2
+      ;;
+    --registry-wait)
+      REGISTRY_RETRY_WAIT="$2"
       shift 2
       ;;
     --no-tests)
@@ -177,18 +189,18 @@ else
 fi
 
 echo "[3/5] Waiting for $PACKAGE_NAME@$NEW_VERSION to become available on registry"
-for i in {1..24}; do
+for i in $(seq 1 "$REGISTRY_RETRY_COUNT"); do
   published_version="$(npm view "${PACKAGE_NAME}@${NEW_VERSION}" version --registry "$NPM_REGISTRY" 2>/dev/null || true)"
   if [[ "$published_version" == "$NEW_VERSION" ]]; then
     echo "Confirmed on npm registry: $PACKAGE_NAME@$NEW_VERSION"
     break
   fi
-  if [[ "$i" -eq 24 ]]; then
-    echo "Version $PACKAGE_NAME@$NEW_VERSION not visible on $NPM_REGISTRY after waiting 120s" >&2
+  if [[ "$i" -eq "$REGISTRY_RETRY_COUNT" ]]; then
+    echo "Version $PACKAGE_NAME@$NEW_VERSION not visible on $NPM_REGISTRY after waiting $((REGISTRY_RETRY_COUNT * REGISTRY_RETRY_WAIT))s" >&2
     echo "You can retry step 4 manually after a short delay." >&2
     exit 1
   fi
-  sleep 5
+  sleep "$REGISTRY_RETRY_WAIT"
 done
 
 echo "[3/5] Pushing release commit + tag to git"
@@ -216,10 +228,34 @@ console.log("sa2kit");
 fi
 
 echo "profile-v1 dependency key: $PROFILE_DEP"
+set +e
 (
   cd "$PROFILE_DIR"
   pnpm add "${PROFILE_DEP}@${NEW_VERSION}" --registry "$NPM_REGISTRY"
 )
+PROFILE_DEP_STATUS=$?
+set -e
+
+if [[ $PROFILE_DEP_STATUS -ne 0 ]]; then
+  echo "Initial install failed; retrying after registry visibility check..." >&2
+  for i in $(seq 1 "$REGISTRY_RETRY_COUNT"); do
+    published_version="$(npm view "${PROFILE_DEP}@${NEW_VERSION}" version --registry "$NPM_REGISTRY" 2>/dev/null || true)"
+    if [[ "$published_version" == "$NEW_VERSION" ]]; then
+      echo "Confirmed dependency available: $PROFILE_DEP@$NEW_VERSION"
+      break
+    fi
+    if [[ "$i" -eq "$REGISTRY_RETRY_COUNT" ]]; then
+      echo "Dependency $PROFILE_DEP@$NEW_VERSION not visible after waiting $((REGISTRY_RETRY_COUNT * REGISTRY_RETRY_WAIT))s" >&2
+      exit 1
+    fi
+    sleep "$REGISTRY_RETRY_WAIT"
+  done
+
+  (
+    cd "$PROFILE_DIR"
+    pnpm add "${PROFILE_DEP}@${NEW_VERSION}" --registry "$NPM_REGISTRY"
+  )
+fi
 
 echo "[5/5] Rebuild and run profile-v1"
 (
