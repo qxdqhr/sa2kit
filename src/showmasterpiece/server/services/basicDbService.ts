@@ -121,7 +121,7 @@ export class MasterpiecesConfigDbService {
 export class CategoriesDbService {
   constructor(private readonly db: any) {}
 
-  async getCategories(): Promise<string[]> {
+  async getCategories(): Promise<Array<{ name: string; description?: string | null }>> {
     const conditions = [eq(comicUniverseCategories.isActive, true)];
 
     const categories = await this.db.select()
@@ -129,7 +129,10 @@ export class CategoriesDbService {
       .where(and(...conditions))
       .orderBy(asc(comicUniverseCategories.displayOrder), asc(comicUniverseCategories.name));
 
-    return categories.map((cat: any) => cat.name);
+    return categories.map((cat: any) => ({
+      name: cat.name,
+      description: cat.description ?? null,
+    }));
   }
 
   async createCategory(name: string, description?: string): Promise<void> {

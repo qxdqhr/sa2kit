@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Settings, Database, Image, Tag, Save, RotateCcw, Plus, Edit, Trash2, ArrowUpDown, Calendar, RefreshCw, Bell, Cog } from 'lucide-react';
 import { useMasterpiecesConfig, useBookingAdmin } from '../../hooks';
-import { ConfigFormData, CollectionFormData, ArtworkFormData, CollectionCategory, CollectionCategoryType, buildDefaultHomeTabConfig, normalizeHomeTabConfig, getCategoryDisplayName } from '../../types';
+import { ConfigFormData, CollectionFormData, ArtworkFormData, CollectionCategory, CollectionCategoryType, CategoryOption, buildDefaultHomeTabConfig, normalizeHomeTabConfig, getCategoryDisplayName } from '../../types';
 import { 
   UniversalImageUpload, 
   CollectionOrderManagerV2 as CollectionOrderManager,
@@ -65,7 +65,8 @@ function ConfigPageContent() {
   const [showArtworkOrder, setShowArtworkOrder] = useState(false);
   const [showCollectionOrder, setShowCollectionOrder] = useState(false);
   const [newHomeTabCategory, setNewHomeTabCategory] = useState('');
-  const [categoryOptions, setCategoryOptions] = useState<CollectionCategoryType[]>([]);
+  const [newHomeTabDescription, setNewHomeTabDescription] = useState('');
+  const [categoryOptions, setCategoryOptions] = useState<CategoryOption[]>([]);
 
   // 预订管理Hook
   const {
@@ -206,6 +207,7 @@ function ConfigPageContent() {
       homeTabConfig: buildDefaultHomeTabConfig(),
     }));
     setNewHomeTabCategory('');
+    setNewHomeTabDescription('');
   };
 
   const handleSetAllHomeTabsVisible = (visible: boolean) => {
@@ -220,6 +222,7 @@ function ConfigPageContent() {
 
   const handleAddHomeTab = async () => {
     const trimmed = newHomeTabCategory.trim();
+    const trimmedDescription = newHomeTabDescription.trim();
     if (!trimmed) {
        alert('分类名称不能为空');
       setNewHomeTabCategory('');
@@ -233,21 +236,27 @@ function ConfigPageContent() {
       setNewHomeTabCategory('');
       return;
     }
-
-    const hasCategory = categoryOptions.some(
-      (category) => category.toLowerCase() === trimmed.toLowerCase(),
+    const existingCategory = categoryOptions.find(
+      (category) => category.name.toLowerCase() === trimmed.toLowerCase(),
     );
+    const description = trimmedDescription || existingCategory?.description || '';
+    if (!description) {
+      alert('展示文案不能为空');
+      return;
+    }
 
     try {
-      if (!hasCategory) {
-        await createCategoryService(trimmed);
-        setCategoryOptions((prev) => [...prev, trimmed as CollectionCategoryType]);
+      if (!existingCategory) {
+        await createCategoryService(trimmed, description);
+        setCategoryOptions((prev) => [...prev, { name: trimmed, description }]);
       }
 
       setConfigForm((prev) => {
         const updated = [
           ...prev.homeTabConfig,
           {
+            name: trimmed,
+            description,
             category: trimmed as CollectionCategoryType,
             visible: true,
             order: prev.homeTabConfig.length,
@@ -256,6 +265,7 @@ function ConfigPageContent() {
         return { ...prev, homeTabConfig: normalizeHomeTabConfig(updated) };
       });
       setNewHomeTabCategory('');
+      setNewHomeTabDescription('');
     } catch (error) {
       console.error('新增分类失败:', error);
       alert(error instanceof Error ? error.message : '新增分类失败');
@@ -747,15 +757,21 @@ function ConfigPageContent() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-col lg:flex-row lg:items-end gap-3 mb-4">
-                  <div className="flex-1 space-y-2">
-                    <Label>新增分类Tab</Label>
-                    <Input
-                      value={newHomeTabCategory}
-                      onChange={(e) => setNewHomeTabCategory(e.target.value)}
-                      placeholder="输入新分类名称"
-                    />
-                  </div>
+                  <div className="flex flex-col lg:flex-row lg:items-end gap-3 mb-4">
+                    <div className="flex-1 space-y-2">
+                      <Label>分类名称</Label>
+                      <Input
+                        value={newHomeTabCategory}
+                        onChange={(e) => setNewHomeTabCategory(e.target.value)}
+                        placeholder="输入分类名称"
+                      />
+                      <Label>展示文案</Label>
+                      <Input
+                        value={newHomeTabDescription}
+                        onChange={(e) => setNewHomeTabDescription(e.target.value)}
+                        placeholder="输入展示文案"
+                      />
+                    </div>
                   <Button onClick={handleAddHomeTab} className="gap-2">
                     <Plus size={16} />
                     新增Tab
@@ -769,9 +785,14 @@ function ConfigPageContent() {
                       className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 border border-slate-200 rounded-lg bg-white"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-sm font-semibold text-slate-800">
-                          {getCategoryDisplayName(item.category)}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-semibold text-slate-800">
+                            {item.description || item.name || getCategoryDisplayName(item.category)}
+                          </span>
+                          {item.description ? (
+                            <span className="text-xs text-slate-500">{item.name || item.category}</span>
+                          ) : null}
+                        </div>
                         {!item.visible && (
                           <Badge variant="secondary" className="text-xs">
                             已隐藏
@@ -1183,8 +1204,8 @@ function ConfigPageContent() {
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     {categoryOptions.map((category) => (
-                      <option key={category} value={category}>
-                        {getCategoryDisplayName(category)}
+                      <option key={category.name} value={category.name}>
+                        {category.description || getCategoryDisplayName(category.name as CollectionCategoryType)}
                       </option>
                     ))}
                   </select>

@@ -287,7 +287,7 @@ function ShowMasterPiecesContent() {
 
   const categoryList = visibleHomeTabs.map((tab) => ({
     category: tab.category,
-    displayName: getCategoryDisplayName(tab.category),
+    displayName: tab.description || tab.name || getCategoryDisplayName(tab.category),
   }));
 
   return (

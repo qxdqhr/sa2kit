@@ -401,7 +401,7 @@ export const moveArtworkDown = async (collectionId: number, artworkId: number): 
 };
 
 // 分类和标签
-export const getCategories = async (): Promise<string[]> => {
+export const getCategories = async (): Promise<Array<{ name: string; description?: string | null }>> => {
   const response = await fetch('/api/showmasterpiece/categories');
   if (!response.ok) {
     throw new Error('获取分类失败');

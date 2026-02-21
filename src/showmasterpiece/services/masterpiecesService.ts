@@ -216,7 +216,7 @@ export class MasterpiecesService {
    * 从后端API获取所有已定义的画集分类列表。
    * 用于构建分类筛选器和下拉菜单。
    * 
-   * @returns Promise<string[]> 分类名称数组
+   * @returns Promise<Array<{ name: string; description?: string | null }>> 分类名称数组
    * @throws {Error} 当API请求失败时抛出错误
    * 
    * @example
@@ -225,12 +225,13 @@ export class MasterpiecesService {
    * console.log('可用分类:', categories);
    * ```
    */
-  static async getCategories(): Promise<string[]> {
+  static async getCategories(): Promise<Array<{ name: string; description?: string | null }>> {
     const response = await fetch('/api/showmasterpiece/categories');
     if (!response.ok) {
       throw new Error('获取分类失败');
     }
-    return await response.json();
+    const payload = await response.json();
+    return Array.isArray(payload) ? payload : payload?.data ?? [];
   }
 
   /**

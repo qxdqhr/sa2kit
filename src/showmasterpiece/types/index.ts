@@ -213,7 +213,14 @@ export interface MasterpiecesConfig {
   language: 'zh' | 'en';
 }
 
+export interface CategoryOption {
+  name: string;
+  description?: string | null;
+}
+
 export interface HomeTabConfigItem {
+  name?: string;
+  description?: string | null;
   category: CollectionCategoryType;
   visible: boolean;
   order: number;
@@ -243,12 +250,26 @@ export function normalizeHomeTabConfig(
   }
 
   const filtered = input
-    .filter((item) => item && typeof item.category === 'string' && item.category.trim().length > 0)
-    .map((item) => ({
-      category: item.category,
-      visible: item.visible ?? true,
-      order: Number.isFinite(item.order) ? Number(item.order) : 0,
-    }));
+    .filter((item) => {
+      if (!item) {
+        return false;
+      }
+      const rawName = typeof item.name === 'string' ? item.name : item.category;
+      return typeof rawName === 'string' && rawName.trim().length > 0;
+    })
+    .map((item) => {
+      const rawName = typeof item.name === 'string' ? item.name : item.category;
+      const name = typeof rawName === 'string' ? rawName.trim() : '';
+      const description = typeof item.description === 'string' ? item.description.trim() : item.description;
+
+      return {
+        name,
+        description: description && description.length > 0 ? description : null,
+        category: name as CollectionCategoryType,
+        visible: item.visible ?? true,
+        order: Number.isFinite(item.order) ? Number(item.order) : 0,
+      };
+    });
 
   if (filtered.length === 0) {
     return [];

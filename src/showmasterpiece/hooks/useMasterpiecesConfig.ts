@@ -24,13 +24,14 @@ import type {
   MasterpiecesConfig, 
   ArtCollection, 
   CollectionFormData, 
-  ArtworkFormData 
+  ArtworkFormData,
+  CategoryOption,
 } from '../types';
 
 export const useMasterpiecesConfig = () => {
   const [config, setConfig] = useState<MasterpiecesConfig | null>(null);
   const [collections, setCollections] = useState<ArtCollection[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

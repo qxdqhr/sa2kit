@@ -225,7 +225,7 @@ export class MasterpiecesConfigDbService {
 // 分类相关服务
 export class CategoriesDbService {
   // 获取所有分类
-  async getCategories(): Promise<string[]> {
+  async getCategories(): Promise<Array<{ name: string; description?: string | null }>> {
     const conditions = [eq(comicUniverseCategories.isActive, true)];
     
     const categories = await db.select()
@@ -234,7 +234,10 @@ export class CategoriesDbService {
       .orderBy(asc(comicUniverseCategories.displayOrder), asc(comicUniverseCategories.name));
     
     console.log(`📊 [CategoriesDbService] 获取分类: 返回${categories.length}个分类`);
-    return categories.map(cat => cat.name);
+    return categories.map(cat => ({
+      name: cat.name,
+      description: cat.description ?? null,
+    }));
   }
 
   // 创建分类
