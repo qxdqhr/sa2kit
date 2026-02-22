@@ -30,12 +30,55 @@ import {
   batchBooking
 } from '../../services/cartService';
 
+type CartEvent = { type: string };
+type CartEventListener = (event: CartEvent) => void;
+
+interface CartEventTarget {
+  addEventListener: (type: string, listener: CartEventListener) => void;
+  removeEventListener: (type: string, listener: CartEventListener) => void;
+  dispatchEvent: (event: CartEvent) => boolean | void;
+}
+
+const createCartEventTarget = (): CartEventTarget => {
+  if (typeof EventTarget !== 'undefined') {
+    return new EventTarget() as unknown as CartEventTarget;
+  }
+
+  const listeners = new Map<string, Set<CartEventListener>>();
+
+  const addEventListener = (type: string, listener: CartEventListener) => {
+    const set = listeners.get(type) ?? new Set<CartEventListener>();
+    set.add(listener);
+    listeners.set(type, set);
+  };
+
+  const removeEventListener = (type: string, listener: CartEventListener) => {
+    const set = listeners.get(type);
+    if (!set) return;
+    set.delete(listener);
+    if (set.size === 0) listeners.delete(type);
+  };
+
+  const dispatchEvent = (event: CartEvent) => {
+    const set = listeners.get(event.type);
+    if (!set) return false;
+    set.forEach(listener => listener(event));
+    return true;
+  };
+
+  return { addEventListener, removeEventListener, dispatchEvent };
+};
+
 // 创建一个全局事件系统来通知购物车更新
-export const cartUpdateEvents = new EventTarget();
 export const CART_UPDATE_EVENT = 'cart-updated';
+export const cartUpdateEvents = createCartEventTarget();
 
 export const notifyCartUpdate = () => {
-  cartUpdateEvents.dispatchEvent(new Event(CART_UPDATE_EVENT));
+  const event =
+    typeof Event !== 'undefined'
+      ? (new Event(CART_UPDATE_EVENT) as unknown as CartEvent)
+      : { type: CART_UPDATE_EVENT };
+  cartUpdateEvents.dispatchEvent(event);
 };
 
 /**
