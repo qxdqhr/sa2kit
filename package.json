@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.6.52",
+  "version": "1.6.57",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -283,6 +283,26 @@
       "import": "./dist/showmasterpiece/index.mjs",
       "require": "./dist/showmasterpiece/index.js"
     },
+    "./showmasterpiece/ui/web": {
+      "types": "./dist/showmasterpiece/ui/web/index.d.ts",
+      "import": "./dist/showmasterpiece/ui/web/index.mjs",
+      "require": "./dist/showmasterpiece/ui/web/index.js"
+    },
+    "./showmasterpiece/ui/miniapp": {
+      "types": "./dist/showmasterpiece/ui/miniapp/index.d.ts",
+      "import": "./dist/showmasterpiece/ui/miniapp/index.mjs",
+      "require": "./dist/showmasterpiece/ui/miniapp/index.js"
+    },
+    "./showmasterpiece/logic": {
+      "types": "./dist/showmasterpiece/logic/index.d.ts",
+      "import": "./dist/showmasterpiece/logic/index.mjs",
+      "require": "./dist/showmasterpiece/logic/index.js"
+    },
+    "./showmasterpiece/db": {
+      "types": "./dist/showmasterpiece/db/index.d.ts",
+      "import": "./dist/showmasterpiece/db/index.mjs",
+      "require": "./dist/showmasterpiece/db/index.js"
+    },
     "./showmasterpiece/server": {
       "types": "./dist/showmasterpiece/server/index.d.ts",
       "import": "./dist/showmasterpiece/server/index.mjs",
@@ -335,6 +355,7 @@
   "peerDependencies": {
     "@imgly/background-removal": "^1.7.0",
     "@xenova/transformers": "^2.17.2",
+    "@tarojs/components": "^4.1.1",
     "lucide-react": "^0.263.0 || ^0.300.0 || ^0.400.0 || ^0.500.0",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0",
@@ -353,6 +374,9 @@
       "optional": true
     },
     "lucide-react": {
+      "optional": true
+    },
+    "@tarojs/components": {
       "optional": true
     },
     "@xenova/transformers": {
@@ -381,6 +405,7 @@
     "@types/three": "^0.181.0",
     "@types/uuid": "^11.0.0",
     "@types/ws": "^8.18.1",
+    "@tarojs/components": "^4.1.1",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
     "@vitest/ui": "^1.2.0",

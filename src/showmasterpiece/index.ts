@@ -41,7 +41,7 @@
  * import { CollectionCard, ArtworkViewer } from 'sa2kitsa2kit/showmasterpiece';
  * ```
  */
-export * from './components';
+export * from './ui/web';
 
 /**
  * 通用顺序管理器组件
@@ -64,13 +64,13 @@ export { GenericOrderManager } from '@/components/GenericOrderManager';
 // 完整的页面组件，可以直接用作路由页面
 
 /** 美术作品展示主页面 - 展示所有画集的网格视图 */
-export { default as ShowMasterPiecesPage } from './pages/ShowMasterPiecesPage';
+export { default as ShowMasterPiecesPage } from './ui/web/pages/ShowMasterPiecesPage';
 
 /** 美术作品配置管理页面 - 后台管理界面，用于配置和管理画集数据 */
-export { default as ShowMasterPiecesConfigPage } from './pages/config/page';
+export { default as ShowMasterPiecesConfigPage } from './ui/web/pages/config/page';
 
 /** 用户购物车历史页面 */
-export { default as ShowMasterPiecesHistoryPage } from './pages/history/page';
+export { default as ShowMasterPiecesHistoryPage } from './ui/web/pages/history/page';
 
 // ===== Hook导出 =====
 // 所有自定义React Hooks通过 hooks/index.ts 统一导出
@@ -89,10 +89,7 @@ export { default as ShowMasterPiecesHistoryPage } from './pages/history/page';
  * import { useMasterpieces, useCart } from 'sa2kitsa2kit/showmasterpiece';
  * ```
  */
-export * from './hooks';
-
-/** 购物车上下文提供者 - 提供购物车状态的全局管理 */
-export { CartProvider } from './contexts/CartContext';
+export * from './logic';
 
 /** 
  * 注意：useCartContext Hook 现已通过 hooks 统一导出
@@ -159,6 +156,8 @@ export type {
   BatchBookingRequest,  // 批量预订请求类型
   BatchBookingResponse  // 批量预订响应类型
 } from './types/cart';
+
+// ===== Miniapp 适配层导出 =====
 
 
 

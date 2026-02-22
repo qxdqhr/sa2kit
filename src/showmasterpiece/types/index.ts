@@ -557,5 +557,8 @@ export const CategoryDescription = {
   [CollectionCategory.OTHER]: '挂件/钥匙扣类商品，如装饰挂件、钥匙扣等'
 } as const;
 
+// ===== 弹窗配置类型导出 =====
+export type { PopupConfig, NewPopupConfig } from './popup';
+
 // ===== 上下文类型导出 =====
 export type { CartContextState } from './context'; 
