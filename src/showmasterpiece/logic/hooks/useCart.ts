@@ -21,14 +21,14 @@ import {
   BatchBookingRequest,
   BatchBookingResponse
 } from '../../types/cart';
-import { 
-  getCart, 
-  addToCart, 
-  updateCartItem, 
-  removeFromCart, 
-  clearCart, 
-  batchBooking 
-} from '../../services';
+import {
+  getCart,
+  addToCart,
+  updateCartItem,
+  removeFromCart,
+  clearCart,
+  batchBooking
+} from '../../services/cartService';
 
 // 创建一个全局事件系统来通知购物车更新
 export const cartUpdateEvents = new EventTarget();

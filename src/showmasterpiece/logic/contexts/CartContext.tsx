@@ -13,7 +13,7 @@
 
 import React, { createContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { Cart, AddToCartRequest, UpdateCartItemRequest, RemoveFromCartRequest, BatchBookingRequest, BatchBookingResponse } from '../../types/cart';
-import { getCart, addToCart, updateCartItem, removeFromCart, batchBooking, clearCart } from '../../services';
+import { getCart, addToCart, updateCartItem, removeFromCart, batchBooking, clearCart } from '../../services/cartService';
 import { cartUpdateEvents, CART_UPDATE_EVENT } from '../hooks';
 import type { CartContextState } from '../../types/context';
 

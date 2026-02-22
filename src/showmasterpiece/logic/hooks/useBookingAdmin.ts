@@ -12,17 +12,17 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  BookingAdminData, 
-  BookingAdminStats, 
+import {
+  BookingAdminData,
+  BookingAdminStats,
   BookingAdminResponse,
   BookingAdminQueryParams,
   getAllBookings,
   getBookingStats,
-  updateBookingAdminStatus as updateBookingStatusService,
-  deleteBookingAdmin as deleteBookingService,
+  updateBookingStatus as updateBookingStatusService,
+  deleteBooking as deleteBookingService,
   exportBookings as exportBookingsService
-} from '../../services';
+} from '../../services/bookingAdminService';
 import { BookingStatus } from '../../types/booking';
 
 /**

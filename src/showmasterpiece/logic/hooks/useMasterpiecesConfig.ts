@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { 
+import {
   getConfig,
   updateConfig,
   resetConfig,
@@ -19,7 +19,7 @@ import {
   getArtworksByCollection,
   getCategories,
   getTags
-} from '../../services';
+} from '../../services/masterpiecesConfigService';
 import type { 
   MasterpiecesConfig, 
   ArtCollection, 

@@ -1,1 +1,1 @@
-export type { PopupConfig, NewPopupConfig } from '../../../../types/popup';
+export type { PopupConfig, NewPopupConfig } from '../../../types/popup';
