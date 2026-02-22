@@ -49,6 +49,7 @@ export default defineConfig({
     'showmasterpiece/ui/web/index': 'src/showmasterpiece/ui/web/index.ts',
     'showmasterpiece/ui/miniapp/index': 'src/showmasterpiece/ui/miniapp/index.ts',
     'showmasterpiece/logic/index': 'src/showmasterpiece/logic/index.ts',
+    'showmasterpiece/logic/miniapp/index': 'src/showmasterpiece/logic/miniapp/index.ts',
     'showmasterpiece/db/index': 'src/showmasterpiece/db/index.ts',
     'showmasterpiece/server/index': 'src/showmasterpiece/server/index.ts',
     'iflytek/index': 'src/iflytek/index.ts',

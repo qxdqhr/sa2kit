@@ -11,7 +11,8 @@
 
 'use client';
 
-import React, { createContext, useState, useCallback, useEffect, ReactNode } from 'react';
+import * as React from 'react';
+import type { ReactNode } from 'react';
 import { Cart, AddToCartRequest, UpdateCartItemRequest, RemoveFromCartRequest, BatchBookingRequest, BatchBookingResponse } from '../../types/cart';
 import { getCart, addToCart, updateCartItem, removeFromCart, batchBooking, clearCart } from '../../services/cartService';
 import { cartUpdateEvents, CART_UPDATE_EVENT } from '../hooks';
@@ -20,7 +21,7 @@ import type { CartContextState } from '../../types/context';
 /**
  * 购物车上下文类型
  */
-export const CartContext = createContext<CartContextState | undefined>(undefined);
+export const CartContext = React.createContext<CartContextState | undefined>(undefined);
 
 /**
  * 购物车上下文提供者属性
@@ -37,7 +38,7 @@ interface CartProviderProps {
  * @returns React组件
  */
 export const CartProvider: React.FC<CartProviderProps> = ({ children, userId }) => {
-  const [state, setState] = useState<CartContextState>({
+  const [state, setState] = React.useState<CartContextState>({
     cart: {
       items: [],
       totalQuantity: 0,
@@ -56,7 +57,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children, userId }) 
   /**
    * 刷新购物车数据
    */
-  const refreshCart = useCallback(async () => {
+  const refreshCart = React.useCallback(async () => {
     if (!userId) return;
 
     setState(prev => ({ ...prev, loading: true, error: undefined }));
@@ -81,7 +82,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children, userId }) 
   /**
    * 添加商品到购物车
    */
-  const addToCartWithEvent = useCallback(async (request: AddToCartRequest & { collection?: any }) => {
+  const addToCartWithEvent = React.useCallback(async (request: AddToCartRequest & { collection?: any }) => {
     setState(prev => ({ ...prev, loading: true, error: undefined }));
     
     try {
@@ -106,7 +107,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children, userId }) 
   /**
    * 更新购物车商品数量
    */
-  const updateCartItemWithEvent = useCallback(async (request: UpdateCartItemRequest) => {
+  const updateCartItemWithEvent = React.useCallback(async (request: UpdateCartItemRequest) => {
     setState(prev => ({ ...prev, loading: true, error: undefined }));
     
     try {
@@ -131,7 +132,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children, userId }) 
   /**
    * 从购物车移除商品
    */
-  const removeFromCartWithEvent = useCallback(async (request: RemoveFromCartRequest) => {
+  const removeFromCartWithEvent = React.useCallback(async (request: RemoveFromCartRequest) => {
     setState(prev => ({ ...prev, loading: true, error: undefined }));
     
     try {
@@ -156,7 +157,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children, userId }) 
   /**
    * 批量预订购物车商品
    */
-  const batchBookingWithEvent = useCallback(async (request: BatchBookingRequest): Promise<BatchBookingResponse> => {
+  const batchBookingWithEvent = React.useCallback(async (request: BatchBookingRequest): Promise<BatchBookingResponse> => {
     setState(prev => ({ ...prev, loading: true, error: undefined }));
     
     try {
@@ -184,7 +185,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children, userId }) 
   /**
    * 清空购物车
    */
-  const clearCartWithEvent = useCallback(async () => {
+  const clearCartWithEvent = React.useCallback(async () => {
     setState(prev => ({ ...prev, loading: true, error: undefined }));
     
     try {
@@ -207,12 +208,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children, userId }) 
   }, [refreshCart, userId]);
 
   // 初始化时加载购物车数据
-  useEffect(() => {
+  React.useEffect(() => {
     refreshCart();
   }, [refreshCart]);
 
   // 监听购物车更新事件
-  useEffect(() => {
+  React.useEffect(() => {
     const handleCartUpdate = () => {
       refreshCart();
     };
@@ -234,9 +235,5 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children, userId }) 
     clearCart: clearCartWithEvent
   };
 
-  return (
-    <CartContext.Provider value={contextValue}>
-      {children}
-    </CartContext.Provider>
-  );
+  return <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>;
 };

@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.6.59",
+  "version": "1.6.60",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -297,6 +297,11 @@
       "types": "./dist/showmasterpiece/logic/index.d.ts",
       "import": "./dist/showmasterpiece/logic/index.mjs",
       "require": "./dist/showmasterpiece/logic/index.js"
+    },
+    "./showmasterpiece/logic/miniapp": {
+      "types": "./dist/showmasterpiece/logic/miniapp/index.d.ts",
+      "import": "./dist/showmasterpiece/logic/miniapp/index.mjs",
+      "require": "./dist/showmasterpiece/logic/miniapp/index.js"
     },
     "./showmasterpiece/db": {
       "types": "./dist/showmasterpiece/db/index.d.ts",
