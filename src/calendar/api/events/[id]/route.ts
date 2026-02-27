@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { calendarDbService } from '../../../server';
-import { validateApiAuth } from '../../../../auth/server';
+import { ensureCalendarDbReady, requireCalendarUser } from '../../_shared';
 
 interface RouteParams {
   params: {
@@ -14,8 +14,10 @@ interface RouteParams {
  */
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    // 验证用户身份
-    const user = await validateApiAuth(request);
+    const dbError = ensureCalendarDbReady();
+    if (dbError) return dbError;
+
+    const user = await requireCalendarUser(request);
     if (!user) {
       return Response.json(
         { success: false, error: '未授权访问' },
@@ -80,8 +82,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
  */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    // 验证用户身份
-    const user = await validateApiAuth(request);
+    const dbError = ensureCalendarDbReady();
+    if (dbError) return dbError;
+
+    const user = await requireCalendarUser(request);
     if (!user) {
       return Response.json(
         { success: false, error: '未授权访问' },
@@ -255,8 +259,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
  */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    // 验证用户身份
-    const user = await validateApiAuth(request);
+    const dbError = ensureCalendarDbReady();
+    if (dbError) return dbError;
+
+    const user = await requireCalendarUser(request);
     if (!user) {
       return Response.json(
         { success: false, error: '未授权访问' },

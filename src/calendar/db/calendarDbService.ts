@@ -24,6 +24,13 @@ class CalendarDbService {
   }
 
   /**
+   * 数据库是否已初始化
+   */
+  isConfigured() {
+    return Boolean(this._db);
+  }
+
+  /**
    * 获取数据库实例
    */
   get db() {
