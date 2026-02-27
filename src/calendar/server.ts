@@ -28,7 +28,7 @@
  * - 用户配置管理
  * - 事件分享功能
  */
-import { calendarDbService } from './db/calendarDbService';
+import { calendarDbService } from './server/services';
 export { calendarDbService };
 
 // ===== 数据库Schema导出 =====
@@ -49,6 +49,9 @@ export {
   calendarConfigsRelations,
   eventSharesRelations,
 } from './db/schema';
+
+// 新分层 server 路由工厂导出
+export * from './server/routes';
 
 // ===== 服务端工具函数 =====
 /**

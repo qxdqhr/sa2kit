@@ -88,84 +88,12 @@ export type {
   CalendarDbService as ICalendarDbService,
 } from './types';
 
-// ===== 工具函数导出 =====
-// 日期和日历相关的工具函数
+// ===== 分层入口导出 =====
+// UI 层（web）
+export * from './ui/web';
 
-/** 日期工具函数 */
-export {
-  formatDate,
-  formatTime,
-  formatDateTime,
-  toLocalISOString,
-  getMonthStart,
-  getMonthEnd,
-  getWeekStart,
-  getWeekEnd,
-  getDayStart,
-  getDayEnd,
-  isSameDay,
-  isSameWeek,
-  isSameMonth,
-  isToday,
-  isWeekend,
-  addDays,
-  addWeeks,
-  addMonths,
-  addYears,
-  getMonthViewDates,
-  getWeekViewDates,
-  generateTimeSlots,
-  parseDate,
-  getDaysDifference,
-  isWorkingHour,
-  getMonthName,
-  getWeekdayName,
-  getRelativeTime,
-  isValidDate,
-  cloneDate,
-} from './utils/dateUtils';
-
-// ===== 组件导出 =====
-/** 页面组件 */
-export { CalendarPage } from './pages/CalendarPage';
-export { default as EventDetailPage } from './pages/EventDetailPage';
-
-/** 客户端组件 */
-export { default as EventForm } from './components/EventForm';
-export { default as EventModal } from './components/EventModal';
-export { default as EventList } from './components/EventList';
-export { default as EventSearch } from './components/EventSearch';
-export { default as DraggableEvent } from './components/DraggableEvent';
-export { default as DroppableCalendarCell } from './components/DroppableCalendarCell';
-export { default as DraggableMonthView } from './components/DraggableMonthView';
-
-// ===== Hook导出 =====
-/** 自定义Hook */
-export { useEvents } from './hooks/useEvents';
-export { useEnhancedEvents } from './hooks/useEnhancedEvents';
-export type { UseEnhancedEventsReturn } from './hooks/useEnhancedEvents';
-export { useEventDrag } from './hooks/useEventDrag';
-export type { UseEventDragReturn, DragState } from './hooks/useEventDrag';
-
-// ===== 服务导出 =====
-/** 导出服务 */
-export { default as CalendarExportService } from './services/exportService';
-export type { ExportOptions } from './services/exportService';
-
-/** 导入服务 */
-export { default as CalendarImportService } from './services/importService';
-export type { ImportOptions, ImportResult } from './services/importService';
-
-/** 重复事件服务 */
-export { RecurrenceService } from './services/recurrenceService';
-export type { RecurrenceRule as RecurrenceRuleType, RecurringEventInstance } from './services/recurrenceService';
-
-/** 智能提醒服务 */
-export { ReminderService } from './services/reminderService';
-export type { ReminderConfig, ScheduledReminder } from './services/reminderService';
-
-// 新增事件类型服务
-export * from './services/eventTypeService';
+// Logic 层（hooks/services/utils）
+export * from './logic';
 
 // ===== 模块信息 =====
 /** 模块版本号 */
