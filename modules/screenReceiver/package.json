@@ -1,5 +1,5 @@
 {
-  "name": "share-screen-tool-receiver",
+  "name": "screenReceiver",
   "private": true,
   "type": "module",
   "scripts": {
