@@ -24,6 +24,7 @@ export interface ModalProps {
   onClose: () => void;
   title?: string;
   width?: number | string;
+  height?: number | string;
   className?: string;
   maskClosable?: boolean;
   children: React.ReactNode;
@@ -35,6 +36,7 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   title,
   width,
+  height,
   className,
   maskClosable = true,
   children,
@@ -58,7 +60,10 @@ export const Modal: React.FC<ModalProps> = ({
         onEscapeKeyDown={(e) => {
           if (!maskClosable) e.preventDefault();
         }}
-        style={width ? { maxWidth: typeof width === 'number' ? (width) + 'px' : width } : undefined}
+        style={{
+          ...(width ? { maxWidth: typeof width === 'number' ? `${width}px` : width } : undefined),
+          ...(height ? { height: typeof height === 'number' ? `${height}px` : height } : undefined),
+        }}
       >
         {title ? (
           <DialogHeader>

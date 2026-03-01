@@ -1,11 +1,35 @@
-// Legacy auth components for ShowMasterpiece compatibility
-export { AuthProvider, useAuth } from './contexts/AuthContext';
-export { default as AuthGuard } from './components/AuthGuard';
-export { default as UserMenu } from './components/UserMenu';
-export { default as LoginModal } from './components/LoginModal';
-export { default as RegisterModal } from './components/RegisterModal';
-export { default as ForgotPasswordModal } from './components/ForgotPasswordModal';
+/**
+ * Legacy Auth Module (phone + cookie session)
+ * 架构对齐 showmasterpiece 模块
+ */
 
+// ===== UI 导出 =====
+export * from './ui/web';
+export {
+  LoginModal as MiniappLoginModal,
+  RegisterModal as MiniappRegisterModal,
+  ForgotPasswordModal as MiniappForgotPasswordModal,
+} from './ui/miniapp';
+
+// ===== 逻辑导出 =====
+export * from './logic';
+
+// ===== 服务导出 =====
+export * from './services';
+
+// ===== 类型导出 =====
+export * from './types';
+
+// ===== Schema =====
+export * from './schema';
+
+// ===== 路由 =====
+export * from './routes';
+
+// ===== 服务端 =====
+export * from './server';
+
+// ===== utils =====
 export {
   validatePhoneNumber,
   validatePassword,
@@ -16,25 +40,3 @@ export {
   isSessionExpired,
   generateSessionToken,
 } from './utils/authUtils';
-
-export type {
-  User,
-  UserSession,
-  LoginRequest,
-  RegisterRequest,
-  LoginResponse,
-  RegisterResponse,
-  SessionValidationResponse,
-  SessionValidation,
-  LoginModalProps,
-  RegisterModalProps,
-  AuthGuardProps,
-  UserMenuProps,
-  CustomMenuItem,
-  UseAuthReturn,
-  AuthService,
-  ValidateApiAuth,
-  SessionConfig,
-} from './types';
-
-export { UserRole } from './types';

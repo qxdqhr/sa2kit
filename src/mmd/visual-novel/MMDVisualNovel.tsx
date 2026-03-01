@@ -55,6 +55,8 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
       onScriptComplete,
       onError,
       showDebugInfo = false,
+      debug = false,
+      onTransitionStateChange,
       showSkipButton = true,
       showAutoButton = true,
       showHistoryButton = true,
@@ -103,6 +105,28 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     const currentNode = nodes[currentNodeIndex];
     const currentDialogue = currentNode?.dialogues[currentDialogueIndex] || null;
 
+    const log = useCallback((...args: unknown[]) => {
+      if (!debug) return;
+      console.log('[MMDVisualNovel]', ...args);
+    }, [debug]);
+
+    useEffect(() => {
+      if (!onTransitionStateChange) return;
+      if (!isStarted) {
+        onTransitionStateChange('idle');
+        return;
+      }
+      if (isTransitioning) {
+        onTransitionStateChange('transitioning');
+        return;
+      }
+      if (isLoading || !isAnimationPlaying) {
+        onTransitionStateChange('loading');
+        return;
+      }
+      onTransitionStateChange('ready');
+    }, [isStarted, isTransitioning, isLoading, isAnimationPlaying, onTransitionStateChange]);
+
     // 添加对话到历史记录
     const addToHistory = useCallback((dialogue: DialogueLine, nodeIndex: number, dialogueIndex: number) => {
       setHistory((prev) => [
@@ -147,12 +171,12 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         // 如果当前节点有 VMD 动画且未播放完成，且不是强制跳转，则弹出确认框
         const currentResources = nodes[currentNodeIndex]?.resources;
         if (!force && currentResources?.motionPath && !isVmdFinishedRef.current) {
-          console.log('[MMDVisualNovel] VMD not finished, showing confirmation');
+          log('VMD not finished, showing confirmation');
           setPendingNodeIndex(nodeIndex);
           return;
         }
 
-        console.log('[MMDVisualNovel] Transitioning to node ' + (nodeIndex));
+        log('Transitioning to node', nodeIndex);
 
         // 🔧 立即设置加载状态，确保遮罩覆盖整个切换过程
         setIsTransitioning(true);
@@ -185,7 +209,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
           // 注意：isLoading 和 isAnimationPlaying 会在 MMDPlayerBase 的回调中更新
           setTimeout(() => {
             setIsTransitioning(false);
-            console.log('[MMDVisualNovel] Transition to node ' + (nodeIndex) + ' completed, waiting for model load');
+            log('Transition to node completed, waiting for model load', nodeIndex);
           }, 100);
         }, 300);
       },
@@ -204,7 +228,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         const val = variables[key];
         if (val !== undefined && map[val as string | number] !== undefined) {
           nextNodeIndex = map[val as string | number]!;
-          console.log('[MMDVisualNovel] Branching: ' + (key) + '=' + (val) + ' -> node ' + (nextNodeIndex));
+          log('Branching', { key, val, nextNodeIndex });
         } else {
           nextNodeIndex = defaultIndex;
         }
@@ -214,7 +238,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         goToNode(nextNodeIndex);
       } else if (loop) {
         // 到达最后一个节点，显示循环确认对话框
-        console.log('[MMDVisualNovel] 到达最后一个节点，显示循环确认对话框');
+        log('Reached final node, showing loop confirmation');
         setShowLoopConfirm(true);
       } else {
         // 剧本结束
@@ -348,7 +372,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         goToNode(nextNodeIndex);
       } else if (loop) {
         // 🔧 修复：到达最后一个节点且开启循环时，显示确认对话框
-        console.log('[MMDVisualNovel] 快进到最后，显示循环确认对话框');
+        log('Skip reached final node, showing loop confirmation');
         setShowLoopConfirm(true);
       } else {
         // 剧本结束
@@ -381,12 +405,12 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
       setIsLoading(true);
       setIsAnimationPlaying(false);
       typingCompleteRef.current = false;
-      console.log('[MMDVisualNovel] 回到开始页面');
+      log('Back to start screen');
     }, [initialNodeIndex, initialDialogueIndex]);
 
     // 处理应援按钮点击
     const handleCheer = useCallback(() => {
-      console.log('[MMDVisualNovel] 触发应援效果');
+      log('Trigger cheer effect');
       cheerParticlesRef.current?.trigger();
     }, []);
 
@@ -394,7 +418,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
     const handleRestartLoop = useCallback(() => {
       setShowLoopConfirm(false);
       goToNode(0, true);
-      console.log('[MMDVisualNovel] 重新开始循环');
+      log('Restart loop');
     }, [goToNode]);
 
     // 暴露给父组件的方法
@@ -473,11 +497,11 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
               loop={currentNode.loopAnimation === true}
               mobileOptimization={mobileOptimization}
               onLoad={() => {
-                console.log('[MMDVisualNovel] MMDPlayerBase onLoad called');
+                log('MMDPlayerBase onLoad');
                 setIsLoading(false);
                 // 如果已经开始游戏，启动动画播放（使用 ref 获取最新值）
                 if (isStartedRef.current) {
-                  console.log('[MMDVisualNovel] Game already started, triggering play');
+                  log('Game already started, triggering play');
                   setTimeout(() => {
                     playerRef.current?.play();
                   }, 100);
@@ -485,7 +509,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
               }}
               onPlay={() => {
                 // 动画开始播放时才设置为 true
-                console.log('[MMDVisualNovel] MMDPlayerBase onPlay called');
+                log('MMDPlayerBase onPlay');
                 setIsAnimationPlaying(true);
               }}
               onTimeUpdate={(time) => {
@@ -499,7 +523,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
 
                 if (isNearEnd || isLooped) {
                   if (!isVmdFinishedRef.current) {
-                    console.log('[MMDVisualNovel] VMD finished/looped, marking as finished');
+                    log('VMD finished/looped, marking as finished');
                     isVmdFinishedRef.current = true;
                     setIsVmdFinished(true);
                   }
@@ -507,7 +531,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
                 lastAnimationTimeRef.current = time;
               }}
               onEnded={() => {
-                console.log('[MMDVisualNovel] VMD ended, marking as finished');
+                log('VMD ended, marking as finished');
                 isVmdFinishedRef.current = true;
                 setIsVmdFinished(true);
               }}
@@ -555,17 +579,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
 
         {/* 加载遮罩和开始界面 */}
         <LoadingOverlay
-          isLoading={(() => {
-            const shouldShowLoading = (isLoading || isTransitioning || !isAnimationPlaying) && isStarted;
-            console.log('[MMDVisualNovel] LoadingOverlay conditions:', {
-              isLoading,
-              isTransitioning,
-              isAnimationPlaying,
-              isStarted,
-              shouldShowLoading
-            });
-            return shouldShowLoading;
-          })()}
+          isLoading={(isLoading || isTransitioning || !isAnimationPlaying) && isStarted}
           showStartScreen={!isStarted}
           scriptName={script.name}
           loadingText="正在准备场景中..."
@@ -578,44 +592,30 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
         />
 
         {/* 对话框 - 仅在动画开始播放后显示 */}
-        {(() => {
-          const shouldShow = isStarted && isAnimationPlaying && currentDialogue && !showHistory && !showChoices && !showLoopConfirm;
-          console.log('[MMDVisualNovel] DialogueBox render condition:', {
-            isStarted,
-            isAnimationPlaying,
-            hasDialogue: !!currentDialogue,
-            showHistory,
-            showChoices,
-            showLoopConfirm,
-            shouldShow,
-            dialogue: currentDialogue
-          });
-
-          return shouldShow ? (
-            <DialogueBox
-              dialogue={currentDialogue}
-              theme={dialogueTheme}
-              isTyping={isTyping}
-              isAutoMode={isAutoMode}
-              onClick={handleDialogueClick}
-              onSkipTyping={() => {
-                typingCompleteRef.current = true;
-              }}
-              onToggleAuto={toggleAutoMode}
-              onOpenHistory={() => setShowHistory(true)}
-              onSkip={handleSkip}
-              onResetCamera={() => {
-                playerRef.current?.resetCamera();
-                setIsCameraManual(false);
-              }}
-              isCameraManual={isCameraManual}
-              showControls={true}
-              showSkipButton={showSkipButton}
-              showAutoButton={showAutoButton}
-              showHistoryButton={showHistoryButton}
-            />
-          ) : null;
-        })()}
+        {isStarted && isAnimationPlaying && currentDialogue && !showHistory && !showChoices && !showLoopConfirm ? (
+          <DialogueBox
+            dialogue={currentDialogue}
+            theme={dialogueTheme}
+            isTyping={isTyping}
+            isAutoMode={isAutoMode}
+            onClick={handleDialogueClick}
+            onSkipTyping={() => {
+              typingCompleteRef.current = true;
+            }}
+            onToggleAuto={toggleAutoMode}
+            onOpenHistory={() => setShowHistory(true)}
+            onSkip={handleSkip}
+            onResetCamera={() => {
+              playerRef.current?.resetCamera();
+              setIsCameraManual(false);
+            }}
+            isCameraManual={isCameraManual}
+            showControls={true}
+            showSkipButton={showSkipButton}
+            showAutoButton={showAutoButton}
+            showHistoryButton={showHistoryButton}
+          />
+        ) : null}
 
         {/* 确认跳过动画弹窗 */}
         {pendingNodeIndex !== null && (
@@ -641,7 +641,7 @@ export const MMDVisualNovel = forwardRef<MMDVisualNovelRef, MMDVisualNovelProps>
               if (choice.setVariable) {
                 const { key, value } = choice.setVariable;
                 setVariables(prev => ({ ...prev, [key]: value }));
-                console.log('[MMDVisualNovel] Variable set: ' + (key) + ' = ' + (value));
+                log('Variable set', { key, value });
               }
 
               // 2. 执行回调

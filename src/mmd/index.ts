@@ -8,6 +8,7 @@ export * from './components/MMDPlaylist';
 export * from './components/MMDPlayerEnhancedDebugInfo';
 export * from './components/MMDPlaylistDebugInfo';
 export * from './components/MMDLightingDebugPanel';
+export * from './components/MMDUploadPanel';
 export * from './utils/ammo-loader';
 export * from './utils/mmd-loader-config';
 export * from './utils/mmd-renderer-diagnostics';
@@ -15,6 +16,7 @@ export * from './utils/sphere-texture-helper';
 export * from './visual-novel';
 export * from './music-player';
 export * from './ar/MMDARPlayer';
+export * from './ar/MMDARApp';
 export * from './ar/types';
 
 // Explicitly export AR types

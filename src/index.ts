@@ -14,6 +14,7 @@ export * from './ai/ocr';
 export * from './ai/background-removal';
 export * from './ai/sentiment-analysis';
 export * from './ai/text-generation';
+export * from './ai/llm';
 
 // Utils
 export * from './utils';
@@ -27,6 +28,7 @@ export * from './portfolio';
 export * from './navigation';
 export * from './testField';
 export * from './mikuFireworks3D';
+export * from './screenReceiver';
 
 // Storage - Only export types and hooks, not platform adapters
 // Platform adapters should be imported from '@qhr123/sa2kit/storage' subpath

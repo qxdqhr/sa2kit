@@ -133,6 +133,8 @@ export interface DialogueBoxTheme {
   showContinueHint?: boolean;
 }
 
+export type VisualNovelTransitionState = 'idle' | 'loading' | 'transitioning' | 'ready';
+
 /** 视觉小说组件属性 */
 export interface MMDVisualNovelProps {
   /** 剧本配置 */
@@ -165,6 +167,10 @@ export interface MMDVisualNovelProps {
   
   /** 是否显示调试信息 */
   showDebugInfo?: boolean;
+  /** 是否启用组件内部调试日志，默认 false */
+  debug?: boolean;
+  /** 切换状态变更回调 */
+  onTransitionStateChange?: (state: VisualNovelTransitionState) => void;
   /** 是否显示光照调试面板（默认false） */
   showLightingDebugPanel?: boolean;
   /** 光照调试面板初始参数 */

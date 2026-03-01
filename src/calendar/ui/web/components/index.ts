@@ -7,4 +7,4 @@ export { default as EventList } from '../../../components/EventList';
 export { default as EventModal } from '../../../components/EventModal';
 export { default as EventSearch } from '../../../components/EventSearch';
 export { default as ImprovedEventModal } from '../../../components/ImprovedEventModal';
-export { default as PopWindow } from '../../../components/internal/PopWindow';
+export { Modal as PopWindow } from '../../../components/internal/PopWindow';

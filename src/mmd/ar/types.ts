@@ -1,4 +1,5 @@
 import { MMDResources, MMDStage, MobileOptimization } from '../types';
+import type { ARMarkerConfig } from '../../ar';
 
 /**
  * AR 模式枚举
@@ -65,6 +66,12 @@ export interface MMDARPlayerProps {
     height?: number | { min?: number; ideal?: number; max?: number };
   };
 
+  /** AR.js 相机参数文件 URL */
+  cameraParametersUrl?: string;
+
+  /** Marker 配置 */
+  markerConfig?: ARMarkerConfig;
+
   /** 是否开启镜像显示 (通常前置摄像头需要开启) */
   mirrored?: boolean;
 
@@ -88,6 +95,12 @@ export interface MMDARPlayerProps {
   
   /** 默认音乐ID (可选) */
   defaultAudioId?: string;
+
+  /** 模型缩放 */
+  modelScale?: number | { x: number; y: number; z: number };
+
+  /** 模型偏移 */
+  modelOffset?: { x: number; y: number; z: number };
   
   /** 初始时是否显示模型 (false 则需要点击放置) */
   initialModelVisible?: boolean;

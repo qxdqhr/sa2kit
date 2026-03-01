@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.6.60",
+  "version": "1.6.62",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -148,6 +148,51 @@
       "import": "./dist/auth/components/index.mjs",
       "require": "./dist/auth/components/index.js"
     },
+    "./auth/legacy": {
+      "types": "./dist/auth/legacy/index.d.ts",
+      "import": "./dist/auth/legacy/index.mjs",
+      "require": "./dist/auth/legacy/index.js"
+    },
+    "./auth/legacy/ui/web": {
+      "types": "./dist/auth/legacy/ui/web/index.d.ts",
+      "import": "./dist/auth/legacy/ui/web/index.mjs",
+      "require": "./dist/auth/legacy/ui/web/index.js"
+    },
+    "./auth/legacy/ui/miniapp": {
+      "types": "./dist/auth/legacy/ui/miniapp/index.d.ts",
+      "import": "./dist/auth/legacy/ui/miniapp/index.mjs",
+      "require": "./dist/auth/legacy/ui/miniapp/index.js"
+    },
+    "./auth/legacy/logic": {
+      "types": "./dist/auth/legacy/logic/index.d.ts",
+      "import": "./dist/auth/legacy/logic/index.mjs",
+      "require": "./dist/auth/legacy/logic/index.js"
+    },
+    "./auth/legacy/db": {
+      "types": "./dist/auth/legacy/db/index.d.ts",
+      "import": "./dist/auth/legacy/db/index.mjs",
+      "require": "./dist/auth/legacy/db/index.js"
+    },
+    "./auth/legacy/schema": {
+      "types": "./dist/auth/legacy/schema/index.d.ts",
+      "import": "./dist/auth/legacy/schema/index.mjs",
+      "require": "./dist/auth/legacy/schema/index.js"
+    },
+    "./auth/legacy/services": {
+      "types": "./dist/auth/legacy/services/index.d.ts",
+      "import": "./dist/auth/legacy/services/index.mjs",
+      "require": "./dist/auth/legacy/services/index.js"
+    },
+    "./auth/legacy/routes": {
+      "types": "./dist/auth/legacy/routes/index.d.ts",
+      "import": "./dist/auth/legacy/routes/index.mjs",
+      "require": "./dist/auth/legacy/routes/index.js"
+    },
+    "./auth/legacy/server": {
+      "types": "./dist/auth/legacy/server/index.d.ts",
+      "import": "./dist/auth/legacy/server/index.mjs",
+      "require": "./dist/auth/legacy/server/index.js"
+    },
     "./config/hooks": {
       "types": "./dist/config/index.d.ts",
       "import": "./dist/config/index.mjs",
@@ -157,6 +202,11 @@
       "types": "./dist/config/server/index.d.ts",
       "import": "./dist/config/server/index.mjs",
       "require": "./dist/config/server/index.js"
+    },
+    "./ar": {
+      "types": "./dist/ar/index.d.ts",
+      "import": "./dist/ar/index.mjs",
+      "require": "./dist/ar/index.js"
     },
     "./mmd/admin": {
       "types": "./dist/mmd/admin/index.d.ts",
@@ -237,6 +287,31 @@
       "types": "./dist/ai/text-generation/index.d.ts",
       "import": "./dist/ai/text-generation/index.mjs",
       "require": "./dist/ai/text-generation/index.js"
+    },
+    "./ai/llm": {
+      "types": "./dist/ai/llm/index.d.ts",
+      "import": "./dist/ai/llm/index.mjs",
+      "require": "./dist/ai/llm/index.js"
+    },
+    "./ai/llm/ui/web": {
+      "types": "./dist/ai/llm/ui/web/index.d.ts",
+      "import": "./dist/ai/llm/ui/web/index.mjs",
+      "require": "./dist/ai/llm/ui/web/index.js"
+    },
+    "./ai/llm/ui/miniapp": {
+      "types": "./dist/ai/llm/ui/miniapp/index.d.ts",
+      "import": "./dist/ai/llm/ui/miniapp/index.mjs",
+      "require": "./dist/ai/llm/ui/miniapp/index.js"
+    },
+    "./ai/llm/ui/rn": {
+      "types": "./dist/ai/llm/ui/rn/index.d.ts",
+      "import": "./dist/ai/llm/ui/rn/index.mjs",
+      "require": "./dist/ai/llm/ui/rn/index.js"
+    },
+    "./ai/llm/ui/electron": {
+      "types": "./dist/ai/llm/ui/electron/index.d.ts",
+      "import": "./dist/ai/llm/ui/electron/index.mjs",
+      "require": "./dist/ai/llm/ui/electron/index.js"
     },
     "./music": {
       "types": "./dist/music/index.d.ts",
@@ -332,6 +407,31 @@
       "types": "./dist/iflytek/server.d.ts",
       "import": "./dist/iflytek/server.mjs",
       "require": "./dist/iflytek/server.js"
+    },
+    "./qqbot": {
+      "types": "./dist/qqbot/index.d.ts",
+      "import": "./dist/qqbot/index.mjs",
+      "require": "./dist/qqbot/index.js"
+    },
+    "./qqbot/server": {
+      "types": "./dist/qqbot/server/index.d.ts",
+      "import": "./dist/qqbot/server/index.mjs",
+      "require": "./dist/qqbot/server/index.js"
+    },
+    "./qqbot/ui/web": {
+      "types": "./dist/qqbot/ui/web/index.d.ts",
+      "import": "./dist/qqbot/ui/web/index.mjs",
+      "require": "./dist/qqbot/ui/web/index.js"
+    },
+    "./screenReceiver": {
+      "types": "./dist/screenReceiver/index.d.ts",
+      "import": "./dist/screenReceiver/index.mjs",
+      "require": "./dist/screenReceiver/index.js"
+    },
+    "./screenReceiver/server": {
+      "types": "./dist/screenReceiver/server/index.d.ts",
+      "import": "./dist/screenReceiver/server/index.mjs",
+      "require": "./dist/screenReceiver/server/index.js"
     }
   },
   "files": [

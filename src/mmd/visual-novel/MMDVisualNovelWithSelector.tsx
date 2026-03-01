@@ -30,6 +30,8 @@ export interface ModelSelectorConfig {
   stageLabel?: string;
 }
 
+export type ResourceMappingMode = 'full-clone' | 'resource-map';
+
 /** 带模型选择器的视觉小说组件属性 */
 export interface MMDVisualNovelWithSelectorProps extends Omit<MMDVisualNovelProps, 'script'> {
   /** 基础剧本配置（模型路径会被选择器覆盖） */
@@ -38,6 +40,8 @@ export interface MMDVisualNovelWithSelectorProps extends Omit<MMDVisualNovelProp
   modelSelector: ModelSelectorConfig;
   /** 模型选择变化回调 */
   onModelSelectionChange?: (characterId: string, stageId: string) => void;
+  /** 资源映射模式，默认 resource-map（轻量） */
+  resourceMappingMode?: ResourceMappingMode;
 }
 
 /** 带模型选择器的视觉小说组件 Ref 接口 */
@@ -85,6 +89,7 @@ export const MMDVisualNovelWithSelector = forwardRef<
     script,
     modelSelector,
     onModelSelectionChange,
+    resourceMappingMode = 'resource-map',
     ...restProps
   } = props;
 
@@ -121,20 +126,42 @@ export const MMDVisualNovelWithSelector = forwardRef<
 
   // 修改后的剧本（所有节点使用选中的模型）
   const modifiedScript = useMemo<VisualNovelScript>(() => {
+    if (resourceMappingMode === 'full-clone') {
+      return {
+        ...script,
+        nodes: script.nodes.map((node) => ({
+          ...node,
+          resources: {
+            ...node.resources,
+            modelPath: selectedCharacterPath as string,
+            stageModelPath: selectedStagePath,
+          },
+        })),
+      };
+    }
+
     return {
       ...script,
-      nodes: script.nodes.map(node => ({
-        ...node,
-        resources: {
-          ...node.resources,
-          // 覆盖人物模型路径
-          modelPath: selectedCharacterPath as string,
-          // 覆盖场景模型路径
-          stageModelPath: selectedStagePath,
-        },
-      })),
+      nodes: script.nodes.map((node) => {
+        const nextModelPath = selectedCharacterPath as string;
+        const nextStagePath = selectedStagePath;
+        const resources = node.resources;
+
+        if (resources.modelPath === nextModelPath && resources.stageModelPath === nextStagePath) {
+          return node;
+        }
+
+        return {
+          ...node,
+          resources: {
+            ...resources,
+            modelPath: nextModelPath,
+            stageModelPath: nextStagePath,
+          },
+        };
+      }),
     };
-  }, [script, selectedCharacterPath, selectedStagePath]);
+  }, [script, selectedCharacterPath, selectedStagePath, resourceMappingMode]);
 
   // 处理人物模型选择变化
   const handleCharacterChange = useCallback((id: string) => {
