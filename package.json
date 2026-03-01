@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.6.62",
+  "version": "1.6.63",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -162,6 +162,21 @@
       "types": "./dist/auth/legacy/ui/miniapp/index.d.ts",
       "import": "./dist/auth/legacy/ui/miniapp/index.mjs",
       "require": "./dist/auth/legacy/ui/miniapp/index.js"
+    },
+    "./auth/legacy/core": {
+      "types": "./dist/auth/legacy/core/index.d.ts",
+      "import": "./dist/auth/legacy/core/index.mjs",
+      "require": "./dist/auth/legacy/core/index.js"
+    },
+    "./auth/legacy/web": {
+      "types": "./dist/auth/legacy/web/index.d.ts",
+      "import": "./dist/auth/legacy/web/index.mjs",
+      "require": "./dist/auth/legacy/web/index.js"
+    },
+    "./auth/legacy/miniapp": {
+      "types": "./dist/auth/legacy/miniapp/index.d.ts",
+      "import": "./dist/auth/legacy/miniapp/index.mjs",
+      "require": "./dist/auth/legacy/miniapp/index.js"
     },
     "./auth/legacy/logic": {
       "types": "./dist/auth/legacy/logic/index.d.ts",
@@ -358,6 +373,21 @@
       "import": "./dist/showmasterpiece/index.mjs",
       "require": "./dist/showmasterpiece/index.js"
     },
+    "./showmasterpiece/core": {
+      "types": "./dist/showmasterpiece/core/index.d.ts",
+      "import": "./dist/showmasterpiece/core/index.mjs",
+      "require": "./dist/showmasterpiece/core/index.js"
+    },
+    "./showmasterpiece/web": {
+      "types": "./dist/showmasterpiece/web/index.d.ts",
+      "import": "./dist/showmasterpiece/web/index.mjs",
+      "require": "./dist/showmasterpiece/web/index.js"
+    },
+    "./showmasterpiece/miniapp": {
+      "types": "./dist/showmasterpiece/miniapp/index.d.ts",
+      "import": "./dist/showmasterpiece/miniapp/index.mjs",
+      "require": "./dist/showmasterpiece/miniapp/index.js"
+    },
     "./showmasterpiece/ui/web": {
       "types": "./dist/showmasterpiece/ui/web/index.d.ts",
       "import": "./dist/showmasterpiece/ui/web/index.mjs",
@@ -432,6 +462,61 @@
       "types": "./dist/screenReceiver/server/index.d.ts",
       "import": "./dist/screenReceiver/server/index.mjs",
       "require": "./dist/screenReceiver/server/index.js"
+    },
+    "./ai/llm/core": {
+      "types": "./dist/ai/llm/core/index.d.ts",
+      "import": "./dist/ai/llm/core/index.mjs",
+      "require": "./dist/ai/llm/core/index.js"
+    },
+    "./ai/llm/web": {
+      "types": "./dist/ai/llm/web/index.d.ts",
+      "import": "./dist/ai/llm/web/index.mjs",
+      "require": "./dist/ai/llm/web/index.js"
+    },
+    "./ai/llm/miniapp": {
+      "types": "./dist/ai/llm/miniapp/index.d.ts",
+      "import": "./dist/ai/llm/miniapp/index.mjs",
+      "require": "./dist/ai/llm/miniapp/index.js"
+    },
+    "./ai/llm/rn": {
+      "types": "./dist/ai/llm/rn/index.d.ts",
+      "import": "./dist/ai/llm/rn/index.mjs",
+      "require": "./dist/ai/llm/rn/index.js"
+    },
+    "./ai/llm/electron": {
+      "types": "./dist/ai/llm/electron/index.d.ts",
+      "import": "./dist/ai/llm/electron/index.mjs",
+      "require": "./dist/ai/llm/electron/index.js"
+    },
+    "./calendar/core": {
+      "types": "./dist/calendar/core/index.d.ts",
+      "import": "./dist/calendar/core/index.mjs",
+      "require": "./dist/calendar/core/index.js"
+    },
+    "./calendar/web": {
+      "types": "./dist/calendar/web/index.d.ts",
+      "import": "./dist/calendar/web/index.mjs",
+      "require": "./dist/calendar/web/index.js"
+    },
+    "./qqbot/core": {
+      "types": "./dist/qqbot/core/index.d.ts",
+      "import": "./dist/qqbot/core/index.mjs",
+      "require": "./dist/qqbot/core/index.js"
+    },
+    "./qqbot/web": {
+      "types": "./dist/qqbot/web/index.d.ts",
+      "import": "./dist/qqbot/web/index.mjs",
+      "require": "./dist/qqbot/web/index.js"
+    },
+    "./screenReceiver/core": {
+      "types": "./dist/screenReceiver/core/index.d.ts",
+      "import": "./dist/screenReceiver/core/index.mjs",
+      "require": "./dist/screenReceiver/core/index.js"
+    },
+    "./screenReceiver/web": {
+      "types": "./dist/screenReceiver/web/index.d.ts",
+      "import": "./dist/screenReceiver/web/index.mjs",
+      "require": "./dist/screenReceiver/web/index.js"
     }
   },
   "files": [
@@ -441,8 +526,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "dev": "NODE_OPTIONS='--max-old-space-size=8192' tsup --watch",
-    "build": "NODE_OPTIONS='--max-old-space-size=8192' tsup",
+    "dev": "NODE_OPTIONS='--max-old-space-size=16384' tsup --watch",
+    "build": "NODE_OPTIONS='--max-old-space-size=16384' tsup",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",

@@ -5,6 +5,11 @@ export default defineConfig({
   entry: {
     index: 'src/index.ts',
     'ai/llm/index': 'src/ai/llm/index.ts',
+    'ai/llm/core/index': 'src/ai/llm/core/index.ts',
+    'ai/llm/web/index': 'src/ai/llm/web/index.ts',
+    'ai/llm/miniapp/index': 'src/ai/llm/miniapp/index.ts',
+    'ai/llm/rn/index': 'src/ai/llm/rn/index.ts',
+    'ai/llm/electron/index': 'src/ai/llm/electron/index.ts',
     'ai/llm/ui/web/index': 'src/ai/llm/ui/web/index.ts',
     'ai/llm/ui/miniapp/index': 'src/ai/llm/ui/miniapp/index.ts',
     'ai/llm/ui/rn/index': 'src/ai/llm/ui/rn/index.ts',
@@ -38,6 +43,9 @@ export default defineConfig({
     'auth/legacy/server/index': 'src/auth/legacy/server/index.ts',
     'auth/legacy/ui/web/index': 'src/auth/legacy/ui/web/index.ts',
     'auth/legacy/ui/miniapp/index': 'src/auth/legacy/ui/miniapp/index.ts',
+    'auth/legacy/core/index': 'src/auth/legacy/core/index.ts',
+    'auth/legacy/web/index': 'src/auth/legacy/web/index.ts',
+    'auth/legacy/miniapp/index': 'src/auth/legacy/miniapp/index.ts',
     'config/index': 'src/config/index.ts',
     'config/server/index': 'src/config/server/index.ts',
     'ar/index': 'src/ar/index.ts',
@@ -46,6 +54,8 @@ export default defineConfig({
     'mmd/server/index': 'src/mmd/server/index.ts',
     'audioDetection/index': 'src/audioDetection/index.ts',
     'calendar/index': 'src/calendar/index.ts',
+    'calendar/core/index': 'src/calendar/core/index.ts',
+    'calendar/web/index': 'src/calendar/web/index.ts',
     'calendar/server': 'src/calendar/server.ts',
     'calendar/routes/index': 'src/calendar/routes/index.ts',
     'imageCrop/index': 'src/imageCrop/index.ts',
@@ -61,6 +71,9 @@ export default defineConfig({
     'navigation/index': 'src/navigation/index.ts',
     'portfolio/index': 'src/portfolio/index.ts',
     'showmasterpiece/index': 'src/showmasterpiece/index.ts',
+    'showmasterpiece/core/index': 'src/showmasterpiece/core/index.ts',
+    'showmasterpiece/web/index': 'src/showmasterpiece/web/index.ts',
+    'showmasterpiece/miniapp/index': 'src/showmasterpiece/miniapp/index.ts',
     'showmasterpiece/ui/web/index': 'src/showmasterpiece/ui/web/index.ts',
     'showmasterpiece/ui/miniapp/index': 'src/showmasterpiece/ui/miniapp/index.ts',
     'showmasterpiece/logic/index': 'src/showmasterpiece/logic/index.ts',
@@ -70,9 +83,13 @@ export default defineConfig({
     'iflytek/index': 'src/iflytek/index.ts',
     'iflytek/server': 'src/iflytek/server.ts',
     'qqbot/index': 'src/qqbot/index.ts',
+    'qqbot/core/index': 'src/qqbot/core/index.ts',
+    'qqbot/web/index': 'src/qqbot/web/index.ts',
     'qqbot/server/index': 'src/qqbot/server/index.ts',
     'qqbot/ui/web/index': 'src/qqbot/ui/web/index.ts',
     'screenReceiver/index': 'src/screenReceiver/index.ts',
+    'screenReceiver/core/index': 'src/screenReceiver/core/index.ts',
+    'screenReceiver/web/index': 'src/screenReceiver/web/index.ts',
     'screenReceiver/server/index': 'src/screenReceiver/server/index.ts',
   },
 
@@ -82,8 +99,8 @@ export default defineConfig({
   // Generate TypeScript declaration files
   dts: true,
 
-  // Split code for better tree-shaking
-  splitting: true,
+  // Keep platform entrypoints isolated (avoid web builds pulling miniapp deps via shared chunks)
+  splitting: false,
 
   // Generate sourcemaps for debugging
   sourcemap: true,
@@ -110,6 +127,7 @@ export default defineConfig({
     'uuid',
     'xlsx',
     '@tarojs/taro', // 小程序环境专用
+    '@tarojs/components',
     'electron', // Electron 环境专用
     'react-native', // React Native 环境专用
     'three', // externalize three to prevent bundling it twice if user app has it
