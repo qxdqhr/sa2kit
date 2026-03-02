@@ -9,7 +9,7 @@ export function createLegacyValidateHandler(config: LegacyValidateRouteConfig) {
 
       if (!sessionToken) {
         return NextResponse.json<LegacyApiResponse>(
-          { success: true, data: { valid: false } },
+          { success: true, valid: false, user: null, data: { valid: false, user: null } },
           { status: 200 }
         );
       }
@@ -17,6 +17,9 @@ export function createLegacyValidateHandler(config: LegacyValidateRouteConfig) {
       const validation = await config.authService.validateSession(sessionToken);
       return NextResponse.json<LegacyApiResponse>({
         success: true,
+        valid: validation.valid,
+        user: validation.user,
+        message: validation.valid ? '会话有效' : '会话无效',
         data: validation,
       });
     } catch (error) {

@@ -176,6 +176,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, onSwitchToRegis
                   id="phone"
                   name="phone"
                   type="tel"
+                  autoComplete="tel"
                   value={formData.phone}
                   onChange={handleInputChange}
                   placeholder="请输入手机号"
@@ -196,6 +197,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, onSwitchToRegis
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
                   value={formData.password}
                   onChange={handleInputChange}
                   placeholder="请输入密码"

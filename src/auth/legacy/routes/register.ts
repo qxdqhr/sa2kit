@@ -36,6 +36,8 @@ export function createLegacyRegisterHandler(config: LegacyRegisterRouteConfig) {
       const response = NextResponse.json<LegacyApiResponse>({
         success: true,
         message: '注册成功',
+        user,
+        sessionToken: session.sessionToken,
         data: { user, sessionToken: session.sessionToken },
       });
 

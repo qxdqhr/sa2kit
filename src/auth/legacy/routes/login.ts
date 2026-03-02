@@ -43,6 +43,8 @@ export function createLegacyLoginHandler(config: LegacyLoginRouteConfig) {
       const response = NextResponse.json<LegacyApiResponse>({
         success: true,
         message: '登录成功',
+        user,
+        sessionToken: session.sessionToken,
         data: { user, sessionToken: session.sessionToken },
       });
 

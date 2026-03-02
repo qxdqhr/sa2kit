@@ -140,6 +140,7 @@ export default function RegisterModal({ isOpen, onClose, onSuccess, onSwitchToLo
                 id="phone"
                 name="phone"
                 type="tel"
+                autoComplete="tel"
                 value={formData.phone}
                 onChange={handleInputChange}
                 placeholder="请输入手机号"
@@ -160,6 +161,7 @@ export default function RegisterModal({ isOpen, onClose, onSuccess, onSwitchToLo
                 id="name"
                 name="name"
                 type="text"
+                autoComplete="name"
                 value={formData.name}
                 onChange={handleInputChange}
                 placeholder="请输入姓名（可选）"
@@ -180,6 +182,7 @@ export default function RegisterModal({ isOpen, onClose, onSuccess, onSwitchToLo
                 id="password"
                 name="password"
                 type={showPassword ? 'text' : 'password'}
+                autoComplete="new-password"
                 value={formData.password}
                 onChange={handleInputChange}
                 placeholder="请输入密码（至少6位）"
@@ -208,6 +211,7 @@ export default function RegisterModal({ isOpen, onClose, onSuccess, onSwitchToLo
                 id="confirmPassword"
                 name="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
+                autoComplete="new-password"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 placeholder="请再次输入密码"

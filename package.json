@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.6.64",
+  "version": "1.6.66",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",

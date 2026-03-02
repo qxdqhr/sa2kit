@@ -7,6 +7,16 @@ interface AuthContextType extends UseAuthReturn {}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function extractUser(data: any): User | null {
+  return data?.user ?? data?.data?.user ?? null;
+}
+
+function extractValid(data: any): boolean {
+  if (typeof data?.valid === 'boolean') return data.valid;
+  if (typeof data?.data?.valid === 'boolean') return data.data.valid;
+  return false;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,11 +39,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       const data = await response.json();
       console.log('📄 [AuthContext] 会话验证响应数据:', data);
+      const resolvedUser = extractUser(data);
+      const resolvedValid = extractValid(data);
       
       safeSetState(() => {
-        if (data.valid && data.user) {
-          console.log('✅ [AuthContext] 会话验证成功, 用户:', data.user);
-          setUser(data.user);
+        if (resolvedValid && resolvedUser) {
+          console.log('✅ [AuthContext] 会话验证成功, 用户:', resolvedUser);
+          setUser(resolvedUser);
           setIsAuthenticated(true);
         } else {
           console.log('❌ [AuthContext] 会话验证失败:', data.message);
@@ -68,10 +80,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('📡 [AuthContext] 收到响应，状态码:', response.status);
       const data = await response.json();
       console.log('📄 [AuthContext] 响应数据:', data);
+      const resolvedUser = extractUser(data);
 
-      if (data.success && data.user) {
+      if (data.success && resolvedUser) {
         console.log('✅ [AuthContext] 登录成功, 开始更新全局状态');
-        console.log('👤 [AuthContext] 用户数据:', data.user);
+        console.log('👤 [AuthContext] 用户数据:', resolvedUser);
         
         // 记录当前状态
         console.log('📊 [AuthContext] 更新前状态:', {
@@ -83,8 +96,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // 使用同步的状态更新确保立即生效
         console.log('🔄 [AuthContext] 执行全局状态更新...');
         safeSetState(() => {
-          console.log('🔄 [AuthContext] 正在设置用户:', data.user);
-          setUser(data.user);
+          console.log('🔄 [AuthContext] 正在设置用户:', resolvedUser);
+          setUser(resolvedUser);
           console.log('🔄 [AuthContext] 正在设置认证状态: true');
           setIsAuthenticated(true);
           console.log('🔄 [AuthContext] 正在设置加载状态: false');
@@ -95,13 +108,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // 等待下一个事件循环后输出确认日志
         setTimeout(() => {
           console.log('🎉 [AuthContext] 延迟确认 - 全局登录状态应该已更新:', {
-            user: data.user,
+            user: resolvedUser,
             isAuthenticated: true
           });
         }, 0);
         
         console.log('🚀 [AuthContext] 返回成功结果');
-        return { success: true, user: data.user };
+        return { success: true, user: resolvedUser };
       } else {
         console.log('❌ [AuthContext] 登录失败:', data.message);
         return { success: false, message: data.message };
@@ -124,19 +137,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const data = await response.json();
       console.log('📡 [AuthContext] 注册响应:', data);
+      const resolvedUser = extractUser(data);
 
-      if (data.success && data.user) {
+      if (data.success && resolvedUser) {
         console.log('✅ [AuthContext] 注册成功, 立即更新全局状态');
         
         // 使用同步的状态更新确保立即生效
         safeSetState(() => {
-          setUser(data.user);
+          setUser(resolvedUser);
           setIsAuthenticated(true);
           setLoading(false);
         });
         
         console.log('🚀 [AuthContext] 返回注册成功结果');
-        return { success: true, user: data.user };
+        return { success: true, user: resolvedUser };
       } else {
         console.log('❌ [AuthContext] 注册失败:', data.message);
         return { success: false, message: data.message };

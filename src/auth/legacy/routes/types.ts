@@ -24,5 +24,8 @@ export interface LegacyResetPasswordConfig extends LegacyBaseRouteConfig {}
 export interface LegacyApiResponse<T = any> {
   success: boolean;
   message?: string;
+  user?: any;
+  sessionToken?: string;
+  valid?: boolean;
   data?: T;
 }
