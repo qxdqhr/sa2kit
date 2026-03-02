@@ -80,19 +80,23 @@ export const FestivalCardConfigPage: React.FC<FestivalCardConfigPageProps> = ({
   const mainLink = useMemo(() => `${mainPagePath}?cardId=${encodeURIComponent(selectedId)}`, [mainPagePath, selectedId]);
 
   return (
-    <div style={{ display: 'grid', gap: 12 }}>
-      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-        <select value={selectedId} onChange={(event) => setSelectedId(event.target.value)}>
+    <div className="grid gap-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <select
+          value={selectedId}
+          onChange={(event) => setSelectedId(event.target.value)}
+          className="min-w-[200px] rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+        >
           {list.map((item) => (
             <option key={item.id} value={item.id}>
               {item.name || item.id}
             </option>
           ))}
         </select>
-        <button type="button" onClick={() => void createNew()}>
+        <button type="button" onClick={() => void createNew()} className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white">
           新建卡片
         </button>
-        <a href={mainLink} style={{ color: '#2563eb', fontSize: 14 }}>
+        <a href={mainLink} className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-700">
           打开主页面
         </a>
       </div>

@@ -35,7 +35,6 @@ export const FestivalCardManagedPage: React.FC<FestivalCardManagedPageProps> = (
   cardId,
   configPagePath = '/festivalCard/config',
 }) => {
-  const [list, setList] = useState<FestivalCardConfigSummary[]>([]);
   const [currentCardId, setCurrentCardId] = useState<string>(cardId || '');
   const [config, setConfig] = useState<FestivalCardConfig | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,7 +44,6 @@ export const FestivalCardManagedPage: React.FC<FestivalCardManagedPageProps> = (
       const response = await fetch(apiBase, { cache: 'no-store' });
       const data: unknown = await response.json();
       const items = parseListResponse(data);
-      setList(items);
       const first = items[0];
       if (!currentCardId && first) {
         setCurrentCardId(first.id);
@@ -70,34 +68,14 @@ export const FestivalCardManagedPage: React.FC<FestivalCardManagedPageProps> = (
   }, [configPagePath, currentCardId]);
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: 14 }}>
-      <aside style={{ borderRadius: 16, padding: 12, background: '#0f172a', color: '#e2e8f0' }}>
-        <div style={{ fontSize: 14, marginBottom: 8 }}>卡片列表</div>
-        <div style={{ display: 'grid', gap: 8 }}>
-          {list.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setCurrentCardId(item.id)}
-              style={{
-                borderRadius: 8,
-                border: '1px solid #334155',
-                padding: '8px 10px',
-                textAlign: 'left',
-                background: currentCardId === item.id ? '#1e293b' : '#0b1220',
-                color: '#e2e8f0',
-              }}
-            >
-              {item.name || item.id}
-            </button>
-          ))}
-        </div>
-        <a href={configLink} style={{ display: 'inline-block', marginTop: 12, color: '#93c5fd', fontSize: 13 }}>
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <a href={configLink} className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-sky-300">
           进入配置页
         </a>
-      </aside>
+      </div>
 
-      <div>{loading || !config ? <div>加载中...</div> : <FestivalCardBook3D config={config} />}</div>
+      <div>{loading || !config ? <div className="py-12 text-center text-slate-400">加载中...</div> : <FestivalCardBook3D config={config} />}</div>
     </div>
   );
 };

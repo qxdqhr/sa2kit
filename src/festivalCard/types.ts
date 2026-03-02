@@ -24,6 +24,7 @@ export interface FestivalCardImageElement extends FestivalCardElementBase {
   alt?: string;
   borderRadius?: number;
   fit?: 'cover' | 'contain';
+  isBackground?: boolean;
 }
 
 export type FestivalCardElement = FestivalCardTextElement | FestivalCardImageElement;

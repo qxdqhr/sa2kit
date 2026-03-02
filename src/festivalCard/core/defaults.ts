@@ -55,6 +55,7 @@ export const DEFAULT_FESTIVAL_CARD_CONFIG: FestivalCardConfig = {
           fit: 'cover',
           borderRadius: 16,
           alt: 'holiday',
+          isBackground: false,
         },
       ],
     },
@@ -114,6 +115,7 @@ export const DEFAULT_FESTIVAL_CARD_CONFIG: FestivalCardConfig = {
           fit: 'cover',
           borderRadius: 14,
           alt: 'gift',
+          isBackground: false,
         },
         {
           id: 'p3-text-1',

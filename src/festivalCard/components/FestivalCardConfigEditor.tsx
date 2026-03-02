@@ -54,21 +54,22 @@ export const FestivalCardConfigEditor: React.FC<FestivalCardConfigEditorProps> =
   };
 
   return (
-    <div style={{ borderRadius: 16, background: '#0f172a', color: '#e2e8f0', padding: 16 }}>
-      <div style={{ display: 'grid', gap: 12 }}>
-        <label style={{ display: 'grid', gap: 6 }}>
-          <span>页面数量</span>
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 shadow-sm">
+      <div className="grid gap-3">
+        <label className="grid gap-1.5">
+          <span className="text-sm font-medium text-slate-700">页面数量</span>
           <input
             type="number"
             min={1}
             max={12}
             value={value.pages.length}
             onChange={(event) => onChange(resizeFestivalCardPages(value, Number(event.target.value)))}
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
           />
         </label>
 
-        <label style={{ display: 'grid', gap: 6 }}>
-          <span>背景音乐 URL</span>
+        <label className="grid gap-1.5">
+          <span className="text-sm font-medium text-slate-700">背景音乐 URL</span>
           <input
             type="url"
             value={value.backgroundMusic?.src || ''}
@@ -81,12 +82,17 @@ export const FestivalCardConfigEditor: React.FC<FestivalCardConfigEditorProps> =
                 },
               })
             }
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
           />
         </label>
 
-        <label style={{ display: 'grid', gap: 6 }}>
-          <span>编辑页面</span>
-          <select value={activePageIndex} onChange={(event) => setActivePageIndex(Number(event.target.value))}>
+        <label className="grid gap-1.5">
+          <span className="text-sm font-medium text-slate-700">编辑页面</span>
+          <select
+            value={activePageIndex}
+            onChange={(event) => setActivePageIndex(Number(event.target.value))}
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+          >
             {pageOptions.map((index) => (
               <option key={index} value={index}>
                 第 {index + 1} 页
@@ -97,8 +103,8 @@ export const FestivalCardConfigEditor: React.FC<FestivalCardConfigEditorProps> =
       </div>
 
       {canEditPage ? (
-        <div style={{ marginTop: 16 }}>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <div className="mt-4">
+          <div className="mb-3 flex gap-2">
             <button
               type="button"
               onClick={() =>
@@ -109,6 +115,7 @@ export const FestivalCardConfigEditor: React.FC<FestivalCardConfigEditorProps> =
                   ),
                 })
               }
+              className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white"
             >
               + 文字
             </button>
@@ -122,29 +129,41 @@ export const FestivalCardConfigEditor: React.FC<FestivalCardConfigEditorProps> =
                   ),
                 })
               }
+              className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white"
             >
               + 图片
             </button>
           </div>
 
-          <div style={{ display: 'grid', gap: 10, maxHeight: 340, overflow: 'auto' }}>
+          <div className="grid max-h-[340px] gap-2.5 overflow-auto pr-1">
             {(page?.elements ?? []).map((element) => (
-              <div key={element.id} style={{ border: '1px solid #334155', borderRadius: 10, padding: 10 }}>
-                <div style={{ marginBottom: 8 }}>{element.type.toUpperCase()}</div>
+              <div key={element.id} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <div className="mb-2 text-xs font-semibold tracking-wide text-slate-500">{element.type.toUpperCase()}</div>
                 {element.type === 'text' ? (
                   <textarea
                     value={element.content}
                     onChange={(event) => updateElement(element.id, { content: event.target.value })}
                     rows={3}
-                    style={{ width: '100%' }}
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
                   />
                 ) : (
-                  <input
-                    type="url"
-                    value={element.src}
-                    onChange={(event) => updateElement(element.id, { src: event.target.value })}
-                    style={{ width: '100%' }}
-                  />
+                  <div className="grid gap-2">
+                    <input
+                      type="url"
+                      value={element.src}
+                      onChange={(event) => updateElement(element.id, { src: event.target.value })}
+                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+                    />
+                    <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(element.isBackground)}
+                        onChange={(event) => updateElement(element.id, { isBackground: event.target.checked })}
+                        className="h-4 w-4 rounded border-slate-300 text-sky-600"
+                      />
+                      作为本页背景图
+                    </label>
+                  </div>
                 )}
               </div>
             ))}

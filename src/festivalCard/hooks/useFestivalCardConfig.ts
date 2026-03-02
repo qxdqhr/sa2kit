@@ -18,11 +18,11 @@ export const useFestivalCardConfig = (options?: UseFestivalCardConfigOptions) =>
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!options?.fetchConfig) return;
+    const fetchConfig = options?.fetchConfig;
+    if (!fetchConfig) return;
 
     let active = true;
-    void options
-      .fetchConfig()
+    void fetchConfig()
       .then((value) => {
         if (!active) return;
         setConfig(normalizeFestivalCardConfig(value));
@@ -34,17 +34,18 @@ export const useFestivalCardConfig = (options?: UseFestivalCardConfigOptions) =>
     return () => {
       active = false;
     };
-  }, [options]);
+  }, [options?.fetchConfig]);
 
   const save = useCallback(async () => {
-    if (!options?.onSave) return;
+    const onSave = options?.onSave;
+    if (!onSave) return;
     setSaving(true);
     try {
-      await options.onSave(config);
+      await onSave(config);
     } finally {
       setSaving(false);
     }
-  }, [config, options]);
+  }, [config, options?.onSave]);
 
   return useMemo(
     () => ({

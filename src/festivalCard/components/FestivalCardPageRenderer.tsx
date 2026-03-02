@@ -5,6 +5,7 @@ import type { FestivalCardElement, FestivalCardPage } from '../types';
 
 const elementStyle = (element: FestivalCardElement): React.CSSProperties => ({
   position: 'absolute',
+  zIndex: 2,
   left: `${element.x}%`,
   top: `${element.y}%`,
   width: `${element.width ?? 70}%`,
@@ -53,21 +54,27 @@ interface FestivalCardPageRendererProps {
 }
 
 export const FestivalCardPageRenderer: React.FC<FestivalCardPageRendererProps> = ({ page }) => {
+  const backgroundElement = page.elements.find(
+    (element): element is Extract<FestivalCardElement, { type: 'image' }> => element.type === 'image' && Boolean(element.isBackground)
+  );
+  const foregroundElements = page.elements.filter((element) => !(element.type === 'image' && element.isBackground));
+
   return (
     <div
+      className="relative h-full w-full overflow-hidden rounded-2xl"
       style={{
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden',
-        borderRadius: 16,
         backgroundColor: page.background?.color || '#0f172a',
-        backgroundImage: page.background?.image ? `url(${page.background.image})` : undefined,
+        backgroundImage: backgroundElement
+          ? `url(${backgroundElement.src})`
+          : page.background?.image
+            ? `url(${page.background.image})`
+            : undefined,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
     >
-      {page.elements.map(renderElement)}
+      <div className="absolute inset-0 bg-slate-950/20" />
+      {foregroundElements.map(renderElement)}
     </div>
   );
 };

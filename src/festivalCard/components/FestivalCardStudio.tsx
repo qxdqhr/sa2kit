@@ -23,8 +23,8 @@ export const FestivalCardStudio: React.FC<FestivalCardStudioProps> = ({ initialC
   if (loading) return <div>加载中...</div>;
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }}>
-      <FestivalCardBook3D config={config} />
+    <div className="grid gap-4 lg:grid-cols-[1.45fr_1fr]">
+      <FestivalCardBook3D config={config} className="h-full" />
       <div>
         <FestivalCardConfigEditor value={config} onChange={setConfig} />
         {onSave ? (
@@ -32,7 +32,7 @@ export const FestivalCardStudio: React.FC<FestivalCardStudioProps> = ({ initialC
             type="button"
             onClick={() => void save()}
             disabled={saving}
-            style={{ marginTop: 12, width: '100%', padding: '10px 16px' }}
+            className="mt-3 w-full rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-60"
           >
             {saving ? '保存中...' : '保存配置'}
           </button>

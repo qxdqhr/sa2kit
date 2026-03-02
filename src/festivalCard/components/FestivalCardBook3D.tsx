@@ -21,90 +21,38 @@ export const FestivalCardBook3D: React.FC<FestivalCardBook3DProps> = ({ config, 
   return (
     <div className={className}>
       <div
+        className="w-full min-h-[560px] rounded-3xl p-6 shadow-2xl shadow-slate-900/50"
         style={{
-          width: '100%',
-          minHeight: 560,
-          borderRadius: 24,
-          padding: 24,
           background: `linear-gradient(145deg, ${normalized.background?.colorA || '#0c1a34'} 0%, ${normalized.background?.colorB || '#1f4f8a'} 100%)`,
-          boxShadow: '0 26px 70px rgba(2, 6, 23, 0.45)',
         }}
       >
-        <div
-          style={{
-            marginBottom: 14,
-            color: '#f8fafc',
-            fontSize: 14,
-            opacity: 0.9,
-            textAlign: 'center',
-          }}
-        >
-          {normalized.coverTitle || 'Festival Card'} · 第 {currentPage + 1} / {pages.length} 页
+        <div className="mx-auto w-full max-w-5xl text-center text-slate-100">
+          <h3 className="mb-4 text-lg font-semibold">{normalized.coverTitle || 'Festival Card'}</h3>
         </div>
 
-        <div style={{ perspective: 1400, width: '100%', maxWidth: 920, margin: '0 auto' }}>
-          <div
-            style={{
-              position: 'relative',
-              height: 460,
-              transformStyle: 'preserve-3d',
-            }}
-          >
-            {pages.map((page, index) => {
-              const isFlipped = index < currentPage;
-              const zIndex = pages.length - index;
-
-              return (
-                <div
-                  key={page.id}
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    transformStyle: 'preserve-3d',
-                    transformOrigin: 'left center',
-                    transform: `rotateY(${isFlipped ? -170 : 0}deg)`,
-                    transition: 'transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1)',
-                    zIndex,
-                  }}
-                >
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      backfaceVisibility: 'hidden',
-                    }}
-                  >
-                    <FestivalCardPageRenderer page={page} />
-                  </div>
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      transform: 'rotateY(180deg)',
-                      backfaceVisibility: 'hidden',
-                      borderRadius: 16,
-                      background: '#0f172a',
-                    }}
-                  />
-                </div>
-              );
-            })}
+        <div className="mx-auto w-full max-w-5xl">
+          <div className="relative h-[460px]">
+            {pages.map((page, index) => (
+              <div
+                key={page.id}
+                className="absolute inset-0 transition-opacity duration-500 ease-out"
+                style={{
+                  opacity: index === currentPage ? 1 : 0,
+                  pointerEvents: index === currentPage ? 'auto' : 'none',
+                }}
+              >
+                <FestivalCardPageRenderer page={page} />
+              </div>
+            ))}
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: 18 }}>
+        <div className="mt-5 flex justify-center gap-3">
           <button
             type="button"
             disabled={!canPrev}
             onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
-            style={{
-              border: 'none',
-              borderRadius: 999,
-              padding: '9px 16px',
-              fontSize: 14,
-              cursor: canPrev ? 'pointer' : 'not-allowed',
-              opacity: canPrev ? 1 : 0.4,
-            }}
+            className="rounded-full bg-white px-5 py-2 text-sm font-medium text-slate-900 disabled:cursor-not-allowed disabled:opacity-45"
           >
             上一页
           </button>
@@ -112,14 +60,7 @@ export const FestivalCardBook3D: React.FC<FestivalCardBook3DProps> = ({ config, 
             type="button"
             disabled={!canNext}
             onClick={() => setCurrentPage((p) => Math.min(pages.length - 1, p + 1))}
-            style={{
-              border: 'none',
-              borderRadius: 999,
-              padding: '9px 16px',
-              fontSize: 14,
-              cursor: canNext ? 'pointer' : 'not-allowed',
-              opacity: canNext ? 1 : 0.4,
-            }}
+            className="rounded-full bg-sky-300 px-5 py-2 text-sm font-medium text-slate-900 disabled:cursor-not-allowed disabled:opacity-45"
           >
             下一页
           </button>
@@ -132,7 +73,7 @@ export const FestivalCardBook3D: React.FC<FestivalCardBook3DProps> = ({ config, 
           autoPlay={normalized.backgroundMusic.autoPlay}
           loop={normalized.backgroundMusic.loop}
           controls
-          style={{ width: '100%', marginTop: 10 }}
+          className="mt-3 w-full"
         />
       ) : null}
     </div>
