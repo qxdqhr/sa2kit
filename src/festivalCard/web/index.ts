@@ -1,9 +1,10 @@
 export * from '../core';
 export * from '../hooks/useFestivalCardConfig';
 export * from '../components/FestivalCardBook3D';
+export * from '../components/FestivalCardConfigPage';
 export * from '../components/FestivalCardConfigEditor';
+export * from '../components/FestivalCardManagedPage';
 export * from '../components/FestivalCardPageRenderer';
 export * from '../components/FestivalCardStudio';
 export * from '../services';
 export type * from '../types';
-

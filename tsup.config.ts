@@ -97,6 +97,7 @@ export default defineConfig({
     'festivalCard/miniapp/index': 'src/festivalCard/miniapp/index.ts',
     'festivalCard/core/index': 'src/festivalCard/core/index.ts',
     'festivalCard/server/index': 'src/festivalCard/server/index.ts',
+    'festivalCard/routes/index': 'src/festivalCard/routes/index.ts',
   },
 
   // Output formats: ESM and CJS

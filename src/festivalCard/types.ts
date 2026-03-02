@@ -59,12 +59,18 @@ export interface FestivalCardConfig {
   };
 }
 
+export interface FestivalCardConfigSummary {
+  id: string;
+  name?: string;
+}
+
 export interface FestivalCardDbAdapter {
+  listConfigs?(): Promise<FestivalCardConfigSummary[]>;
   getConfig(id: string): Promise<FestivalCardConfig | null>;
   saveConfig(id: string, config: FestivalCardConfig): Promise<void>;
+  deleteConfig?(id: string): Promise<void>;
 }
 
 export interface FestivalCardServiceOptions {
   db?: FestivalCardDbAdapter;
 }
-
