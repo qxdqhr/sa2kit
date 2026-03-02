@@ -93,6 +93,10 @@ export default defineConfig({
     'screenReceiver/server/index': 'src/screenReceiver/server/index.ts',
     'screenReceiver/server/next': 'src/screenReceiver/server/next.ts',
     'festivalCard/index': 'src/festivalCard/index.ts',
+    'festivalCard/web/index': 'src/festivalCard/web/index.ts',
+    'festivalCard/miniapp/index': 'src/festivalCard/miniapp/index.ts',
+    'festivalCard/core/index': 'src/festivalCard/core/index.ts',
+    'festivalCard/server/index': 'src/festivalCard/server/index.ts',
   },
 
   // Output formats: ESM and CJS

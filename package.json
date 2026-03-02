@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.6.68",
+  "version": "1.6.69",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -357,6 +357,26 @@
       "types": "./dist/festivalCard/index.d.ts",
       "import": "./dist/festivalCard/index.mjs",
       "require": "./dist/festivalCard/index.js"
+    },
+    "./festivalCard/web": {
+      "types": "./dist/festivalCard/web/index.d.ts",
+      "import": "./dist/festivalCard/web/index.mjs",
+      "require": "./dist/festivalCard/web/index.js"
+    },
+    "./festivalCard/miniapp": {
+      "types": "./dist/festivalCard/miniapp/index.d.ts",
+      "import": "./dist/festivalCard/miniapp/index.mjs",
+      "require": "./dist/festivalCard/miniapp/index.js"
+    },
+    "./festivalCard/core": {
+      "types": "./dist/festivalCard/core/index.d.ts",
+      "import": "./dist/festivalCard/core/index.mjs",
+      "require": "./dist/festivalCard/core/index.js"
+    },
+    "./festivalCard/server": {
+      "types": "./dist/festivalCard/server/index.d.ts",
+      "import": "./dist/festivalCard/server/index.mjs",
+      "require": "./dist/festivalCard/server/index.js"
     },
     "./components": {
       "types": "./dist/components/index.d.ts",
