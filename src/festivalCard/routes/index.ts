@@ -9,9 +9,18 @@ export interface FestivalCardRouteConfig {
   db?: FestivalCardDbAdapter;
 }
 
+type RouteContext =
+  | { params: { id: string } }
+  | { params: Promise<{ id: string }> };
+
 const createService = (config: FestivalCardRouteConfig) => {
   if (config.db) initializeFestivalCardDb(config.db);
   return new FestivalCardService({ db: config.db });
+};
+
+const resolveCardId = async (context: RouteContext): Promise<string> => {
+  const params = await context.params;
+  return params.id;
 };
 
 export const createListFestivalCardsHandler = (config: FestivalCardRouteConfig = {}) => {
@@ -28,9 +37,10 @@ export const createListFestivalCardsHandler = (config: FestivalCardRouteConfig =
 
 export const createGetFestivalCardHandler = (config: FestivalCardRouteConfig = {}) => {
   const service = createService(config);
-  return async (_request: NextRequest, context: { params: { id: string } }) => {
+  return async (_request: NextRequest, context: RouteContext) => {
     try {
-      const card = await service.getConfig(context.params.id);
+      const cardId = await resolveCardId(context);
+      const card = await service.getConfig(cardId);
       return NextResponse.json({ success: true, data: card });
     } catch (error) {
       return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
@@ -40,15 +50,16 @@ export const createGetFestivalCardHandler = (config: FestivalCardRouteConfig = {
 
 export const createUpsertFestivalCardHandler = (config: FestivalCardRouteConfig = {}) => {
   const service = createService(config);
-  return async (request: NextRequest, context: { params: { id: string } }) => {
+  return async (request: NextRequest, context: RouteContext) => {
     try {
+      const cardId = await resolveCardId(context);
       const body: unknown = await request.json();
       const payload =
         body && typeof body === 'object' && 'config' in body
           ? (body as { config?: unknown }).config
           : undefined;
       const normalized = normalizeFestivalCardConfig((payload || {}) as Partial<FestivalCardConfig>);
-      const data = await service.saveConfig(context.params.id, normalized);
+      const data = await service.saveConfig(cardId, normalized);
       return NextResponse.json({ success: true, data });
     } catch (error) {
       return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
@@ -58,9 +69,10 @@ export const createUpsertFestivalCardHandler = (config: FestivalCardRouteConfig 
 
 export const createDeleteFestivalCardHandler = (config: FestivalCardRouteConfig = {}) => {
   const service = createService(config);
-  return async (_request: NextRequest, context: { params: { id: string } }) => {
+  return async (_request: NextRequest, context: RouteContext) => {
     try {
-      await service.deleteConfig(context.params.id);
+      const cardId = await resolveCardId(context);
+      await service.deleteConfig(cardId);
       return NextResponse.json({ success: true });
     } catch (error) {
       return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });

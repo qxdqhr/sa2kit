@@ -36,9 +36,14 @@ export const FestivalCardConfigPage: React.FC<FestivalCardConfigPageProps> = ({
   };
 
   const reloadList = useCallback(async () => {
-    const response = await fetch(apiBase, { cache: 'no-store' });
-    const data: unknown = await response.json();
-    setList(parseListResponse(data));
+    try {
+      const response = await fetch(apiBase, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`加载卡片列表失败: ${response.status}`);
+      const data: unknown = await response.json();
+      setList(parseListResponse(data));
+    } catch (error) {
+      window.alert((error as Error).message || '加载卡片列表失败');
+    }
   }, [apiBase]);
 
   useEffect(() => {
@@ -47,17 +52,29 @@ export const FestivalCardConfigPage: React.FC<FestivalCardConfigPageProps> = ({
 
   const fetchConfig = async (): Promise<FestivalCardConfig> => {
     const response = await fetch(`${apiBase}/${encodeURIComponent(selectedId)}`, { cache: 'no-store' });
+    if (!response.ok) {
+      const message = `加载配置失败: ${response.status}`;
+      window.alert(message);
+      throw new Error(message);
+    }
     const data: unknown = await response.json();
     return parseConfigResponse(data);
   };
 
   const saveConfig = async (config: FestivalCardConfig) => {
-    await fetch(`${apiBase}/${encodeURIComponent(selectedId)}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ config }),
-    });
-    await reloadList();
+    try {
+      const response = await fetch(`${apiBase}/${encodeURIComponent(selectedId)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ config }),
+      });
+      if (!response.ok) throw new Error(`保存失败: ${response.status}`);
+      await reloadList();
+      window.alert('保存成功');
+    } catch (error) {
+      window.alert((error as Error).message || '保存失败');
+      throw error;
+    }
   };
 
   const createNew = async () => {
@@ -68,13 +85,19 @@ export const FestivalCardConfigPage: React.FC<FestivalCardConfigPageProps> = ({
       id,
       name,
     });
-    await fetch(`${apiBase}/${encodeURIComponent(id)}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ config }),
-    });
-    setSelectedId(id);
-    await reloadList();
+    try {
+      const response = await fetch(`${apiBase}/${encodeURIComponent(id)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ config }),
+      });
+      if (!response.ok) throw new Error(`创建失败: ${response.status}`);
+      setSelectedId(id);
+      await reloadList();
+      window.alert('新卡片创建成功');
+    } catch (error) {
+      window.alert((error as Error).message || '创建失败');
+    }
   };
 
   const mainLink = useMemo(() => `${mainPagePath}?cardId=${encodeURIComponent(selectedId)}`, [mainPagePath, selectedId]);
