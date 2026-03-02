@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { resolveScreenReceiverSignalUrl } from './signalUrl';
 import { useScreenReceiver } from './useScreenReceiver';
 
 export interface ScreenReceiverPanelProps {
@@ -7,12 +8,15 @@ export interface ScreenReceiverPanelProps {
   className?: string;
 }
 
-const DEFAULT_SIGNAL_URL = 'ws://127.0.0.1:8787/ws';
 const DEFAULT_ROOM_ID = 'screen-room-1';
 
 export function ScreenReceiverPanel(props: ScreenReceiverPanelProps) {
-  const { defaultSignalUrl = DEFAULT_SIGNAL_URL, defaultRoomId = DEFAULT_ROOM_ID, className } = props;
-  const [wsUrl, setWsUrl] = useState(defaultSignalUrl);
+  const { defaultSignalUrl, defaultRoomId = DEFAULT_ROOM_ID, className } = props;
+  const initialSignalUrl = useMemo(
+    () => resolveScreenReceiverSignalUrl({ signalUrl: defaultSignalUrl }),
+    [defaultSignalUrl],
+  );
+  const [wsUrl, setWsUrl] = useState(initialSignalUrl);
   const [roomId, setRoomId] = useState(defaultRoomId);
   const receiver = useScreenReceiver({ wsUrl, roomId });
   const logs = useMemo(() => receiver.logs.map((entry) => entry.text).join('\n'), [receiver.logs]);

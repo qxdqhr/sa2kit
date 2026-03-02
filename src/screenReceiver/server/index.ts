@@ -101,7 +101,8 @@ export class ScreenReceiverSignalingHub {
 
     this.removeClient(socket, false);
 
-    const role: ScreenReceiverRole = message.role === 'broadcaster' ? 'broadcaster' : 'viewer';
+    const role: ScreenReceiverRole =
+      message.role === 'broadcaster' || message.role === 'sender' ? 'broadcaster' : 'viewer';
     const peerId = typeof message.peerId === 'string' && message.peerId.trim() ? message.peerId : this.createPeerId();
 
     const record: PeerRecord = { peerId, roomId, role, socket };

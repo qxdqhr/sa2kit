@@ -1,11 +1,12 @@
 export type ScreenReceiverRole = 'viewer' | 'broadcaster';
+export type ScreenReceiverClientRole = ScreenReceiverRole | 'sender';
 
 export type ScreenReceiverSignalType = 'offer' | 'answer' | 'ice';
 
 export interface ScreenReceiverJoinMessage {
   type: 'join';
   roomId: string;
-  role?: ScreenReceiverRole;
+  role?: ScreenReceiverClientRole;
   peerId?: string;
 }
 

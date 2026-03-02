@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.6.66",
+  "version": "1.6.67",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -353,6 +353,11 @@
       "import": "./dist/mikuFireworks3D/server/index.mjs",
       "require": "./dist/mikuFireworks3D/server/index.js"
     },
+    "./festivalCard": {
+      "types": "./dist/festivalCard/index.d.ts",
+      "import": "./dist/festivalCard/index.mjs",
+      "require": "./dist/festivalCard/index.js"
+    },
     "./components": {
       "types": "./dist/components/index.d.ts",
       "import": "./dist/components/index.mjs",
@@ -517,6 +522,11 @@
       "types": "./dist/screenReceiver/web/index.d.ts",
       "import": "./dist/screenReceiver/web/index.mjs",
       "require": "./dist/screenReceiver/web/index.js"
+    },
+    "./screenReceiver/server/next": {
+      "types": "./dist/screenReceiver/server/next.d.ts",
+      "import": "./dist/screenReceiver/server/next.mjs",
+      "require": "./dist/screenReceiver/server/next.js"
     }
   },
   "files": [

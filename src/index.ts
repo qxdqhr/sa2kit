@@ -29,6 +29,7 @@ export * from './navigation';
 export * from './testField';
 export * from './mikuFireworks3D';
 export * from './screenReceiver';
+export * from './festivalCard';
 
 // Storage - Only export types and hooks, not platform adapters
 // Platform adapters should be imported from '@qhr123/sa2kit/storage' subpath
