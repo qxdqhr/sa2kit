@@ -23,6 +23,7 @@ const renderElement = (element: FestivalCardElement) => {
           color: element.color || '#f8fafc',
           fontSize: element.fontSize || 18,
           fontWeight: element.fontWeight || 500,
+          fontFamily: element.fontFamily || 'inherit',
           textAlign: element.align || 'left',
           lineHeight: 1.45,
           whiteSpace: 'pre-wrap',

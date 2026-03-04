@@ -7,3 +7,4 @@ export {
   removeCartItem as removeMiniappCartItem,
   clearCart as clearMiniappCart
 } from './cart';
+export { useDeadlinePopupCore } from './useDeadlinePopupCore';

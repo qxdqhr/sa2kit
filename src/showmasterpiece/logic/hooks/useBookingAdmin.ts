@@ -22,7 +22,7 @@ import {
   updateBookingStatus as updateBookingStatusService,
   deleteBooking as deleteBookingService,
   exportBookings as exportBookingsService
-} from '../../services/bookingAdminService';
+} from '../../service/client-business/bookingAdminService';
 import { BookingStatus } from '../../types/booking';
 
 /**

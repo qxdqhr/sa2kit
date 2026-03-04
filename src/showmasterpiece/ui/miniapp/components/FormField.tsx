@@ -29,13 +29,13 @@ export const FormInput: React.FC<FormInputProps> = ({
 }) => {
   return (
     <View className="mt-4">
-      <Text className="text-sm font-medium text-slate-700">{label}</Text>
+      <Text className="text-sm font-medium text-prussian-blue-700">{label}</Text>
       <Input
         value={value}
         placeholder={placeholder}
         onInput={(event: { detail: { value: string } }) => onChange(event.detail.value)}
-        className={`mt-2 h-11 w-full rounded-lg border bg-white px-3 text-sm ${
-          error ? 'border-rose-300' : 'border-slate-300'
+        className={`mt-2 h-11 w-full rounded-2xl border bg-white px-3 text-sm ${
+          error ? 'border-rose-300' : 'border-prussian-blue-200'
         }`}
         disabled={disabled}
         type={type}
@@ -55,13 +55,13 @@ export const FormTextarea: React.FC<FormTextareaProps> = ({
 }) => {
   return (
     <View className="mt-4">
-      <Text className="text-sm font-medium text-slate-700">{label}</Text>
+      <Text className="text-sm font-medium text-prussian-blue-700">{label}</Text>
       <Textarea
         value={value}
         placeholder={placeholder}
         onInput={(event: { detail: { value: string } }) => onChange(event.detail.value)}
-        className={`mt-2 min-h-24 w-full rounded-lg border bg-white px-3 py-2 text-sm ${
-          error ? 'border-rose-300' : 'border-slate-300'
+        className={`mt-2 min-h-24 w-full rounded-2xl border bg-white px-3 py-2 text-sm ${
+          error ? 'border-rose-300' : 'border-prussian-blue-200'
         }`}
         disabled={disabled}
       />

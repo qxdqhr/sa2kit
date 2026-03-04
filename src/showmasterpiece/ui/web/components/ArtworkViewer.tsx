@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ImageIcon } from 'lucide-react';
-import { ArtworkPage } from '../types';
+import { ArtworkPage } from '../../../types';
 import { Card, CardContent } from '@/components';
 import { Button } from '@/components';
 import { Badge } from '@/components';

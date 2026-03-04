@@ -15,9 +15,9 @@
 
 import React, { useState } from 'react';
 import { useCartContext, useDeadlinePopup } from '../../../logic/hooks';
-import { CartItem } from '../types/cart';
+import { CartItem } from '../../../types/cart';
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
-import { DeadlinePopupManager } from './';
+import { DeadlinePopupManager } from './DeadlinePopup';
 
 /**
  * 购物车页面组件属性

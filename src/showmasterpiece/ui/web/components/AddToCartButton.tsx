@@ -11,7 +11,7 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Plus, Minus, Check } from 'lucide-react';
 import { useCartContext } from '../../../logic/hooks';
-import { ArtCollection } from '../types';
+import { ArtCollection } from '../../../types';
 
 /**
  * 添加到购物车按钮组件属性

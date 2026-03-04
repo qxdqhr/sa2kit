@@ -7,8 +7,8 @@ import {
   updateCollectionOrder,
   moveCollectionUp,
   moveCollectionDown
-} from '../services';
-import type { ArtCollection } from '../types';
+} from '../../../service/client-business/masterpiecesConfigService';
+import type { ArtCollection } from '../../../types';
 
 interface CollectionOrderManagerV2Props {
   onOrderChanged?: () => void;

@@ -10,8 +10,9 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { Calendar, User, Package, Clock, CheckCircle, XCircle, RefreshCw, Eye, Edit, Save, X, Trash2, Download, Settings, Search } from 'lucide-react';
-import { BookingAdminData, BookingAdminStats, BookingAdminQueryParams, BOOKING_EXPORT_FIELDS, DEFAULT_BOOKING_EXPORT_CONFIG } from '../services';
-import { BookingStatus, BOOKING_STATUS_LABELS, BOOKING_STATUS_COLORS } from '../types/booking';
+import { BookingAdminData, BookingAdminStats, BookingAdminQueryParams } from '../../../service/client-business/bookingAdminService';
+import { BOOKING_EXPORT_FIELDS, DEFAULT_BOOKING_EXPORT_CONFIG } from '../../../service/client-business/exportConfig';
+import { BookingStatus, BOOKING_STATUS_LABELS, BOOKING_STATUS_COLORS } from '../../../types/booking';
 import { ExportResult, UniversalExportButton, UniversalExportClient } from '@/universalExport';
 
 /**

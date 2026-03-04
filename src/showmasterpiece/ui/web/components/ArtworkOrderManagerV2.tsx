@@ -8,8 +8,8 @@ import {
   updateArtworkOrder,
   moveArtworkUp,
   moveArtworkDown
-} from '../services';
-import type { ArtworkPage } from '../types';
+} from '../../../service/client-business/masterpiecesConfigService';
+import type { ArtworkPage } from '../../../types';
 
 interface ArtworkOrderManagerV2Props {
   collectionId: number;

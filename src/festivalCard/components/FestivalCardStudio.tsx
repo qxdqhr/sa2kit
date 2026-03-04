@@ -23,9 +23,9 @@ export const FestivalCardStudio: React.FC<FestivalCardStudioProps> = ({ initialC
   if (loading) return <div>加载中...</div>;
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1.45fr_1fr]">
+    <div className="grid items-start gap-4 lg:grid-cols-[1.45fr_1fr]">
       <FestivalCardBook3D config={config} className="h-full" />
-      <div>
+      <div className="lg:sticky lg:top-4">
         <FestivalCardConfigEditor value={config} onChange={setConfig} />
         {onSave ? (
           <button

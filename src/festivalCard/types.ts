@@ -15,6 +15,7 @@ export interface FestivalCardTextElement extends FestivalCardElementBase {
   color?: string;
   fontSize?: number;
   fontWeight?: number;
+  fontFamily?: string;
   align?: 'left' | 'center' | 'right';
 }
 

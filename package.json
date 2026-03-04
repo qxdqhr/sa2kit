@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.6.73",
+  "version": "1.6.74",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -404,19 +404,34 @@
       "require": "./dist/showmasterpiece/index.js"
     },
     "./showmasterpiece/core": {
-      "types": "./dist/showmasterpiece/core/index.d.ts",
-      "import": "./dist/showmasterpiece/core/index.mjs",
-      "require": "./dist/showmasterpiece/core/index.js"
+      "types": "./dist/showmasterpiece/core.d.ts",
+      "import": "./dist/showmasterpiece/core.mjs",
+      "require": "./dist/showmasterpiece/core.js"
     },
     "./showmasterpiece/web": {
       "types": "./dist/showmasterpiece/web/index.d.ts",
       "import": "./dist/showmasterpiece/web/index.mjs",
       "require": "./dist/showmasterpiece/web/index.js"
     },
-    "./showmasterpiece/miniapp": {
-      "types": "./dist/showmasterpiece/miniapp/index.d.ts",
-      "import": "./dist/showmasterpiece/miniapp/index.mjs",
-      "require": "./dist/showmasterpiece/miniapp/index.js"
+    "./showmasterpiece/service": {
+      "types": "./dist/showmasterpiece/service/index.d.ts",
+      "import": "./dist/showmasterpiece/service/index.mjs",
+      "require": "./dist/showmasterpiece/service/index.js"
+    },
+    "./showmasterpiece/service/web": {
+      "types": "./dist/showmasterpiece/service/web/index.d.ts",
+      "import": "./dist/showmasterpiece/service/web/index.mjs",
+      "require": "./dist/showmasterpiece/service/web/index.js"
+    },
+    "./showmasterpiece/service/client-business": {
+      "types": "./dist/showmasterpiece/service/client-business/index.d.ts",
+      "import": "./dist/showmasterpiece/service/client-business/index.mjs",
+      "require": "./dist/showmasterpiece/service/client-business/index.js"
+    },
+    "./showmasterpiece/service/miniapp": {
+      "types": "./dist/showmasterpiece/service/miniapp/index.d.ts",
+      "import": "./dist/showmasterpiece/service/miniapp/index.mjs",
+      "require": "./dist/showmasterpiece/service/miniapp/index.js"
     },
     "./showmasterpiece/ui/web": {
       "types": "./dist/showmasterpiece/ui/web/index.d.ts",
@@ -433,15 +448,10 @@
       "import": "./dist/showmasterpiece/logic/index.mjs",
       "require": "./dist/showmasterpiece/logic/index.js"
     },
-    "./showmasterpiece/logic/miniapp": {
-      "types": "./dist/showmasterpiece/logic/miniapp/index.d.ts",
-      "import": "./dist/showmasterpiece/logic/miniapp/index.mjs",
-      "require": "./dist/showmasterpiece/logic/miniapp/index.js"
-    },
     "./showmasterpiece/db": {
-      "types": "./dist/showmasterpiece/db/index.d.ts",
-      "import": "./dist/showmasterpiece/db/index.mjs",
-      "require": "./dist/showmasterpiece/db/index.js"
+      "types": "./dist/showmasterpiece/db.d.ts",
+      "import": "./dist/showmasterpiece/db.mjs",
+      "require": "./dist/showmasterpiece/db.js"
     },
     "./showmasterpiece/server": {
       "types": "./dist/showmasterpiece/server/index.d.ts",
@@ -581,6 +591,7 @@
     "@imgly/background-removal": "^1.7.0",
     "@xenova/transformers": "^2.17.2",
     "@tarojs/components": "^4.1.1",
+    "@tarojs/taro": "^4.1.1",
     "lucide-react": "^0.263.0 || ^0.300.0 || ^0.400.0 || ^0.500.0",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0",
@@ -602,6 +613,9 @@
       "optional": true
     },
     "@tarojs/components": {
+      "optional": true
+    },
+    "@tarojs/taro": {
       "optional": true
     },
     "@xenova/transformers": {
@@ -631,6 +645,7 @@
     "@types/uuid": "^11.0.0",
     "@types/ws": "^8.18.1",
     "@tarojs/components": "^4.1.1",
+    "@tarojs/taro": "^4.1.1",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
     "@vitest/ui": "^1.2.0",

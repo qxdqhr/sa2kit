@@ -40,7 +40,20 @@ export const FestivalCardConfigPage: React.FC<FestivalCardConfigPageProps> = ({
       const response = await fetch(apiBase, { cache: 'no-store' });
       if (!response.ok) throw new Error(`加载卡片列表失败: ${response.status}`);
       const data: unknown = await response.json();
-      setList(parseListResponse(data));
+      const items = parseListResponse(data);
+      if (items.length === 0) {
+        const fallbackId = 'default-festival-card';
+        const fallbackConfig = normalizeFestivalCardConfig({ id: fallbackId, name: 'Holiday Card' });
+        await fetch(`${apiBase}/${encodeURIComponent(fallbackId)}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ config: fallbackConfig }),
+        });
+        setList([{ id: fallbackId, name: fallbackConfig.name }]);
+        setSelectedId(fallbackId);
+        return;
+      }
+      setList(items);
     } catch (error) {
       window.alert((error as Error).message || '加载卡片列表失败');
     }
@@ -103,12 +116,12 @@ export const FestivalCardConfigPage: React.FC<FestivalCardConfigPageProps> = ({
   const mainLink = useMemo(() => `${mainPagePath}?cardId=${encodeURIComponent(selectedId)}`, [mainPagePath, selectedId]);
 
   return (
-    <div className="grid gap-3">
-      <div className="flex flex-wrap items-center gap-2">
+    <div className="grid gap-4">
+      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/50 p-3">
         <select
           value={selectedId}
           onChange={(event) => setSelectedId(event.target.value)}
-          className="min-w-[200px] rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+          className="min-w-[240px] rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
         >
           {list.map((item) => (
             <option key={item.id} value={item.id}>

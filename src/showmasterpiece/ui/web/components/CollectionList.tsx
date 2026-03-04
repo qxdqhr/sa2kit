@@ -13,7 +13,7 @@
 'use client';
 
 import React from 'react';
-import { CollectionSummary } from '../types/booking';
+import { CollectionSummary } from '../../../types/booking';
 
 /**
  * 画集列表组件属性

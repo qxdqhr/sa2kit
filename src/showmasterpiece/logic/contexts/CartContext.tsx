@@ -14,7 +14,7 @@
 import * as React from 'react';
 import type { ReactNode } from 'react';
 import { Cart, AddToCartRequest, UpdateCartItemRequest, RemoveFromCartRequest, BatchBookingRequest, BatchBookingResponse } from '../../types/cart';
-import { getCart, addToCart, updateCartItem, removeFromCart, batchBooking, clearCart } from '../../services/cartService';
+import { getCart, addToCart, updateCartItem, removeFromCart, batchBooking, clearCart } from '../../service/client-business/cartService';
 import { cartUpdateEvents, CART_UPDATE_EVENT } from '../hooks';
 import type { CartContextState } from '../../types/context';
 

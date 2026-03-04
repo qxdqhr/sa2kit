@@ -19,7 +19,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Book, Eye, ImageIcon, ShoppingBag } from 'lucide-react';
-import { ArtCollection, CollectionCategory } from '../types';
+import { ArtCollection, CollectionCategory } from '../../../types';
 import { AddToCartButton } from './AddToCartButton';
 import { Card, CardContent, Badge, Button } from '@/components';
 

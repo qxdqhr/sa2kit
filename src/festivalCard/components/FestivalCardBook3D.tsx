@@ -20,18 +20,13 @@ export const FestivalCardBook3D: React.FC<FestivalCardBook3DProps> = ({ config, 
 
   return (
     <div className={className}>
-      <div
-        className="w-full min-h-[560px] rounded-3xl p-6 shadow-2xl shadow-slate-900/50"
-        style={{
-          background: `linear-gradient(145deg, ${normalized.background?.colorA || '#0c1a34'} 0%, ${normalized.background?.colorB || '#1f4f8a'} 100%)`,
-        }}
-      >
-        <div className="mx-auto w-full max-w-5xl text-center text-slate-100">
-          <h3 className="mb-4 text-lg font-semibold">{normalized.coverTitle || 'Festival Card'}</h3>
+      <div className="w-full min-h-screen px-0 py-4">
+        <div className="mx-auto w-full text-center text-slate-100">
+          <h3 className="mb-3 text-lg font-semibold">{normalized.coverTitle || 'Festival Card'}</h3>
         </div>
 
-        <div className="mx-auto w-full max-w-5xl">
-          <div className="relative h-[460px]">
+        <div className="mx-auto w-full">
+          <div className="relative h-[calc(100vh-170px)] min-h-[460px]">
             {pages.map((page, index) => (
               <div
                 key={page.id}
@@ -47,7 +42,7 @@ export const FestivalCardBook3D: React.FC<FestivalCardBook3DProps> = ({ config, 
           </div>
         </div>
 
-        <div className="mt-5 flex justify-center gap-3">
+        <div className="mt-4 flex justify-center gap-3">
           <button
             type="button"
             disabled={!canPrev}

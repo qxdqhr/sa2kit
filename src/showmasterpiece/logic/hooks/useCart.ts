@@ -28,7 +28,7 @@ import {
   removeFromCart,
   clearCart,
   batchBooking
-} from '../../services/cartService';
+} from '../../service/client-business/cartService';
 
 type CartEvent = { type: string };
 type CartEventListener = (event: CartEvent) => void;

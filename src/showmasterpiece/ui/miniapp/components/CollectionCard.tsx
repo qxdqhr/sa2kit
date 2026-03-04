@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Image, Text, View } from '@tarojs/components';
+import { Image, Text, View } from '@tarojs/components';
 import type { ArtCollection, CollectionCategoryType } from '../../../types';
 import { CollectionCategory } from '../../../types';
 import { formatPrice } from '../../../logic/shared/format';
@@ -44,15 +44,15 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
     <View
       className={
         isCompact
-          ? 'flex gap-3 rounded-2xl border border-prussian-blue-200/30 bg-white/95 p-3 shadow-sm'
-          : 'overflow-hidden rounded-2xl border border-prussian-blue-200/30 bg-gradient-to-br from-white to-prussian-blue-900/5 shadow-lg'
+          ? 'flex gap-3 rounded-2xl border border-prussian-blue-200 bg-white p-3 shadow-sm'
+          : 'overflow-hidden rounded-3xl border border-prussian-blue-200 bg-white shadow-lg'
       }
     >
       <View
         className={
           isCompact
-            ? 'relative h-20 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-prussian-blue-900/5 to-oxford-blue-100/10'
-            : 'relative w-full overflow-hidden bg-gradient-to-br from-prussian-blue-900/5 to-oxford-blue-100/10 aspect-[1/1.414]'
+            ? 'relative h-24 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-prussian-blue-100 to-oxford-blue-100'
+            : 'relative h-80 w-full overflow-hidden bg-gradient-to-br from-prussian-blue-100 to-oxford-blue-100'
         }
       >
         {collection.coverImage ? (
@@ -67,14 +67,19 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
           </View>
         )}
         {!isCompact && (
-          <View className="absolute bottom-3 left-3 rounded-full bg-moonstone/90 px-3 py-1 text-[10px] font-semibold text-white shadow-lg">
-            <Text>{badgeText}</Text>
+          <View className="absolute bottom-0 left-0 right-0 flex items-end justify-between bg-gradient-to-t from-rich-black to-transparent px-4 py-3">
+            <View className="rounded-full bg-moonstone-400 px-3 py-1 text-xs font-semibold text-white shadow-lg">
+              <Text>{badgeText}</Text>
+            </View>
+            <View className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-prussian-blue-700">
+              <Text>{formatPrice(collection.price)}</Text>
+            </View>
           </View>
         )}
       </View>
 
       <View className={isCompact ? 'flex-1' : 'p-4'}>
-        <Text className={isCompact ? 'text-sm font-semibold text-rich-black' : 'text-base font-bold text-rich-black'}>
+        <Text className={isCompact ? 'text-sm font-semibold text-rich-black' : 'text-lg font-bold text-rich-black'}>
           {collection.title}
         </Text>
         <Text className="mt-1 block text-xs text-prussian-blue-600">编号：{collection.number}</Text>
@@ -83,26 +88,37 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
             分类：{getCategoryLabel(collection.category)}
           </Text>
         )}
-        <Text className="mt-1 block text-xs font-medium text-prussian-blue-700">
-          价格：{formatPrice(collection.price)}
-        </Text>
+        {isCompact && (
+          <Text className="mt-1 block text-xs font-medium text-prussian-blue-700">
+            价格：{formatPrice(collection.price)}
+          </Text>
+        )}
         {showDescription && collection.description && !isCompact && (
           <Text className="mt-2 block text-xs text-prussian-blue-500">{collection.description}</Text>
         )}
         {actions && actions.length > 0 && (
           <View className={isCompact ? 'mt-3 flex gap-2' : 'mt-4 flex gap-2'}>
             {actions.map(action => (
-              <Button
+              <View
                 key={action.label}
                 className={
                   action.variant === 'ghost'
-                    ? 'h-8 rounded-full border border-prussian-blue-200 bg-white px-4 text-xs font-semibold text-prussian-blue-700'
-                    : 'h-8 rounded-full bg-gradient-to-r from-moonstone to-cerulean px-4 text-xs font-semibold text-white shadow-lg'
+                    ? 'flex h-9 flex-1 items-center justify-center rounded-full border border-prussian-blue-200 bg-white px-4'
+                    : 'flex h-9 flex-1 items-center justify-center rounded-full px-4 shadow-lg'
                 }
+                style={action.variant === 'ghost' ? undefined : { backgroundColor: '#1e88e5' }}
                 onClick={action.onClick}
               >
-                {action.label}
-              </Button>
+                <Text
+                  className={
+                    action.variant === 'ghost'
+                      ? 'text-xs font-semibold text-prussian-blue-700'
+                      : 'text-xs font-semibold text-white'
+                  }
+                >
+                  {action.label}
+                </Text>
+              </View>
             ))}
           </View>
         )}

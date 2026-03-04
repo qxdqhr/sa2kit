@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FestivalCardBook3D } from './FestivalCardBook3D';
 import type { FestivalCardConfig, FestivalCardConfigSummary } from '../types';
 
 interface FestivalCardManagedPageProps {
   apiBase?: string;
   cardId?: string;
-  configPagePath?: string;
 }
 
 const isSummary = (value: unknown): value is FestivalCardConfigSummary => {
@@ -33,7 +32,6 @@ const parseConfigResponse = (data: unknown): FestivalCardConfig | null => {
 export const FestivalCardManagedPage: React.FC<FestivalCardManagedPageProps> = ({
   apiBase = '/api/festivalCard',
   cardId,
-  configPagePath = '/festivalCard/config',
 }) => {
   const [currentCardId, setCurrentCardId] = useState<string>(cardId || '');
   const [config, setConfig] = useState<FestivalCardConfig | null>(null);
@@ -62,20 +60,7 @@ export const FestivalCardManagedPage: React.FC<FestivalCardManagedPageProps> = (
       .finally(() => setLoading(false));
   }, [apiBase, currentCardId]);
 
-  const configLink = useMemo(() => {
-    if (!currentCardId) return configPagePath;
-    return `${configPagePath}?cardId=${encodeURIComponent(currentCardId)}`;
-  }, [configPagePath, currentCardId]);
-
   return (
-    <div className="space-y-4">
-      <div className="flex justify-end">
-        <a href={configLink} className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-sky-300">
-          进入配置页
-        </a>
-      </div>
-
-      <div>{loading || !config ? <div className="py-12 text-center text-slate-400">加载中...</div> : <FestivalCardBook3D config={config} />}</div>
-    </div>
+    <div>{loading || !config ? <div className="py-12 text-center text-slate-400">加载中...</div> : <FestivalCardBook3D config={config} />}</div>
   );
 };

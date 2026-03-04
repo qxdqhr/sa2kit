@@ -195,7 +195,7 @@ export { useBookingAdmin } from './useBookingAdmin';
  * } = useDeadlinePopup('showmasterpiece', 'homepage_visit');
  * ```
  */
-export { useDeadlinePopup } from './useDeadlinePopup';
+export { useDeadlinePopup } from './useDeadlinePopupWeb';
 
 /** 
  * 购物车上下文Hook
@@ -221,4 +221,4 @@ export { useCartContext } from './useCartContext';
  * 
  * 为了兼容性，同时提供默认导出，指向最常用的Hook
  */
-export { useDeadlinePopup as default } from './useDeadlinePopup';
+export { useDeadlinePopup as default } from './useDeadlinePopupWeb';

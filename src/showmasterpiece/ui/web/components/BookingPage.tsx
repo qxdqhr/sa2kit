@@ -14,7 +14,7 @@
 import React, { useState } from 'react';
 import { CollectionList } from './CollectionList';
 import { useBooking, useBookingForm } from '../../../logic/hooks';
-import { CollectionSummary } from '../types/booking';
+import { CollectionSummary } from '../../../types/booking';
 
 /**
  * 预订页面组件属性

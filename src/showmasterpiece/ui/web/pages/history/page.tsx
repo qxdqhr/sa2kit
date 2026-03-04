@@ -9,7 +9,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CartHistoryPage } from '../../components';
+import { CartHistoryPage } from '../../components/CartHistoryPage';
 import { User, Search, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
