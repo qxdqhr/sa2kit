@@ -86,11 +86,11 @@ const HistoryMiniappPage: React.FC<HistoryMiniappPageProps> = ({ apiBaseUrl = DE
         />
 
         <View
-          className={`mt-5 flex h-10 w-full items-center justify-center rounded-full ${
-            loading
-              ? 'bg-prussian-blue-300'
-              : 'bg-gradient-to-r from-moonstone to-cerulean shadow-lg'
-          }`}
+          className="mt-5 flex h-10 w-full items-center justify-center rounded-full"
+          style={{
+            backgroundColor: loading ? '#93C5FD' : '#2563EB',
+            boxShadow: loading ? 'none' : '0 8px 20px rgba(37, 99, 235, 0.28)',
+          }}
           onClick={loading ? undefined : handleSearch}
         >
           <Text className="text-sm font-semibold text-white">{loading ? '查询中...' : '查询记录'}</Text>

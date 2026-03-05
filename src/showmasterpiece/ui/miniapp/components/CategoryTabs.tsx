@@ -18,13 +18,6 @@ function CategoryTabs<T extends string = string>({
   activeValue,
   onChange
 }: CategoryTabsProps<T>) {
-  const total = items.length || 1;
-  const activeIndex = Math.max(
-    items.findIndex(item => item.value === activeValue),
-    0
-  );
-  const progressWidth = `${((activeIndex + 1) / total) * 100}%`;
-
   return (
     <View className="mt-3">
       <ScrollView scrollX showScrollbar>
@@ -58,9 +51,6 @@ function CategoryTabs<T extends string = string>({
           })}
         </View>
       </ScrollView>
-      <View className="mt-2 h-2 w-full overflow-hidden rounded-full bg-prussian-blue-100">
-        <View className="h-full rounded-full bg-sky-500 transition-all" style={{ width: progressWidth }} />
-      </View>
     </View>
   );
 }

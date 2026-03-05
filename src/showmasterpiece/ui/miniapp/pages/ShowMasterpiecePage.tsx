@@ -42,18 +42,63 @@ const ShowMasterpieceMiniappPage: React.FC<ShowMasterpieceMiniappPageProps> = ({
   } = useDeadlinePopup('showmasterpiece', 'homepage_visit', apiBaseUrl);
 
   useEffect(() => {
+    try {
+      Taro.setStorageSync('__cy_mps_boot_ready__', true);
+      Taro.setStorageSync('__cy_mps_boot_retry_once__', false);
+    } catch (error) {
+      console.error('[ShowMasterpieceMiniappPage] boot ready sync failed', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    const withTimeout = async <T,>(
+      task: Promise<T>,
+      timeoutMs: number,
+      fallbackMessage: string,
+    ): Promise<T> => {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      try {
+        return await Promise.race<T>([
+          task,
+          new Promise<T>((_, reject) => {
+            timer = setTimeout(() => reject(new Error(fallbackMessage)), timeoutMs);
+          }),
+        ]);
+      } finally {
+        if (timer) {
+          clearTimeout(timer);
+        }
+      }
+    };
+
     const loadCollections = async () => {
       setLoading(true);
       setError(null);
-    try {
-        const [collectionData, categoryData] = await Promise.all([
-          getCollectionsOverview(apiBaseUrl),
-          getCategories(apiBaseUrl),
+      try {
+        const [collectionsResult, categoriesResult] = await Promise.allSettled([
+          withTimeout(getCollectionsOverview(apiBaseUrl), 12000, '商品数据加载超时'),
+          withTimeout(getCategories(apiBaseUrl), 8000, '分类数据加载超时'),
         ]);
-        setCollections(collectionData);
-        setCategoryOptions(Array.isArray(categoryData) ? categoryData : []);
+
+        if (collectionsResult.status === 'fulfilled') {
+          setCollections(Array.isArray(collectionsResult.value) ? collectionsResult.value : []);
+        } else {
+          setCollections([]);
+          setError(collectionsResult.reason instanceof Error ? collectionsResult.reason.message : '商品加载失败');
+        }
+
+        if (categoriesResult.status === 'fulfilled') {
+          setCategoryOptions(Array.isArray(categoriesResult.value) ? categoriesResult.value : []);
+        } else {
+          setCategoryOptions([]);
+          if (collectionsResult.status === 'fulfilled') {
+            setError('分类加载失败，已使用默认分类展示');
+          }
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : '加载商品失败');
+        setCollections([]);
+        setCategoryOptions([]);
       } finally {
         setLoading(false);
       }
@@ -153,9 +198,9 @@ const ShowMasterpieceMiniappPage: React.FC<ShowMasterpieceMiniappPageProps> = ({
         subtitle="葱韵环京的谷子网站，请大家尽情鉴赏老师们的作品吧！"
       />
 
-      <View className="mx-4 mt-4 rounded-3xl border border-prussian-blue-200 bg-white p-4 shadow-sm">
+      <View className="mx-4 mt-4 rounded-3xl border border-teal-200 bg-teal-50 p-4 shadow-sm">
         <Text className="text-base font-semibold text-rich-black">分类浏览</Text>
-        <Text className="mt-1 block text-xs text-prussian-blue-600">按分类快速筛选商品内容</Text>
+        <Text className="mt-1 block text-xs text-teal-700">按分类快速筛选商品内容</Text>
         <CategoryTabs
           items={categories}
           activeValue={activeCategory}

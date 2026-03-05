@@ -264,11 +264,11 @@ const CartMiniappPage: React.FC<CartMiniappPageProps> = ({ apiBaseUrl = DEFAULT_
           </View>
           <View
             className={`flex h-11 flex-1 items-center justify-center rounded-xl ${
-              submitting ? 'bg-blue-300' : 'bg-blue-600 shadow-lg'
+              submitting ? 'bg-teal-300' : 'bg-teal-600 shadow-lg'
             }`}
             onClick={submitting ? undefined : handleCheckout}
           >
-            <Text className="text-sm font-semibold text-white">{submitting ? '提交中...' : '批量预订'}</Text>
+            <Text className="text-sm font-semibold text-white">{submitting ? '提交中...' : '提交申请'}</Text>
           </View>
         </View>
         <Text className="mt-3 block text-right text-sm font-semibold text-rich-black">合计：{totalPriceLabel}</Text>
