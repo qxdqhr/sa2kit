@@ -83,9 +83,9 @@ const CartMiniappPage: React.FC<CartMiniappPageProps> = ({ apiBaseUrl = DEFAULT_
     }
 
     if (!phone) {
-      nextErrors.phoneNumber = '请输入手机号';
+      nextErrors.phoneNumber = '请输入联系方式';
     } else if (!/^1[3-9]\d{9}$/.test(phone)) {
-      nextErrors.phoneNumber = '手机号格式不正确';
+      nextErrors.phoneNumber = '联系方式格式不正确';
     }
 
     if (!pickup) {
@@ -229,9 +229,9 @@ const CartMiniappPage: React.FC<CartMiniappPageProps> = ({ apiBaseUrl = DEFAULT_
         />
 
         <FormInput
-          label="手机号 *"
+          label="联系方式 *"
           value={phoneNumber}
-          placeholder="请输入您的手机号"
+          placeholder="请输入您的联系方式"
           onChange={setPhoneNumber}
           disabled={submitting}
           error={formErrors.phoneNumber}
@@ -249,7 +249,7 @@ const CartMiniappPage: React.FC<CartMiniappPageProps> = ({ apiBaseUrl = DEFAULT_
         <FormTextarea
           label="收货信息 *"
           value={shippingInfo}
-          placeholder={'请填写2月10号以后能收到货的地址\n（1）收件人\n（2）收件地址\n（3）收件手机号'}
+          placeholder={'请填写2月10号以后能收到货的地址\n（1）收件人\n（2）收件地址\n（3）收件联系方式'}
           onChange={setShippingInfo}
           disabled={submitting}
           error={formErrors.pickupMethod}

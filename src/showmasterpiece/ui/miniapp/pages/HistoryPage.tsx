@@ -19,7 +19,7 @@ const HistoryMiniappPage: React.FC<HistoryMiniappPageProps> = ({ apiBaseUrl = DE
 
   const handleSearch = async () => {
     if (!qqNumber.trim() && !phoneNumber.trim()) {
-      Taro.showToast({ title: '请输入QQ号或手机号', icon: 'none' });
+      Taro.showToast({ title: '请输入QQ号或联系方式', icon: 'none' });
       return;
     }
 
@@ -66,7 +66,7 @@ const HistoryMiniappPage: React.FC<HistoryMiniappPageProps> = ({ apiBaseUrl = DE
 
   return (
     <View className="min-h-screen bg-gradient-to-br from-white to-prussian-blue-100 pb-12 text-rich-black">
-      <PageHeader title="历史记录查询" subtitle="输入 QQ 或手机号查询预订记录" />
+      <PageHeader title="历史记录查询" subtitle="输入 QQ 或联系方式查询预订记录" />
 
       <View className="mx-4 mt-5 rounded-3xl border border-prussian-blue-200 bg-white px-5 py-5 shadow-sm">
         <FormInput
@@ -78,9 +78,9 @@ const HistoryMiniappPage: React.FC<HistoryMiniappPageProps> = ({ apiBaseUrl = DE
         />
 
         <FormInput
-          label="手机号"
+          label="联系方式"
           value={phoneNumber}
-          placeholder="请输入手机号"
+          placeholder="请输入联系方式"
           onChange={setPhoneNumber}
           disabled={loading}
         />
