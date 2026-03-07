@@ -1,4 +1,5 @@
-import { MMDResources, MMDStage, MobileOptimization } from '../types';
+import type { CSSProperties } from 'react';
+import type { MMDResources, MMDStage, MobileOptimization } from '../types';
 import type { ARMarkerConfig } from '../../ar';
 
 /**
@@ -72,6 +73,13 @@ export interface MMDARPlayerProps {
   /** Marker 配置 */
   markerConfig?: ARMarkerConfig;
 
+  /**
+   * Marker 放置模式
+   * - manual: 识别到 marker 后仍需点击按钮手动放置（默认）
+   * - follow-marker: 识别到 marker 自动显示并跟随 marker
+   */
+  markerPlacementMode?: 'manual' | 'follow-marker';
+
   /** 是否开启镜像显示 (通常前置摄像头需要开启) */
   mirrored?: boolean;
 
@@ -129,7 +137,7 @@ export interface MMDARPlayerProps {
   
   /** 样式 */
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 }
 
 export interface MMDARPlayerRef {

@@ -109,10 +109,11 @@ export interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement>
   onPointerDownOutside?: (event: PointerEvent) => void
   onEscapeKeyDown?: (event: KeyboardEvent) => void
   showCloseButton?: boolean
+  overlayClassName?: string
 }
 
 const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
-  ({ className, children, onPointerDownOutside, onEscapeKeyDown, showCloseButton = true, ...props }, ref) => {
+  ({ className, children, onPointerDownOutside, onEscapeKeyDown, showCloseButton = true, overlayClassName, ...props }, ref) => {
     const ctx = React.useContext(DialogContext)
     const open = !!ctx?.open
 
@@ -144,7 +145,7 @@ const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
 
     return (
       <DialogPortal>
-        <DialogOverlay />
+        <DialogOverlay className={overlayClassName} />
         <div
           ref={mergeRefs(ctx.contentRef, ref)}
           className={cn(

@@ -3,7 +3,18 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Settings, Database, Image, Tag, Save, RotateCcw, Plus, Edit, Trash2, ArrowUpDown, Calendar, RefreshCw, Bell, Cog } from 'lucide-react';
 import { useMasterpiecesConfig, useBookingAdmin } from '../../../../logic/hooks';
-import { ConfigFormData, CollectionFormData, ArtworkFormData, CollectionCategory, CollectionCategoryType, CategoryOption, buildDefaultHomeTabConfig, normalizeHomeTabConfig, getCategoryDisplayName } from '../../../../types';
+import {
+  ConfigFormData,
+  CollectionFormData,
+  ArtworkFormData,
+  CollectionCategory,
+  CollectionCategoryType,
+  CategoryOption,
+  buildDefaultHomeTabConfig,
+  normalizeHomeTabConfig,
+  normalizeMiniappFloatingButtonsConfig,
+  getCategoryDisplayName,
+} from '../../../../types';
 import { UniversalImageUpload } from '../../components/UniversalImageUpload';
 import { CollectionOrderManagerV2 as CollectionOrderManager } from '../../components/CollectionOrderManagerV2';
 import { ArtworkOrderManagerV2 as ArtworkOrderManager } from '../../components/ArtworkOrderManagerV2';
@@ -119,6 +130,7 @@ function ConfigPageContent() {
     enableCategories: config?.enableCategories || true,
     defaultCategory: config?.defaultCategory || 'all',
     homeTabConfig: normalizeHomeTabConfig(config?.homeTabConfig),
+    miniappFloatingButtons: normalizeMiniappFloatingButtonsConfig(config?.miniappFloatingButtons),
     theme: config?.theme || 'light',
     language: config?.language || 'zh',
   });
@@ -159,6 +171,7 @@ function ConfigPageContent() {
         enableCategories: config.enableCategories,
         defaultCategory: config.defaultCategory,
         homeTabConfig: normalizeHomeTabConfig(config.homeTabConfig),
+        miniappFloatingButtons: normalizeMiniappFloatingButtonsConfig(config.miniappFloatingButtons),
         theme: config.theme,
         language: config.language,
       });
@@ -723,6 +736,50 @@ function ConfigPageContent() {
                     <Label htmlFor="enableCategories" className="text-sm font-medium">
                       启用分类功能
                     </Label>
+                  </div>
+
+                  <div className="space-y-2 rounded-xl border border-slate-200 p-3">
+                    <p className="text-sm font-medium text-slate-900">小程序悬浮按钮</p>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        id="miniappShowCart"
+                        type="checkbox"
+                        checked={configForm.miniappFloatingButtons.showCart}
+                        onChange={(e) =>
+                          setConfigForm((prev) => ({
+                            ...prev,
+                            miniappFloatingButtons: {
+                              ...prev.miniappFloatingButtons,
+                              showCart: e.target.checked,
+                            },
+                          }))
+                        }
+                        className="h-4 w-4 rounded border-gray-300"
+                      />
+                      <Label htmlFor="miniappShowCart" className="text-sm font-medium">
+                        显示“购物车”按钮
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        id="miniappShowHistory"
+                        type="checkbox"
+                        checked={configForm.miniappFloatingButtons.showHistory}
+                        onChange={(e) =>
+                          setConfigForm((prev) => ({
+                            ...prev,
+                            miniappFloatingButtons: {
+                              ...prev.miniappFloatingButtons,
+                              showHistory: e.target.checked,
+                            },
+                          }))
+                        }
+                        className="h-4 w-4 rounded border-gray-300"
+                      />
+                      <Label htmlFor="miniappShowHistory" className="text-sm font-medium">
+                        显示“历史记录”按钮
+                      </Label>
+                    </div>
                   </div>
                 </div>
               </CardContent>

@@ -45,6 +45,7 @@ export const MMDARApp = forwardRef<MMDARPlayerRef, MMDARPlayerProps>((props, ref
     cameraConfig,
     cameraParametersUrl,
     markerConfig,
+    markerPlacementMode = 'manual',
     mirrored = false,
     showSettings,
     modelPresets,
@@ -88,6 +89,7 @@ export const MMDARApp = forwardRef<MMDARPlayerRef, MMDARPlayerProps>((props, ref
   const mmdMeshRef = useRef<THREE.SkinnedMesh | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const markerDetectedRef = useRef(false);
+  const markerPlacedOnceRef = useRef(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const autoPlayRef = useRef(autoPlay);
 
@@ -122,6 +124,7 @@ export const MMDARApp = forwardRef<MMDARPlayerRef, MMDARPlayerProps>((props, ref
     return {
       type: markerConfig?.type ?? 'pattern',
       patternUrl: markerConfig?.patternUrl ?? DEFAULT_AR_ASSETS.patternUrl,
+      descriptorsUrl: markerConfig?.descriptorsUrl,
       barcodeValue: markerConfig?.barcodeValue ?? 0,
       changeMatrixMode: markerConfig?.changeMatrixMode ?? 'modelViewMatrix'
     };
@@ -205,14 +208,24 @@ export const MMDARApp = forwardRef<MMDARPlayerRef, MMDARPlayerProps>((props, ref
         modelRootRef.current.quaternion.identity();
         updateModelPlacement(true);
       } else {
-        if (modelRootRef.current.parent !== sceneRef.current) {
-          modelRootRef.current.parent?.remove(modelRootRef.current);
-          sceneRef.current.add(modelRootRef.current);
+        if (markerPlacementMode === 'follow-marker' && markerRootRef.current) {
+          if (modelRootRef.current.parent !== markerRootRef.current) {
+            modelRootRef.current.parent?.remove(modelRootRef.current);
+            markerRootRef.current.add(modelRootRef.current);
+          }
+          modelRootRef.current.position.set(0, 0, 0);
+          modelRootRef.current.quaternion.identity();
+          updateModelPlacement(markerDetectedRef.current);
+        } else {
+          if (modelRootRef.current.parent !== sceneRef.current) {
+            modelRootRef.current.parent?.remove(modelRootRef.current);
+            sceneRef.current.add(modelRootRef.current);
+          }
+          updateModelPlacement(initialModelVisible);
         }
-        updateModelPlacement(initialModelVisible);
       }
     },
-    [initialModelVisible, updateModelPlacement]
+    [initialModelVisible, markerPlacementMode, updateModelPlacement]
   );
 
   const stopCameraStream = useCallback(() => {
@@ -244,6 +257,7 @@ export const MMDARApp = forwardRef<MMDARPlayerRef, MMDARPlayerProps>((props, ref
     arToolkitSourceRef.current = null;
     arToolkitContextRef.current = null;
     markerDetectedRef.current = false;
+    markerPlacedOnceRef.current = false;
     setMarkerDetected(false);
     setCameraReady(false);
     setArReady(false);
@@ -334,6 +348,16 @@ export const MMDARApp = forwardRef<MMDARPlayerRef, MMDARPlayerProps>((props, ref
           if (isVisible !== markerDetectedRef.current) {
             markerDetectedRef.current = isVisible;
             setMarkerDetected(isVisible);
+            if (
+              resolvedARMode !== ARMode.Overlay &&
+              markerPlacementMode === 'follow-marker'
+            ) {
+              updateModelPlacement(isVisible);
+              if (isVisible && !markerPlacedOnceRef.current) {
+                markerPlacedOnceRef.current = true;
+                onModelPlaced?.();
+              }
+            }
           }
         }
       }
@@ -347,12 +371,17 @@ export const MMDARApp = forwardRef<MMDARPlayerRef, MMDARPlayerProps>((props, ref
     };
 
     render();
-  }, []);
+  }, [markerPlacementMode, onModelPlaced, resolvedARMode, updateModelPlacement]);
 
   const setupAR = useCallback(async (facingOverride?: 'user' | 'environment') => {
     if (!sceneRef.current || !cameraRef.current) return;
 
     const THREEx = await loadARJS({ three: THREE });
+    if (resolvedMarkerConfig.type === 'nft' && !resolvedMarkerConfig.descriptorsUrl) {
+      throw new Error(
+        'markerConfig.descriptorsUrl is required when markerConfig.type is "nft".'
+      );
+    }
 
     const facingMode = facingOverride ?? cameraFacing;
     const sourceWidth =
@@ -378,6 +407,7 @@ export const MMDARApp = forwardRef<MMDARPlayerRef, MMDARPlayerProps>((props, ref
     const markerRoot = new THREE.Group();
     markerRootRef.current = markerRoot;
     sceneRef.current.add(markerRoot);
+    attachModelRoot(resolvedARMode);
 
     markerControlsRef.current = new THREEx.ArMarkerControls(
       arToolkitContext,
@@ -423,6 +453,8 @@ export const MMDARApp = forwardRef<MMDARPlayerRef, MMDARPlayerProps>((props, ref
     mirrored,
     onCameraReady,
     resize,
+    attachModelRoot,
+    resolvedARMode,
     resolvedMarkerConfig
   ]);
 
@@ -534,13 +566,20 @@ export const MMDARApp = forwardRef<MMDARPlayerRef, MMDARPlayerProps>((props, ref
       onModelPlaced?.();
       return;
     }
+    if (markerPlacementMode === 'follow-marker') {
+      updateModelPlacement(markerDetectedRef.current);
+      if (markerDetectedRef.current) {
+        onModelPlaced?.();
+      }
+      return;
+    }
     if (!markerRootRef.current) return;
 
     modelRootRef.current.position.copy(markerRootRef.current.position);
     modelRootRef.current.quaternion.copy(markerRootRef.current.quaternion);
     updateModelPlacement(true);
     onModelPlaced?.();
-  }, [onModelPlaced, resolvedARMode, updateModelPlacement]);
+  }, [markerPlacementMode, onModelPlaced, resolvedARMode, updateModelPlacement]);
 
   const removeModel = useCallback(() => {
     updateModelPlacement(false);
@@ -734,7 +773,9 @@ export const MMDARApp = forwardRef<MMDARPlayerRef, MMDARPlayerProps>((props, ref
             <div className="absolute top-4 left-4 right-4 bg-black/70 text-white p-3 rounded-lg text-sm z-10">
               <div className="font-semibold mb-1">Marker Placement</div>
               <div className="text-gray-200">
-                Align the marker in view, then tap "{placementText}" to place the model.
+                {markerPlacementMode === 'follow-marker'
+                  ? 'Align the marker in view, model will be placed automatically.'
+                  : `Align the marker in view, then tap "${placementText}" to place the model.`}
               </div>
               <div className="mt-2">
                 {markerDetected ? (
@@ -768,7 +809,7 @@ export const MMDARApp = forwardRef<MMDARPlayerRef, MMDARPlayerProps>((props, ref
             >
               Settings
             </button>
-            {resolvedARMode !== ARMode.Overlay && !modelPlaced && (
+            {resolvedARMode !== ARMode.Overlay && markerPlacementMode === 'manual' && !modelPlaced && (
               <button
                 onClick={placeModel}
                 disabled={!markerDetected}
@@ -866,6 +907,15 @@ export const MMDARApp = forwardRef<MMDARPlayerRef, MMDARPlayerProps>((props, ref
                   <option value={ARMode.Overlay}>Overlay</option>
                   <option value={ARMode.WorldFixed}>World Fixed</option>
                 </select>
+              </label>
+
+              <label className="block text-xs text-gray-300">
+                Marker Placement
+                <input
+                  value={markerPlacementMode === 'follow-marker' ? 'Auto Follow' : 'Manual Place'}
+                  readOnly
+                  className="mt-1 w-full bg-gray-700 text-white text-sm rounded px-2 py-1 opacity-70"
+                />
               </label>
 
               <label className="block text-xs text-gray-300">

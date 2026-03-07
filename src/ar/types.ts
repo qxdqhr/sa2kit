@@ -37,8 +37,9 @@ export interface ARJSLoadOptions {
 }
 
 export interface ARMarkerConfig {
-  type?: 'pattern' | 'barcode' | 'unknown';
+  type?: 'pattern' | 'barcode' | 'nft' | 'unknown';
   patternUrl?: string;
+  descriptorsUrl?: string;
   barcodeValue?: number;
   changeMatrixMode?: 'modelViewMatrix' | 'cameraTransformMatrix';
 }

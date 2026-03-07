@@ -20,7 +20,11 @@ import {
   comicUniverseArtworks
 } from '../schema/masterpieces';
 import { eq, desc, asc, and, sql, inArray } from 'drizzle-orm';
-import { buildDefaultHomeTabConfig, normalizeHomeTabConfig } from '../../types';
+import {
+  buildDefaultHomeTabConfig,
+  normalizeHomeTabConfig,
+  normalizeMiniappFloatingButtonsConfig,
+} from '../../types';
 
 interface MasterpiecesConfig {
   siteName: string;
@@ -31,6 +35,10 @@ interface MasterpiecesConfig {
   enableSearch: boolean;
   enableCategories: boolean;
   homeTabConfig: any[];
+  miniappFloatingButtons: {
+    showCart: boolean;
+    showHistory: boolean;
+  };
   defaultCategory: string;
   theme: 'light' | 'dark' | 'auto';
   language: 'zh' | 'en';
@@ -143,6 +151,9 @@ export class MasterpiecesConfigDbService {
         enableSearch: configData.enableSearch ?? true,
         enableCategories: configData.enableCategories ?? true,
         homeTabConfig: normalizeHomeTabConfig(configData.homeTabConfig),
+        miniappFloatingButtons: normalizeMiniappFloatingButtonsConfig(
+          configData.miniappFloatingButtons,
+        ),
         defaultCategory: configData.defaultCategory || 'all',
         theme: configData.theme || 'light',
         language: configData.language || 'zh',
@@ -165,6 +176,11 @@ export class MasterpiecesConfigDbService {
       if (configData.enableSearch !== undefined) updateData.enableSearch = configData.enableSearch;
       if (configData.enableCategories !== undefined) updateData.enableCategories = configData.enableCategories;
       if (configData.homeTabConfig !== undefined) updateData.homeTabConfig = normalizeHomeTabConfig(configData.homeTabConfig);
+      if (configData.miniappFloatingButtons !== undefined) {
+        updateData.miniappFloatingButtons = normalizeMiniappFloatingButtonsConfig(
+          configData.miniappFloatingButtons,
+        );
+      }
       if (configData.defaultCategory !== undefined) updateData.defaultCategory = configData.defaultCategory;
       if (configData.theme !== undefined) updateData.theme = configData.theme;
       if (configData.language !== undefined) updateData.language = configData.language;
@@ -196,6 +212,7 @@ export class MasterpiecesConfigDbService {
       enableSearch: true,
       enableCategories: true,
       homeTabConfig: buildDefaultHomeTabConfig(),
+      miniappFloatingButtons: normalizeMiniappFloatingButtonsConfig(undefined),
       defaultCategory: 'all',
       theme: 'light',
       language: 'zh',
@@ -215,6 +232,9 @@ export class MasterpiecesConfigDbService {
       enableSearch: dbConfig.enableSearch,
       enableCategories: dbConfig.enableCategories,
       homeTabConfig: normalizeHomeTabConfig(dbConfig.homeTabConfig),
+      miniappFloatingButtons: normalizeMiniappFloatingButtonsConfig(
+        dbConfig.miniappFloatingButtons,
+      ),
       defaultCategory: dbConfig.defaultCategory,
       theme: dbConfig.theme,
       language: dbConfig.language,

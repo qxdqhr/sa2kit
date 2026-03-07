@@ -514,8 +514,12 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
           title={editingConfig ? '编辑弹窗配置' : '创建弹窗配置'}
           width={600}
           maskClosable={false}
+          overlayClassName="bg-black/45 backdrop-blur-[1px]"
         >
-          <div className="space-y-6 max-h-[70vh] overflow-y-auto">
+          <div
+            className="space-y-6 max-h-[76vh] overflow-y-auto overscroll-contain pr-1"
+            style={{ WebkitOverflowScrolling: 'touch' }}
+          >
             {/* 基本信息 */}
             <div className="space-y-4">
               <h4 className="font-medium text-slate-800">基本信息</h4>

@@ -29,6 +29,7 @@ export interface ModalProps {
   maskClosable?: boolean;
   children: React.ReactNode;
   zIndex?: number;
+  overlayClassName?: string;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -41,7 +42,10 @@ export const Modal: React.FC<ModalProps> = ({
   maskClosable = true,
   children,
   zIndex = 50,
+  overlayClassName,
 }) => {
+  const contentZIndex = Math.max(zIndex, 10000);
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => {
         if (!open) {
@@ -53,7 +57,8 @@ export const Modal: React.FC<ModalProps> = ({
         }
       }}>
       <DialogContent 
-        className={cn("sm:max-w-[425px]", className) + ' z-[' + (zIndex) + ']'}
+        className={cn("sm:max-w-[425px]", className)}
+        overlayClassName={overlayClassName}
         onPointerDownOutside={(e) => {
           if (!maskClosable) e.preventDefault();
         }}
@@ -61,6 +66,7 @@ export const Modal: React.FC<ModalProps> = ({
           if (!maskClosable) e.preventDefault();
         }}
         style={{
+          zIndex: contentZIndex,
           ...(width ? { maxWidth: typeof width === 'number' ? `${width}px` : width } : undefined),
           ...(height ? { height: typeof height === 'number' ? `${height}px` : height } : undefined),
         }}

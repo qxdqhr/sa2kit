@@ -74,6 +74,12 @@ export const comicUniverseConfigs = pgTable('comic_universe_configs', {
 
   /** 首页分类Tab配置 */
   homeTabConfig: json('home_tab_config').default([]),
+
+  /** 小程序悬浮按钮显示配置 */
+  miniappFloatingButtons: json('miniapp_floating_buttons').default({
+    showCart: true,
+    showHistory: true,
+  }),
   
   /** 默认分类（'all'表示显示所有分类） */
   defaultCategory: varchar('default_category', { length: 100 }).notNull().default('all'),

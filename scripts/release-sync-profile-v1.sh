@@ -210,54 +210,7 @@ git tag "v$NEW_VERSION"
 git push origin HEAD
 git push origin "v$NEW_VERSION"
 
-echo "[4/5] Updating profile-v1 dependency"
-if [[ -z "$PROFILE_DEP" ]]; then
-  PROFILE_DEP="$(node -e '
-const fs = require("fs");
-const p = process.argv[1];
-const pkg = JSON.parse(fs.readFileSync(p, "utf8"));
-const candidates = ["sa2kit", "@qhr123/sa2kit"];
-for (const name of candidates) {
-  if ((pkg.dependencies && pkg.dependencies[name]) || (pkg.devDependencies && pkg.devDependencies[name])) {
-    console.log(name);
-    process.exit(0);
-  }
-}
-console.log("sa2kit");
-' "$PROFILE_DIR/package.json")"
-fi
-
-echo "profile-v1 dependency key: $PROFILE_DEP"
-set +e
-(
-  cd "$PROFILE_DIR"
-  pnpm add "${PROFILE_DEP}@${NEW_VERSION}" --registry "$NPM_REGISTRY"
-)
-PROFILE_DEP_STATUS=$?
-set -e
-
-if [[ $PROFILE_DEP_STATUS -ne 0 ]]; then
-  echo "Initial install failed; retrying after registry visibility check..." >&2
-  for i in $(seq 1 "$REGISTRY_RETRY_COUNT"); do
-    published_version="$(npm view "${PROFILE_DEP}@${NEW_VERSION}" version --registry "$NPM_REGISTRY" 2>/dev/null || true)"
-    if [[ "$published_version" == "$NEW_VERSION" ]]; then
-      echo "Confirmed dependency available: $PROFILE_DEP@$NEW_VERSION"
-      break
-    fi
-    if [[ "$i" -eq "$REGISTRY_RETRY_COUNT" ]]; then
-      echo "Dependency $PROFILE_DEP@$NEW_VERSION not visible after waiting $((REGISTRY_RETRY_COUNT * REGISTRY_RETRY_WAIT))s" >&2
-      exit 1
-    fi
-    sleep "$REGISTRY_RETRY_WAIT"
-  done
-
-  (
-    cd "$PROFILE_DIR"
-    pnpm add "${PROFILE_DEP}@${NEW_VERSION}" --registry "$NPM_REGISTRY"
-  )
-fi
-
-echo "[5/5] Rebuild and run profile-v1"
+echo "[4/4] Rebuild and run profile-v1"
 (
   cd "$PROFILE_DIR"
   bash -lc "$PROFILE_BUILD_CMD"

@@ -1,7 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Taro, { useDidShow } from '@tarojs/taro';
 import { Text, View } from '@tarojs/components';
-import { getCategoryDisplayName, type ArtCollection, type CategoryOption, type CollectionCategoryType } from '../../../types';
+import {
+  getCategoryDisplayName,
+  normalizeMiniappFloatingButtonsConfig,
+  type ArtCollection,
+  type CategoryOption,
+  type CollectionCategoryType,
+  type MiniappFloatingButtonsConfig,
+} from '../../../types';
 import { addToCart, getCart } from '../../../logic/shared/cart';
 import { CategoryTabs, MiniappCollectionCard, PageHeader } from '../index';
 import {
@@ -32,6 +39,9 @@ const ShowMasterpieceMiniappPage: React.FC<ShowMasterpieceMiniappPageProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<CollectionCategoryType>('' as CollectionCategoryType);
   const [cartCount, setCartCount] = useState(0);
+  const [miniappFloatingButtons, setMiniappFloatingButtons] = useState<MiniappFloatingButtonsConfig>(
+    () => normalizeMiniappFloatingButtonsConfig(undefined),
+  );
 
   const {
     configs: popupConfigs,
@@ -121,6 +131,28 @@ const ShowMasterpieceMiniappPage: React.FC<ShowMasterpieceMiniappPageProps> = ({
     }, 600);
     return () => clearTimeout(timer);
   }, [triggerCheck]);
+
+  useEffect(() => {
+    const loadMiniappConfig = async () => {
+      try {
+        const response = await Taro.request({
+          url: `${apiBaseUrl.replace(/\/$/, '')}/api/showmasterpiece/config`,
+          method: 'GET',
+          header: {
+            'Content-Type': 'application/json',
+          },
+        });
+        const buttons = normalizeMiniappFloatingButtonsConfig(
+          (response.data as any)?.miniappFloatingButtons,
+        );
+        setMiniappFloatingButtons(buttons);
+      } catch (err) {
+        setMiniappFloatingButtons(normalizeMiniappFloatingButtonsConfig(undefined));
+      }
+    };
+
+    loadMiniappConfig();
+  }, [apiBaseUrl]);
 
   const categories = useMemo<CategoryFilter[]>(() => {
     const categoryCounter = new Map<CollectionCategoryType, number>();
@@ -249,25 +281,34 @@ const ShowMasterpieceMiniappPage: React.FC<ShowMasterpieceMiniappPageProps> = ({
 
       <View className="fixed bottom-6 right-4 flex flex-col gap-3" style={{ zIndex: 80 }}>
         <View
-          className="flex h-11 min-w-28 items-center justify-center rounded-full bg-teal-600 px-4 shadow-lg"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-600 shadow-lg"
           onClick={goToTop}
         >
-          <Text className="text-xs font-semibold text-white">回到顶部</Text>
+          <Text className="text-lg text-white">↑</Text>
         </View>
-        <View
-          className="flex h-11 min-w-28 items-center justify-center rounded-full bg-cyan-500 px-4 shadow-lg"
-          onClick={goToCart}
-        >
-          <Text className="text-xs font-semibold text-white">
-            购物车{cartCount > 0 ? ` (${cartCount})` : ''}
-          </Text>
-        </View>
-        <View
-          className="flex h-11 min-w-28 items-center justify-center rounded-full bg-blue-700 px-4 shadow-lg"
-          onClick={goToHistory}
-        >
-          <Text className="text-xs font-semibold text-white">历史记录</Text>
-        </View>
+        {miniappFloatingButtons.showCart && (
+          <View
+            className="relative flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500 shadow-lg"
+            onClick={goToCart}
+          >
+            <Text className="text-lg text-white">🛒</Text>
+            {cartCount > 0 && (
+              <View className="absolute -right-1 -top-1 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1">
+                <Text className="text-[10px] font-semibold text-white">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
+        {miniappFloatingButtons.showHistory && (
+          <View
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-700 shadow-lg"
+            onClick={goToHistory}
+          >
+            <Text className="text-lg text-white">🕘</Text>
+          </View>
+        )}
       </View>
     </View>
   );

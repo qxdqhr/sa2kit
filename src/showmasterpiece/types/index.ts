@@ -202,6 +202,9 @@ export interface MasterpiecesConfig {
 
   /** 首页分类Tab配置 */
   homeTabConfig: HomeTabConfigItem[];
+
+  /** 小程序悬浮按钮显示配置 */
+  miniappFloatingButtons: MiniappFloatingButtonsConfig;
   
   /** 默认分类 */
   defaultCategory: string;
@@ -211,6 +214,11 @@ export interface MasterpiecesConfig {
   
   /** 界面语言：zh(中文)、en(英文) */
   language: 'zh' | 'en';
+}
+
+export interface MiniappFloatingButtonsConfig {
+  showCart: boolean;
+  showHistory: boolean;
 }
 
 export interface CategoryOption {
@@ -286,6 +294,20 @@ export function normalizeHomeTabConfig(
   }
 
   return normalized;
+}
+
+export const defaultMiniappFloatingButtonsConfig: MiniappFloatingButtonsConfig = {
+  showCart: true,
+  showHistory: true,
+};
+
+export function normalizeMiniappFloatingButtonsConfig(
+  input?: Partial<MiniappFloatingButtonsConfig> | null,
+): MiniappFloatingButtonsConfig {
+  return {
+    showCart: input?.showCart ?? true,
+    showHistory: input?.showHistory ?? true,
+  };
 }
 
 // ===== 表单数据类型 =====
@@ -381,6 +403,9 @@ export interface ConfigFormData {
 
   /** 首页分类Tab配置 */
   homeTabConfig: HomeTabConfigItem[];
+
+  /** 小程序悬浮按钮显示配置 */
+  miniappFloatingButtons: MiniappFloatingButtonsConfig;
   
   /** 默认分类 */
   defaultCategory: string;
