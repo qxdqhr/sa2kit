@@ -294,7 +294,7 @@ const ShowMasterpieceMiniappPage: React.FC<ShowMasterpieceMiniappPageProps> = ({
             <Text className="text-lg text-white">🛒</Text>
             {cartCount > 0 && (
               <View className="absolute -right-1 -top-1 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1">
-                <Text className="text-[10px] font-semibold text-white">
+                <Text className="text-xs font-semibold text-white">
                   {cartCount > 99 ? '99+' : cartCount}
                 </Text>
               </View>

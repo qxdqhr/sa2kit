@@ -13,6 +13,7 @@ import { CartItemCard, FormInput, FormTextarea, PageHeader } from '../index';
 import { batchBooking, DEFAULT_BASE_URL } from '../../../service/miniapp';
 import useDeadlinePopup from '../../../logic/hooks/useDeadlinePopupWechat';
 import DeadlinePopupManager from '../components/DeadlinePopup';
+import { ensurePrivacyConsent, hasPrivacyConsent, showAgreementDoc } from '../components/privacyConsent';
 
 export interface CartMiniappPageProps {
   apiBaseUrl?: string;
@@ -26,6 +27,7 @@ const CartMiniappPage: React.FC<CartMiniappPageProps> = ({ apiBaseUrl = DEFAULT_
   const [shippingInfo, setShippingInfo] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [pendingCheckout, setPendingCheckout] = useState(false);
+  const [privacyConsented, setPrivacyConsented] = useState<boolean>(() => hasPrivacyConsent());
   const [formErrors, setFormErrors] = useState<{
     qqNumber?: string;
     phoneNumber?: string;
@@ -55,6 +57,7 @@ const CartMiniappPage: React.FC<CartMiniappPageProps> = ({ apiBaseUrl = DEFAULT_
 
   useDidShow(() => {
     refreshCart();
+    setPrivacyConsented(hasPrivacyConsent());
   });
 
   const handleUpdateQuantity = (collectionId: number, quantity: number) => {
@@ -145,6 +148,13 @@ const CartMiniappPage: React.FC<CartMiniappPageProps> = ({ apiBaseUrl = DEFAULT_
   };
 
   const handleCheckout = async () => {
+    const consented = await ensurePrivacyConsent();
+    if (!consented) {
+      Taro.showToast({ title: '请先阅读并同意协议', icon: 'none' });
+      return;
+    }
+    setPrivacyConsented(true);
+
     if (!validateForm()) {
       Taro.showToast({ title: '请先修正表单错误', icon: 'none' });
       return;
@@ -254,6 +264,26 @@ const CartMiniappPage: React.FC<CartMiniappPageProps> = ({ apiBaseUrl = DEFAULT_
           disabled={submitting}
           error={formErrors.pickupMethod}
         />
+
+        <View className="mt-4 rounded-xl bg-prussian-blue-50 px-3 py-3">
+          <Text className="text-xs text-prussian-blue-700">提交前请阅读并同意</Text>
+          <Text
+            className="ml-1 text-xs text-blue-600"
+            onClick={() => showAgreementDoc('service')}
+          >
+            《用户服务协议》
+          </Text>
+          <Text className="text-xs text-prussian-blue-700">与</Text>
+          <Text
+            className="ml-1 text-xs text-blue-600"
+            onClick={() => showAgreementDoc('privacy')}
+          >
+            《隐私政策》
+          </Text>
+          <Text className="ml-1 text-xs text-prussian-blue-700">
+            {privacyConsented ? '（已同意）' : '（未同意）'}
+          </Text>
+        </View>
 
         <View className="mt-5 flex items-center justify-between gap-3">
           <View

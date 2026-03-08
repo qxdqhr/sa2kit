@@ -9,6 +9,14 @@ usage() {
 Usage:
   scripts/release-sync-profile-v1.sh [options]
 
+中文流程说明:
+  1) (可选) 执行 --change-cmd，对 sa2kit 做发布前修改。
+  2) 执行 npm version 更新版本号（不自动打 git tag）。
+  3) 执行测试/构建（可用 --no-tests 或 --no-build 跳过）。
+  4) 发布到 npm（npm publish），并轮询确认新版本在 registry 可见。
+  5) 提交并推送到 git（commit + tag + push）。
+  6) 进入 profile-v1，执行构建并启动（用于联调验证）。
+
 Options:
   --version <patch|minor|major|x.y.z|pre*>   Version bump spec for npm version
   --change-cmd "<command>"                   Optional command to modify sa2kit before release

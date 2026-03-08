@@ -1,9 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import Taro from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import { Text, View } from '@tarojs/components';
 import type { Booking } from '../../../types/booking';
 import { FormInput, HistoryRecordCard, PageHeader } from '../index';
 import { DEFAULT_BASE_URL, getBookings } from '../../../service/miniapp';
+import { ensurePrivacyConsent, hasPrivacyConsent, showAgreementDoc } from '../components/privacyConsent';
 
 export interface HistoryMiniappPageProps {
   apiBaseUrl?: string;
@@ -16,8 +17,20 @@ const HistoryMiniappPage: React.FC<HistoryMiniappPageProps> = ({ apiBaseUrl = DE
   const [error, setError] = useState<string | null>(null);
   const [records, setRecords] = useState<Booking[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [privacyConsented, setPrivacyConsented] = useState<boolean>(() => hasPrivacyConsent());
+
+  useDidShow(() => {
+    setPrivacyConsented(hasPrivacyConsent());
+  });
 
   const handleSearch = async () => {
+    const consented = await ensurePrivacyConsent();
+    if (!consented) {
+      Taro.showToast({ title: '请先阅读并同意协议', icon: 'none' });
+      return;
+    }
+    setPrivacyConsented(true);
+
     if (!qqNumber.trim() && !phoneNumber.trim()) {
       Taro.showToast({ title: '请输入QQ号或联系方式', icon: 'none' });
       return;
@@ -84,6 +97,26 @@ const HistoryMiniappPage: React.FC<HistoryMiniappPageProps> = ({ apiBaseUrl = DE
           onChange={setPhoneNumber}
           disabled={loading}
         />
+
+        <View className="mt-4 rounded-xl bg-prussian-blue-50 px-3 py-3">
+          <Text className="text-xs text-prussian-blue-700">查询前请阅读并同意</Text>
+          <Text
+            className="ml-1 text-xs text-blue-600"
+            onClick={() => showAgreementDoc('service')}
+          >
+            《用户服务协议》
+          </Text>
+          <Text className="text-xs text-prussian-blue-700">与</Text>
+          <Text
+            className="ml-1 text-xs text-blue-600"
+            onClick={() => showAgreementDoc('privacy')}
+          >
+            《隐私政策》
+          </Text>
+          <Text className="ml-1 text-xs text-prussian-blue-700">
+            {privacyConsented ? '（已同意）' : '（未同意）'}
+          </Text>
+        </View>
 
         <View
           className="mt-5 flex h-10 w-full items-center justify-center rounded-full"
