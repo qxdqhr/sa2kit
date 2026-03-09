@@ -129,19 +129,9 @@ export const UniversalImageUpload: React.FC<UniversalImageUploadProps> = ({
       }
     };
 
-    const handleDivClick = (e: React.MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const input = document.getElementById(inputId) as HTMLInputElement | null;
-      if (input && !disabled && !uploading) {
-        input.click();
-      }
-    };
-
     return (
       <div 
         className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-blue-400 hover:bg-slate-50 transition-all duration-200 cursor-pointer"
-        onClick={handleDivClick}
         style={{ position: 'relative', zIndex: 1 }}
       >
         {/* 文件选择器 */}
