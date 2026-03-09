@@ -19,6 +19,17 @@ import type { PopupConfig, NewPopupConfig } from '../../../types/popup';
 interface PopupConfigManagementProps {
 }
 
+const isSuccessResponse = (result: any, fallback: boolean): boolean =>
+  typeof result?.success === 'boolean' ? result.success : fallback;
+
+const extractPopupConfigs = (result: any): PopupConfig[] => {
+  if (Array.isArray(result?.data)) return result.data;
+  if (Array.isArray(result?.configs)) return result.configs;
+  if (Array.isArray(result?.data?.configs)) return result.data.configs;
+  if (Array.isArray(result)) return result;
+  return [];
+};
+
 /**
  * 弹窗配置管理组件
  */
@@ -78,12 +89,13 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
       const result = await response.json();
       console.log('📊 [PopupConfigManagement] API响应数据:', result);
 
-      if (result.success) {
-        console.log('✅ [PopupConfigManagement] 配置加载成功，数量:', result.data.length);
-        setConfigs(result.data);
+      if (isSuccessResponse(result, response.ok)) {
+        const nextConfigs = extractPopupConfigs(result);
+        console.log('✅ [PopupConfigManagement] 配置加载成功，数量:', nextConfigs.length);
+        setConfigs(nextConfigs);
       } else {
         console.error('❌ [PopupConfigManagement] API返回失败:', result.error);
-        setError(result.error || '加载配置失败');
+        setError(result?.error || result?.message || '加载配置失败');
       }
     } catch (err) {
       console.error('❌ [PopupConfigManagement] 加载弹窗配置失败:', err);
@@ -213,13 +225,13 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
 
       const result = await response.json();
 
-      if (result.success) {
+      if (isSuccessResponse(result, response.ok)) {
         await loadConfigs();
         setShowCreateModal(false);
         resetForm();
         setEditingConfig(null);
       } else {
-        alert(result.error || '保存失败');
+        alert(result?.error || result?.message || '保存失败');
       }
     } catch (err) {
       console.error('保存配置失败:', err);
@@ -242,10 +254,10 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
 
       const result = await response.json();
 
-      if (result.success) {
+      if (isSuccessResponse(result, response.ok)) {
         await loadConfigs();
       } else {
-        alert(result.error || '删除失败');
+        alert(result?.error || result?.message || '删除失败');
       }
     } catch (err) {
       console.error('删除配置失败:', err);
@@ -280,10 +292,10 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
 
       const result = await response.json();
 
-      if (result.success) {
+      if (isSuccessResponse(result, response.ok)) {
         await loadConfigs();
       } else {
-        alert(result.error || '操作失败');
+        alert(result?.error || result?.message || '操作失败');
       }
     } catch (err) {
       console.error('切换状态失败:', err);

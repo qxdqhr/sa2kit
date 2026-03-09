@@ -91,15 +91,19 @@ export const UniversalImageUpload: React.FC<UniversalImageUploadProps> = ({
       }
       
       const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || '上传失败');
+      const resultData = result?.data || result?.file || result;
+      const nextFileId = resultData?.fileId || resultData?.id;
+      const nextImageUrl = resultData?.accessUrl || resultData?.url || resultData?.fileUrl;
+      const isSuccess = typeof result?.success === 'boolean' ? result.success : Boolean(nextFileId);
+
+      if (!isSuccess || !nextFileId) {
+        throw new Error(result?.error || result?.message || '上传失败');
       }
       
       // 更新状态为使用新的文件服务
       onChange({
-        image: result.data.accessUrl, // 使用访问URL
-        fileId: result.data.fileId
+        image: nextImageUrl || `/api/universal-file/${nextFileId}`,
+        fileId: nextFileId
       });
       
     } catch (error) {
@@ -125,17 +129,13 @@ export const UniversalImageUpload: React.FC<UniversalImageUploadProps> = ({
       }
     };
 
-    const handleTestClick = (e: React.MouseEvent) => {
+    const handleDivClick = (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      const input = document.getElementById(inputId) as HTMLInputElement;
-      if (input) {
+      const input = document.getElementById(inputId) as HTMLInputElement | null;
+      if (input && !disabled && !uploading) {
         input.click();
       }
-    };
-
-    const handleDivClick = (e: React.MouseEvent) => {
-      // 处理div点击事件
     };
 
     return (

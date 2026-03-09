@@ -32,6 +32,17 @@ interface ConfigItem {
 
 type Environment = 'development' | 'production';
 
+const isSuccessResponse = (result: any, fallback: boolean): boolean =>
+  typeof result?.success === 'boolean' ? result.success : fallback;
+
+const extractConfigItems = (result: any): ConfigItem[] => {
+  if (Array.isArray(result?.items)) return result.items;
+  if (Array.isArray(result?.data?.items)) return result.data.items;
+  if (Array.isArray(result?.data)) return result.data;
+  if (Array.isArray(result)) return result;
+  return [];
+};
+
 export const SystemConfigManager: React.FC = () => {
   const [configItems, setConfigItems] = useState<ConfigItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,9 +78,18 @@ export const SystemConfigManager: React.FC = () => {
     try {
       const response = await fetch(`/api/showmasterpiece/config/items?environment=${env}`);
       const data = await response.json();
-      
-      if (data.items && Array.isArray(data.items)) {
-        setConfigItems(data.items);
+
+      if (!response.ok) {
+        setMessage({
+          type: 'error',
+          text: data?.error || data?.message || '加载配置项失败'
+        });
+        return;
+      }
+
+      const items = extractConfigItems(data);
+      if (Array.isArray(items)) {
+        setConfigItems(items);
       } else {
         console.error('API响应格式错误:', data);
         setMessage({
@@ -139,8 +159,8 @@ export const SystemConfigManager: React.FC = () => {
       });
 
       const result = await response.json();
-      
-      if (result.success) {
+
+      if (isSuccessResponse(result, response.ok)) {
         setMessage({
           type: 'success',
           text: '配置项更新成功'
@@ -195,8 +215,8 @@ export const SystemConfigManager: React.FC = () => {
       });
 
       const result = await response.json();
-      
-      if (result.success) {
+
+      if (isSuccessResponse(result, response.ok)) {
         setMessage({
           type: 'success',
           text: '配置项删除成功'
@@ -545,8 +565,8 @@ export const SystemConfigManager: React.FC = () => {
             });
 
             const result = await response.json();
-            
-            if (result.success) {
+
+            if (isSuccessResponse(result, response.ok)) {
               setMessage({
                 type: 'success',
                 text: '配置项创建成功'

@@ -52,21 +52,14 @@ export const useMasterpiecesConfig = () => {
       console.log('📡 [Hook] 并行请求所有数据...');
       
       // 强制不使用缓存，添加时间戳和特殊参数
-      const timestamp = Date.now();
       const [configData, collectionsResponse, categoriesData, tagsData] = await Promise.all([
         getConfig(),
-        fetch(`/api/showmasterpiece/collections?_t=${timestamp}&nocache=true&includeImages=true`, {
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-          }
-        }).then(r => r.json()),
+        getAllCollections(),
         getCategories(),
         getTags()
       ]);
       
-      // 从API响应中提取实际的画集数据
-      const collectionsData = collectionsResponse.data || [];
+      const collectionsData = Array.isArray(collectionsResponse) ? collectionsResponse : [];
       
       console.log('✅ [Hook] 数据加载完成:', {
         配置: configData ? '已加载' : '未加载',
