@@ -29,15 +29,15 @@
 - [x] 过期清理任务接口（expireBoothRecords）
 - [x] 下载签名 URL（signRecordFiles）
 
-## P3：稳定性与安全（进行中）
+## P3：稳定性与安全（已完成核心）
 - [x] 兑换接口限流（BoothRedeemGuard）
 - [x] 匹配码爆破防护（失败次数封禁）
 - [x] 上传格式/大小校验（validateUploadFiles）
-- [ ] 日志与审计字段
+- [x] 日志与审计字段（BoothAuditEvent + audit sink）
 
-## P4：交付
-- [ ] 模块文档（使用示例）
-- [ ] API 样例
+## P4：交付（进行中）
+- [x] 模块文档（使用示例）
+- [x] API 样例
 - [ ] 版本发布说明
 
 ---

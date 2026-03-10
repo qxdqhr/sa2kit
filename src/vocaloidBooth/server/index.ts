@@ -3,3 +3,4 @@ export * from './adapters';
 export * from './cleanup';
 export * from './security';
 export * from './ossIntegration';
+export * from './audit';

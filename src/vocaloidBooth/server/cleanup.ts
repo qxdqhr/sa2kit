@@ -12,7 +12,8 @@ export interface ExpireResult {
 
 export const expireBoothRecords = async (
   store: BoothExpiryStore,
-  now = Date.now()
+  now = Date.now(),
+  onExpired?: (record: BoothUploadRecord) => void
 ): Promise<ExpireResult> => {
   const records = store.listActiveRecords ? await store.listActiveRecords() : [];
 
@@ -25,6 +26,7 @@ export const expireBoothRecords = async (
         // eslint-disable-next-line no-await-in-loop
         await store.updateStatus(record.id, 'expired');
       }
+      onExpired?.(record);
     }
   }
 

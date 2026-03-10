@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import type {
+  BoothAuditEvent,
   BoothUploadRecord,
   BoothVaultStore,
   CreateBoothUploadInput,
@@ -18,14 +19,22 @@ export interface BoothVaultServiceOptions {
   defaultTtlHours?: number;
   baseDownloadPath?: string;
   redeemGuard?: BoothRedeemGuardLike;
+  onAuditEvent?: (event: BoothAuditEvent) => void;
 }
 
 export class BoothVaultService {
+  private emitAudit(event: Omit<BoothAuditEvent, 'at'>): void {
+    this.onAuditEvent?.({
+      ...event,
+      at: new Date().toISOString(),
+    });
+  }
   private readonly store: BoothVaultStore;
   private readonly codeLength: number;
   private readonly defaultTtlHours: number;
   private readonly baseDownloadPath: string;
   private readonly redeemGuard?: BoothRedeemGuardLike;
+  private readonly onAuditEvent?: (event: BoothAuditEvent) => void;
 
   constructor(options: BoothVaultServiceOptions) {
     this.store = options.store;
@@ -33,6 +42,7 @@ export class BoothVaultService {
     this.defaultTtlHours = options.defaultTtlHours ?? 24 * 14;
     this.baseDownloadPath = options.baseDownloadPath ?? '/redeem';
     this.redeemGuard = options.redeemGuard;
+    this.onAuditEvent = options.onAuditEvent;
   }
 
   async createUpload(input: CreateBoothUploadInput): Promise<CreateBoothUploadResult> {
@@ -65,6 +75,13 @@ export class BoothVaultService {
     };
 
     await this.store.saveRecord(record);
+    this.emitAudit({
+      type: 'upload.created',
+      boothId: record.boothId,
+      recordId: record.id,
+      matchCode: record.matchCode,
+      detail: { fileCount: record.files.length },
+    });
 
     return {
       record,
@@ -100,7 +117,17 @@ export class BoothVaultService {
   ): Promise<BoothUploadRecord | null> {
     const requesterKey = options?.requesterKey;
     if (requesterKey && this.redeemGuard) {
-      this.redeemGuard.assertAllowed(requesterKey);
+      try {
+        this.redeemGuard.assertAllowed(requesterKey);
+      } catch (error) {
+        this.emitAudit({
+          type: 'redeem.blocked',
+          requesterKey,
+          matchCode,
+          detail: { message: error instanceof Error ? error.message : 'blocked' },
+        });
+        throw error;
+      }
     }
 
     const record = await this.getByMatchCode(matchCode);
@@ -111,6 +138,13 @@ export class BoothVaultService {
     }
 
     if (!success) {
+      this.emitAudit({
+        type: 'redeem.failed',
+        requesterKey,
+        matchCode,
+        boothId: record?.boothId,
+        recordId: record?.id,
+      });
       return record;
     }
 
@@ -118,6 +152,14 @@ export class BoothVaultService {
     const reloaded = this.store.findByRecordId
       ? await this.store.findByRecordId(record.id)
       : await this.getByMatchCode(record.matchCode);
+
+    this.emitAudit({
+      type: 'redeem.success',
+      requesterKey,
+      matchCode: record.matchCode,
+      boothId: record.boothId,
+      recordId: record.id,
+    });
 
     return reloaded ?? record;
   }

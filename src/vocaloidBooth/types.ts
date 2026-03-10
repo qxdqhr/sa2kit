@@ -26,6 +26,23 @@ export interface BoothUploadRecord {
   downloadCount: number;
 }
 
+export type BoothAuditEventType =
+  | 'upload.created'
+  | 'redeem.success'
+  | 'redeem.failed'
+  | 'redeem.blocked'
+  | 'record.expired';
+
+export interface BoothAuditEvent {
+  type: BoothAuditEventType;
+  at: string;
+  boothId?: string;
+  recordId?: string;
+  matchCode?: string;
+  requesterKey?: string;
+  detail?: Record<string, unknown>;
+}
+
 export interface CreateBoothUploadInput {
   boothId: string;
   ttlHours?: number;
