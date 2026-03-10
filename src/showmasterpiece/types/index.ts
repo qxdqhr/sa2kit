@@ -219,6 +219,7 @@ export interface MasterpiecesConfig {
 export interface MiniappFloatingButtonsConfig {
   showCart: boolean;
   showHistory: boolean;
+  showAddToCart: boolean;
 }
 
 export interface CategoryOption {
@@ -299,6 +300,7 @@ export function normalizeHomeTabConfig(
 export const defaultMiniappFloatingButtonsConfig: MiniappFloatingButtonsConfig = {
   showCart: true,
   showHistory: true,
+  showAddToCart: true,
 };
 
 export function normalizeMiniappFloatingButtonsConfig(
@@ -307,6 +309,7 @@ export function normalizeMiniappFloatingButtonsConfig(
   return {
     showCart: input?.showCart ?? true,
     showHistory: input?.showHistory ?? true,
+    showAddToCart: input?.showAddToCart ?? true,
   };
 }
 

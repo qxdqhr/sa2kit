@@ -79,6 +79,7 @@ export const comicUniverseConfigs = pgTable('comic_universe_configs', {
   miniappFloatingButtons: json('miniapp_floating_buttons').default({
     showCart: true,
     showHistory: true,
+    showAddToCart: true,
   }),
   
   /** 默认分类（'all'表示显示所有分类） */

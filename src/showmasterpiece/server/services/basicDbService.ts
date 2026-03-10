@@ -22,6 +22,7 @@ interface MasterpiecesConfig {
   miniappFloatingButtons: {
     showCart: boolean;
     showHistory: boolean;
+    showAddToCart: boolean;
   };
   defaultCategory: string;
   theme: 'light' | 'dark' | 'auto';

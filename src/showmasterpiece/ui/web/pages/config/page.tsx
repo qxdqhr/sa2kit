@@ -780,6 +780,26 @@ function ConfigPageContent() {
                         显示“历史记录”按钮
                       </Label>
                     </div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        id="miniappShowAddToCart"
+                        type="checkbox"
+                        checked={configForm.miniappFloatingButtons.showAddToCart}
+                        onChange={(e) =>
+                          setConfigForm((prev) => ({
+                            ...prev,
+                            miniappFloatingButtons: {
+                              ...prev.miniappFloatingButtons,
+                              showAddToCart: e.target.checked,
+                            },
+                          }))
+                        }
+                        className="h-4 w-4 rounded border-gray-300"
+                      />
+                      <Label htmlFor="miniappShowAddToCart" className="text-sm font-medium">
+                        显示“加入购物车”按钮
+                      </Label>
+                    </div>
                   </div>
                 </div>
               </CardContent>

@@ -259,13 +259,17 @@ const ShowMasterpieceMiniappPage: React.FC<ShowMasterpieceMiniappPageProps> = ({
               <MiniappCollectionCard
                 key={collection.id}
                 collection={collection}
-                actions={[
-                  {
-                    label: '加入购物车',
-                    onClick: () => handleAddToCart(collection),
-                    variant: 'primary',
-                  },
-                ]}
+                actions={
+                  miniappFloatingButtons.showAddToCart
+                    ? [
+                        {
+                          label: '加入购物车',
+                          onClick: () => handleAddToCart(collection),
+                          variant: 'primary' as const,
+                        },
+                      ]
+                    : []
+                }
               />
             ))}
           </View>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { resizeFestivalCardPages } from '../core';
 import type { FestivalCardConfig, FestivalCardElement } from '../types';
 
@@ -37,9 +37,30 @@ const createImageElement = (pageIndex: number): FestivalCardElement => ({
 
 export const FestivalCardConfigEditor: React.FC<FestivalCardConfigEditorProps> = ({ value, onChange }) => {
   const [activePageIndex, setActivePageIndex] = useState(0);
+  const [activeElementId, setActiveElementId] = useState<string | null>(null);
+  const [draggingElementId, setDraggingElementId] = useState<string | null>(null);
+  const previewRef = useRef<HTMLDivElement | null>(null);
+  const dragStateRef = useRef<{
+    pointerId: number;
+    elementId: string;
+    rect: DOMRect;
+  } | null>(null);
   const page = value.pages[activePageIndex];
   const canEditPage = Boolean(page);
   const pageOptions = useMemo(() => value.pages.map((_, index) => index), [value.pages]);
+  const backgroundElement = useMemo(
+    () =>
+      page?.elements.find(
+        (element): element is Extract<FestivalCardElement, { type: 'image' }> => element.type === 'image' && Boolean(element.isBackground)
+      ),
+    [page]
+  );
+  const foregroundElements = useMemo(
+    () => (page?.elements ?? []).filter((element) => !(element.type === 'image' && element.isBackground)),
+    [page]
+  );
+
+  const clampPercent = (valueToClamp: number) => Math.max(0, Math.min(100, Number.isFinite(valueToClamp) ? valueToClamp : 0));
 
   const handlePageCountChange = (nextRaw: number) => {
     const next = Number.isFinite(nextRaw) ? Math.max(1, Math.min(12, Math.floor(nextRaw))) : value.pages.length;
@@ -83,6 +104,42 @@ export const FestivalCardConfigEditor: React.FC<FestivalCardConfigEditorProps> =
       ...value,
       pages: value.pages.map((p, index) => (index === activePageIndex ? { ...p, ...patch } : p)),
     });
+  };
+
+  const moveElementWithPointer = (elementId: string, clientX: number, clientY: number, rect?: DOMRect) => {
+    const bounds = rect || previewRef.current?.getBoundingClientRect();
+    if (!bounds || bounds.width <= 0 || bounds.height <= 0) return;
+    const x = clampPercent(((clientX - bounds.left) / bounds.width) * 100);
+    const y = clampPercent(((clientY - bounds.top) / bounds.height) * 100);
+    updateElement(elementId, { x, y });
+  };
+
+  const handleElementPointerDown = (event: React.PointerEvent<HTMLElement>, elementId: string) => {
+    if (!previewRef.current) return;
+    event.preventDefault();
+    const rect = previewRef.current.getBoundingClientRect();
+    dragStateRef.current = {
+      pointerId: event.pointerId,
+      elementId,
+      rect,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setActiveElementId(elementId);
+    setDraggingElementId(elementId);
+    moveElementWithPointer(elementId, event.clientX, event.clientY, rect);
+  };
+
+  const handlePreviewPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const dragState = dragStateRef.current;
+    if (!dragState || dragState.pointerId !== event.pointerId) return;
+    moveElementWithPointer(dragState.elementId, event.clientX, event.clientY, dragState.rect);
+  };
+
+  const endPointerDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const dragState = dragStateRef.current;
+    if (!dragState || dragState.pointerId !== event.pointerId) return;
+    dragStateRef.current = null;
+    setDraggingElementId(null);
   };
 
   const numberFieldClassName =
@@ -213,6 +270,83 @@ export const FestivalCardConfigEditor: React.FC<FestivalCardConfigEditorProps> =
             >
               + 图片
             </button>
+          </div>
+          <div className="mb-3">
+            <div className="mb-2 flex items-center justify-between">
+              <div className="text-xs font-semibold tracking-wide text-slate-500">拖拽定位（直接拖动元素调整 X / Y）</div>
+              <div className="text-xs text-slate-500">{draggingElementId ? '拖拽中...' : '可拖拽'}</div>
+            </div>
+            <div
+              ref={previewRef}
+              onPointerMove={handlePreviewPointerMove}
+              onPointerUp={endPointerDrag}
+              onPointerCancel={endPointerDrag}
+              className="relative aspect-[3/4] w-full touch-none overflow-hidden rounded-xl border border-slate-300 bg-slate-900"
+              style={{
+                backgroundColor: page?.background?.color || '#0f172a',
+                backgroundImage: backgroundElement
+                  ? `url(${backgroundElement.src})`
+                  : page?.background?.image
+                    ? `url(${page.background.image})`
+                    : undefined,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            >
+              <div className="absolute inset-0 bg-slate-950/20" />
+              {foregroundElements.map((element) => {
+                const isActive = activeElementId === element.id;
+                const isDragging = draggingElementId === element.id;
+                return (
+                  <div
+                    key={element.id}
+                    role="button"
+                    tabIndex={0}
+                    onPointerDown={(event) => handleElementPointerDown(event, element.id)}
+                    onClick={() => setActiveElementId(element.id)}
+                    className={`absolute select-none rounded-md ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} ${
+                      isActive ? 'ring-2 ring-sky-300' : 'ring-1 ring-white/40'
+                    }`}
+                    style={{
+                      left: `${element.x}%`,
+                      top: `${element.y}%`,
+                      width: `${element.width ?? 70}%`,
+                      height: element.height ? `${element.height}%` : undefined,
+                      transform: 'translate(-50%, -50%)',
+                      zIndex: isActive ? 4 : 2,
+                    }}
+                  >
+                    {element.type === 'text' ? (
+                      <div
+                        className="w-full rounded-md bg-black/20 px-2 py-1"
+                        style={{
+                          color: element.color || '#f8fafc',
+                          fontSize: element.fontSize || 18,
+                          fontWeight: element.fontWeight || 500,
+                          fontFamily: element.fontFamily || 'inherit',
+                          textAlign: element.align || 'left',
+                          lineHeight: 1.35,
+                          whiteSpace: 'pre-wrap',
+                        }}
+                      >
+                        {element.content || '文本'}
+                      </div>
+                    ) : (
+                      <img
+                        src={element.src}
+                        alt={element.alt || 'festival-card-image'}
+                        draggable={false}
+                        className="h-full w-full pointer-events-none"
+                        style={{
+                          objectFit: element.fit || 'cover',
+                          borderRadius: element.borderRadius || 0,
+                        }}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           <div className="grid max-h-[340px] gap-2.5 overflow-auto pr-1">
