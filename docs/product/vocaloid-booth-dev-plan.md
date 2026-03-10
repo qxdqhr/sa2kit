@@ -26,13 +26,13 @@
 ## P2：Server 适配（已完成接口层）
 - [x] DB Store 抽象（RepositoryBoothVaultStore）
 - [x] Object Storage 抽象（BoothObjectStorageProvider）
-- [ ] 过期清理任务接口
+- [x] 过期清理任务接口（expireBoothRecords）
 - [x] 下载签名 URL（signRecordFiles）
 
-## P3：稳定性与安全
-- [ ] 兑换接口限流
-- [ ] 匹配码爆破防护
-- [ ] 上传格式/大小校验
+## P3：稳定性与安全（进行中）
+- [x] 兑换接口限流（BoothRedeemGuard）
+- [x] 匹配码爆破防护（失败次数封禁）
+- [x] 上传格式/大小校验（validateUploadFiles）
 - [ ] 日志与审计字段
 
 ## P4：交付

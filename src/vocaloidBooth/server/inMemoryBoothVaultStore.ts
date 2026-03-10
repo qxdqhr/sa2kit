@@ -36,4 +36,18 @@ export class InMemoryBoothVaultStore implements BoothVaultStore {
   async existsByMatchCode(matchCode: string): Promise<boolean> {
     return this.idByCode.has(matchCode);
   }
+
+  async listActiveRecords(): Promise<BoothUploadRecord[]> {
+    return Array.from(this.recordsById.values()).filter((record) => record.status === 'active');
+  }
+
+  async updateStatus(recordId: string, status: BoothUploadRecord['status']): Promise<void> {
+    const record = this.recordsById.get(recordId);
+    if (!record) return;
+
+    this.recordsById.set(recordId, {
+      ...record,
+      status,
+    });
+  }
 }

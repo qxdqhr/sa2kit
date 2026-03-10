@@ -7,11 +7,17 @@ import type {
 } from '../types';
 import { generateMatchCode, normalizeMatchCode } from './code';
 
+export interface BoothRedeemGuardLike {
+  assertAllowed(subjectKey: string): void;
+  registerAttempt(subjectKey: string, success: boolean): void;
+}
+
 export interface BoothVaultServiceOptions {
   store: BoothVaultStore;
   codeLength?: number;
   defaultTtlHours?: number;
   baseDownloadPath?: string;
+  redeemGuard?: BoothRedeemGuardLike;
 }
 
 export class BoothVaultService {
@@ -19,12 +25,14 @@ export class BoothVaultService {
   private readonly codeLength: number;
   private readonly defaultTtlHours: number;
   private readonly baseDownloadPath: string;
+  private readonly redeemGuard?: BoothRedeemGuardLike;
 
   constructor(options: BoothVaultServiceOptions) {
     this.store = options.store;
     this.codeLength = options.codeLength ?? 6;
     this.defaultTtlHours = options.defaultTtlHours ?? 24 * 14;
     this.baseDownloadPath = options.baseDownloadPath ?? '/redeem';
+    this.redeemGuard = options.redeemGuard;
   }
 
   async createUpload(input: CreateBoothUploadInput): Promise<CreateBoothUploadResult> {
@@ -86,9 +94,23 @@ export class BoothVaultService {
     await this.store.incrementDownloadCount(recordId);
   }
 
-  async resolveDownloadFilesByCode(matchCode: string): Promise<BoothUploadRecord | null> {
+  async resolveDownloadFilesByCode(
+    matchCode: string,
+    options?: { requesterKey?: string }
+  ): Promise<BoothUploadRecord | null> {
+    const requesterKey = options?.requesterKey;
+    if (requesterKey && this.redeemGuard) {
+      this.redeemGuard.assertAllowed(requesterKey);
+    }
+
     const record = await this.getByMatchCode(matchCode);
-    if (!record || record.status !== 'active') {
+    const success = !!record && record.status === 'active';
+
+    if (requesterKey && this.redeemGuard) {
+      this.redeemGuard.registerAttempt(requesterKey, success);
+    }
+
+    if (!success) {
       return record;
     }
 
