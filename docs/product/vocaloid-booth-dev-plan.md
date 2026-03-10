@@ -35,10 +35,10 @@
 - [x] 上传格式/大小校验（validateUploadFiles）
 - [x] 日志与审计字段（BoothAuditEvent + audit sink）
 
-## P4：交付（进行中）
+## P4：交付（已完成）
 - [x] 模块文档（使用示例）
 - [x] API 样例
-- [ ] 版本发布说明
+- [x] 版本发布说明
 
 ---
 
