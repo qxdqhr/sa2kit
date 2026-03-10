@@ -41,6 +41,7 @@ export interface CreateBoothUploadResult {
 export interface BoothVaultStore {
   saveRecord(record: BoothUploadRecord): Promise<void>;
   findByMatchCode(matchCode: string): Promise<BoothUploadRecord | null>;
+  findByRecordId?(recordId: string): Promise<BoothUploadRecord | null>;
   incrementDownloadCount(recordId: string): Promise<void>;
   existsByMatchCode(matchCode: string): Promise<boolean>;
 }

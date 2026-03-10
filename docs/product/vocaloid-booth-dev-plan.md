@@ -9,25 +9,25 @@
 
 ---
 
-## P0：核心能力（进行中）
+## P0：核心能力（已完成）
 - [x] 定义业务类型（record/file/matchCode）
 - [x] 匹配码生成与规范化
 - [x] 核心服务（创建上传记录、按码查询、下载计数）
 - [x] 内存存储适配器（便于测试）
-- [ ] 单元测试补齐
-- [ ] 对外导出与构建配置接入
+- [x] 单元测试补齐
+- [x] 对外导出与构建配置接入
 
-## P1：Web 组件
-- [ ] UploadPanel（拖拽上传、进度、提交）
-- [ ] RedeemPanel（输入匹配码、查询结果）
-- [ ] SuccessCard（展示匹配码、到期时间、复制）
-- [ ] 空态/错误态文案
+## P1：Web 组件（已完成可演示版本）
+- [x] UploadPanel（文件选择、大小/数量校验、提交）
+- [x] RedeemPanel（输入匹配码、查询结果）
+- [x] SuccessCard（展示匹配码、到期时间、复制）
+- [x] 空态/错误态文案
 
-## P2：Server 适配
-- [ ] DB Store（Postgres/MySQL）
-- [ ] Object Storage（S3/COS/OSS）
+## P2：Server 适配（已完成接口层）
+- [x] DB Store 抽象（RepositoryBoothVaultStore）
+- [x] Object Storage 抽象（BoothObjectStorageProvider）
 - [ ] 过期清理任务接口
-- [ ] 下载签名 URL
+- [x] 下载签名 URL（signRecordFiles）
 
 ## P3：稳定性与安全
 - [ ] 兑换接口限流

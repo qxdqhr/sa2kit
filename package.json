@@ -388,6 +388,11 @@
       "import": "./dist/vocaloidBooth/index.mjs",
       "require": "./dist/vocaloidBooth/index.js"
     },
+    "./vocaloidBooth/web": {
+      "types": "./dist/vocaloidBooth/web/index.d.ts",
+      "import": "./dist/vocaloidBooth/web/index.mjs",
+      "require": "./dist/vocaloidBooth/web/index.js"
+    },
     "./vocaloidBooth/server": {
       "types": "./dist/vocaloidBooth/server/index.d.ts",
       "import": "./dist/vocaloidBooth/server/index.mjs",

@@ -17,6 +17,10 @@ export class InMemoryBoothVaultStore implements BoothVaultStore {
     return this.recordsById.get(id) ?? null;
   }
 
+  async findByRecordId(recordId: string): Promise<BoothUploadRecord | null> {
+    return this.recordsById.get(recordId) ?? null;
+  }
+
   async incrementDownloadCount(recordId: string): Promise<void> {
     const record = this.recordsById.get(recordId);
     if (!record) {

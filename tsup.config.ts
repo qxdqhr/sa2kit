@@ -102,6 +102,7 @@ export default defineConfig({
     'festivalCard/server/index': 'src/festivalCard/server/index.ts',
     'festivalCard/routes/index': 'src/festivalCard/routes/index.ts',
     'vocaloidBooth/index': 'src/vocaloidBooth/index.ts',
+    'vocaloidBooth/web/index': 'src/vocaloidBooth/web/index.ts',
     'vocaloidBooth/server/index': 'src/vocaloidBooth/server/index.ts',
   },
 

@@ -30,5 +30,8 @@ describe('BoothVaultService', () => {
     await service.markDownloaded(created.record.id);
     const queried2 = await service.getByMatchCode(created.record.matchCode);
     expect(queried2?.downloadCount).toBe(1);
+
+    const resolved = await service.resolveDownloadFilesByCode(created.record.matchCode);
+    expect(resolved?.downloadCount).toBe(2);
   });
 });

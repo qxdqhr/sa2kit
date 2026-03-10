@@ -85,4 +85,18 @@ export class BoothVaultService {
   async markDownloaded(recordId: string): Promise<void> {
     await this.store.incrementDownloadCount(recordId);
   }
+
+  async resolveDownloadFilesByCode(matchCode: string): Promise<BoothUploadRecord | null> {
+    const record = await this.getByMatchCode(matchCode);
+    if (!record || record.status !== 'active') {
+      return record;
+    }
+
+    await this.markDownloaded(record.id);
+    const reloaded = this.store.findByRecordId
+      ? await this.store.findByRecordId(record.id)
+      : await this.getByMatchCode(record.matchCode);
+
+    return reloaded ?? record;
+  }
 }
