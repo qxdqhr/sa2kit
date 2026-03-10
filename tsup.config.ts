@@ -101,6 +101,8 @@ export default defineConfig({
     'festivalCard/core/index': 'src/festivalCard/core/index.ts',
     'festivalCard/server/index': 'src/festivalCard/server/index.ts',
     'festivalCard/routes/index': 'src/festivalCard/routes/index.ts',
+    'vocaloidBooth/index': 'src/vocaloidBooth/index.ts',
+    'vocaloidBooth/server/index': 'src/vocaloidBooth/server/index.ts',
   },
 
   // Output formats: ESM and CJS

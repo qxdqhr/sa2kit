@@ -44,3 +44,4 @@ export * from './storage/hooks';
 // - Analytics: import { Analytics } from '@qhr123/sa2kit/analytics';
 // - Music: import { MusicPlayer, musicService } from '@qhr123/sa2kit/music';
 // - Calendar: import { useEvents, CalendarPage } from '@qhr123/sa2kit/calendar';
+// - Vocaloid Booth Vault: import { BoothVaultService } from '@qhr123/sa2kit/vocaloidBooth';

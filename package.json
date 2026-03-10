@@ -383,6 +383,16 @@
       "import": "./dist/festivalCard/routes/index.mjs",
       "require": "./dist/festivalCard/routes/index.js"
     },
+    "./vocaloidBooth": {
+      "types": "./dist/vocaloidBooth/index.d.ts",
+      "import": "./dist/vocaloidBooth/index.mjs",
+      "require": "./dist/vocaloidBooth/index.js"
+    },
+    "./vocaloidBooth/server": {
+      "types": "./dist/vocaloidBooth/server/index.d.ts",
+      "import": "./dist/vocaloidBooth/server/index.mjs",
+      "require": "./dist/vocaloidBooth/server/index.js"
+    },
     "./components": {
       "types": "./dist/components/index.d.ts",
       "import": "./dist/components/index.mjs",
