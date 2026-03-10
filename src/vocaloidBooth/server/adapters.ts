@@ -35,7 +35,7 @@ export class RepositoryBoothVaultStore implements BoothVaultStore {
     return this.repository.existsByMatchCode(matchCode);
   }
 
-  private async findByRecordId(recordId: string): Promise<BoothUploadRecord | null> {
+  async findByRecordId(recordId: string): Promise<BoothUploadRecord | null> {
     if (this.repository.findByRecordId) {
       return this.repository.findByRecordId(recordId);
     }
