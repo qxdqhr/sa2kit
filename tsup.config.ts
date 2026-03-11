@@ -104,6 +104,14 @@ export default defineConfig({
     'vocaloidBooth/index': 'src/vocaloidBooth/index.ts',
     'vocaloidBooth/web/index': 'src/vocaloidBooth/web/index.ts',
     'vocaloidBooth/server/index': 'src/vocaloidBooth/server/index.ts',
+    'mikuContest/index': 'src/mikuContest/index.ts',
+    'mikuContest/types/index': 'src/mikuContest/types/index.ts',
+    'mikuContest/logic/index': 'src/mikuContest/logic/index.ts',
+    'mikuContest/service/index': 'src/mikuContest/service/index.ts',
+    'mikuContest/ui/web/index': 'src/mikuContest/ui/web/index.ts',
+    'mikuContest/ui/miniapp/index': 'src/mikuContest/ui/miniapp/index.ts',
+    'mikuContest/server/index': 'src/mikuContest/server/index.ts',
+    'mikuContest/routes/index': 'src/mikuContest/routes/index.ts',
   },
 
   // Output formats: ESM and CJS

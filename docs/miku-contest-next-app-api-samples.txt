@@ -1,0 +1,123 @@
+# Miku Contest - Next app/api 路由接线样板（管理端）
+
+更新时间：2026-03-11
+
+说明：仓库中已提供可直接复用的真实路由文件，路径为 `src/mikuContest/api/**/route.ts`。
+你可以直接复制到业务项目的 `app/api/**/route.ts`，或按需改 import 路径后直接使用。
+
+## 1. 统一创建路由处理器（建议）
+文件：`src/server/mikuContestApi.ts`
+
+```ts
+import {
+  createGetContestSnapshotHandler,
+  createUpdateContestConfigHandler,
+  createCreateSubmissionHandler,
+  createListSubmissionsHandler,
+  createReviewSubmissionHandler,
+  createVoteHandler,
+  createSetVoterRestrictionHandler,
+  createResetVotesHandler,
+  createExportSubmissionsHandler,
+} from 'sa2kit/mikuContest/routes';
+import { db } from './db'; // 你的 drizzle db 实例
+
+const config = { db };
+
+export const mikuContestApi = {
+  getSnapshot: createGetContestSnapshotHandler(config),
+  updateContestConfig: createUpdateContestConfigHandler(config),
+  createSubmission: createCreateSubmissionHandler(config),
+  listSubmissions: createListSubmissionsHandler(config),
+  reviewSubmission: createReviewSubmissionHandler(config),
+  vote: createVoteHandler(config),
+  setVoterRestriction: createSetVoterRestrictionHandler(config),
+  resetVotes: createResetVotesHandler(config),
+  exportSubmissions: createExportSubmissionsHandler(config),
+};
+```
+
+## 2. app/api 路由样板
+
+### 2.1 赛事快照 + 配置更新
+文件：`app/api/miku-contest/contest/route.ts`
+
+```ts
+import { mikuContestApi } from '@/src/server/mikuContestApi';
+
+export const GET = mikuContestApi.getSnapshot;
+export const PATCH = mikuContestApi.updateContestConfig;
+```
+
+### 2.2 投稿创建 + 投稿列表筛选
+文件：`app/api/miku-contest/submissions/route.ts`
+
+```ts
+import { mikuContestApi } from '@/src/server/mikuContestApi';
+
+export const GET = mikuContestApi.listSubmissions;
+export const POST = mikuContestApi.createSubmission;
+```
+
+支持 query：
+- `status=pending|approved|rejected`
+- `type=visual|video|text|audio`
+- `authorId=xxx`
+- `authorKeyword=昵称关键词`
+- `titleKeyword=标题关键词`
+
+### 2.3 投稿审核（通过/驳回）
+文件：`app/api/miku-contest/submissions/review/route.ts`
+
+```ts
+import { mikuContestApi } from '@/src/server/mikuContestApi';
+
+export const POST = mikuContestApi.reviewSubmission;
+```
+
+### 2.4 投票
+文件：`app/api/miku-contest/votes/route.ts`
+
+```ts
+import { mikuContestApi } from '@/src/server/mikuContestApi';
+
+export const POST = mikuContestApi.vote;
+```
+
+### 2.5 管理端：封禁/解封投票账号
+文件：`app/api/miku-contest/admin/voter-restrictions/route.ts`
+
+```ts
+import { mikuContestApi } from '@/src/server/mikuContestApi';
+
+export const POST = mikuContestApi.setVoterRestriction;
+```
+
+### 2.6 管理端：异常票数清零
+文件：`app/api/miku-contest/admin/votes/reset/route.ts`
+
+```ts
+import { mikuContestApi } from '@/src/server/mikuContestApi';
+
+export const POST = mikuContestApi.resetVotes;
+```
+
+### 2.7 管理端：投稿 Excel 导出
+文件：`app/api/miku-contest/admin/submissions/export/route.ts`
+
+```ts
+import { mikuContestApi } from '@/src/server/mikuContestApi';
+
+export const GET = mikuContestApi.exportSubmissions;
+```
+
+## 3. 数据表
+`sa2kit/mikuContest` 持久化采用多表存储：
+- `miku_contest_configs`
+- `miku_contest_submissions`
+- `miku_contest_votes`
+- `miku_contest_notices`
+- `miku_contest_voter_restrictions`
+
+对应 schema 导出：
+- `mikuContestConfigs / mikuContestSubmissions / mikuContestVotes / mikuContestNotices / mikuContestVoterRestrictions`

@@ -1,0 +1,90 @@
+# 初音未来社团征稿大赛 模块拆分与开发计划
+
+更新时间：2026-03-11
+
+## 1. 模块目标
+- 基于 PRD 新增 `mikuContest` 业务模块，覆盖官网 + 微信小程序 + 管理端共用的数据模型与服务能力。
+- 首期优先落地核心闭环：赛事配置、投稿、审核、展示、投票、公告。
+- 通过统一服务层，确保官网与小程序数据同步一致。
+
+## 2. 子任务拆分（按优先级）
+
+### M1：领域模型与模块骨架（P0）
+1. 新建 `src/mikuContest` 目录结构与统一导出入口。
+2. 定义核心类型：赛事配置、作品、投票、公告、用户角色、审核状态。
+3. 建立基础规则函数：投稿校验、投票限制校验、榜单排序。
+
+### M2：核心服务层（P0）
+1. 实现 `MikuContestService`（先用内存存储，便于联调和后续替换 DB）。
+2. 支持投稿创建、列表查询、审核（通过/驳回）。
+3. 支持投票（每日限额、同作品防重复）、排行榜。
+4. 支持公告发布与查询。
+
+### M3：多端接入层（P0）
+1. 提供 `web`/`miniapp` 统一导出，面向前端页面快速接入。
+2. 提供 `routes` 路由工厂（Next Route Handler 风格）用于 API 接口挂载。
+3. 输出基础 hook（`useMikuContest`）降低页面集成复杂度。
+
+### M4：管理端能力补齐（P1）
+1. 增加赛事配置更新能力（时间节点、投票规则、功能开关）。
+2. 增加投稿筛选与导出接口（按状态/类型/作者）。
+3. 增加投票异常处理接口（清零、封禁账号投票权限）。
+
+### M5：生产化（P1）
+1. 持久化替换（Drizzle/Postgres 适配器）。
+2. 文件上传接入对象存储（图片/封面）。
+3. 审计日志、速率限制、敏感词过滤、监控告警。
+
+### M6：测试与文档（P0）
+1. 补充核心单元测试：投稿校验、投票限制、审核状态流转。
+2. 补充路由层集成测试。
+3. 输出管理员简版操作文档。
+
+## 3. 建议目录（已按此创建）
+```text
+src/mikuContest/
+  index.ts
+  types.ts
+  core/
+    defaults.ts
+    validators.ts
+    voting.ts
+    index.ts
+  server/
+    service.ts
+    index.ts
+  routes/
+    index.ts
+  hooks/
+    useMikuContest.ts
+  web/
+    index.ts
+  miniapp/
+    index.ts
+```
+
+## 4. 验收标准（首期）
+- 能通过 `import { createMikuContestService } from 'sa2kit/mikuContest'` 初始化模块。
+- 投稿可创建并产生唯一编号，审核状态可流转。
+- 投票满足“每日上限 + 同作品不可重复投票”。
+- 官网与小程序均可通过统一服务读取赛事、作品、公告数据。
+- 路由工厂可直接用于 Next API 路由挂载。
+
+## 5. 当前进度（已完成）
+- 已完成 M1：模块目录、统一导出、类型定义、校验规则。
+- 已完成 M2：`MikuContestService` 投稿/审核/投票/公告/榜单能力。
+- 已完成 M3：`web/miniapp` 导出、`routes` 工厂、`useMikuContest` hook。
+- 已完成 M4（第一版）：
+  - 投稿管理筛选：按状态/类型/作者ID/作者昵称关键词/标题关键词查询。
+  - 投票管理：支持按作品或账号清零票数；支持账号投票封禁。
+  - 导出能力：支持投稿列表导出 Excel（xlsx）。
+- 已完成 M5（第一版）：
+  - 新增持久化接口与 `MikuContestPersistentService`（懒加载 + 自动保存）。
+  - 新增 Drizzle/Postgres 多表 repository 与 adapter（`configs/submissions/votes/notices/voter_restrictions`）。
+  - 路由层支持直接注入 `db`，自动切换为持久化服务。
+- 已完成管理端 API 样板接线文档：
+  - `docs/miku-contest-next-app-api-samples.txt`
+  - 并已落地真实路由文件：`src/mikuContest/api/**/route.ts`
+- 已完成目录分层对齐（参考 `showmasterpiece`）：
+  - 新增 `src/mikuContest/{logic,service,types,ui,README.md}`。
+  - 仅保留主分层目录，不再提供兼容转发目录。

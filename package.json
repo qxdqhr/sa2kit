@@ -398,6 +398,46 @@
       "import": "./dist/vocaloidBooth/server/index.mjs",
       "require": "./dist/vocaloidBooth/server/index.js"
     },
+    "./mikuContest": {
+      "types": "./dist/mikuContest/index.d.ts",
+      "import": "./dist/mikuContest/index.mjs",
+      "require": "./dist/mikuContest/index.js"
+    },
+    "./mikuContest/types": {
+      "types": "./dist/mikuContest/types/index.d.ts",
+      "import": "./dist/mikuContest/types/index.mjs",
+      "require": "./dist/mikuContest/types/index.js"
+    },
+    "./mikuContest/logic": {
+      "types": "./dist/mikuContest/logic/index.d.ts",
+      "import": "./dist/mikuContest/logic/index.mjs",
+      "require": "./dist/mikuContest/logic/index.js"
+    },
+    "./mikuContest/service": {
+      "types": "./dist/mikuContest/service/index.d.ts",
+      "import": "./dist/mikuContest/service/index.mjs",
+      "require": "./dist/mikuContest/service/index.js"
+    },
+    "./mikuContest/ui/web": {
+      "types": "./dist/mikuContest/ui/web/index.d.ts",
+      "import": "./dist/mikuContest/ui/web/index.mjs",
+      "require": "./dist/mikuContest/ui/web/index.js"
+    },
+    "./mikuContest/ui/miniapp": {
+      "types": "./dist/mikuContest/ui/miniapp/index.d.ts",
+      "import": "./dist/mikuContest/ui/miniapp/index.mjs",
+      "require": "./dist/mikuContest/ui/miniapp/index.js"
+    },
+    "./mikuContest/server": {
+      "types": "./dist/mikuContest/server/index.d.ts",
+      "import": "./dist/mikuContest/server/index.mjs",
+      "require": "./dist/mikuContest/server/index.js"
+    },
+    "./mikuContest/routes": {
+      "types": "./dist/mikuContest/routes/index.d.ts",
+      "import": "./dist/mikuContest/routes/index.mjs",
+      "require": "./dist/mikuContest/routes/index.js"
+    },
     "./components": {
       "types": "./dist/components/index.d.ts",
       "import": "./dist/components/index.mjs",
