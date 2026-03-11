@@ -82,7 +82,6 @@ const MikuContestAdminPage: React.FC<MikuContestAdminPageProps> = ({
     if (!snapshot || !voterId.trim()) return;
     try {
       await api.setVoterRestriction({
-        contestId: snapshot.contest.id,
         voterId: voterId.trim(),
         banned,
         reason: banned ? '管理员手动封禁' : '管理员解除封禁',
