@@ -112,6 +112,13 @@ export default defineConfig({
     'mikuContest/ui/miniapp/index': 'src/mikuContest/ui/miniapp/index.ts',
     'mikuContest/server/index': 'src/mikuContest/server/index.ts',
     'mikuContest/routes/index': 'src/mikuContest/routes/index.ts',
+    'huarongdao/index': 'src/huarongdao/index.ts',
+    'huarongdao/types/index': 'src/huarongdao/types/index.ts',
+    'huarongdao/logic/index': 'src/huarongdao/logic/index.ts',
+    'huarongdao/service/index': 'src/huarongdao/service/index.ts',
+    'huarongdao/ui/web/index': 'src/huarongdao/ui/web/index.ts',
+    'huarongdao/server/index': 'src/huarongdao/server/index.ts',
+    'huarongdao/routes/index': 'src/huarongdao/routes/index.ts',
   },
 
   // Output formats: ESM and CJS

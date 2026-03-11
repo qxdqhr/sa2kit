@@ -438,6 +438,41 @@
       "import": "./dist/mikuContest/routes/index.mjs",
       "require": "./dist/mikuContest/routes/index.js"
     },
+    "./huarongdao": {
+      "types": "./dist/huarongdao/index.d.ts",
+      "import": "./dist/huarongdao/index.mjs",
+      "require": "./dist/huarongdao/index.js"
+    },
+    "./huarongdao/types": {
+      "types": "./dist/huarongdao/types/index.d.ts",
+      "import": "./dist/huarongdao/types/index.mjs",
+      "require": "./dist/huarongdao/types/index.js"
+    },
+    "./huarongdao/logic": {
+      "types": "./dist/huarongdao/logic/index.d.ts",
+      "import": "./dist/huarongdao/logic/index.mjs",
+      "require": "./dist/huarongdao/logic/index.js"
+    },
+    "./huarongdao/service": {
+      "types": "./dist/huarongdao/service/index.d.ts",
+      "import": "./dist/huarongdao/service/index.mjs",
+      "require": "./dist/huarongdao/service/index.js"
+    },
+    "./huarongdao/ui/web": {
+      "types": "./dist/huarongdao/ui/web/index.d.ts",
+      "import": "./dist/huarongdao/ui/web/index.mjs",
+      "require": "./dist/huarongdao/ui/web/index.js"
+    },
+    "./huarongdao/server": {
+      "types": "./dist/huarongdao/server/index.d.ts",
+      "import": "./dist/huarongdao/server/index.mjs",
+      "require": "./dist/huarongdao/server/index.js"
+    },
+    "./huarongdao/routes": {
+      "types": "./dist/huarongdao/routes/index.d.ts",
+      "import": "./dist/huarongdao/routes/index.mjs",
+      "require": "./dist/huarongdao/routes/index.js"
+    },
     "./components": {
       "types": "./dist/components/index.d.ts",
       "import": "./dist/components/index.mjs",

@@ -32,6 +32,7 @@ export * from './screenReceiver';
 export * from './festivalCard';
 export * from './vocaloidBooth';
 export * from './mikuContest';
+export * as huarongdao from './huarongdao';
 
 // Storage - Only export types and hooks, not platform adapters
 // Platform adapters should be imported from '@qhr123/sa2kit/storage' subpath
