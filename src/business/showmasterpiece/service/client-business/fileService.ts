@@ -331,7 +331,7 @@ export async function refreshFileServiceConfig() {
       if (ossConfig && ossConfig.enabled) {
         console.log('🔄 [ShowMasterpiece] 重新初始化OSS Provider以应用新配置');
         // 创建新的文件服务实例以确保Provider使用最新配置
-        const { UniversalFileService } = await import('../../../universalFile/server/UniversalFileService');
+        const { UniversalFileService } = await import('../../../../universalFile/server/UniversalFileService');
         const fileService = new UniversalFileService(config as any);
         await fileService.initialize();
         

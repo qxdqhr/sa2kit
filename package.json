@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.6.96",
+  "version": "1.6.97",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -472,6 +472,46 @@
       "types": "./dist/huarongdao/routes/index.d.ts",
       "import": "./dist/huarongdao/routes/index.mjs",
       "require": "./dist/huarongdao/routes/index.js"
+    },
+    "./bubbleShooter": {
+      "types": "./dist/bubbleShooter/index.d.ts",
+      "import": "./dist/bubbleShooter/index.mjs",
+      "require": "./dist/bubbleShooter/index.js"
+    },
+    "./bubbleShooter/types": {
+      "types": "./dist/bubbleShooter/types/index.d.ts",
+      "import": "./dist/bubbleShooter/types/index.mjs",
+      "require": "./dist/bubbleShooter/types/index.js"
+    },
+    "./bubbleShooter/logic": {
+      "types": "./dist/bubbleShooter/logic/index.d.ts",
+      "import": "./dist/bubbleShooter/logic/index.mjs",
+      "require": "./dist/bubbleShooter/logic/index.js"
+    },
+    "./bubbleShooter/ui/web": {
+      "types": "./dist/bubbleShooter/ui/web/index.d.ts",
+      "import": "./dist/bubbleShooter/ui/web/index.mjs",
+      "require": "./dist/bubbleShooter/ui/web/index.js"
+    },
+    "./mikuFlick": {
+      "types": "./dist/mikuFlick/index.d.ts",
+      "import": "./dist/mikuFlick/index.mjs",
+      "require": "./dist/mikuFlick/index.js"
+    },
+    "./mikuFlick/types": {
+      "types": "./dist/mikuFlick/types/index.d.ts",
+      "import": "./dist/mikuFlick/types/index.mjs",
+      "require": "./dist/mikuFlick/types/index.js"
+    },
+    "./mikuFlick/logic": {
+      "types": "./dist/mikuFlick/logic/index.d.ts",
+      "import": "./dist/mikuFlick/logic/index.mjs",
+      "require": "./dist/mikuFlick/logic/index.js"
+    },
+    "./mikuFlick/ui/web": {
+      "types": "./dist/mikuFlick/ui/web/index.d.ts",
+      "import": "./dist/mikuFlick/ui/web/index.mjs",
+      "require": "./dist/mikuFlick/ui/web/index.js"
     },
     "./components": {
       "types": "./dist/components/index.d.ts",

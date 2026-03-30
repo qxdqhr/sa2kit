@@ -205,6 +205,20 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
         console.log('✅ [UniversalExportButton] 文件下载完成');
+      } else if (result.exportId && typeof exportService.downloadExportFile === 'function') {
+        console.log('📥 [UniversalExportButton] 从exportId兜底下载文件...');
+        const blob = await exportService.downloadExportFile(result.exportId);
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = result.fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        console.log('✅ [UniversalExportButton] 文件下载完成（兜底分支）');
+      } else {
+        console.warn('⚠️ [UniversalExportButton] 导出成功但缺少可下载文件信息:', result);
       }
 
       // 延迟清除进度状态

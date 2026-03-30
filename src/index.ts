@@ -22,6 +22,10 @@ export * from './utils';
 // Components (Foundation UI)
 export * from './components';
 
+// Architecture Modules
+export * as business from './business';
+export * as common from './common';
+
 // Business Logic Components
 export * from './profile';
 export * from './portfolio';
@@ -32,7 +36,9 @@ export * from './screenReceiver';
 export * from './festivalCard';
 export * from './vocaloidBooth';
 export * from './mikuContest';
-export * as huarongdao from './huarongdao';
+export * as huarongdao from './business/huarongdao';
+export * as mikuFlick from './business/mikuFlick';
+export * as bubbleShooter from './business/bubbleShooter';
 
 // Storage - Only export types and hooks, not platform adapters
 // Platform adapters should be imported from '@qhr123/sa2kit/storage' subpath
