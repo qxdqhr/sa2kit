@@ -345,17 +345,76 @@ export class UniversalExportClient {
    * 转换API返回的导出结果
    */
   private transformExportResultFromAPI(apiResult: any): ExportResult {
+    const fileBlob = this.createFileBlobFromBase64(apiResult.fileData, apiResult.fileName);
+
     return {
       exportId: apiResult.exportId,
       fileName: apiResult.fileName,
       fileSize: apiResult.fileSize,
       fileUrl: apiResult.fileUrl,
+      fileBlob,
       exportedRows: apiResult.exportedRows,
       startTime: new Date(apiResult.startTime),
       endTime: new Date(apiResult.endTime),
       duration: apiResult.duration,
       statistics: apiResult.statistics,
     };
+  }
+
+  /**
+   * 将后端返回的base64文件数据转换为Blob
+   */
+  private createFileBlobFromBase64(fileData?: string, fileName?: string): Blob | undefined {
+    if (!fileData || typeof fileData !== 'string') {
+      return undefined;
+    }
+
+    try {
+      if (typeof atob === 'function') {
+        const binaryString = atob(fileData);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+
+        const arrayBuffer = bytes.buffer.slice(
+          bytes.byteOffset,
+          bytes.byteOffset + bytes.byteLength
+        );
+        return new Blob([arrayBuffer], { type: this.getMimeTypeByFileName(fileName) });
+      } else if (typeof Buffer !== 'undefined') {
+        const bufferBytes = Buffer.from(fileData, 'base64');
+        const bytes = Uint8Array.from(bufferBytes);
+        const arrayBuffer = bytes.buffer.slice(
+          bytes.byteOffset,
+          bytes.byteOffset + bytes.byteLength
+        );
+        return new Blob([arrayBuffer], { type: this.getMimeTypeByFileName(fileName) });
+      } else {
+        return undefined;
+      }
+    } catch {
+      return undefined;
+    }
+  }
+
+  /**
+   * 根据文件名推断MIME类型
+   */
+  private getMimeTypeByFileName(fileName?: string): string {
+    const extension = fileName?.split('.').pop()?.toLowerCase();
+
+    switch (extension) {
+      case 'csv':
+        return 'text/csv; charset=utf-8';
+      case 'xlsx':
+      case 'xls':
+        return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+      case 'json':
+        return 'application/json; charset=utf-8';
+      default:
+        return 'application/octet-stream';
+    }
   }
 
   /**
