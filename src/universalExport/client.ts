@@ -172,7 +172,6 @@ export class UniversalExportClient {
       const isDataArray = Array.isArray(request.dataSource);
 
       const requestBody: any = {
-        configId: request.configId,
         queryParams: request.queryParams,
         fieldMapping: request.fieldMapping,
         filters: request.filters,
@@ -180,6 +179,18 @@ export class UniversalExportClient {
         pagination: request.pagination,
         customFileName: request.customFileName,
       };
+
+      // 兼容两种后端协议：
+      // 1) configId: string
+      // 2) config: ExportConfig（某些实现仅支持该字段并直接返回fileData）
+      if (typeof request.configId === 'string') {
+        requestBody.configId = request.configId;
+      } else {
+        requestBody.config = request.configId;
+        if (request.configId?.id) {
+          requestBody.configId = request.configId.id;
+        }
+      }
 
       // 如果是数组数据，直接包含在请求体中
       if (isDataArray) {
