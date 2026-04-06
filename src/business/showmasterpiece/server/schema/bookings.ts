@@ -45,8 +45,8 @@ import { comicUniverseCollections } from './masterpieces';
  * - 支持对同一画集的多次预订
  */
 export const comicUniverseBookings = pgTable('comic_universe_bookings', {
-  /** 自增ID（用于内部管理） */
-  id: serial('id'),
+  /** 自增主键 */
+  id: serial('id').primaryKey(),
   
   /** 预订的画集ID（外键，级联删除） */
   collectionId: integer('collection_id').notNull().references(() => comicUniverseCollections.id, { onDelete: 'cascade' }),
