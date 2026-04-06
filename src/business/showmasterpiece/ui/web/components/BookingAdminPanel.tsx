@@ -191,7 +191,6 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          configId: exportConfig.id,
           config: exportConfig,
           data: exportData,
           customFileName: `预订信息_${new Date().toISOString().split('T')[0]}${enableUserPriceCalculation ? '_含用户总价' : ''}`,

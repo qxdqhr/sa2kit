@@ -180,15 +180,12 @@ export class UniversalExportClient {
         customFileName: request.customFileName,
       };
 
-      // 后端路由要求 body.configId 必填；可为字符串或完整配置对象
+      // 支持两种方式：传字符串 ID（服务端从缓存/数据库查找）或传完整配置对象（服务端直接使用）
       if (typeof request.configId === 'string') {
         requestBody.configId = request.configId;
       } else if (request.configId && typeof request.configId === 'object') {
-        // 传入完整配置对象时，同时设置 config（完整对象）和 configId（id 字符串）
+        // 传入完整配置对象时，只设置 config 字段，避免与字符串 configId 产生歧义
         requestBody.config = request.configId;
-        if ((request.configId as any).id) {
-          requestBody.configId = (request.configId as any).id;
-        }
       }
 
       // 如果是数组数据，直接包含在请求体中
