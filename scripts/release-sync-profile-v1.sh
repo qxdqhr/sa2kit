@@ -178,7 +178,24 @@ if [[ $AUTO_YES -ne 1 ]]; then
 fi
 
 echo "[2/5] Bumping sa2kit version"
-NEW_VERSION="$(npm version "$VERSION_SPEC" --no-git-tag-version | sed 's/^v//')"
+NEW_VERSION="$(node -e "
+  const fs = require('fs');
+  const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+  const spec = process.argv[1];
+  let newV;
+  if (/^\d/.test(spec)) {
+    newV = spec;
+  } else {
+    const [ma, mi, pa] = pkg.version.split('.').map(Number);
+    if (spec === 'major') newV = (ma + 1) + '.0.0';
+    else if (spec === 'minor') newV = ma + '.' + (mi + 1) + '.0';
+    else if (spec === 'patch') newV = ma + '.' + mi + '.' + (pa + 1);
+    else { console.error('Unknown version spec: ' + spec); process.exit(1); }
+  }
+  pkg.version = newV;
+  fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');
+  process.stdout.write(newV);
+" "$VERSION_SPEC")"
 echo "Version updated: $CURRENT_VERSION -> $NEW_VERSION"
 
 echo "[2/5] Running release checks"
