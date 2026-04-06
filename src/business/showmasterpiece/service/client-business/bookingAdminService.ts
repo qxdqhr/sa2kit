@@ -192,7 +192,7 @@ export class BookingAdminService {
       }
       
       
-      const response = await fetch(`/api/showmasterpiece/bookings/admin/refresh?${searchParams.toString()}`, {
+      const response = await fetch(`/api/showmasterpiece/bookings/admin?${searchParams.toString()}`, {
         method: 'POST',
         cache: 'no-store',
         headers: {
@@ -301,7 +301,7 @@ export class BookingAdminService {
       }
       
       
-      const response = await fetch(`/api/showmasterpiece/bookings/admin/refresh?${searchParams.toString()}`, {
+      const response = await fetch(`/api/showmasterpiece/bookings/admin?${searchParams.toString()}`, {
         method: 'POST',
         cache: 'no-store',
         headers: {

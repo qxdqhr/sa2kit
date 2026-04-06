@@ -15,7 +15,6 @@ import * as React from 'react';
 import type { ReactNode } from 'react';
 import { Cart, AddToCartRequest, UpdateCartItemRequest, RemoveFromCartRequest, BatchBookingRequest, BatchBookingResponse } from '../../types/cart';
 import { getCart, addToCart, updateCartItem, removeFromCart, batchBooking, clearCart } from '../../service/client-business/cartService';
-import { cartUpdateEvents, CART_UPDATE_EVENT } from '../hooks';
 import type { CartContextState } from '../../types/context';
 
 /**
@@ -210,19 +209,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children, userId }) 
   // 初始化时加载购物车数据
   React.useEffect(() => {
     refreshCart();
-  }, [refreshCart]);
-
-  // 监听购物车更新事件
-  React.useEffect(() => {
-    const handleCartUpdate = () => {
-      refreshCart();
-    };
-
-    cartUpdateEvents.addEventListener(CART_UPDATE_EVENT, handleCartUpdate);
-
-    return () => {
-      cartUpdateEvents.removeEventListener(CART_UPDATE_EVENT, handleCartUpdate);
-    };
   }, [refreshCart]);
 
   const contextValue: CartContextState = {
