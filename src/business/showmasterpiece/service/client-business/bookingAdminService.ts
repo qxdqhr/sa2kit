@@ -193,7 +193,7 @@ export class BookingAdminService {
       
       
       const response = await fetch(`/api/showmasterpiece/bookings/admin/refresh?${searchParams.toString()}`, {
-        method: 'GET',
+        method: 'POST',
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -302,7 +302,7 @@ export class BookingAdminService {
       
       
       const response = await fetch(`/api/showmasterpiece/bookings/admin/refresh?${searchParams.toString()}`, {
-        method: 'GET',
+        method: 'POST',
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',

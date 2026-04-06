@@ -30,8 +30,6 @@ import { useMasterpieces, useDeadlinePopup } from '../../../logic/hooks';
 import { getConfig } from '../../../service/client-business/masterpiecesConfigService';
 import { MasterpiecesConfig, CollectionCategory, CollectionCategoryType, normalizeHomeTabConfig, getCategoryDisplayName } from '../../../types';
 import { CollectionCard } from '../components/CollectionCard';
-import { ArtworkViewer } from '../components/ArtworkViewer';
-import { ThumbnailSidebar } from '../components/ThumbnailSidebar';
 import { MobileAlbumViewer } from '../components/MobileAlbumViewer';
 import { CartModal } from '../components/CartModal';
 import { CartButton } from '../components/CartButton';
