@@ -191,10 +191,10 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          configId: exportConfig.id,
           config: exportConfig,
           data: exportData,
           customFileName: `预订信息_${new Date().toISOString().split('T')[0]}${enableUserPriceCalculation ? '_含用户总价' : ''}`,
-          // 不传递分页参数，避免导出时被分页限制
           pagination: undefined,
         }),
       });
@@ -207,13 +207,16 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
       // 解析JSON响应
       const responseData = await response.json();
 
-      if (responseData.result && responseData.result.fileData) {
-        // 有文件数据，使用base64数据创建blob并下载
+      const base64Payload =
+        responseData.result?.fileData ?? responseData.result?.fileBlob;
+
+      if (responseData.result && base64Payload) {
+        // 有文件数据，使用base64数据创建blob并下载（API 可能返回 fileData 或 fileBlob 字段）
         console.log('📁 [BookingAdminPanel] 检测到文件数据，开始下载');
-        const { fileData, fileName } = responseData.result;
+        const { fileName } = responseData.result;
 
         // 将base64转换为blob
-        const binaryString = atob(fileData);
+        const binaryString = atob(base64Payload);
         const bytes = new Uint8Array(binaryString.length);
         for (let i = 0; i < binaryString.length; i++) {
           bytes[i] = binaryString.charCodeAt(i);

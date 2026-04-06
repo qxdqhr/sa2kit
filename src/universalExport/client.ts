@@ -180,15 +180,14 @@ export class UniversalExportClient {
         customFileName: request.customFileName,
       };
 
-      // 兼容两种后端协议：
-      // 1) configId: string
-      // 2) config: ExportConfig（某些实现仅支持该字段并直接返回fileData）
+      // 后端路由要求 body.configId 必填；可为字符串或完整配置对象
       if (typeof request.configId === 'string') {
         requestBody.configId = request.configId;
-      } else {
+      } else if (request.configId && typeof request.configId === 'object') {
+        // 传入完整配置对象时，同时设置 config（完整对象）和 configId（id 字符串）
         requestBody.config = request.configId;
-        if (request.configId?.id) {
-          requestBody.configId = request.configId.id;
+        if ((request.configId as any).id) {
+          requestBody.configId = (request.configId as any).id;
         }
       }
 
@@ -356,7 +355,10 @@ export class UniversalExportClient {
    * 转换API返回的导出结果
    */
   private transformExportResultFromAPI(apiResult: any): ExportResult {
-    const fileBlob = this.createFileBlobFromBase64(apiResult.fileData, apiResult.fileName);
+    const fileBlob = this.createFileBlobFromBase64(
+      apiResult.fileData ?? apiResult.fileBlob,
+      apiResult.fileName
+    );
 
     return {
       exportId: apiResult.exportId,
