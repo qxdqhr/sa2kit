@@ -31,8 +31,8 @@ const HistoryMiniappPage: React.FC<HistoryMiniappPageProps> = ({ apiBaseUrl = DE
     }
     setPrivacyConsented(true);
 
-    if (!qqNumber.trim() && !phoneNumber.trim()) {
-      Taro.showToast({ title: '请输入QQ号或联系方式', icon: 'none' });
+    if (!qqNumber.trim() || !phoneNumber.trim()) {
+      Taro.showToast({ title: '请同时填写QQ号与联系方式', icon: 'none' });
       return;
     }
 
@@ -43,8 +43,8 @@ const HistoryMiniappPage: React.FC<HistoryMiniappPageProps> = ({ apiBaseUrl = DE
     try {
       const result = await getBookings(
         {
-          qqNumber: qqNumber.trim() || undefined,
-          phoneNumber: phoneNumber.trim() || undefined,
+          qqNumber: qqNumber.trim(),
+          phoneNumber: phoneNumber.trim(),
           page: 1,
           limit: 50,
         },
@@ -79,7 +79,7 @@ const HistoryMiniappPage: React.FC<HistoryMiniappPageProps> = ({ apiBaseUrl = DE
 
   return (
     <View className="min-h-screen bg-gradient-to-br from-white to-prussian-blue-100 pb-12 text-rich-black">
-      <PageHeader title="历史记录查询" subtitle="输入 QQ 或联系方式查询预订记录" />
+      <PageHeader title="历史记录查询" subtitle="请同时填写 QQ 号与联系方式查询预订记录" />
 
       <View className="mx-4 mt-5 rounded-3xl border border-prussian-blue-200 bg-white px-5 py-5 shadow-sm">
         <FormInput

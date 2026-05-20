@@ -86,7 +86,7 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
   const handleDeleteBooking = async (bookingId: number) => {
     if (confirm('确定要删除这条预订记录吗？此操作不可撤销。')) {
       try {
-        await BookingService.deleteBooking(bookingId);
+        await BookingService.deleteBooking(bookingId, { qqNumber, phoneNumber });
         console.log('预订记录删除成功');
         
         // 重新加载预订记录

@@ -300,11 +300,11 @@ export class BookingQueryService {
     }
 
     if (input.qqNumber) {
-      conditions.push(like(comicUniverseBookings.qqNumber, `%${input.qqNumber}%`));
+      conditions.push(eq(comicUniverseBookings.qqNumber, input.qqNumber.trim()));
     }
 
     if (input.phoneNumber) {
-      conditions.push(like(comicUniverseBookings.phoneNumber, `%${input.phoneNumber}%`));
+      conditions.push(eq(comicUniverseBookings.phoneNumber, input.phoneNumber.trim()));
     }
 
     if (input.status) {
