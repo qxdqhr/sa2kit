@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "1.6.114",
+  "version": "1.6.116",
   "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
   "keywords": [
     "react",
@@ -147,6 +147,11 @@
       "types": "./dist/auth/components/index.d.ts",
       "import": "./dist/auth/components/index.mjs",
       "require": "./dist/auth/components/index.js"
+    },
+    "./auth/rn": {
+      "types": "./dist/auth/rn/index.d.ts",
+      "import": "./dist/auth/rn/index.mjs",
+      "require": "./dist/auth/rn/index.js"
     },
     "./auth/legacy": {
       "types": "./dist/auth/legacy/index.d.ts",
@@ -713,6 +718,7 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "clean": "rm -rf dist",
+    "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run build && pnpm run test",
     "publish:beta": "npm publish --tag beta --access public",
     "publish:latest": "npm publish --access public"

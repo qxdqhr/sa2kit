@@ -34,6 +34,7 @@ export default defineConfig({
     'auth/hooks/index': 'src/auth/hooks/index.ts',
     'auth/client/index': 'src/auth/client/index.ts',
     'auth/components/index': 'src/auth/components/index.ts',
+    'auth/rn/index': 'src/auth/rn/index.ts',
     'auth/legacy/index': 'src/auth/legacy/index.ts',
     'auth/legacy/schema/index': 'src/auth/legacy/schema/index.ts',
     'auth/legacy/services/index': 'src/auth/legacy/services/index.ts',

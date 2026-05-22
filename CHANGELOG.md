@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`sa2kit/auth/rn`**：React Native 账密登录子包（`RnAccountLoginForm`、`initRnAuthClient`、`loginWithLegacyPhone`）；手机号走 legacy `/auth/login`，邮箱复用 headless `LoginForm`。
+- **`sa2kit/request`**：`ReactNativeRequestAdapter`（fetch、无 Cookie，供 RN 与 auth/rn 使用）。
+
+## [1.6.115] - 2026-05-21
+
+### Changed (showmasterpiece)
+
+- **T6-sa2kit-cmd**：`BookingCommandService.deleteBooking(id, options?)` 支持 `{ asAdmin: true }` 或 `{ credentials: { qqNumber, phoneNumber } }`，服务层校验 QQ+手机与订单一致；新增错误码 `UNAUTHORIZED`。
+
+### Changed (showmasterpiece UI)
+
+- 新增共享设计 token：`ui/shared/theme.ts`（`sm` / `smCn`），Web、微信小程序、管理端统一 prussian-blue 品牌色板。
+- **小程序**：`PageHeader`、`CollectionCard`、`CartItemCard`、`CategoryTabs`、`FormField`、`HistoryRecordCard`、`BookingSteps`、`DeadlinePopup` 及首页/购物车/历史页接入 token；卡片阴影、主按钮渐变、`active:scale-[0.96]`、价格 `tabular-nums`。
+- **Web 用户端**：批量替换 `slate-*` / `gray-*` 为品牌色；`CollectionCard` 使用 `webCard` 并移除调试日志；`CartButton`、`AddToCartButton`、`ShowMasterPiecesPage` 顶栏与加载态统一。
+- **管理端**：`BookingAdminPanel` 统计卡、搜索区、筛选与主操作按钮对齐 `adminStatCard` / `adminPanel` / `adminInput`；`SystemConfigManager`、配置 Tab、历史页等管理界面色板一致。
+
 ## [1.6.0] - 2025-12-21
 
 ### Added
