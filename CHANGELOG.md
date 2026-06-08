@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.0.0-alpha.5] - 2026-06-08
+
+### Changed
+
+- **构建拆分（R2-301）**：`tsup.common.config.ts` + `tsup.business.config.ts`
+- 新增 `build:common` / `build:business`；`build` 顺序执行两者
+- entry 清单抽离为 `tsup.entries.common.ts` / `tsup.entries.business.ts`
+- `scripts/verify-tsup-entries.mjs` 校验分区无重叠
+
 ## [2.0.0-alpha.4] - 2026-06-08
 
 ### Added

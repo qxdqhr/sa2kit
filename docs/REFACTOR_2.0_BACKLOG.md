@@ -217,7 +217,7 @@ flowchart TB
 
 | ID | 任务 | 优先级 | 工时 | 影响面 | 依赖 | 状态 |
 |----|------|--------|------|--------|------|------|
-| R2-301 | tsup 拆为 `tsup.common.config.ts` + `tsup.business.config.ts` | P0 | 1d | 构建 | R2-101 | ⬜ |
+| R2-301 | tsup 拆为 `tsup.common.config.ts` + `tsup.business.config.ts` | P0 | 1d | 构建 | R2-101 | ✅ |
 | R2-302 | common 启用 `splitting: true` + 共享 chunk | P0 | 2d | dist 体积 | R2-301 | ⬜ |
 | R2-303 | business 按需 entry：仅保留仍被 profile-v1 引用的 subpath | P0 | 1.5d | exports | R2-301 | ⬜ |
 | R2-304 | exports 从 ~538 收敛到 common ~40 + business ~N（N 逐步减小） | P0 | 1d | package.json | R2-303 | ⬜ |
@@ -321,11 +321,11 @@ Week 10  R2-601 → R2-605        2.0 stable
 | 0 启动 | 6 | 6 | 0 | ~3.5d |
 | 1 目录 | 9 | 8 | 0 | ~8.5d |
 | 2 common | 17 | 7 | 0 | ~22d |
-| 3 构建 | 7 | 0 | 0 | ~8d |
+| 3 构建 | 7 | 1 | 0 | ~8d |
 | 4 business | 7 | 2 | 0 | ~9d |
 | 5 profile-v1 | 6 | 4 | 0 | ~4.5d |
 | 6 稳定 | 5 | 0 | 0 | ~3.5d |
-| **合计** | **57** | **27** | **0** | **~59d** |
+| **合计** | **57** | **28** | **0** | **~59d** |
 
 ---
 
@@ -333,7 +333,7 @@ Week 10  R2-601 → R2-605        2.0 stable
 
 | 日期 | 变更 |
 |------|------|
-| 2026-06-08 | **alpha.4**：R2-204/207/213；profile-v1 R2-501/502/504 |
+| 2026-06-08 | **alpha.5**：R2-301 tsup common/business 构建拆分 |
 | 2026-06-08 | **alpha.3**：R2-205 bootstrap；删除 showmasterpiece @ sa2kit |
 | 2026-06-08 | 初版：架构目标、57 项 backlog、2.0.0-alpha.0 启动 |
 

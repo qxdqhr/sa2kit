@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "2.0.0-alpha.4",
+  "version": "2.0.0-alpha.5",
   "description": "SA2Kit 2.x — common 通用工具库 + business 业务模块（重构中，见 docs/REFACTOR_2.0_BACKLOG.md）",
   "keywords": [
     "react",
@@ -697,7 +697,10 @@
   ],
   "scripts": {
     "dev": "NODE_OPTIONS='--max-old-space-size=16384' tsup --watch",
-    "build": "NODE_OPTIONS='--max-old-space-size=16384' tsup",
+    "build": "pnpm run verify:tsup-entries && pnpm run build:common && pnpm run build:business",
+    "build:common": "NODE_OPTIONS='--max-old-space-size=16384' tsup --config tsup.common.config.ts",
+    "build:business": "NODE_OPTIONS='--max-old-space-size=16384' tsup --config tsup.business.config.ts",
+    "verify:tsup-entries": "node scripts/verify-tsup-entries.mjs",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
