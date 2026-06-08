@@ -11,6 +11,7 @@
 import React from 'react';
 import { ShoppingCart } from 'lucide-react';
 import { useCartContext } from '../../../logic/hooks';
+import { sm, smCn } from '../../shared/theme';
 
 /**
  * 购物车按钮组件属性
@@ -46,14 +47,18 @@ export const CartButton: React.FC<CartButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`relative bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 ${className}`}
+      className={smCn(
+        'relative flex items-center gap-2 px-4 py-2 text-white',
+        sm.webBtnPrimary,
+        className,
+      )}
     >
       <ShoppingCart size={16} />
       <span>购物车</span>
       
       {/* 商品数量徽章 */}
       {showBadge && cart.totalQuantity > 0 && (
-        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+        <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-xs font-semibold tabular-nums text-white shadow-sm">
           {cart.totalQuantity > 99 ? '99+' : cart.totalQuantity}
         </span>
       )}

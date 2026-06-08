@@ -292,7 +292,7 @@ export const SystemConfigManager: React.FC = () => {
     }
     
     if (!item.value) {
-      return <span className="text-gray-400 italic">未设置</span>;
+      return <span className="text-prussian-blue-500 italic">未设置</span>;
     }
     
     return item.value;
@@ -328,17 +328,17 @@ export const SystemConfigManager: React.FC = () => {
       )}
 
       {/* 控制面板 */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60 p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           {/* 左侧控制 */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             {/* 环境切换 */}
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">环境:</label>
+              <label className="text-sm font-medium text-prussian-blue-700">环境:</label>
               <select
                 value={currentEnvironment}
                 onChange={(e) => handleEnvironmentChange(e.target.value as Environment)}
-                className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-1 border border-prussian-blue-200/80 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-moonstone/25"
               >
                 <option value="development">开发环境</option>
                 <option value="production">生产环境</option>
@@ -352,7 +352,7 @@ export const SystemConfigManager: React.FC = () => {
                 placeholder="搜索配置项..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-1 border border-prussian-blue-200/80 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-moonstone/25"
               />
             </div>
           </div>
@@ -361,7 +361,7 @@ export const SystemConfigManager: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setAddDialog({ isOpen: true })}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-moonstone to-cerulean text-white rounded-md text-sm font-medium hover:from-cerulean hover:to-moonstone transition-colors"
             >
               <Plus size={16} />
               新增配置
@@ -369,7 +369,7 @@ export const SystemConfigManager: React.FC = () => {
             <button
               onClick={() => loadConfigItems()}
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 bg-prussian-blue-100 text-prussian-blue-700 rounded-md text-sm font-medium hover:bg-prussian-blue-200 transition-colors disabled:opacity-50"
             >
               <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
               刷新
@@ -380,34 +380,34 @@ export const SystemConfigManager: React.FC = () => {
 
       {/* 配置项统计 */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60 p-4">
           <div className="flex items-center gap-3">
             <Database className="text-blue-500" size={20} />
             <div>
-              <p className="text-sm text-gray-600">总配置项</p>
-              <p className="text-lg font-semibold text-gray-900">{configItems.length}</p>
+              <p className="text-sm text-prussian-blue-600">总配置项</p>
+              <p className="text-lg font-semibold text-rich-black">{configItems.length}</p>
             </div>
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60 p-4">
           <div className="flex items-center gap-3">
             <CheckCircle className="text-green-500" size={20} />
             <div>
-              <p className="text-sm text-gray-600">已配置</p>
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="text-sm text-prussian-blue-600">已配置</p>
+              <p className="text-lg font-semibold text-rich-black">
                 {configItems.filter(item => item.value).length}
               </p>
             </div>
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60 p-4">
           <div className="flex items-center gap-3">
             <AlertTriangle className="text-yellow-500" size={20} />
             <div>
-              <p className="text-sm text-gray-600">待配置</p>
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="text-sm text-prussian-blue-600">待配置</p>
+              <p className="text-lg font-semibold text-rich-black">
                 {configItems.filter(item => item.isRequired && !item.value).length}
               </p>
             </div>
@@ -416,42 +416,42 @@ export const SystemConfigManager: React.FC = () => {
       </div>
 
       {/* 配置项列表 */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60">
         {loading ? (
           <div className="p-8 text-center">
             <Loader className="animate-spin mx-auto mb-4 text-blue-500" size={32} />
-            <p className="text-gray-600">加载配置项中...</p>
+            <p className="text-prussian-blue-600">加载配置项中...</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-prussian-blue-50/50 border-b border-prussian-blue-200/60">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">配置项</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">类型</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">当前值</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-prussian-blue-600 uppercase tracking-wider">状态</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-prussian-blue-600 uppercase tracking-wider">配置项</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-prussian-blue-600 uppercase tracking-wider">类型</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-prussian-blue-600 uppercase tracking-wider">当前值</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-prussian-blue-600 uppercase tracking-wider">操作</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-prussian-blue-200/60">
                 {filteredItems.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
+                  <tr key={item.id} className="hover:bg-prussian-blue-50/50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       {getStatusIcon(item)}
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-rich-black">
                           {item.displayName}
                           {item.isRequired && <span className="text-red-500 ml-1">*</span>}
                         </div>
-                        <div className="text-sm text-gray-500">{item.description}</div>
-                        <div className="text-xs text-gray-400 mt-1">Key: {item.key}</div>
+                        <div className="text-sm text-prussian-blue-600">{item.description}</div>
+                        <div className="text-xs text-prussian-blue-500 mt-1">Key: {item.key}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-prussian-blue-100 text-rich-black">
                         {getTypeDisplay(item.type)}
                       </span>
                     </td>
@@ -465,7 +465,7 @@ export const SystemConfigManager: React.FC = () => {
                               ...prev,
                               [item.id]: e.target.value
                             }))}
-                            className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="px-2 py-1 border border-prussian-blue-200/80 rounded text-sm focus:outline-none focus:ring-1 focus:ring-moonstone/25"
                             placeholder={item.defaultValue}
                           />
                           <button
@@ -481,20 +481,20 @@ export const SystemConfigManager: React.FC = () => {
                           </button>
                           <button
                             onClick={cancelEdit}
-                            className="text-gray-600 hover:text-gray-700"
+                            className="text-prussian-blue-600 hover:text-prussian-blue-700"
                           >
                             ×
                           </button>
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-gray-900">
+                          <span className="text-sm text-rich-black">
                             {renderValue(item)}
                           </span>
                           {item.isSensitive && (
                             <button
                               onClick={() => toggleSensitive(item.id)}
-                              className="text-gray-400 hover:text-gray-600"
+                              className="text-prussian-blue-500 hover:text-prussian-blue-600"
                             >
                               {showSensitive[item.id] ? <EyeOff size={14} /> : <Eye size={14} />}
                             </button>
@@ -508,7 +508,7 @@ export const SystemConfigManager: React.FC = () => {
                           <>
                             <button
                               onClick={() => startEdit(item)}
-                              className="text-blue-600 hover:text-blue-700"
+                              className="text-moonstone hover:text-blue-700"
                             >
                               <Edit size={16} />
                             </button>
@@ -534,7 +534,7 @@ export const SystemConfigManager: React.FC = () => {
             
             {filteredItems.length === 0 && (
               <div className="p-8 text-center">
-                <p className="text-gray-600">
+                <p className="text-prussian-blue-600">
                   {searchTerm ? '未找到匹配的配置项' : '暂无配置项'}
                 </p>
               </div>

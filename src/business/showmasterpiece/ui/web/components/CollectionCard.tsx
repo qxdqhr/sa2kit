@@ -22,6 +22,7 @@ import { Book, Eye, ImageIcon, ShoppingBag } from 'lucide-react';
 import { ArtCollection, CollectionCategory } from '../../../types';
 import { AddToCartButton } from './AddToCartButton';
 import { Card, CardContent, Badge, Button } from '@/components';
+import { sm, smCn } from '../../shared/theme';
 
 /**
  * CollectionCard 组件的 Props 接口
@@ -152,14 +153,15 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
     if (imageError || !collection.coverImage) {
       return renderImageError();
     }
-    console.log('🔍 [CollectionCard] 渲染封面图片:', collection.coverImage, 'collection:', collection);
     return (
       <img
         src={collection.coverImage}
         alt={collection.title}
-        className={`w-full h-full object-contain transition-opacity duration-300 ${
-          imageLoading ? 'opacity-0 absolute' : 'opacity-100'
-        }`}
+        className={smCn(
+          'h-full w-full object-contain transition-opacity duration-300',
+          sm.imgCover,
+          imageLoading ? 'absolute opacity-0' : 'opacity-100',
+        )}
         onLoad={handleImageLoad}
         onError={handleImageError}
       />
@@ -187,11 +189,13 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
   return (
     <Card
       ref={cardRef}
-      className={`overflow-hidden transition-all duration-300 transform w-full max-w-sm mx-auto group border-prussian-blue-200/30 shadow-lg hover:shadow-xl bg-gradient-to-br from-white to-prussian-blue-900/5 ${
-        !(collection.pages && collection.pages.length > 0) 
-          ? 'cursor-default' 
-          : 'cursor-pointer hover:-translate-y-1 hover:shadow-moonstone/20 hover:border-moonstone/40'
-      }`}
+      className={smCn(
+        'group mx-auto w-full max-w-sm overflow-hidden bg-gradient-to-br from-white to-prussian-blue-50/30',
+        sm.webCard,
+        !(collection.pages && collection.pages.length > 0)
+          ? 'cursor-default'
+          : smCn('cursor-pointer', sm.webCardHover),
+      )}
       onClick={(collection.pages && collection.pages.length > 0) ? () => onSelect(collection) : undefined}
     >
       {/* 图片容器 - B5尺寸适配 */}
@@ -243,9 +247,7 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
         )}
         
         {/* 价格 */}
-        <p className="text-prussian-blue-700 text-sm mb-2 font-medium">
-          价格：{formatPrice(collection.price)}
-        </p>
+        <p className={smCn(sm.price, 'mb-2')}>价格：{formatPrice(collection.price)}</p>
         
         {/* 描述 */}
         {collection.description && (
@@ -259,7 +261,7 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
           {/* 查看按钮 - 有作品内容时显示 */}
           {collection.pages && collection.pages.length > 0 && (
             <Button
-              className="flex-1 bg-gradient-to-r from-moonstone to-cerulean hover:from-cerulean hover:to-moonstone text-white gap-2 shadow-lg transition-all duration-300 hover:shadow-moonstone/30"
+              className={smCn('flex-1 gap-2 text-white', sm.webBtnPrimary)}
               onClick={(e) => {
                 e.stopPropagation();
                 onSelect(collection);

@@ -10,6 +10,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { Calendar, User, Package, Clock, CheckCircle, XCircle, RefreshCw, Eye, Edit, Save, X, Trash2, Download, Settings, Search } from 'lucide-react';
+import { sm, smCn } from '../../shared/theme';
 import { BookingAdminData, BookingAdminStats, BookingAdminQueryParams } from '../../../service/client-business/bookingAdminService';
 import { BOOKING_EXPORT_FIELDS, DEFAULT_BOOKING_EXPORT_CONFIG } from '../../../service/client-business/exportConfig';
 import { BookingStatus, BOOKING_STATUS_LABELS, BOOKING_STATUS_COLORS } from '../../../types/booking';
@@ -510,62 +511,62 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
     <div className="space-y-6">
       {/* 统计卡片 */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 sm:p-6">
+        <div className={sm.adminStatCard}>
           <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Calendar size={20} className="text-blue-600 sm:w-6 sm:h-6" />
+            <div className={smCn(sm.adminIconWrap, 'bg-prussian-blue-100')}>
+              <Calendar size={20} className="text-moonstone sm:h-6 sm:w-6" />
             </div>
             <div className="ml-3 sm:ml-4">
-              <h3 className="text-lg sm:text-2xl font-bold text-slate-800">{stats.totalBookings}</h3>
-              <p className="text-xs sm:text-sm text-slate-600">总预订数</p>
+              <h3 className={sm.adminStatValue}>{stats.totalBookings}</h3>
+              <p className={sm.adminStatLabel}>总预订数</p>
             </div>
           </div>
         </div>
-        
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 sm:p-6">
+
+        <div className={sm.adminStatCard}>
           <div className="flex items-center">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Clock size={20} className="text-yellow-600 sm:w-6 sm:h-6" />
+            <div className={smCn(sm.adminIconWrap, 'bg-amber-100')}>
+              <Clock size={20} className="text-amber-600 sm:h-6 sm:w-6" />
             </div>
             <div className="ml-3 sm:ml-4">
-              <h3 className="text-lg sm:text-2xl font-bold text-slate-800">{stats.pendingBookings}</h3>
-              <p className="text-xs sm:text-sm text-slate-600">待确认</p>
+              <h3 className={sm.adminStatValue}>{stats.pendingBookings}</h3>
+              <p className={sm.adminStatLabel}>待确认</p>
             </div>
           </div>
         </div>
-        
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 sm:p-6">
+
+        <div className={sm.adminStatCard}>
           <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle size={20} className="text-green-600 sm:w-6 sm:h-6" />
+            <div className={smCn(sm.adminIconWrap, 'bg-emerald-100')}>
+              <CheckCircle size={20} className="text-emerald-600 sm:h-6 sm:w-6" />
             </div>
             <div className="ml-3 sm:ml-4">
-              <h3 className="text-lg sm:text-2xl font-bold text-slate-800">{stats.completedBookings}</h3>
-              <p className="text-xs sm:text-sm text-slate-600">已完成</p>
+              <h3 className={sm.adminStatValue}>{stats.completedBookings}</h3>
+              <p className={sm.adminStatLabel}>已完成</p>
             </div>
           </div>
         </div>
-        
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 sm:p-6">
+
+        <div className={sm.adminStatCard}>
           <div className="flex items-center">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Package size={20} className="text-purple-600 sm:w-6 sm:h-6" />
+            <div className={smCn(sm.adminIconWrap, 'bg-cerulean/15')}>
+              <Package size={20} className="text-cerulean sm:h-6 sm:w-6" />
             </div>
             <div className="ml-3 sm:ml-4">
-              <h3 className="text-lg sm:text-2xl font-bold text-slate-800">¥{stats.totalRevenue}</h3>
-              <p className="text-xs sm:text-sm text-slate-600">总收入</p>
+              <h3 className={sm.adminStatValue}>¥{stats.totalRevenue}</h3>
+              <p className={sm.adminStatLabel}>总收入</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* 搜索栏 */}
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
+      <div className={sm.adminPanel}>
         <form onSubmit={handleSearchSubmit} className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
             {/* QQ号搜索 */}
             <div className="flex-1">
-              <label htmlFor="searchQqNumber" className="block text-sm font-medium text-slate-700 mb-2">
+              <label htmlFor="searchQqNumber" className={sm.adminLabel}>
                 QQ号搜索
               </label>
               <input
@@ -573,14 +574,14 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                 id="searchQqNumber"
                 value={searchForm.qqNumber}
                 onChange={(e) => setSearchForm(prev => ({ ...prev, qqNumber: e.target.value }))}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={sm.adminInput}
                 placeholder="输入QQ号进行搜索"
               />
             </div>
             
             {/* 手机号搜索 */}
             <div className="flex-1">
-              <label htmlFor="searchPhoneNumber" className="block text-sm font-medium text-slate-700 mb-2">
+              <label htmlFor="searchPhoneNumber" className="block text-sm font-medium text-prussian-blue-700 mb-2">
                 手机号搜索
               </label>
               <input
@@ -588,21 +589,21 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                 id="searchPhoneNumber"
                 value={searchForm.phoneNumber}
                 onChange={(e) => setSearchForm(prev => ({ ...prev, phoneNumber: e.target.value }))}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                 placeholder="输入手机号进行搜索"
               />
             </div>
             
             {/* 状态过滤 */}
             <div className="flex-1">
-              <label htmlFor="searchStatus" className="block text-sm font-medium text-slate-700 mb-2">
+              <label htmlFor="searchStatus" className="block text-sm font-medium text-prussian-blue-700 mb-2">
                 状态过滤
               </label>
               <select
                 id="searchStatus"
                 value={searchForm.status}
                 onChange={(e) => setSearchForm(prev => ({ ...prev, status: e.target.value as BookingStatus | 'all' }))}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25"
               >
                 <option value="all">全部状态</option>
                 <option value="pending">待确认</option>
@@ -618,7 +619,7 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-moonstone to-cerulean text-white rounded-lg font-medium hover:from-cerulean hover:to-moonstone transition-colors disabled:opacity-50"
             >
               <Search size={16} />
               搜索
@@ -627,7 +628,7 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
               type="button"
               onClick={handleClearSearch}
               disabled={loading}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors disabled:opacity-50"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-prussian-blue-100 text-prussian-blue-700 rounded-lg font-medium hover:bg-prussian-blue-200 transition-colors disabled:opacity-50"
             >
               <X size={16} />
               清除
@@ -637,14 +638,14 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
       </div>
 
       {/* 操作栏 */}
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
+      <div className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60 p-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex flex-wrap gap-2">
             <button
               className={`px-3 py-2 text-sm sm:text-base rounded-lg font-medium transition-colors ${
                 filterStatus === 'all' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  ? 'bg-gradient-to-r from-moonstone to-cerulean text-white' 
+                  : 'bg-prussian-blue-100 text-prussian-blue-700 hover:bg-prussian-blue-200'
               }`}
               onClick={() => handleStatusFilter('all')}
             >
@@ -653,8 +654,8 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
             <button
               className={`px-3 py-2 text-sm sm:text-base rounded-lg font-medium transition-colors ${
                 filterStatus === 'pending' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  ? 'bg-gradient-to-r from-moonstone to-cerulean text-white' 
+                  : 'bg-prussian-blue-100 text-prussian-blue-700 hover:bg-prussian-blue-200'
               }`}
               onClick={() => handleStatusFilter('pending')}
             >
@@ -663,8 +664,8 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
             <button
               className={`px-3 py-2 text-sm sm:text-base rounded-lg font-medium transition-colors ${
                 filterStatus === 'confirmed' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  ? 'bg-gradient-to-r from-moonstone to-cerulean text-white' 
+                  : 'bg-prussian-blue-100 text-prussian-blue-700 hover:bg-prussian-blue-200'
               }`}
               onClick={() => handleStatusFilter('confirmed')}
             >
@@ -673,8 +674,8 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
             <button
               className={`px-3 py-2 text-sm sm:text-base rounded-lg font-medium transition-colors ${
                 filterStatus === 'completed' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  ? 'bg-gradient-to-r from-moonstone to-cerulean text-white' 
+                  : 'bg-prussian-blue-100 text-prussian-blue-700 hover:bg-prussian-blue-200'
               }`}
               onClick={() => handleStatusFilter('completed')}
             >
@@ -683,8 +684,8 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
             <button
               className={`px-3 py-2 text-sm sm:text-base rounded-lg font-medium transition-colors ${
                 filterStatus === 'cancelled' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  ? 'bg-gradient-to-r from-moonstone to-cerulean text-white' 
+                  : 'bg-prussian-blue-100 text-prussian-blue-700 hover:bg-prussian-blue-200'
               }`}
               onClick={() => handleStatusFilter('cancelled')}
             >
@@ -696,24 +697,24 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
             <button
               onClick={onRefresh}
               disabled={loading}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-moonstone to-cerulean text-white rounded-lg font-medium hover:from-cerulean hover:to-moonstone transition-colors disabled:opacity-50"
             >
               <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
               刷新
             </button>
 
             {/* 用户价格结算勾选框 */}
-            <div className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg">
+            <div className="flex items-center gap-2 px-3 py-2 bg-white border border-prussian-blue-200/60 rounded-lg">
               <input
                 type="checkbox"
                 id="enableUserPriceCalculation"
                 checked={enableUserPriceCalculation}
                 onChange={(e) => setEnableUserPriceCalculation(e.target.checked)}
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                className="w-4 h-4 text-moonstone bg-prussian-blue-100 border-prussian-blue-200/80 rounded focus:ring-moonstone/25 focus:ring-2"
               />
               <label
                 htmlFor="enableUserPriceCalculation"
-                className="text-sm font-medium text-slate-700 cursor-pointer"
+                className="text-sm font-medium text-prussian-blue-700 cursor-pointer"
                 title="勾选后导出Excel时会添加一列用户总价（根据QQ号+手机号唯一匹配）"
               >
                 包含用户总价
@@ -813,10 +814,10 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
       {/* 预订列表 */}
       <div className="space-y-4">
         {paginatedBookings.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-8 sm:p-12 text-center">
-            <Calendar size={40} className="text-slate-400 mx-auto mb-4 sm:w-12 sm:h-12" />
-            <h3 className="text-base sm:text-lg font-medium text-slate-800 mb-2">暂无预订数据</h3>
-            <p className="text-sm sm:text-base text-slate-600">
+          <div className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60 p-8 sm:p-12 text-center">
+            <Calendar size={40} className="text-prussian-blue-500 mx-auto mb-4 sm:w-12 sm:h-12" />
+            <h3 className="text-base sm:text-lg font-medium text-rich-black mb-2">暂无预订数据</h3>
+            <p className="text-sm sm:text-base text-prussian-blue-600">
               {totalItems === 0 ? '当前筛选条件下没有找到预订数据' : '当前页无数据'}
             </p>
           </div>
@@ -825,7 +826,7 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
             const statusInfo = getStatusInfo(booking.status);
             
             return (
-              <div key={booking.id} className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+              <div key={booking.id} className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60 overflow-hidden">
                 <div className="p-4 sm:p-6">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                     <div className="flex items-start gap-3 sm:gap-4">
@@ -836,16 +837,16 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                           className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg flex-shrink-0"
                         />
                       ) : (
-                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 rounded-lg flex-shrink-0 flex items-center justify-center text-slate-400 text-xs">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-prussian-blue-100 rounded-lg flex-shrink-0 flex items-center justify-center text-prussian-blue-500 text-xs">
                           暂无
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-base sm:text-lg font-semibold text-slate-800 truncate">{booking.collection.title}</h3>
-                        <p className="text-sm text-slate-600">编号：{booking.collection.number}</p>
-                        <p className="text-sm text-slate-600">QQ号：{booking.qqNumber}</p>
+                        <h3 className="text-base sm:text-lg font-semibold text-rich-black truncate">{booking.collection.title}</h3>
+                        <p className="text-sm text-prussian-blue-600">编号：{booking.collection.number}</p>
+                        <p className="text-sm text-prussian-blue-600">QQ号：{booking.qqNumber}</p>
                         {booking.phoneNumber && (
-                          <p className="text-sm text-slate-600">手机号：{booking.phoneNumber}</p>
+                          <p className="text-sm text-prussian-blue-600">手机号：{booking.phoneNumber}</p>
                         )}
                       </div>
                     </div>
@@ -854,37 +855,37 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusInfo.color}`}>
                         {statusInfo.label}
                       </span>
-                      <p className="text-sm text-slate-500 mt-1"># {booking.id}</p>
+                      <p className="text-sm text-prussian-blue-600 mt-1"># {booking.id}</p>
                     </div>
                   </div>
                   
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
                     <div>
-                      <p className="text-xs text-slate-500">数量</p>
-                      <p className="text-sm font-medium text-slate-800">{booking.quantity}</p>
+                      <p className="text-xs text-prussian-blue-600">数量</p>
+                      <p className="text-sm font-medium text-rich-black">{booking.quantity}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-slate-500">单价</p>
-                      <p className="text-sm font-medium text-slate-800">¥{booking.collection.price}</p>
+                      <p className="text-xs text-prussian-blue-600">单价</p>
+                      <p className="text-sm font-medium text-rich-black">¥{booking.collection.price}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-slate-500">总价</p>
-                      <p className="text-sm font-medium text-slate-800">¥{booking.totalPrice}</p>
+                      <p className="text-xs text-prussian-blue-600">总价</p>
+                      <p className="text-sm font-medium text-rich-black">¥{booking.totalPrice}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-slate-500">预订时间</p>
-                      <p className="text-sm font-medium text-slate-800">{formatTime(booking.createdAt)}</p>
+                      <p className="text-xs text-prussian-blue-600">预订时间</p>
+                      <p className="text-sm font-medium text-rich-black">{formatTime(booking.createdAt)}</p>
                     </div>
                   </div>
                   
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
                     <div>
-                      <p className="text-xs text-slate-500">QQ号</p>
-                      <p className="text-sm font-medium text-slate-800">{booking.qqNumber}</p>
+                      <p className="text-xs text-prussian-blue-600">QQ号</p>
+                      <p className="text-sm font-medium text-rich-black">{booking.qqNumber}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-slate-500">手机号</p>
-                      <p className="text-sm font-medium text-slate-800">{booking.phoneNumber}</p>
+                      <p className="text-xs text-prussian-blue-600">手机号</p>
+                      <p className="text-sm font-medium text-rich-black">{booking.phoneNumber}</p>
                     </div>
                   </div>
                   
@@ -892,19 +893,19 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
                     {booking.confirmedAt && (
                       <div>
-                        <p className="text-xs text-slate-500">确认时间</p>
+                        <p className="text-xs text-prussian-blue-600">确认时间</p>
                         <p className="text-sm font-medium text-green-800">{formatTime(booking.confirmedAt)}</p>
                       </div>
                     )}
                     {booking.completedAt && (
                       <div>
-                        <p className="text-xs text-slate-500">完成时间</p>
+                        <p className="text-xs text-prussian-blue-600">完成时间</p>
                         <p className="text-sm font-medium text-blue-800">{formatTime(booking.completedAt)}</p>
                       </div>
                     )}
                     {booking.cancelledAt && (
                       <div>
-                        <p className="text-xs text-slate-500">取消时间</p>
+                        <p className="text-xs text-prussian-blue-600">取消时间</p>
                         <p className="text-sm font-medium text-red-800">{formatTime(booking.cancelledAt)}</p>
                       </div>
                     )}
@@ -914,18 +915,18 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                     <div className="mb-4">
                       {booking.pickupMethod && (
                         <div className="mb-2">
-                          <p className="text-xs text-slate-500">领取方式
+                          <p className="text-xs text-prussian-blue-600">领取方式
                             请填写2月10号以后能收到货的地址
                             （1）收件人
                             （2）收件地址
                             （3）收件手机号
                           </p>
-                          <p className="text-sm text-slate-700">{booking.pickupMethod}</p>
+                          <p className="text-sm text-prussian-blue-700">{booking.pickupMethod}</p>
                         </div>
                       )}
                       {booking.notes && (
                         <div className="mb-2">
-                          <p className="text-xs text-slate-500">用户备注：
+                          <p className="text-xs text-prussian-blue-600">用户备注：
                             （1）葱韵环京ComicUniverse
                             （2）葱韵环京外星开拓群
                             （3）葱韵环京比邻星
@@ -933,13 +934,13 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                             （5）葱韵环京天津群
                             （6）葱韵环京·四维空间
                           </p>
-                          <p className="text-sm text-slate-700">{booking.notes}</p>
+                          <p className="text-sm text-prussian-blue-700">{booking.notes}</p>
                         </div>
                       )}
                       {booking.adminNotes && (
                         <div>
-                          <p className="text-xs text-slate-500">管理员备注</p>
-                          <p className="text-sm text-slate-700">{booking.adminNotes}</p>
+                          <p className="text-xs text-prussian-blue-600">管理员备注</p>
+                          <p className="text-sm text-prussian-blue-700">{booking.adminNotes}</p>
                         </div>
                       )}
                     </div>
@@ -951,7 +952,7 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                         <select
                           value={editForm.status}
                           onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value as BookingStatus }))}
-                          className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="flex-1 px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                         >
                           <option value="pending">待确认</option>
                           <option value="confirmed">已确认</option>
@@ -963,7 +964,7 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                           value={editForm.adminNotes}
                           onChange={(e) => setEditForm(prev => ({ ...prev, adminNotes: e.target.value }))}
                           placeholder="管理员备注"
-                          className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="flex-1 px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                         />
                         <button
                           onClick={handleSaveEdit}
@@ -974,7 +975,7 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                         </button>
                         <button
                           onClick={handleCancelEdit}
-                          className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                          className="flex items-center justify-center gap-2 px-4 py-2 bg-prussian-blue-100 text-prussian-blue-700 rounded-lg font-medium hover:bg-prussian-blue-200 transition-colors"
                         >
                           <X size={16} />
                           取消
@@ -984,7 +985,7 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                       <>
                         <button
                           onClick={() => handleEditBooking(booking)}
-                          className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                          className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-moonstone to-cerulean text-white rounded-lg font-medium hover:from-cerulean hover:to-moonstone transition-colors"
                         >
                           <Edit size={16} />
                           编辑
@@ -1008,26 +1009,26 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
 
       {/* 分页组件 */}
       {totalItems > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 sm:p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60 p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             {/* 分页信息 */}
             <div className="flex items-center gap-4">
-              <div className="text-sm text-slate-600">
+              <div className="text-sm text-prussian-blue-600">
                 共 {totalItems} 条记录，第 {currentPage} / {totalPages} 页
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-600">每页显示</span>
+                <span className="text-sm text-prussian-blue-600">每页显示</span>
                 <select
                   value={pageSize}
                   onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-                  className="px-2 py-1 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-2 py-1 border border-prussian-blue-200/80 rounded text-sm focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                 >
                   <option value={5}>5</option>
                   <option value={10}>10</option>
                   <option value={20}>20</option>
                   <option value={50}>50</option>
                 </select>
-                <span className="text-sm text-slate-600">条</span>
+                <span className="text-sm text-prussian-blue-600">条</span>
               </div>
             </div>
 
@@ -1037,7 +1038,7 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-3 py-1 text-sm border border-slate-300 rounded hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+                className="px-3 py-1 text-sm border border-prussian-blue-200/80 rounded hover:bg-prussian-blue-50/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
               >
                 上一页
               </button>
@@ -1057,7 +1058,7 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                       if (index < 5) {
                         pageNum = index + 1;
                       } else if (index === 5) {
-                        return <span key={index} className="px-2 text-slate-400">...</span>;
+                        return <span key={index} className="px-2 text-prussian-blue-500">...</span>;
                       } else {
                         pageNum = totalPages;
                       }
@@ -1066,7 +1067,7 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                       if (index === 0) {
                         pageNum = 1;
                       } else if (index === 1) {
-                        return <span key={index} className="px-2 text-slate-400">...</span>;
+                        return <span key={index} className="px-2 text-prussian-blue-500">...</span>;
                       } else {
                         pageNum = totalPages - 5 + index;
                       }
@@ -1075,11 +1076,11 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                       if (index === 0) {
                         pageNum = 1;
                       } else if (index === 1) {
-                        return <span key={index} className="px-2 text-slate-400">...</span>;
+                        return <span key={index} className="px-2 text-prussian-blue-500">...</span>;
                       } else if (index >= 2 && index <= 4) {
                         pageNum = currentPage - 3 + index;
                       } else if (index === 5) {
-                        return <span key={index} className="px-2 text-slate-400">...</span>;
+                        return <span key={index} className="px-2 text-prussian-blue-500">...</span>;
                       } else {
                         pageNum = totalPages;
                       }
@@ -1093,7 +1094,7 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                       className={`px-3 py-1 text-sm border rounded ${
                         pageNum === currentPage
                           ? 'bg-blue-500 text-white border-blue-500'
-                          : 'border-slate-300 hover:bg-slate-50'
+                          : 'border-prussian-blue-200/80 hover:bg-prussian-blue-50/50'
                       }`}
                     >
                       {pageNum}
@@ -1106,7 +1107,7 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 text-sm border border-slate-300 rounded hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+                className="px-3 py-1 text-sm border border-prussian-blue-200/80 rounded hover:bg-prussian-blue-50/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
               >
                 下一页
               </button>
@@ -1115,23 +1116,23 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
 
           {/* 移动端简化分页 */}
           <div className="sm:hidden">
-            <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+            <div className="flex items-center justify-between pt-4 border-t border-prussian-blue-200/60">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-slate-100 rounded hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-slate-100"
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-prussian-blue-100 rounded hover:bg-prussian-blue-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-prussian-blue-100"
               >
                 上一页
               </button>
               
-              <span className="text-sm text-slate-600">
+              <span className="text-sm text-prussian-blue-600">
                 {currentPage} / {totalPages}
               </span>
               
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-slate-100 rounded hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-slate-100"
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-prussian-blue-100 rounded hover:bg-prussian-blue-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-prussian-blue-100"
               >
                 下一页
               </button>
@@ -1144,11 +1145,11 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
       {selectedBooking && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-200">
-              <h2 className="text-lg sm:text-xl font-semibold text-slate-800">预订详情</h2>
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-prussian-blue-200/60">
+              <h2 className="text-lg sm:text-xl font-semibold text-rich-black">预订详情</h2>
               <button
                 onClick={() => setSelectedBooking(null)}
-                className="text-slate-400 hover:text-slate-600 text-2xl font-bold leading-none p-1"
+                className="text-prussian-blue-500 hover:text-prussian-blue-600 text-2xl font-bold leading-none p-1"
               >
                 ×
               </button>
@@ -1158,7 +1159,7 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
               <div className="space-y-6">
                 {/* 画集信息 */}
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-slate-800 mb-3">画集信息</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-rich-black mb-3">画集信息</h3>
                   <div className="flex items-start gap-3 sm:gap-4">
                     {selectedBooking.collection.coverImage ? (
                       <img
@@ -1167,46 +1168,46 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                         className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0"
                       />
                     ) : (
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100 rounded-lg flex-shrink-0 flex items-center justify-center text-slate-400 text-xs">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-prussian-blue-100 rounded-lg flex-shrink-0 flex items-center justify-center text-prussian-blue-500 text-xs">
                         暂无图片
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
-                      <h4 className="font-medium text-slate-800 truncate">{selectedBooking.collection.title}</h4>
-                      <p className="text-sm text-slate-600">编号：{selectedBooking.collection.number}</p>
-                      <p className="text-sm text-slate-600">价格：¥{selectedBooking.collection.price || '待定'}</p>
+                      <h4 className="font-medium text-rich-black truncate">{selectedBooking.collection.title}</h4>
+                      <p className="text-sm text-prussian-blue-600">编号：{selectedBooking.collection.number}</p>
+                      <p className="text-sm text-prussian-blue-600">价格：¥{selectedBooking.collection.price || '待定'}</p>
                     </div>
                   </div>
                 </div>
                 
                 {/* 预订信息 */}
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-slate-800 mb-3">预订信息</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-rich-black mb-3">预订信息</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
-                      <p className="text-sm text-slate-500">预订ID</p>
-                      <p className="font-medium text-slate-800">#{selectedBooking.id}</p>
+                      <p className="text-sm text-prussian-blue-600">预订ID</p>
+                      <p className="font-medium text-rich-black">#{selectedBooking.id}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-500">QQ号</p>
-                      <p className="font-medium text-slate-800">{selectedBooking.qqNumber}</p>
+                      <p className="text-sm text-prussian-blue-600">QQ号</p>
+                      <p className="font-medium text-rich-black">{selectedBooking.qqNumber}</p>
                     </div>
                     {selectedBooking.phoneNumber && (
                       <div>
-                        <p className="text-sm text-slate-500">手机号</p>
-                        <p className="font-medium text-slate-800">{selectedBooking.phoneNumber}</p>
+                        <p className="text-sm text-prussian-blue-600">手机号</p>
+                        <p className="font-medium text-rich-black">{selectedBooking.phoneNumber}</p>
                       </div>
                     )}
                     <div>
-                      <p className="text-sm text-slate-500">预订数量</p>
-                      <p className="font-medium text-slate-800">{selectedBooking.quantity}</p>
+                      <p className="text-sm text-prussian-blue-600">预订数量</p>
+                      <p className="font-medium text-rich-black">{selectedBooking.quantity}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-500">总价格</p>
-                      <p className="font-medium text-slate-800">¥{selectedBooking.totalPrice}</p>
+                      <p className="text-sm text-prussian-blue-600">总价格</p>
+                      <p className="font-medium text-rich-black">¥{selectedBooking.totalPrice}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-500">状态</p>
+                      <p className="text-sm text-prussian-blue-600">状态</p>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusInfo(selectedBooking.status).color}`}>
                         {getStatusInfo(selectedBooking.status).label}
                       </span>
@@ -1216,32 +1217,32 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                 
                 {/* 时间信息 */}
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-slate-800 mb-3">时间信息</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-rich-black mb-3">时间信息</h3>
                   <div className="space-y-2">
                     <div>
-                      <p className="text-sm text-slate-500">预订时间</p>
-                      <p className="text-sm font-medium text-slate-800">{formatTime(selectedBooking.createdAt)}</p>
+                      <p className="text-sm text-prussian-blue-600">预订时间</p>
+                      <p className="text-sm font-medium text-rich-black">{formatTime(selectedBooking.createdAt)}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-500">更新时间</p>
-                      <p className="text-sm font-medium text-slate-800">{formatTime(selectedBooking.updatedAt)}</p>
+                      <p className="text-sm text-prussian-blue-600">更新时间</p>
+                      <p className="text-sm font-medium text-rich-black">{formatTime(selectedBooking.updatedAt)}</p>
                     </div>
                     {selectedBooking.confirmedAt && (
                       <div>
-                        <p className="text-sm text-slate-500">确认时间</p>
-                        <p className="text-sm font-medium text-slate-800">{formatTime(selectedBooking.confirmedAt)}</p>
+                        <p className="text-sm text-prussian-blue-600">确认时间</p>
+                        <p className="text-sm font-medium text-rich-black">{formatTime(selectedBooking.confirmedAt)}</p>
                       </div>
                     )}
                     {selectedBooking.completedAt && (
                       <div>
-                        <p className="text-sm text-slate-500">完成时间</p>
-                        <p className="text-sm font-medium text-slate-800">{formatTime(selectedBooking.completedAt)}</p>
+                        <p className="text-sm text-prussian-blue-600">完成时间</p>
+                        <p className="text-sm font-medium text-rich-black">{formatTime(selectedBooking.completedAt)}</p>
                       </div>
                     )}
                     {selectedBooking.cancelledAt && (
                       <div>
-                        <p className="text-sm text-slate-500">取消时间</p>
-                        <p className="text-sm font-medium text-slate-800">{formatTime(selectedBooking.cancelledAt)}</p>
+                        <p className="text-sm text-prussian-blue-600">取消时间</p>
+                        <p className="text-sm font-medium text-rich-black">{formatTime(selectedBooking.cancelledAt)}</p>
                       </div>
                     )}
                   </div>
@@ -1250,15 +1251,15 @@ export const BookingAdminPanel: React.FC<BookingAdminPanelProps> = ({
                 {/* 备注信息 */}
                 {selectedBooking.notes && (
                   <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-slate-800 mb-3">用户备注</h3>
-                    <p className="text-sm text-slate-800 bg-slate-50 p-4 rounded-lg break-words">{selectedBooking.notes}</p>
+                    <h3 className="text-base sm:text-lg font-semibold text-rich-black mb-3">用户备注</h3>
+                    <p className="text-sm text-rich-black bg-prussian-blue-50/50 p-4 rounded-lg break-words">{selectedBooking.notes}</p>
                   </div>
                 )}
                 
                 {selectedBooking.adminNotes && (
                   <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-slate-800 mb-3">管理员备注</h3>
-                    <p className="text-sm text-slate-800 bg-slate-50 p-4 rounded-lg break-words">{selectedBooking.adminNotes}</p>
+                    <h3 className="text-base sm:text-lg font-semibold text-rich-black mb-3">管理员备注</h3>
+                    <p className="text-sm text-rich-black bg-prussian-blue-50/50 p-4 rounded-lg break-words">{selectedBooking.adminNotes}</p>
                   </div>
                 )}
               </div>

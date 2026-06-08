@@ -4,6 +4,7 @@ import type { ArtCollection, CollectionCategoryType } from '../../../types';
 import { CollectionCategory } from '../../../types';
 import { formatPrice } from '../../../logic/shared/format';
 import { getCategoryLabel } from '../../../logic/shared/category';
+import { sm, smCn } from '../../shared/theme';
 
 type ActionButton = {
   label: string;
@@ -33,7 +34,7 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
   actions,
   showCategory = true,
   showDescription = true,
-  variant = 'default'
+  variant = 'default',
 }) => {
   const isCompact = variant === 'compact';
   const pageCount = collection.pages?.length ?? 0;
@@ -41,17 +42,11 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
   const badgeText = isCollection ? (pageCount > 0 ? `${pageCount} 页` : '画集') : '商品';
 
   return (
-    <View
-      className={
-        isCompact
-          ? 'flex gap-3 rounded-2xl border border-prussian-blue-200 bg-white p-3 shadow-sm'
-          : 'overflow-hidden rounded-3xl border border-prussian-blue-200 bg-white shadow-lg'
-      }
-    >
+    <View className={isCompact ? smCn(sm.cardCompact, 'flex gap-3') : sm.cardLg}>
       <View
         className={
           isCompact
-            ? 'relative h-24 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-prussian-blue-100 to-oxford-blue-100'
+            ? smCn('relative h-24 w-20 shrink-0 overflow-hidden', sm.imgPlaceholder)
             : 'relative h-80 w-full overflow-hidden bg-gradient-to-br from-prussian-blue-100 to-oxford-blue-100'
         }
       >
@@ -59,61 +54,60 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
           <Image
             src={collection.coverImage}
             mode="aspectFill"
-            className={isCompact ? 'h-full w-full' : 'h-full w-full'}
+            className={smCn('h-full w-full', sm.imgCover)}
           />
         ) : (
-          <View className="flex h-full w-full items-center justify-center text-xs text-prussian-blue-500">
+          <View className={smCn('flex h-full w-full items-center justify-center', sm.meta)}>
             暂无图片
           </View>
         )}
         {!isCompact && (
-          <View className="absolute bottom-0 left-0 right-0 flex items-end justify-between bg-gradient-to-t from-rich-black to-transparent px-4 py-3">
-            <View className="rounded-full bg-moonstone-400 px-3 py-1 text-xs font-semibold text-white shadow-lg">
-              <Text>{badgeText}</Text>
+          <View className="absolute bottom-0 left-0 right-0 flex items-end justify-between bg-gradient-to-t from-rich-black/70 via-rich-black/20 to-transparent px-4 py-3">
+            <View className="rounded-full bg-moonstone/95 px-3 py-1 shadow-md backdrop-blur-sm">
+              <Text className="text-xs font-semibold text-white">{badgeText}</Text>
             </View>
-            <View className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-prussian-blue-700">
-              <Text>{formatPrice(collection.price)}</Text>
+            <View className="rounded-full bg-white/95 px-3 py-1 shadow-sm backdrop-blur-sm">
+              <Text className={smCn(sm.price, 'text-xs')}>{formatPrice(collection.price)}</Text>
             </View>
           </View>
         )}
       </View>
 
       <View className={isCompact ? 'flex-1' : 'p-4'}>
-        <Text className={isCompact ? 'text-sm font-semibold text-rich-black' : 'text-lg font-bold text-rich-black'}>
+        <Text className={isCompact ? sm.titleSm : smCn(sm.title, 'text-lg')}>
           {collection.title}
         </Text>
-        <Text className="mt-1 block text-xs text-prussian-blue-600">编号：{collection.number}</Text>
+        <Text className={smCn(sm.meta, 'mt-1 block')}>编号：{collection.number}</Text>
         {showCategory && collection.category && (
-          <Text className="mt-1 block text-xs text-prussian-blue-600">
+          <Text className={smCn(sm.meta, 'mt-1 block')}>
             分类：{getCategoryLabel(collection.category)}
           </Text>
         )}
         {isCompact && (
-          <Text className="mt-1 block text-xs font-medium text-prussian-blue-700">
+          <Text className={smCn(sm.price, 'mt-1 block')}>
             价格：{formatPrice(collection.price)}
           </Text>
         )}
         {showDescription && collection.description && !isCompact && (
-          <Text className="mt-2 block text-xs text-prussian-blue-500">{collection.description}</Text>
+          <Text className={smCn(sm.subtitle, 'mt-2 block line-clamp-2')}>
+            {collection.description}
+          </Text>
         )}
         {actions && actions.length > 0 && (
           <View className={isCompact ? 'mt-3 flex gap-2' : 'mt-4 flex gap-2'}>
-            {actions.map(action => (
+            {actions.map((action) => (
               <View
                 key={action.label}
                 className={
                   action.variant === 'ghost'
-                    ? 'flex h-9 flex-1 items-center justify-center rounded-full border border-prussian-blue-200 bg-white px-4'
-                    : 'flex h-9 flex-1 items-center justify-center rounded-full px-4 shadow-lg'
+                    ? smCn(sm.btnGhost, sm.btnGhostFlex)
+                    : smCn(sm.btnPrimary, sm.btnPrimaryFlex)
                 }
-                style={action.variant === 'ghost' ? undefined : { backgroundColor: '#1e88e5' }}
                 onClick={action.onClick}
               >
                 <Text
                   className={
-                    action.variant === 'ghost'
-                      ? 'text-xs font-semibold text-prussian-blue-700'
-                      : 'text-xs font-semibold text-white'
+                    action.variant === 'ghost' ? sm.btnTextGhost : sm.btnTextPrimary
                   }
                 >
                   {action.label}

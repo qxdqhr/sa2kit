@@ -1,6 +1,26 @@
 # SA2Kit
 
-一个现代的、类型安全的 React 工具库，具有跨平台支持，用于构建可扩展的应用程序。
+一个现代的、类型安全的跨平台工具库。**2.0 重构进行中**：拆分为 `common`（通用逻辑，供 Web / Taro / Electron / Hono 等多项目接入）与 `business`（业务逻辑，逐步迁回 profile-v1）。
+
+> 📋 **重构任务 SSOT**：[docs/REFACTOR_2.0_BACKLOG.md](./docs/REFACTOR_2.0_BACKLOG.md)  
+> 当前版本：`2.0.0-alpha.1`（API 不保证稳定，生产环境请暂用 1.6.x 或 pin alpha）
+
+### 2.0 推荐 import（common）
+
+```typescript
+import { logger } from 'sa2kit/common/logger';
+import { uploadModuleFile } from 'sa2kit/common/file';
+import { createOssFileConfigManagerFromEnv } from 'sa2kit/common/file/server';
+```
+
+旧路径（`sa2kit/logger`、`sa2kit/ossFile`）在 2.x 仍可用，后续标记 deprecated。
+
+## 2.0 目标架构（摘要）
+
+| 层级 | 入口 | 职责 |
+|------|------|------|
+| **common** | `sa2kit/common/*`（规划中的统一前缀） | logger、utils、storage、request、ossFile、auth 内核等 |
+| **business** | `sa2kit/business/*` | showmasterpiece、mikuContest 等；后期迁回 profile-v1 |
 
 ## 特性
 

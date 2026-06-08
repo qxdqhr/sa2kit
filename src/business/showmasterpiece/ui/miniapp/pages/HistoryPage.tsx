@@ -5,6 +5,7 @@ import type { Booking } from '../../../types/booking';
 import { FormInput, HistoryRecordCard, PageHeader } from '../index';
 import { DEFAULT_BASE_URL, getBookings } from '../../../service/miniapp';
 import { ensurePrivacyConsent, hasPrivacyConsent, showAgreementDoc } from '../components/privacyConsent';
+import { sm, smCn } from '../../shared/theme';
 
 export interface HistoryMiniappPageProps {
   apiBaseUrl?: string;
@@ -78,10 +79,10 @@ const HistoryMiniappPage: React.FC<HistoryMiniappPageProps> = ({ apiBaseUrl = DE
   }, [records]);
 
   return (
-    <View className="min-h-screen bg-gradient-to-br from-white to-prussian-blue-100 pb-12 text-rich-black">
+    <View className={smCn(sm.screen, 'pb-12 text-rich-black')}>
       <PageHeader title="历史记录查询" subtitle="请同时填写 QQ 号与联系方式查询预订记录" />
 
-      <View className="mx-4 mt-5 rounded-3xl border border-prussian-blue-200 bg-white px-5 py-5 shadow-sm">
+      <View className={smCn('mx-4 mt-5', sm.panel)}>
         <FormInput
           label="QQ号"
           value={qqNumber}
@@ -98,56 +99,46 @@ const HistoryMiniappPage: React.FC<HistoryMiniappPageProps> = ({ apiBaseUrl = DE
           disabled={loading}
         />
 
-        <View className="mt-4 rounded-xl bg-prussian-blue-50 px-3 py-3">
-          <Text className="text-xs text-prussian-blue-700">查询前请阅读并同意</Text>
-          <Text
-            className="ml-1 text-xs text-blue-600"
-            onClick={() => showAgreementDoc('service')}
-          >
+        <View className={smCn('mt-4', sm.panelInset)}>
+          <Text className={sm.meta}>查询前请阅读并同意</Text>
+          <Text className="ml-1 text-xs text-moonstone" onClick={() => showAgreementDoc('service')}>
             《用户服务协议》
           </Text>
-          <Text className="text-xs text-prussian-blue-700">与</Text>
-          <Text
-            className="ml-1 text-xs text-blue-600"
-            onClick={() => showAgreementDoc('privacy')}
-          >
+          <Text className={sm.meta}>与</Text>
+          <Text className="ml-1 text-xs text-moonstone" onClick={() => showAgreementDoc('privacy')}>
             《隐私政策》
           </Text>
-          <Text className="ml-1 text-xs text-prussian-blue-700">
+          <Text className={smCn(sm.meta, 'ml-1')}>
             {privacyConsented ? '（已同意）' : '（未同意）'}
           </Text>
         </View>
 
         <View
-          className="mt-5 flex h-10 w-full items-center justify-center rounded-full"
-          style={{
-            backgroundColor: loading ? '#93C5FD' : '#2563EB',
-            boxShadow: loading ? 'none' : '0 8px 20px rgba(37, 99, 235, 0.28)',
-          }}
+          className={smCn(sm.btnPrimary, 'mt-5 w-full', loading && 'opacity-60')}
           onClick={loading ? undefined : handleSearch}
         >
-          <Text className="text-sm font-semibold text-white">{loading ? '查询中...' : '查询记录'}</Text>
+          <Text className={sm.btnTextPrimary}>{loading ? '查询中...' : '查询记录'}</Text>
         </View>
       </View>
 
       {stats.totalBookings > 0 && (
-        <View className="mx-4 mt-4 rounded-3xl border border-prussian-blue-200 bg-white px-4 py-4 shadow-sm">
-          <View className="grid grid-cols-2">
+        <View className={smCn('mx-4 mt-4', sm.panel)}>
+          <View className="grid grid-cols-2 gap-2">
             <View className="py-2">
-              <Text className="text-xl font-bold text-rich-black">{stats.totalBookings}</Text>
-              <Text className="block text-xs text-prussian-blue-600">总预订次数</Text>
+              <Text className={sm.adminStatValue}>{stats.totalBookings}</Text>
+              <Text className={sm.adminStatLabel}>总预订次数</Text>
             </View>
             <View className="py-2">
-              <Text className="text-xl font-bold text-rich-black">{stats.totalQuantity}</Text>
-              <Text className="block text-xs text-prussian-blue-600">总预订数量</Text>
+              <Text className={sm.adminStatValue}>{stats.totalQuantity}</Text>
+              <Text className={sm.adminStatLabel}>总预订数量</Text>
             </View>
             <View className="py-2">
-              <Text className="text-xl font-bold text-rich-black">¥{stats.totalAmount}</Text>
-              <Text className="block text-xs text-prussian-blue-600">总预订金额</Text>
+              <Text className={sm.adminStatValue}>¥{stats.totalAmount}</Text>
+              <Text className={sm.adminStatLabel}>总预订金额</Text>
             </View>
             <View className="py-2">
-              <Text className="text-xl font-bold text-rich-black">{stats.completedCount}</Text>
-              <Text className="block text-xs text-prussian-blue-600">已完成</Text>
+              <Text className={sm.adminStatValue}>{stats.completedCount}</Text>
+              <Text className={sm.adminStatLabel}>已完成</Text>
             </View>
           </View>
         </View>
@@ -161,9 +152,7 @@ const HistoryMiniappPage: React.FC<HistoryMiniappPageProps> = ({ apiBaseUrl = DE
         )}
 
         {hasSearched && !loading && !error && records.length === 0 && (
-          <View className="rounded-2xl bg-white px-4 py-8 text-center text-sm text-prussian-blue-600 shadow-md">
-            暂无记录
-          </View>
+          <View className={sm.empty}>暂无记录</View>
         )}
 
         {records.map((record) => (

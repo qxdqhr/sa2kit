@@ -88,15 +88,15 @@ export function HomeTabsTab({
           {configForm.homeTabConfig.map((item, index) => (
             <div
               key={item.category}
-              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 border border-slate-200 rounded-lg bg-white"
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 border border-prussian-blue-200/60 rounded-lg bg-white"
             >
               <div className="flex items-center gap-3">
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-slate-800">
+                  <span className="text-sm font-semibold text-rich-black">
                     {item.description || item.name || getCategoryDisplayName(item.category)}
                   </span>
                   {item.description ? (
-                    <span className="text-xs text-slate-500">{item.name || item.category}</span>
+                    <span className="text-xs text-prussian-blue-600">{item.name || item.category}</span>
                   ) : null}
                 </div>
                 {!item.visible && <Badge variant="secondary" className="text-xs">已隐藏</Badge>}

@@ -64,12 +64,12 @@ export function ArtworksTab({
   return (
     <>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-slate-800">商品详情图管理</h2>
+        <h2 className="text-2xl font-bold text-rich-black">商品详情图管理</h2>
         <div className="flex gap-3">
           <select
             value={selectedCollection || ''}
             onChange={(e) => setSelectedCollection(e.target.value ? parseInt(e.target.value) : null)}
-            className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 focus:border-moonstone/50"
           >
             <option value="">选择商品</option>
             {collections.map((collection) => (
@@ -85,14 +85,14 @@ export function ArtworksTab({
                   setArtworkForm({ title: '', number: '', image: '', description: '', createdTime: '', theme: '' });
                   setShowArtworkForm(true);
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-moonstone to-cerulean text-white border border-blue-600 rounded-lg font-medium hover:from-cerulean hover:to-moonstone transition-colors"
               >
                 <Plus size={16} />
                 添加商品详情图
               </button>
               <button
                 onClick={onToggleOrder}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 border border-slate-300 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-prussian-blue-100 text-prussian-blue-700 border border-prussian-blue-200/80 rounded-lg font-medium hover:bg-prussian-blue-200 transition-colors"
               >
                 <ArrowUpDown size={16} />
                 {showArtworkOrder ? '关闭排序' : '商品详情图排序'}
@@ -103,10 +103,10 @@ export function ArtworksTab({
       </div>
 
       {selectedCollection && showArtworkOrder && (
-        <div className="mb-6 p-6 bg-white rounded-lg shadow-sm border border-slate-200">
+        <div className="mb-6 p-6 bg-white rounded-lg shadow-sm border border-prussian-blue-200/60">
           <div className="mb-4">
-            <h3 className="text-xl font-semibold text-slate-800 mb-2">商品详情图排序管理</h3>
-            <p className="text-slate-600">拖拽或使用按钮调整商品详情图在商品中的显示顺序</p>
+            <h3 className="text-xl font-semibold text-rich-black mb-2">商品详情图排序管理</h3>
+            <p className="text-prussian-blue-600">拖拽或使用按钮调整商品详情图在商品中的显示顺序</p>
           </div>
           <ArtworkOrderManager
             collectionId={selectedCollection}
@@ -125,19 +125,19 @@ export function ArtworksTab({
             ?.pages.map((artwork) => (
               <div
                 key={artwork.id}
-                className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow"
+                className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60 overflow-hidden hover:shadow-md transition-shadow"
               >
-                <div className="h-48 bg-slate-100 overflow-hidden">
+                <div className="h-48 bg-prussian-blue-100 overflow-hidden">
                   {artwork.image && (
                     <img src={artwork.image} alt={artwork.title} className="w-full h-full object-cover" />
                   )}
                 </div>
                 <div className="p-4">
-                  <h4 className="text-lg font-semibold text-slate-800 mb-2">{artwork.title}</h4>
-                  <p className="text-slate-600 text-sm mb-1">编号：{artwork.number}</p>
-                  <p className="text-slate-600 text-sm mb-1">创作时间：{artwork.createdTime}</p>
-                  <p className="text-slate-600 text-sm mb-1">主题：{artwork.theme}</p>
-                  <p className="text-slate-600 text-sm mb-3 line-clamp-2">{artwork.description}</p>
+                  <h4 className="text-lg font-semibold text-rich-black mb-2">{artwork.title}</h4>
+                  <p className="text-prussian-blue-600 text-sm mb-1">编号：{artwork.number}</p>
+                  <p className="text-prussian-blue-600 text-sm mb-1">创作时间：{artwork.createdTime}</p>
+                  <p className="text-prussian-blue-600 text-sm mb-1">主题：{artwork.theme}</p>
+                  <p className="text-prussian-blue-600 text-sm mb-3 line-clamp-2">{artwork.description}</p>
                   <div className="flex gap-2">
                     <button
                       onClick={() => onEdit(selectedCollection, artwork)}
@@ -168,13 +168,13 @@ export function ArtworksTab({
       {showArtworkForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-slate-200">
-              <h3 className="text-xl font-semibold text-slate-800">
+            <div className="flex items-center justify-between p-6 border-b border-prussian-blue-200/60">
+              <h3 className="text-xl font-semibold text-rich-black">
                 {editingArtwork ? '编辑商品详情图' : '添加商品详情图'}
               </h3>
               <button
                 onClick={() => setShowArtworkForm(false)}
-                className="text-slate-400 hover:text-slate-600 text-2xl font-bold leading-none"
+                className="text-prussian-blue-500 hover:text-prussian-blue-600 text-2xl font-bold leading-none"
               >
                 ×
               </button>
@@ -182,23 +182,23 @@ export function ArtworksTab({
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">标题</label>
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-2">标题</label>
                   <input
                     type="text"
                     value={artworkForm.title}
                     onChange={(e) => setArtworkForm(prev => ({ ...prev, title: e.target.value }))}
                     placeholder="输入商品详情图标题"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 focus:border-moonstone/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">编号</label>
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-2">编号</label>
                   <input
                     type="text"
                     value={artworkForm.number}
                     onChange={(e) => setArtworkForm(prev => ({ ...prev, number: e.target.value }))}
                     placeholder="输入编号"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 focus:border-moonstone/50"
                   />
                 </div>
                 <div>
@@ -214,47 +214,47 @@ export function ArtworksTab({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">描述</label>
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-2">描述</label>
                   <textarea
                     value={artworkForm.description}
                     onChange={(e) => setArtworkForm(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="输入商品详情图描述"
                     rows={3}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 focus:border-moonstone/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">创作时间</label>
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-2">创作时间</label>
                   <input
                     type="text"
                     value={artworkForm.createdTime}
                     onChange={(e) => setArtworkForm(prev => ({ ...prev, createdTime: e.target.value }))}
                     placeholder="输入创作时间"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 focus:border-moonstone/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">主题</label>
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-2">主题</label>
                   <input
                     type="text"
                     value={artworkForm.theme}
                     onChange={(e) => setArtworkForm(prev => ({ ...prev, theme: e.target.value }))}
                     placeholder="输入商品详情图主题"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 focus:border-moonstone/50"
                   />
                 </div>
               </div>
             </div>
-            <div className="flex justify-end gap-3 p-6 border-t border-slate-200">
+            <div className="flex justify-end gap-3 p-6 border-t border-prussian-blue-200/60">
               <button
                 onClick={() => setShowArtworkForm(false)}
-                className="px-4 py-2 bg-slate-100 text-slate-700 border border-slate-300 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                className="px-4 py-2 bg-prussian-blue-100 text-prussian-blue-700 border border-prussian-blue-200/80 rounded-lg font-medium hover:bg-prussian-blue-200 transition-colors"
               >
                 取消
               </button>
               <button
                 onClick={onSave}
-                className="px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-gradient-to-r from-moonstone to-cerulean text-white border border-blue-600 rounded-lg font-medium hover:from-cerulean hover:to-moonstone transition-colors"
               >
                 保存
               </button>

@@ -8,7 +8,6 @@ export function initializeShowmasterpieceDb(
 ): void {
   db = database;
   fileUrlResolver = resolver;
-  (globalThis as any).__sa2kitShowmasterpieceResolveFileUrl = resolver;
 }
 
 import { 

@@ -55,7 +55,7 @@ export const DeadlinePopup: React.FC<DeadlinePopupProps> = ({
       case 'success':
         return <CheckCircle {...iconProps} className="text-green-500" />;
       default:
-        return <Clock {...iconProps} className="text-slate-500" />;
+        return <Clock {...iconProps} className="text-prussian-blue-600" />;
     }
   };
 
@@ -76,7 +76,7 @@ export const DeadlinePopup: React.FC<DeadlinePopupProps> = ({
           borderColor: 'border-blue-200',
           titleColor: 'text-blue-800',
           messageColor: 'text-blue-700',
-          confirmButton: 'bg-blue-600 hover:bg-blue-700 text-white',
+          confirmButton: 'bg-gradient-to-r from-moonstone to-cerulean hover:from-cerulean hover:to-moonstone text-white',
         };
       case 'error':
         return {
@@ -96,11 +96,11 @@ export const DeadlinePopup: React.FC<DeadlinePopupProps> = ({
         };
       default:
         return {
-          bgColor: 'bg-slate-50',
-          borderColor: 'border-slate-200',
-          titleColor: 'text-slate-800',
-          messageColor: 'text-slate-700',
-          confirmButton: 'bg-slate-600 hover:bg-slate-700 text-white',
+          bgColor: 'bg-prussian-blue-50/50',
+          borderColor: 'border-prussian-blue-200/60',
+          titleColor: 'text-rich-black',
+          messageColor: 'text-prussian-blue-700',
+          confirmButton: 'bg-prussian-blue-700 hover:bg-prussian-blue-800 text-white',
         };
     }
   };
@@ -162,7 +162,7 @@ export const DeadlinePopup: React.FC<DeadlinePopupProps> = ({
             
             {/* 自动关闭倒计时 */}
             {countdown > 0 && (
-              <div className="text-sm text-slate-500 mb-2">
+              <div className="text-sm text-prussian-blue-600 mb-2">
                 <Clock size={14} className="inline mr-1" />
                 {countdown} 秒后自动关闭
               </div>
@@ -180,7 +180,7 @@ export const DeadlinePopup: React.FC<DeadlinePopupProps> = ({
           {contentConfig.showCancel !== false && (
             <button
               onClick={handleCancel}
-              className="px-4 py-2 text-slate-600 hover:text-slate-700 transition-colors"
+              className="px-4 py-2 text-prussian-blue-600 hover:text-prussian-blue-700 transition-colors"
             >
               {contentConfig.cancelText || '取消'}
             </button>

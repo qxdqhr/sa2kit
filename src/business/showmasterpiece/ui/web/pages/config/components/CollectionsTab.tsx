@@ -99,10 +99,10 @@ export function CollectionsTab({
         </CardHeader>
         <CardContent>
           {showCollectionOrder && (
-            <div className="mb-6 p-6 bg-white rounded-lg shadow-sm border border-slate-200">
+            <div className="mb-6 p-6 bg-white rounded-lg shadow-sm border border-prussian-blue-200/60">
               <div className="mb-4">
-                <h3 className="text-xl font-semibold text-slate-800 mb-2">商品排序管理</h3>
-                <p className="text-slate-600">拖拽或使用按钮调整商品在前台的显示顺序</p>
+                <h3 className="text-xl font-semibold text-rich-black mb-2">商品排序管理</h3>
+                <p className="text-prussian-blue-600">拖拽或使用按钮调整商品在前台的显示顺序</p>
               </div>
               <CollectionOrderManager
                 moveCollectionUp={moveCollectionUp}
@@ -118,22 +118,22 @@ export function CollectionsTab({
               {collections.map((collection) => (
                 <div
                   key={collection.id}
-                  className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow"
+                  className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60 overflow-hidden hover:shadow-md transition-shadow"
                 >
-                  <div className="h-48 bg-slate-100 overflow-hidden flex items-center justify-center">
+                  <div className="h-48 bg-prussian-blue-100 overflow-hidden flex items-center justify-center">
                     {collection.coverImage ? (
                       <img src={collection.coverImage} alt={collection.title} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="text-slate-400 text-sm">暂无封面</div>
+                      <div className="text-prussian-blue-500 text-sm">暂无封面</div>
                     )}
                   </div>
                   <div className="p-4">
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">{collection.title}</h3>
-                    <p className="text-slate-600 text-sm mb-1">编号：{collection.number}</p>
-                    <p className="text-slate-600 text-sm mb-1">分类：{collection.category.displayName}</p>
-                    <p className="text-slate-600 text-sm mb-1">价格：{collection.price ? `¥${collection.price}` : '免费'}</p>
-                    <p className="text-slate-600 text-sm mb-1">商品详情图数量：{collection.pages.length}</p>
-                    <p className="text-slate-600 text-sm mb-3">状态：{collection.isPublished ? '已发布' : '草稿'}</p>
+                    <h3 className="text-lg font-semibold text-rich-black mb-2">{collection.title}</h3>
+                    <p className="text-prussian-blue-600 text-sm mb-1">编号：{collection.number}</p>
+                    <p className="text-prussian-blue-600 text-sm mb-1">分类：{collection.category.displayName}</p>
+                    <p className="text-prussian-blue-600 text-sm mb-1">价格：{collection.price ? `¥${collection.price}` : '免费'}</p>
+                    <p className="text-prussian-blue-600 text-sm mb-1">商品详情图数量：{collection.pages.length}</p>
+                    <p className="text-prussian-blue-600 text-sm mb-3">状态：{collection.isPublished ? '已发布' : '草稿'}</p>
                     <div className="flex gap-2">
                       <button
                         onClick={() => onEdit(collection)}
@@ -166,13 +166,13 @@ export function CollectionsTab({
       {showCollectionForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-slate-200">
-              <h3 className="text-xl font-semibold text-slate-800">
+            <div className="flex items-center justify-between p-6 border-b border-prussian-blue-200/60">
+              <h3 className="text-xl font-semibold text-rich-black">
                 {editingCollection ? '编辑商品' : '添加商品'}
               </h3>
               <button
                 onClick={() => setShowCollectionForm(false)}
-                className="text-slate-400 hover:text-slate-600 text-2xl font-bold leading-none"
+                className="text-prussian-blue-500 hover:text-prussian-blue-600 text-2xl font-bold leading-none"
               >
                 ×
               </button>
@@ -180,23 +180,23 @@ export function CollectionsTab({
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">标题</label>
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-2">标题</label>
                   <input
                     type="text"
                     value={collectionForm.title}
                     onChange={(e) => setCollectionForm(prev => ({ ...prev, title: e.target.value }))}
                     placeholder="输入商品标题"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 focus:border-moonstone/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">编号</label>
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-2">编号</label>
                   <input
                     type="text"
                     value={collectionForm.number}
                     onChange={(e) => setCollectionForm(prev => ({ ...prev, number: e.target.value }))}
                     placeholder="输入编号"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 focus:border-moonstone/50"
                   />
                 </div>
                 <div>
@@ -216,21 +216,21 @@ export function CollectionsTab({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">描述</label>
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-2">描述</label>
                   <textarea
                     value={collectionForm.description}
                     onChange={(e) => setCollectionForm(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="输入商品描述"
                     rows={3}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 focus:border-moonstone/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">分类</label>
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-2">分类</label>
                   <select
                     value={collectionForm.category}
                     onChange={(e) => setCollectionForm(prev => ({ ...prev, category: e.target.value as CollectionCategoryType }))}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 focus:border-moonstone/50"
                   >
                     {categoryOptions.map((category) => (
                       <option key={category.name} value={category.name}>
@@ -240,7 +240,7 @@ export function CollectionsTab({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">价格（元）</label>
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-2">价格（元）</label>
                   <input
                     type="number"
                     value={collectionForm.price || ''}
@@ -253,7 +253,7 @@ export function CollectionsTab({
                     placeholder="输入价格（留空表示免费）"
                     min="0"
                     step="1"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 focus:border-moonstone/50"
                   />
                 </div>
                 <div>
@@ -262,23 +262,23 @@ export function CollectionsTab({
                       type="checkbox"
                       checked={collectionForm.isPublished}
                       onChange={(e) => setCollectionForm(prev => ({ ...prev, isPublished: e.target.checked }))}
-                      className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                      className="w-4 h-4 text-moonstone border-prussian-blue-200/80 rounded focus:ring-moonstone/25"
                     />
-                    <span className="text-sm font-medium text-slate-700">发布商品</span>
+                    <span className="text-sm font-medium text-prussian-blue-700">发布商品</span>
                   </label>
                 </div>
               </div>
             </div>
-            <div className="flex justify-end gap-3 p-6 border-t border-slate-200">
+            <div className="flex justify-end gap-3 p-6 border-t border-prussian-blue-200/60">
               <button
                 onClick={() => setShowCollectionForm(false)}
-                className="px-4 py-2 bg-slate-100 text-slate-700 border border-slate-300 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                className="px-4 py-2 bg-prussian-blue-100 text-prussian-blue-700 border border-prussian-blue-200/80 rounded-lg font-medium hover:bg-prussian-blue-200 transition-colors"
               >
                 取消
               </button>
               <button
                 onClick={onSave}
-                className="px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-gradient-to-r from-moonstone to-cerulean text-white border border-blue-600 rounded-lg font-medium hover:from-cerulean hover:to-moonstone transition-colors"
               >
                 保存
               </button>

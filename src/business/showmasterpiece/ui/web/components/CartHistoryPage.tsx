@@ -131,11 +131,11 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
   return (
     <div className="space-y-6">
       {/* 页面标题 */}
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+      <div className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">我的预订历史</h1>
-            <p className="text-slate-600 mt-1">
+            <h1 className="text-2xl font-bold text-rich-black">我的预订历史</h1>
+            <p className="text-prussian-blue-600 mt-1">
               QQ: {qqNumber} | 手机: {phoneNumber}
             </p>
           </div>
@@ -143,7 +143,7 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
             <button
               onClick={loadBookings}
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-moonstone to-cerulean text-white rounded-lg font-medium hover:from-cerulean hover:to-moonstone transition-colors disabled:opacity-50"
             >
               <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
               刷新
@@ -154,23 +154,23 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
 
       {/* 统计信息 */}
       {totalBookings > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60 p-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-slate-800">{totalBookings}</div>
-              <div className="text-sm text-slate-600">总预订次数</div>
+              <div className="text-2xl font-bold text-rich-black">{totalBookings}</div>
+              <div className="text-sm text-prussian-blue-600">总预订次数</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-slate-800">{totalQuantity}</div>
-              <div className="text-sm text-slate-600">总预订数量</div>
+              <div className="text-2xl font-bold text-rich-black">{totalQuantity}</div>
+              <div className="text-sm text-prussian-blue-600">总预订数量</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-slate-800">¥{totalPrice}</div>
-              <div className="text-sm text-slate-600">总预订金额</div>
+              <div className="text-2xl font-bold text-rich-black">¥{totalPrice}</div>
+              <div className="text-sm text-prussian-blue-600">总预订金额</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-slate-800">{completedBookings}</div>
-              <div className="text-sm text-slate-600">已完成</div>
+              <div className="text-2xl font-bold text-rich-black">{completedBookings}</div>
+              <div className="text-sm text-prussian-blue-600">已完成</div>
             </div>
           </div>
         </div>
@@ -194,16 +194,16 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
       {/* 预订记录列表 */}
       <div className="space-y-4">
         {loading ? (
-          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-8 text-center">
-            <RefreshCw size={40} className="text-slate-400 mx-auto mb-4 animate-spin" />
-            <h3 className="text-lg font-medium text-slate-800 mb-2">加载中...</h3>
-            <p className="text-slate-600">正在获取您的预订历史记录</p>
+          <div className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60 p-8 text-center">
+            <RefreshCw size={40} className="text-prussian-blue-500 mx-auto mb-4 animate-spin" />
+            <h3 className="text-lg font-medium text-rich-black mb-2">加载中...</h3>
+            <p className="text-prussian-blue-600">正在获取您的预订历史记录</p>
           </div>
         ) : totalBookings === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-8 text-center">
-            <Calendar size={40} className="text-slate-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-slate-800 mb-2">暂无预订记录</h3>
-            <p className="text-slate-600">您还没有提交过任何预订</p>
+          <div className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60 p-8 text-center">
+            <Calendar size={40} className="text-prussian-blue-500 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-rich-black mb-2">暂无预订记录</h3>
+            <p className="text-prussian-blue-600">您还没有提交过任何预订</p>
           </div>
         ) : (
           bookings.map((booking) => {
@@ -211,7 +211,7 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
             const totalPrice = (booking.collection?.price || 0) * booking.quantity;
             
             return (
-              <div key={booking.id} className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+              <div key={booking.id} className="bg-white rounded-lg shadow-sm border border-prussian-blue-200/60 overflow-hidden">
                 <div className="p-6">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                     <div className="flex items-start gap-4">
@@ -221,16 +221,16 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
                         className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
                       />
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-lg font-semibold text-slate-800">
+                        <h3 className="text-lg font-semibold text-rich-black">
                           {booking.collection?.title || '未知画集'}
                         </h3>
-                        <p className="text-sm text-slate-600">
+                        <p className="text-sm text-prussian-blue-600">
                           编号：{booking.collection?.number || '未知编号'}
                         </p>
-                        <p className="text-sm text-slate-600">
+                        <p className="text-sm text-prussian-blue-600">
                           预订时间：{formatTime(booking.createdAt)}
                         </p>
-                        <p className="text-sm text-slate-600">
+                        <p className="text-sm text-prussian-blue-600">
                           数量：{booking.quantity} | 总价：¥{totalPrice}
                         </p>
                       </div>
@@ -240,7 +240,7 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusInfo.color}`}>
                         {statusInfo.label}
                       </span>
-                      <p className="text-sm text-slate-500 mt-1">
+                      <p className="text-sm text-prussian-blue-600 mt-1">
                         预订ID: {booking.id}
                       </p>
                     </div>
@@ -249,8 +249,8 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
                   {/* 备注信息 */}
                   {booking.notes && (
                     <div className="mb-4">
-                      <p className="text-sm text-slate-500">备注</p>
-                      <p className="text-sm text-slate-800 bg-slate-50 p-3 rounded-lg break-words">
+                      <p className="text-sm text-prussian-blue-600">备注</p>
+                      <p className="text-sm text-rich-black bg-prussian-blue-50/50 p-3 rounded-lg break-words">
                         {booking.notes}
                       </p>
                     </div>
@@ -259,8 +259,8 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
                   {/* 管理员备注 */}
                   {booking.adminNotes && (
                     <div className="mb-4">
-                      <p className="text-sm text-slate-500">管理员备注</p>
-                      <p className="text-sm text-slate-800 bg-blue-50 p-3 rounded-lg break-words">
+                      <p className="text-sm text-prussian-blue-600">管理员备注</p>
+                      <p className="text-sm text-rich-black bg-blue-50 p-3 rounded-lg break-words">
                         {booking.adminNotes}
                       </p>
                     </div>
@@ -270,7 +270,7 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
                   <div className="flex flex-col sm:flex-row gap-2">
                     <button
                       onClick={() => setSelectedBooking(booking)}
-                      className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                      className="flex items-center justify-center gap-2 px-4 py-2 bg-prussian-blue-100 text-prussian-blue-700 rounded-lg font-medium hover:bg-prussian-blue-200 transition-colors"
                     >
                       <Eye size={16} />
                       查看详情
@@ -294,11 +294,11 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
       {selectedBooking && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-slate-200">
-              <h2 className="text-xl font-semibold text-slate-800">预订详情</h2>
+            <div className="flex items-center justify-between p-6 border-b border-prussian-blue-200/60">
+              <h2 className="text-xl font-semibold text-rich-black">预订详情</h2>
               <button
                 onClick={() => setSelectedBooking(null)}
-                className="text-slate-400 hover:text-slate-600 text-2xl font-bold leading-none"
+                className="text-prussian-blue-500 hover:text-prussian-blue-600 text-2xl font-bold leading-none"
               >
                 ×
               </button>
@@ -308,33 +308,33 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
               <div className="space-y-6">
                 {/* 基本信息 */}
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-800 mb-3">基本信息</h3>
+                  <h3 className="text-lg font-semibold text-rich-black mb-3">基本信息</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <p className="text-sm text-slate-500">预订ID</p>
-                      <p className="font-medium text-slate-800">{selectedBooking.id}</p>
+                      <p className="text-sm text-prussian-blue-600">预订ID</p>
+                      <p className="font-medium text-rich-black">{selectedBooking.id}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-500">预订时间</p>
-                      <p className="font-medium text-slate-800">{formatTime(selectedBooking.createdAt)}</p>
+                      <p className="text-sm text-prussian-blue-600">预订时间</p>
+                      <p className="font-medium text-rich-black">{formatTime(selectedBooking.createdAt)}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-500">QQ号</p>
-                      <p className="font-medium text-slate-800">{selectedBooking.qqNumber}</p>
+                      <p className="text-sm text-prussian-blue-600">QQ号</p>
+                      <p className="font-medium text-rich-black">{selectedBooking.qqNumber}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-500">手机号</p>
-                      <p className="font-medium text-slate-800">{selectedBooking.phoneNumber}</p>
+                      <p className="text-sm text-prussian-blue-600">手机号</p>
+                      <p className="font-medium text-rich-black">{selectedBooking.phoneNumber}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-500">状态</p>
+                      <p className="text-sm text-prussian-blue-600">状态</p>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusInfo(selectedBooking.status).color}`}>
                         {getStatusInfo(selectedBooking.status).label}
                       </span>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-500">数量</p>
-                      <p className="font-medium text-slate-800">{selectedBooking.quantity}</p>
+                      <p className="text-sm text-prussian-blue-600">数量</p>
+                      <p className="font-medium text-rich-black">{selectedBooking.quantity}</p>
                     </div>
                   </div>
                 </div>
@@ -342,8 +342,8 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
                 {/* 画集详情 */}
                 {selectedBooking.collection && (
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-3">画集详情</h3>
-                    <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg">
+                    <h3 className="text-lg font-semibold text-rich-black mb-3">画集详情</h3>
+                    <div className="flex items-center gap-4 p-4 bg-prussian-blue-50/50 rounded-lg">
                       {selectedBooking.collection.coverImage ? (
                         <img
                           src={selectedBooking.collection.coverImage}
@@ -351,18 +351,18 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
                           className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
                         />
                       ) : (
-                        <div className="w-16 h-16 bg-slate-100 rounded-lg flex-shrink-0 flex items-center justify-center text-slate-400 text-xs">
+                        <div className="w-16 h-16 bg-prussian-blue-100 rounded-lg flex-shrink-0 flex items-center justify-center text-prussian-blue-500 text-xs">
                           暂无图片
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-slate-800">{selectedBooking.collection.title}</h4>
-                        <p className="text-sm text-slate-600">编号：{selectedBooking.collection.number}</p>
-                        <p className="text-sm text-slate-600">单价：¥{selectedBooking.collection.price || '待定'}</p>
+                        <h4 className="font-medium text-rich-black">{selectedBooking.collection.title}</h4>
+                        <p className="text-sm text-prussian-blue-600">编号：{selectedBooking.collection.number}</p>
+                        <p className="text-sm text-prussian-blue-600">单价：¥{selectedBooking.collection.price || '待定'}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium text-slate-800">数量：{selectedBooking.quantity}</p>
-                        <p className="font-medium text-slate-800">
+                        <p className="font-medium text-rich-black">数量：{selectedBooking.quantity}</p>
+                        <p className="font-medium text-rich-black">
                           总价：¥{(selectedBooking.collection.price || 0) * selectedBooking.quantity}
                         </p>
                       </div>
@@ -373,8 +373,8 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
                 {/* 备注信息 */}
                 {selectedBooking.notes && (
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-3">用户备注</h3>
-                    <p className="text-slate-800 bg-slate-50 p-4 rounded-lg break-words">
+                    <h3 className="text-lg font-semibold text-rich-black mb-3">用户备注</h3>
+                    <p className="text-rich-black bg-prussian-blue-50/50 p-4 rounded-lg break-words">
                       {selectedBooking.notes}
                     </p>
                   </div>
@@ -383,8 +383,8 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
                 {/* 管理员备注 */}
                 {selectedBooking.adminNotes && (
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-3">管理员备注</h3>
-                    <p className="text-slate-800 bg-blue-50 p-4 rounded-lg break-words">
+                    <h3 className="text-lg font-semibold text-rich-black mb-3">管理员备注</h3>
+                    <p className="text-rich-black bg-blue-50 p-4 rounded-lg break-words">
                       {selectedBooking.adminNotes}
                     </p>
                   </div>
@@ -392,32 +392,32 @@ export const CartHistoryPage: React.FC<CartHistoryPageProps> = ({
                 
                 {/* 时间信息 */}
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-800 mb-3">时间信息</h3>
+                  <h3 className="text-lg font-semibold text-rich-black mb-3">时间信息</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <p className="text-sm text-slate-500">创建时间</p>
-                      <p className="font-medium text-slate-800">{formatTime(selectedBooking.createdAt)}</p>
+                      <p className="text-sm text-prussian-blue-600">创建时间</p>
+                      <p className="font-medium text-rich-black">{formatTime(selectedBooking.createdAt)}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-500">更新时间</p>
-                      <p className="font-medium text-slate-800">{formatTime(selectedBooking.updatedAt)}</p>
+                      <p className="text-sm text-prussian-blue-600">更新时间</p>
+                      <p className="font-medium text-rich-black">{formatTime(selectedBooking.updatedAt)}</p>
                     </div>
                     {selectedBooking.confirmedAt && (
                       <div>
-                        <p className="text-sm text-slate-500">确认时间</p>
-                        <p className="font-medium text-slate-800">{formatTime(selectedBooking.confirmedAt)}</p>
+                        <p className="text-sm text-prussian-blue-600">确认时间</p>
+                        <p className="font-medium text-rich-black">{formatTime(selectedBooking.confirmedAt)}</p>
                       </div>
                     )}
                     {selectedBooking.completedAt && (
                       <div>
-                        <p className="text-sm text-slate-500">完成时间</p>
-                        <p className="font-medium text-slate-800">{formatTime(selectedBooking.completedAt)}</p>
+                        <p className="text-sm text-prussian-blue-600">完成时间</p>
+                        <p className="font-medium text-rich-black">{formatTime(selectedBooking.completedAt)}</p>
                       </div>
                     )}
                     {selectedBooking.cancelledAt && (
                       <div>
-                        <p className="text-sm text-slate-500">取消时间</p>
-                        <p className="font-medium text-slate-800">{formatTime(selectedBooking.cancelledAt)}</p>
+                        <p className="text-sm text-prussian-blue-600">取消时间</p>
+                        <p className="font-medium text-rich-black">{formatTime(selectedBooking.cancelledAt)}</p>
                       </div>
                     )}
                   </div>

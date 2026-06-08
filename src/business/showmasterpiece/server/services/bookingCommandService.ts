@@ -10,7 +10,20 @@ export type BookingCommandErrorCode =
   | 'INVALID_QQ'
   | 'INVALID_QUANTITY'
   | 'COLLECTION_NOT_FOUND'
-  | 'INVALID_STATUS';
+  | 'INVALID_STATUS'
+  | 'UNAUTHORIZED';
+
+/** 用户删单须与下单一致的 QQ + 手机号 */
+export interface BookingDeleteCredentials {
+  qqNumber: string;
+  phoneNumber: string;
+}
+
+export interface DeleteBookingOptions {
+  /** 管理端删单，跳过凭证校验 */
+  asAdmin?: boolean;
+  credentials?: BookingDeleteCredentials;
+}
 
 export class BookingCommandError extends Error {
   constructor(public readonly code: BookingCommandErrorCode, message: string) {
@@ -296,8 +309,43 @@ export class BookingCommandService {
     return updatedBookings[0];
   }
 
-  async deleteBooking(id: number): Promise<void> {
-    await this.ensureBookingExists(id);
+  /**
+   * 删除预订。管理端传 `{ asAdmin: true }`；用户删单须传匹配凭证。
+   */
+  async deleteBooking(id: number, options?: DeleteBookingOptions): Promise<void> {
+    const rows = await this.db
+      .select({
+        id: comicUniverseBookings.id,
+        qqNumber: comicUniverseBookings.qqNumber,
+        phoneNumber: comicUniverseBookings.phoneNumber,
+      })
+      .from(comicUniverseBookings)
+      .where(eq(comicUniverseBookings.id, id))
+      .limit(1);
+
+    if (rows.length === 0) {
+      throw new BookingCommandError('BOOKING_NOT_FOUND', '预订不存在');
+    }
+
+    if (!options?.asAdmin) {
+      const qq = options?.credentials?.qqNumber?.trim() ?? '';
+      const phone = options?.credentials?.phoneNumber?.trim() ?? '';
+      if (!qq || !phone) {
+        throw new BookingCommandError(
+          'INVALID_PAYLOAD',
+          '删除预订请同时提供匹配的 QQ 号与手机号',
+        );
+      }
+      const storedQq = String(rows[0].qqNumber ?? '').trim();
+      const storedPhone = String(rows[0].phoneNumber ?? '').trim();
+      if (storedQq !== qq || storedPhone !== phone) {
+        throw new BookingCommandError(
+          'UNAUTHORIZED',
+          '删除预订请同时提供匹配的 QQ 号与手机号',
+        );
+      }
+    }
+
     await this.db.delete(comicUniverseBookings).where(eq(comicUniverseBookings.id, id));
   }
 }

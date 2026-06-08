@@ -35,6 +35,9 @@ export {
   BookingCommandService,
   BookingCommandError,
   createBookingCommandService,
+  type BookingCommandErrorCode,
+  type BookingDeleteCredentials,
+  type DeleteBookingOptions,
 } from './bookingCommandService';
 
 export {

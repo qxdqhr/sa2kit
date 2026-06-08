@@ -14,6 +14,7 @@ import { batchBooking, DEFAULT_BASE_URL } from '../../../service/miniapp';
 import useDeadlinePopup from '../../../logic/hooks/useDeadlinePopupWechat';
 import DeadlinePopupManager from '../components/DeadlinePopup';
 import { ensurePrivacyConsent, hasPrivacyConsent, showAgreementDoc } from '../components/privacyConsent';
+import { sm, smCn } from '../../shared/theme';
 
 export interface CartMiniappPageProps {
   apiBaseUrl?: string;
@@ -205,14 +206,12 @@ const CartMiniappPage: React.FC<CartMiniappPageProps> = ({ apiBaseUrl = DEFAULT_
   };
 
   return (
-    <View className="min-h-screen bg-gradient-to-br from-white to-prussian-blue-100 pb-12 text-rich-black">
+    <View className={smCn(sm.screen, 'pb-12 text-rich-black')}>
       <PageHeader title="购物车" subtitle="确认画集数量并提交预订" />
 
       <View className="mx-4 mt-5 flex flex-col gap-4">
         {cartItems.length === 0 ? (
-          <View className="rounded-2xl bg-white px-4 py-8 text-center text-sm text-prussian-blue-600 shadow-md">
-            购物车暂无画集
-          </View>
+          <View className={sm.empty}>购物车暂无画集</View>
         ) : (
           cartItems.map((item) => (
             <CartItemCard
@@ -226,8 +225,8 @@ const CartMiniappPage: React.FC<CartMiniappPageProps> = ({ apiBaseUrl = DEFAULT_
         )}
       </View>
 
-      <View className="mx-4 mt-6 rounded-3xl border border-prussian-blue-200 bg-white px-5 py-5 shadow-sm">
-        <Text className="text-base font-semibold text-rich-black">批量预订信息</Text>
+      <View className={smCn('mx-4 mt-6', sm.panel)}>
+        <Text className={sm.titleSm}>批量预订信息</Text>
 
         <FormInput
           label="QQ号 *"
@@ -265,43 +264,43 @@ const CartMiniappPage: React.FC<CartMiniappPageProps> = ({ apiBaseUrl = DEFAULT_
           error={formErrors.pickupMethod}
         />
 
-        <View className="mt-4 rounded-xl bg-prussian-blue-50 px-3 py-3">
-          <Text className="text-xs text-prussian-blue-700">提交前请阅读并同意</Text>
-          <Text
-            className="ml-1 text-xs text-blue-600"
-            onClick={() => showAgreementDoc('service')}
-          >
+        <View className={smCn('mt-4', sm.panelInset)}>
+          <Text className={sm.meta}>提交前请阅读并同意</Text>
+          <Text className="ml-1 text-xs text-moonstone" onClick={() => showAgreementDoc('service')}>
             《用户服务协议》
           </Text>
-          <Text className="text-xs text-prussian-blue-700">与</Text>
-          <Text
-            className="ml-1 text-xs text-blue-600"
-            onClick={() => showAgreementDoc('privacy')}
-          >
+          <Text className={sm.meta}>与</Text>
+          <Text className="ml-1 text-xs text-moonstone" onClick={() => showAgreementDoc('privacy')}>
             《隐私政策》
           </Text>
-          <Text className="ml-1 text-xs text-prussian-blue-700">
+          <Text className={smCn(sm.meta, 'ml-1')}>
             {privacyConsented ? '（已同意）' : '（未同意）'}
           </Text>
         </View>
 
         <View className="mt-5 flex items-center justify-between gap-3">
           <View
-            className="flex h-11 flex-1 items-center justify-center rounded-xl bg-prussian-blue-100"
+            className={smCn(sm.btnGhost, sm.btnGhostFlex, submitting && 'opacity-50')}
             onClick={submitting ? undefined : handleClearCart}
           >
-            <Text className="text-sm font-semibold text-prussian-blue-700">清空购物车</Text>
+            <Text className={sm.btnTextGhost}>清空购物车</Text>
           </View>
           <View
-            className={`flex h-11 flex-1 items-center justify-center rounded-xl ${
-              submitting ? 'bg-teal-300' : 'bg-teal-600 shadow-lg'
-            }`}
+            className={smCn(
+              sm.btnPrimary,
+              sm.btnPrimaryFlex,
+              submitting && 'opacity-60',
+            )}
             onClick={submitting ? undefined : handleCheckout}
           >
-            <Text className="text-sm font-semibold text-white">{submitting ? '提交中...' : '提交申请'}</Text>
+            <Text className={sm.btnTextPrimary}>
+              {submitting ? '提交中...' : '提交申请'}
+            </Text>
           </View>
         </View>
-        <Text className="mt-3 block text-right text-sm font-semibold text-rich-black">合计：{totalPriceLabel}</Text>
+        <Text className={smCn(sm.priceLg, 'mt-3 block text-right')}>
+          合计：{totalPriceLabel}
+        </Text>
       </View>
 
       <DeadlinePopupManager

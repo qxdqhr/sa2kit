@@ -12,6 +12,7 @@ import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Plus, Minus, Check } from 'lucide-react';
 import { useCartContext } from '../../../logic/hooks';
 import { ArtCollection } from '../../../types';
+import { sm, smCn } from '../../shared/theme';
 
 /**
  * 添加到购物车按钮组件属性
@@ -150,14 +151,14 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
           </button>
           
           {/* 数量控制控件 */}
-          <div className="flex items-center justify-center border border-gray-300 rounded-lg bg-white">
+          <div className="flex items-center justify-center border border-prussian-blue-200/80 rounded-lg bg-white">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 handleCartQuantityChange(currentQuantity - 1);
               }}
               disabled={loading}
-              className="px-2 py-1 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+              className="px-2 py-1 hover:bg-prussian-blue-50/50 disabled:opacity-50 transition-colors"
             >
               <Minus size={14} />
             </button>
@@ -170,7 +171,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
                 handleCartQuantityChange(currentQuantity + 1);
               }}
               disabled={loading}
-              className="px-2 py-1 hover:bg-gray-50 transition-colors"
+              className="px-2 py-1 hover:bg-prussian-blue-50/50 transition-colors"
             >
               <Plus size={14} />
             </button>
@@ -181,14 +182,14 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
         <div className="flex flex-col gap-2">
           {/* 数量选择器 */}
           {showQuantitySelector && (
-            <div className="flex items-center justify-center border border-gray-300 rounded-lg bg-white">
+            <div className="flex items-center justify-center border border-prussian-blue-200/80 rounded-lg bg-white">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleQuantityChange(quantity - 1);
                 }}
                 disabled={quantity <= 1 || loading}
-                className="px-2 py-1 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                className="px-2 py-1 hover:bg-prussian-blue-50/50 disabled:opacity-50 transition-colors"
               >
                 <Minus size={14} />
               </button>
@@ -199,7 +200,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
                   handleQuantityChange(quantity + 1);
                 }}
                 disabled={loading}
-                className="px-2 py-1 hover:bg-gray-50 transition-colors"
+                className="px-2 py-1 hover:bg-prussian-blue-50/50 transition-colors"
               >
                 <Plus size={14} />
               </button>
@@ -213,7 +214,12 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
               handleAddToCart();
             }}
             disabled={loading}
-            className={`flex items-center justify-center gap-2 rounded-lg font-medium transition-colors ${sizeStyles[size]} bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50`}
+            className={smCn(
+              'flex items-center justify-center gap-2 font-medium',
+              sizeStyles[size],
+              sm.webBtnPrimary,
+              'disabled:opacity-50',
+            )}
           >
             <ShoppingCart size={16} />
             <span>加入购物车</span>

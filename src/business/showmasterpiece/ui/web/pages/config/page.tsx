@@ -337,10 +337,10 @@ function ConfigPageContent() {
   // ─── Loading / error states ───────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200">
+      <div className="min-h-screen bg-gradient-to-br from-prussian-blue-50/90 via-white to-white">
         <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
-          <div className="w-10 h-10 border-4 border-slate-200 border-t-blue-500 rounded-full animate-spin" />
-          <p className="text-slate-600">加载中...</p>
+          <div className="w-10 h-10 border-4 border-prussian-blue-200/60 border-t-blue-500 rounded-full animate-spin" />
+          <p className="text-prussian-blue-600">加载中...</p>
         </div>
       </div>
     );
@@ -473,8 +473,8 @@ function ConfigPageContent() {
           <TabsContent value="bookings" className="space-y-6">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-bold text-slate-800">预订管理</h2>
-                <p className="text-slate-600">查看所有用户的预订信息</p>
+                <h2 className="text-2xl font-bold text-rich-black">预订管理</h2>
+                <p className="text-prussian-blue-600">查看所有用户的预订信息</p>
               </div>
               <button
                 onClick={refreshBookingData}
@@ -502,19 +502,19 @@ function ConfigPageContent() {
 
           <TabsContent value="popup" className="space-y-6">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-slate-800 mb-2">弹窗配置</h2>
-              <p className="text-slate-600">管理购物车提交时的限时提醒弹窗设置</p>
+              <h2 className="text-2xl font-bold text-rich-black mb-2">弹窗配置</h2>
+              <p className="text-prussian-blue-600">管理购物车提交时的限时提醒弹窗设置</p>
             </div>
             <PopupConfigManagement />
           </TabsContent>
 
           <TabsContent value="system" className="space-y-6">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-slate-800 mb-2">系统配置</h2>
-              <p className="text-slate-600">管理ShowMasterPieces模块的系统级配置项，为模块独立化做准备</p>
+              <h2 className="text-2xl font-bold text-rich-black mb-2">系统配置</h2>
+              <p className="text-prussian-blue-600">管理ShowMasterPieces模块的系统级配置项，为模块独立化做准备</p>
               <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="flex items-start gap-3">
-                  <Cog className="text-blue-600 mt-0.5" size={20} />
+                  <Cog className="text-moonstone mt-0.5" size={20} />
                   <div>
                     <h3 className="font-semibold text-blue-900">配置说明</h3>
                     <p className="text-blue-800 text-sm mt-1">

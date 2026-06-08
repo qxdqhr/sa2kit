@@ -262,13 +262,13 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
       <div className="max-w-2xl mx-auto p-6">
         <div className="text-center">
           <div className="text-green-500 text-6xl mb-4">✅</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">批量预订提交成功！</h2>
-          <p className="text-gray-600 mb-6">
+          <h2 className="text-2xl font-bold text-rich-black mb-4">批量预订提交成功！</h2>
+          <p className="text-prussian-blue-600 mb-6">
             您的批量预订已成功提交，我们会尽快与您联系确认。
           </p>
           <button
             onClick={handleContinueShopping}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+            className="w-full bg-gradient-to-r from-moonstone to-cerulean text-white py-2 px-4 rounded-lg hover:from-cerulean hover:to-moonstone transition-colors"
           >
             继续购物
           </button>
@@ -281,8 +281,8 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
     <div className="max-w-4xl mx-auto p-3 sm:p-6">
       {/* 页面标题 */}
       <div className="text-center mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">购物车</h1>
-        <p className="text-sm sm:text-base text-gray-600">管理您选择的谷子，确认后批量预订</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-rich-black mb-2">购物车</h1>
+        <p className="text-sm sm:text-base text-prussian-blue-600">管理您选择的谷子，确认后批量预订</p>
       </div>
 
       {/* 错误提示 */}
@@ -305,12 +305,12 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
       {/* 购物车为空状态 */}
       {cart.items.length === 0 && !loading && (
         <div className="text-center py-8 sm:py-12">
-          <ShoppingBag className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">购物车为空</h3>
-          <p className="text-sm sm:text-base text-gray-600 mb-6">您还没有添加任何谷子到购物车</p>
+          <ShoppingBag className="w-12 h-12 sm:w-16 sm:h-16 text-prussian-blue-500 mx-auto mb-4" />
+          <h3 className="text-base sm:text-lg font-medium text-rich-black mb-2">购物车为空</h3>
+          <p className="text-sm sm:text-base text-prussian-blue-600 mb-6">您还没有添加任何谷子到购物车</p>
           <button
             onClick={onClose}
-            className="bg-blue-600 text-white px-4 py-3 sm:py-2 rounded-lg hover:bg-blue-700 transition-colors text-base"
+            className="bg-gradient-to-r from-moonstone to-cerulean text-white px-4 py-3 sm:py-2 rounded-lg hover:from-cerulean hover:to-moonstone transition-colors text-base"
           >
             继续浏览谷子
           </button>
@@ -332,16 +332,16 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
                     className="w-16 h-16 sm:w-16 sm:h-16 object-cover rounded-md flex-shrink-0"
                   />
                 ) : (
-                  <div className="w-16 h-16 sm:w-16 sm:h-16 bg-gray-100 rounded-md flex-shrink-0 flex items-center justify-center text-gray-400 text-xs">
+                  <div className="w-16 h-16 sm:w-16 sm:h-16 bg-prussian-blue-100 rounded-md flex-shrink-0 flex items-center justify-center text-prussian-blue-500 text-xs">
                     暂无图片
                   </div>
                 )}
                 
                 {/* 商品信息 */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base line-clamp-2">{item.collection.title}</h3>
-                  <p className="text-xs sm:text-sm text-gray-600">编号：{item.collection.number}</p>
-                  <p className="text-xs sm:text-sm text-gray-600">
+                  <h3 className="font-semibold text-rich-black text-sm sm:text-base line-clamp-2">{item.collection.title}</h3>
+                  <p className="text-xs sm:text-sm text-prussian-blue-600">编号：{item.collection.number}</p>
+                  <p className="text-xs sm:text-sm text-prussian-blue-600">
                     价格：{(item.collection as any).price ? `¥${(item.collection as any).price}` : '价格待定'}
                   </p>
                 </div>
@@ -353,7 +353,7 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
                     <button
                       onClick={() => updateCartItem({ collectionId: item.collectionId, quantity: item.quantity - 1 })}
                       disabled={loading}
-                      className="w-10 h-10 sm:w-8 sm:h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50"
+                      className="w-10 h-10 sm:w-8 sm:h-8 rounded-full border border-prussian-blue-200/80 flex items-center justify-center hover:bg-prussian-blue-50/50 disabled:opacity-50"
                     >
                       <Minus size={18} className="sm:w-4 sm:h-4" />
                     </button>
@@ -361,7 +361,7 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
                     <button
                       onClick={() => updateCartItem({ collectionId: item.collectionId, quantity: item.quantity + 1 })}
                       disabled={loading}
-                      className="w-10 h-10 sm:w-8 sm:h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50"
+                      className="w-10 h-10 sm:w-8 sm:h-8 rounded-full border border-prussian-blue-200/80 flex items-center justify-center hover:bg-prussian-blue-50/50 disabled:opacity-50"
                     >
                       <Plus size={18} className="sm:w-4 sm:h-4" />
                     </button>
@@ -369,7 +369,7 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
                   
                   {/* 小计 */}
                   <div className="text-center sm:text-right">
-                    <p className="font-semibold text-gray-900 text-sm sm:text-base">
+                    <p className="font-semibold text-rich-black text-sm sm:text-base">
                       ¥{((item.collection as any).price || 0) * item.quantity}
                     </p>
                   </div>
@@ -388,21 +388,21 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
           </div>
 
           {/* 购物车统计 */}
-          <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
+          <div className="bg-prussian-blue-50/50 rounded-lg p-3 sm:p-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm sm:text-base text-gray-600">商品总数：</span>
+              <span className="text-sm sm:text-base text-prussian-blue-600">商品总数：</span>
               <span className="text-sm sm:text-base font-semibold">{cart.totalQuantity}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm sm:text-base text-gray-600">总价格：</span>
-              <span className="text-lg sm:text-xl font-bold text-blue-600">¥{cart.totalPrice}</span>
+              <span className="text-sm sm:text-base text-prussian-blue-600">总价格：</span>
+              <span className="text-lg sm:text-xl font-bold text-moonstone">¥{cart.totalPrice}</span>
             </div>
           </div>
 
           {/* 批量预订表单 */}
           <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900">批量预订信息</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-rich-black">批量预订信息</h3>
               {/* 开发环境测试数据按钮 */}
               {process.env.NODE_ENV === 'development' && (
                 <button
@@ -418,7 +418,7 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
             <form onSubmit={handleCheckout} className="space-y-4">
               {/* QQ号输入 */}
               <div>
-                <label htmlFor="qqNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="qqNumber" className="block text-sm font-medium text-prussian-blue-700 mb-2">
                   QQ号 <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -426,8 +426,8 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
                   id="qqNumber"
                   value={formData.qqNumber}
                   onChange={(e) => handleFormChange('qqNumber', e.target.value)}
-                  className={`w-full px-3 py-3 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base ${
-                    formErrors.qqNumber ? 'border-red-300' : 'border-gray-300'
+                  className={`w-full px-3 py-3 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 text-base ${
+                    formErrors.qqNumber ? 'border-red-300' : 'border-prussian-blue-200/80'
                   }`}
                   placeholder="请输入您的QQ号"
                   disabled={isCheckingOut}
@@ -439,7 +439,7 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
 
               {/* 手机号输入 */}
               <div>
-                <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="phoneNumber" className="block text-sm font-medium text-prussian-blue-700 mb-2">
                   手机号 <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -447,8 +447,8 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
                   id="phoneNumber"
                   value={formData.phoneNumber}
                   onChange={(e) => handleFormChange('phoneNumber', e.target.value)}
-                  className={`w-full px-3 py-3 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base ${
-                    formErrors.phoneNumber ? 'border-red-300' : 'border-gray-300'
+                  className={`w-full px-3 py-3 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 text-base ${
+                    formErrors.phoneNumber ? 'border-red-300' : 'border-prussian-blue-200/80'
                   }`}
                   placeholder="请输入您的手机号"
                   disabled={isCheckingOut}
@@ -460,7 +460,7 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
 
               {/* 备注信息 */}
               <div>
-                <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="notes" className="block text-sm font-medium text-prussian-blue-700 mb-2">
                   备注信息 <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -468,8 +468,8 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
                   value={formData.notes}
                   onChange={(e) => handleFormChange('notes', e.target.value)}
                   rows={8}
-                  className={`w-full px-3 py-3 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base min-h-[160px] sm:min-h-[140px] ${
-                    formErrors.notes ? 'border-red-300' : 'border-gray-300'
+                  className={`w-full px-3 py-3 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 text-base min-h-[160px] sm:min-h-[140px] ${
+                    formErrors.notes ? 'border-red-300' : 'border-prussian-blue-200/80'
                   }`}
                   placeholder={`您在葱韵环京的哪个群（方便我们联系您）
 （1）葱韵环京ComicUniverse
@@ -487,7 +487,7 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
 
               {/* 领取方式 */}
               <div>
-                <label htmlFor="pickupMethod" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="pickupMethod" className="block text-sm font-medium text-prussian-blue-700 mb-2">
                   收货信息 <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -495,8 +495,8 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
                   value={formData.pickupMethod}
                   onChange={(e) => handleFormChange('pickupMethod', e.target.value)}
                   rows={4}
-                  className={`w-full px-3 py-3 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base min-h-[120px] ${
-                    formErrors.pickupMethod ? 'border-red-300' : 'border-gray-300'
+                  className={`w-full px-3 py-3 sm:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 text-base min-h-[120px] ${
+                    formErrors.pickupMethod ? 'border-red-300' : 'border-prussian-blue-200/80'
                   }`}
                   placeholder={`请填写2月10号以后能收到货的地址
 （1）收件人
@@ -515,7 +515,7 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
                   type="button"
                   onClick={clearCart}
                   disabled={loading || isCheckingOut}
-                  className="flex-1 bg-gray-200 text-gray-800 py-3 sm:py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 text-base"
+                  className="flex-1 bg-prussian-blue-200 text-rich-black py-3 sm:py-2 px-4 rounded-lg hover:bg-prussian-blue-300 transition-colors disabled:opacity-50 text-base"
                 >
                   清空购物车
                 </button>
@@ -524,8 +524,8 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
                   disabled={loading || isCheckingOut || cart.items.length === 0}
                   className={`flex-1 py-3 sm:py-2 px-4 rounded-lg font-medium transition-colors text-base ${
                     loading || isCheckingOut || cart.items.length === 0
-                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                      ? 'bg-prussian-blue-400 text-prussian-blue-600 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-moonstone to-cerulean text-white hover:from-cerulean hover:to-moonstone'
                   }`}
                 >
                   {isCheckingOut ? '提交中...' : '批量预订'}
@@ -540,7 +540,7 @@ export const CartPage: React.FC<CartPageProps> = ({ userId, onClose }) => {
       {loading && (
         <div className="text-center py-8 sm:py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-sm sm:text-base text-gray-600">加载中...</p>
+          <p className="text-sm sm:text-base text-prussian-blue-600">加载中...</p>
         </div>
       )}
 

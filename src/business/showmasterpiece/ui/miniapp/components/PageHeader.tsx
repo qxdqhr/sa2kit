@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, View } from '@tarojs/components';
+import { sm, smCn } from '../../shared/theme';
 
 type HeaderAction = {
   label: string;
@@ -21,29 +22,23 @@ interface PageHeaderProps {
 
 const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, actions, cta }) => {
   return (
-    <View className="border-b border-prussian-blue-200 bg-white px-4 py-4">
+    <View className={sm.header}>
       <View className="flex items-start justify-between gap-3">
         <View className="flex-1">
-          <Text className="text-xl font-bold text-rich-black">{title}</Text>
-          {subtitle && <Text className="mt-1 block text-sm text-prussian-blue-600">{subtitle}</Text>}
+          <Text className={sm.titleLg}>{title}</Text>
+          {subtitle && <Text className={smCn(sm.subtitle, 'mt-1 block')}>{subtitle}</Text>}
         </View>
         {actions && actions.length > 0 && (
           <View className="flex items-center gap-2">
-            {actions.map(action => (
+            {actions.map((action) => (
               <View
                 key={action.label}
-                className={
-                  action.variant === 'ghost'
-                    ? 'flex h-9 items-center justify-center rounded-full border border-prussian-blue-200 bg-white px-4'
-                    : 'flex h-9 items-center justify-center rounded-full bg-gradient-to-r from-moonstone to-cerulean px-4 shadow-lg'
-                }
+                className={action.variant === 'ghost' ? sm.btnGhost : sm.btnPrimary}
                 onClick={action.onClick}
               >
                 <Text
                   className={
-                    action.variant === 'ghost'
-                      ? 'text-xs font-semibold text-prussian-blue-700'
-                      : 'text-xs font-semibold text-white'
+                    action.variant === 'ghost' ? sm.btnTextGhost : sm.btnTextPrimary
                   }
                 >
                   {action.label}
@@ -54,11 +49,8 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, actions, cta }
         )}
       </View>
       {cta && (
-        <View
-          className="mt-4 flex h-10 items-center justify-center rounded-full bg-gradient-to-r from-moonstone to-cerulean px-4 shadow-lg"
-          onClick={cta.onClick}
-        >
-          <Text className="text-sm font-semibold text-white">{cta.label}</Text>
+        <View className={smCn(sm.btnPrimary, 'mt-4 w-full')} onClick={cta.onClick}>
+          <Text className={sm.btnTextPrimary}>{cta.label}</Text>
         </View>
       )}
     </View>

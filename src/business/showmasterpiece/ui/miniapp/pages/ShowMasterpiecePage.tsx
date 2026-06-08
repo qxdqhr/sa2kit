@@ -19,6 +19,7 @@ import {
 } from '../../../service/miniapp';
 import useDeadlinePopup from '../../../logic/hooks/useDeadlinePopupWechat';
 import DeadlinePopupManager from '../components/DeadlinePopup';
+import { sm, smCn } from '../../shared/theme';
 
 type CategoryFilter = {
   value: CollectionCategoryType;
@@ -224,15 +225,15 @@ const ShowMasterpieceMiniappPage: React.FC<ShowMasterpieceMiniappPageProps> = ({
   };
 
   return (
-    <View className="min-h-screen bg-gradient-to-br from-white to-prussian-blue-100 pb-12 text-rich-black">
+    <View className={smCn(sm.screen, 'pb-12 text-rich-black')}>
       <PageHeader
         title="葱韵魔法屋"
         subtitle="葱韵环京的谷子网站，请大家尽情鉴赏老师们的作品吧！"
       />
 
-      <View className="mx-4 mt-4 rounded-3xl border border-teal-200 bg-teal-50 p-4 shadow-sm">
-        <Text className="text-base font-semibold text-rich-black">分类浏览</Text>
-        <Text className="mt-1 block text-xs text-teal-700">按分类快速筛选商品内容</Text>
+      <View className={smCn('mx-4 mt-4', sm.panelInset)}>
+        <Text className={sm.titleSm}>分类浏览</Text>
+        <Text className={smCn(sm.meta, 'mt-1 block')}>按分类快速筛选商品内容</Text>
         <CategoryTabs
           items={categories}
           activeValue={activeCategory}
@@ -241,18 +242,19 @@ const ShowMasterpieceMiniappPage: React.FC<ShowMasterpieceMiniappPageProps> = ({
       </View>
 
       <View className="mx-4 mt-5">
-        <Text className="text-lg font-semibold text-rich-black">精选</Text>
+        <Text className={sm.titleLg}>精选</Text>
         {loading ? (
-          <View className="py-10 text-center text-sm text-prussian-blue-600">加载中...</View>
+          <View className="flex flex-col items-center py-10">
+            <View className={sm.spinner} />
+            <Text className={smCn(sm.meta, 'mt-3')}>加载中...</Text>
+          </View>
         ) : error ? (
-          <View className="mt-4 rounded-2xl bg-rose-50 px-4 py-4 text-rose-700 shadow-md">
-            <Text className="text-sm font-semibold">加载失败</Text>
-            <Text className="mt-1 block text-xs">{error}</Text>
+          <View className="mt-4 rounded-2xl bg-rose-50 px-4 py-4 ring-1 ring-rose-200/80">
+            <Text className="text-sm font-semibold text-rose-800">加载失败</Text>
+            <Text className="mt-1 block text-xs text-rose-700">{error}</Text>
           </View>
         ) : filteredCollections.length === 0 ? (
-          <View className="rounded-2xl bg-white py-10 text-center text-sm text-prussian-blue-600 shadow-md">
-            暂无匹配商品
-          </View>
+          <View className={smCn(sm.empty, 'mt-4')}>暂无匹配商品</View>
         ) : (
           <View className="mt-4 flex flex-col gap-5">
             {filteredCollections.map((collection) => (
@@ -285,20 +287,20 @@ const ShowMasterpieceMiniappPage: React.FC<ShowMasterpieceMiniappPageProps> = ({
 
       <View className="fixed bottom-6 right-4 flex flex-col gap-3" style={{ zIndex: 80 }}>
         <View
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-600 shadow-lg"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-moonstone to-cerulean shadow-[0_4px_14px_rgba(30,136,229,0.4)] transition-transform active:scale-[0.96]"
           onClick={goToTop}
         >
           <Text className="text-lg text-white">↑</Text>
         </View>
         {miniappFloatingButtons.showCart && (
           <View
-            className="relative flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500 shadow-lg"
+            className="relative flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-cerulean to-prussian-blue-700 shadow-[0_4px_14px_rgba(30,136,229,0.35)] transition-transform active:scale-[0.96]"
             onClick={goToCart}
           >
             <Text className="text-lg text-white">🛒</Text>
             {cartCount > 0 && (
-              <View className="absolute -right-1 -top-1 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1">
-                <Text className="text-xs font-semibold text-white">
+              <View className="absolute -right-1 -top-1 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 shadow-sm">
+                <Text className="text-xs font-semibold tabular-nums text-white">
                   {cartCount > 99 ? '99+' : cartCount}
                 </Text>
               </View>
@@ -307,7 +309,7 @@ const ShowMasterpieceMiniappPage: React.FC<ShowMasterpieceMiniappPageProps> = ({
         )}
         {miniappFloatingButtons.showHistory && (
           <View
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-700 shadow-lg"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-prussian-blue-700 shadow-[0_4px_14px_rgba(0,48,73,0.35)] transition-transform active:scale-[0.96]"
             onClick={goToHistory}
           >
             <Text className="text-lg text-white">🕘</Text>

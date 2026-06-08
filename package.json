@@ -1,7 +1,7 @@
 {
   "name": "sa2kit",
-  "version": "1.6.116",
-  "description": "A modern, type-safe React utility library with cross-platform support and platform adapters",
+  "version": "2.0.0-alpha.2",
+  "description": "SA2Kit 2.x — common 通用工具库 + business 业务模块（重构中，见 docs/REFACTOR_2.0_BACKLOG.md）",
   "keywords": [
     "react",
     "typescript",
@@ -43,6 +43,56 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
+    "./common": {
+      "types": "./dist/common/index.d.ts",
+      "import": "./dist/common/index.mjs",
+      "require": "./dist/common/index.js"
+    },
+    "./common/logger": {
+      "types": "./dist/common/logger/index.d.ts",
+      "import": "./dist/common/logger/index.mjs",
+      "require": "./dist/common/logger/index.js"
+    },
+    "./common/utils": {
+      "types": "./dist/common/utils/index.d.ts",
+      "import": "./dist/common/utils/index.mjs",
+      "require": "./dist/common/utils/index.js"
+    },
+    "./common/storage": {
+      "types": "./dist/common/storage/index.d.ts",
+      "import": "./dist/common/storage/index.mjs",
+      "require": "./dist/common/storage/index.js"
+    },
+    "./common/request": {
+      "types": "./dist/common/request/index.d.ts",
+      "import": "./dist/common/request/index.mjs",
+      "require": "./dist/common/request/index.js"
+    },
+    "./common/file": {
+      "types": "./dist/common/file/index.d.ts",
+      "import": "./dist/common/file/index.mjs",
+      "require": "./dist/common/file/index.js"
+    },
+    "./common/file/server": {
+      "types": "./dist/common/file/server/index.d.ts",
+      "import": "./dist/common/file/server/index.mjs",
+      "require": "./dist/common/file/server/index.js"
+    },
+    "./common/export": {
+      "types": "./dist/common/export/index.d.ts",
+      "import": "./dist/common/export/index.mjs",
+      "require": "./dist/common/export/index.js"
+    },
+    "./common/export/server": {
+      "types": "./dist/common/export/server/index.d.ts",
+      "import": "./dist/common/export/server/index.mjs",
+      "require": "./dist/common/export/server/index.js"
+    },
+    "./business": {
+      "types": "./dist/business/index.d.ts",
+      "import": "./dist/business/index.mjs",
+      "require": "./dist/business/index.js"
+    },
     "./logger": {
       "types": "./dist/logger/index.d.ts",
       "import": "./dist/logger/index.mjs",
@@ -67,6 +117,16 @@
       "types": "./dist/universalFile/server/index.d.ts",
       "import": "./dist/universalFile/server/index.mjs",
       "require": "./dist/universalFile/server/index.js"
+    },
+    "./ossFile": {
+      "types": "./dist/ossFile/index.d.ts",
+      "import": "./dist/ossFile/index.mjs",
+      "require": "./dist/ossFile/index.js"
+    },
+    "./ossFile/server": {
+      "types": "./dist/ossFile/server/index.d.ts",
+      "import": "./dist/ossFile/server/index.mjs",
+      "require": "./dist/ossFile/server/index.js"
     },
     "./universalExport": {
       "types": "./dist/universalExport/index.d.ts",
@@ -718,6 +778,8 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "clean": "rm -rf dist",
+    "snapshot:exports": "node scripts/snapshot-exports.mjs",
+    "smoke:exports": "node scripts/smoke-exports.mjs",
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run build && pnpm run test",
     "publish:beta": "npm publish --tag beta --access public",

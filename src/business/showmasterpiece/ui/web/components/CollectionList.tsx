@@ -82,11 +82,11 @@ export const CollectionList: React.FC<CollectionListProps> = ({
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 6 }).map((_, index) => (
-          <div key={index} className="bg-gray-100 rounded-lg p-4 animate-pulse">
-            <div className="w-full h-48 bg-gray-200 rounded-md mb-3"></div>
-            <div className="h-4 bg-gray-200 rounded mb-2"></div>
-            <div className="h-3 bg-gray-200 rounded mb-2"></div>
-            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+          <div key={index} className="bg-prussian-blue-100 rounded-lg p-4 animate-pulse">
+            <div className="w-full h-48 bg-prussian-blue-200 rounded-md mb-3"></div>
+            <div className="h-4 bg-prussian-blue-200 rounded mb-2"></div>
+            <div className="h-3 bg-prussian-blue-200 rounded mb-2"></div>
+            <div className="h-3 bg-prussian-blue-200 rounded w-1/2"></div>
           </div>
         ))}
       </div>
@@ -99,9 +99,9 @@ export const CollectionList: React.FC<CollectionListProps> = ({
   if (collections.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="text-gray-400 text-6xl mb-4">🎨</div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">暂无可用画集</h3>
-        <p className="text-gray-500">当前没有可预订的画集，请稍后再试</p>
+        <div className="text-prussian-blue-500 text-6xl mb-4">🎨</div>
+        <h3 className="text-lg font-medium text-rich-black mb-2">暂无可用画集</h3>
+        <p className="text-prussian-blue-600">当前没有可预订的画集，请稍后再试</p>
       </div>
     );
   }
@@ -116,7 +116,7 @@ export const CollectionList: React.FC<CollectionListProps> = ({
             transition-all duration-200 hover:shadow-lg
             ${selectedCollectionId === collection.id 
               ? 'ring-2 ring-blue-500 shadow-lg' 
-              : 'hover:ring-1 hover:ring-gray-300'
+              : 'hover:ring-1 hover:ring-prussian-blue-200/80'
             }
             ${disabled ? 'opacity-60 cursor-not-allowed' : ''}
           `}
@@ -155,14 +155,14 @@ export const CollectionList: React.FC<CollectionListProps> = ({
 
           {/* 画集信息 */}
           <div className="p-4">
-            <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">
+            <h3 className="font-semibold text-rich-black mb-1 line-clamp-2">
               {collection.title}
             </h3>
-            <p className="text-sm text-gray-600 mb-2">
+            <p className="text-sm text-prussian-blue-600 mb-2">
               编号：{collection.number}
             </p>
             {collection.description && (
-              <p className="text-sm text-gray-500 line-clamp-2">
+              <p className="text-sm text-prussian-blue-600 line-clamp-2">
                 {collection.description}
               </p>
             )}
@@ -171,7 +171,7 @@ export const CollectionList: React.FC<CollectionListProps> = ({
           {/* 选择提示 */}
           {!disabled && (
             <div className="absolute inset-0 bg-blue-500 bg-opacity-0 hover:bg-opacity-10 transition-all duration-200 flex items-center justify-center">
-              <span className="text-blue-600 font-medium opacity-0 hover:opacity-100 transition-opacity duration-200">
+              <span className="text-moonstone font-medium opacity-0 hover:opacity-100 transition-opacity duration-200">
                 点击选择
               </span>
             </div>

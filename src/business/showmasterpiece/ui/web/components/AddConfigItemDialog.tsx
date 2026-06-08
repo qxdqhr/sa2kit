@@ -146,7 +146,7 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
       {/* 背景遮罩 */}
       <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div 
-          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+          className="fixed inset-0 bg-prussian-blue-50/500 bg-opacity-75 transition-opacity"
           onClick={onCancel}
         ></div>
 
@@ -155,10 +155,10 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="sm:flex sm:items-start">
               <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
-                <Plus className="h-6 w-6 text-blue-600" />
+                <Plus className="h-6 w-6 text-moonstone" />
               </div>
               <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                <h3 className="text-lg leading-6 font-medium text-rich-black mb-4">
                   新增配置项
                 </h3>
                 
@@ -185,7 +185,7 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {/* 配置键 */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                       配置键 <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -193,22 +193,22 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
                       value={formData.key}
                       onChange={(e) => handleInputChange('key', e.target.value.toUpperCase())}
                       placeholder="例如: SHOWMASTER_CONFIG_KEY"
-                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.key ? 'border-red-300' : 'border-gray-300'
+                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25 ${
+                        errors.key ? 'border-red-300' : 'border-prussian-blue-200/80'
                       }`}
                       disabled={saving}
                     />
                     {errors.key && (
                       <p className="mt-1 text-sm text-red-600">{errors.key}</p>
                     )}
-                    <p className="mt-1 text-xs text-gray-500">
+                    <p className="mt-1 text-xs text-prussian-blue-600">
                       只能包含大写字母、数字和下划线，且必须以字母或下划线开头
                     </p>
                   </div>
 
                   {/* 显示名称 */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                       显示名称 <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -216,8 +216,8 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
                       value={formData.displayName}
                       onChange={(e) => handleInputChange('displayName', e.target.value)}
                       placeholder="例如: ShowMaster配置项"
-                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.displayName ? 'border-red-300' : 'border-gray-300'
+                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25 ${
+                        errors.displayName ? 'border-red-300' : 'border-prussian-blue-200/80'
                       }`}
                       disabled={saving}
                     />
@@ -228,7 +228,7 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
 
                   {/* 描述 */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                       描述
                     </label>
                     <textarea
@@ -236,7 +236,7 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
                       onChange={(e) => handleInputChange('description', e.target.value)}
                       placeholder="配置项的详细描述"
                       rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                       disabled={saving}
                     />
                   </div>
@@ -244,13 +244,13 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* 配置类型 */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                         配置类型 <span className="text-red-500">*</span>
                       </label>
                       <select
                         value={formData.type}
                         onChange={(e) => handleInputChange('type', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                         disabled={saving}
                       >
                         <option value="string">字符串</option>
@@ -262,7 +262,7 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
 
                     {/* 排序 */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                         排序
                       </label>
                       <input
@@ -270,7 +270,7 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
                         value={formData.sortOrder}
                         onChange={(e) => handleInputChange('sortOrder', parseInt(e.target.value) || 0)}
                         placeholder="0"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                         disabled={saving}
                       />
                     </div>
@@ -279,15 +279,15 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* 配置值 */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                         配置值
                       </label>
                       {formData.type === 'boolean' ? (
                         <select
                           value={formData.value}
                           onChange={(e) => handleInputChange('value', e.target.value)}
-                          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.value ? 'border-red-300' : 'border-gray-300'
+                          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25 ${
+                            errors.value ? 'border-red-300' : 'border-prussian-blue-200/80'
                           }`}
                           disabled={saving}
                         >
@@ -301,8 +301,8 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
                           value={formData.value}
                           onChange={(e) => handleInputChange('value', e.target.value)}
                           placeholder="输入配置值"
-                          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.value ? 'border-red-300' : 'border-gray-300'
+                          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25 ${
+                            errors.value ? 'border-red-300' : 'border-prussian-blue-200/80'
                           }`}
                           disabled={saving}
                         />
@@ -314,14 +314,14 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
 
                     {/* 默认值 */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                         默认值
                       </label>
                       {formData.type === 'boolean' ? (
                         <select
                           value={formData.defaultValue}
                           onChange={(e) => handleInputChange('defaultValue', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                           disabled={saving}
                         >
                           <option value="">请选择</option>
@@ -334,7 +334,7 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
                           value={formData.defaultValue}
                           onChange={(e) => handleInputChange('defaultValue', e.target.value)}
                           placeholder="输入默认值"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                           disabled={saving}
                         />
                       )}
@@ -349,10 +349,10 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
                         id="isRequired"
                         checked={formData.isRequired}
                         onChange={(e) => handleInputChange('isRequired', e.target.checked)}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        className="h-4 w-4 text-moonstone focus:ring-moonstone/25 border-prussian-blue-200/80 rounded"
                         disabled={saving}
                       />
-                      <label htmlFor="isRequired" className="ml-2 block text-sm text-gray-900">
+                      <label htmlFor="isRequired" className="ml-2 block text-sm text-rich-black">
                         必需配置项
                       </label>
                     </div>
@@ -362,10 +362,10 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
                         id="isSensitive"
                         checked={formData.isSensitive}
                         onChange={(e) => handleInputChange('isSensitive', e.target.checked)}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        className="h-4 w-4 text-moonstone focus:ring-moonstone/25 border-prussian-blue-200/80 rounded"
                         disabled={saving}
                       />
-                      <label htmlFor="isSensitive" className="ml-2 block text-sm text-gray-900">
+                      <label htmlFor="isSensitive" className="ml-2 block text-sm text-rich-black">
                         敏感信息
                       </label>
                     </div>
@@ -374,12 +374,12 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
               </div>
             </div>
           </div>
-          <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <div className="bg-prussian-blue-50/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
             <button
               type="button"
               onClick={handleSubmit}
               disabled={saving}
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-gradient-to-r from-moonstone to-cerulean text-base font-medium text-white hover:from-cerulean hover:to-moonstone focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-moonstone/25 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? (
                 <>
@@ -397,7 +397,7 @@ export const AddConfigItemDialog: React.FC<AddConfigItemDialogProps> = ({
               type="button"
               onClick={onCancel}
               disabled={saving}
-              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="mt-3 w-full inline-flex justify-center rounded-md border border-prussian-blue-200/80 shadow-sm px-4 py-2 bg-white text-base font-medium text-prussian-blue-700 hover:bg-prussian-blue-50/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-moonstone/25 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               取消
             </button>

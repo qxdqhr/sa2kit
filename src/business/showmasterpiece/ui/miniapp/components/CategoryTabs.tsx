@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, Text, View } from '@tarojs/components';
+import { sm, smCn } from '../../shared/theme';
 
 export type CategoryTabItem<T extends string = string> = {
   value: T;
@@ -16,32 +17,26 @@ interface CategoryTabsProps<T extends string = string> {
 function CategoryTabs<T extends string = string>({
   items,
   activeValue,
-  onChange
+  onChange,
 }: CategoryTabsProps<T>) {
   return (
     <View className="mt-3">
-      <ScrollView scrollX showScrollbar>
+      <ScrollView scrollX showScrollbar={false}>
         <View className="flex gap-3 pb-1">
-          {items.map(item => {
+          {items.map((item) => {
             const isActive = activeValue === item.value;
             return (
               <View
                 key={item.value}
-                className={`flex h-20 w-28 shrink-0 flex-col justify-between rounded-2xl border px-3 py-3 transition-all ${
-                  isActive
-                    ? 'border-sky-500 bg-sky-500 text-white shadow-lg'
-                    : 'border-prussian-blue-200 bg-white text-prussian-blue-700'
-                }`}
+                className={smCn(sm.tab, isActive ? sm.tabActive : sm.tabInactive)}
                 onClick={() => onChange(item.value)}
               >
-                <Text className="text-xs font-semibold leading-4 whitespace-nowrap">{item.label}</Text>
+                <Text className="whitespace-nowrap text-xs font-semibold leading-4">
+                  {item.label}
+                </Text>
                 {typeof item.count === 'number' && (
                   <Text
-                    className={`self-start rounded-full px-2 py-1 text-xs ${
-                      isActive
-                        ? 'bg-white text-sky-600'
-                        : 'bg-prussian-blue-100 text-prussian-blue-700'
-                    }`}
+                    className={isActive ? sm.tabCountActive : sm.tabCountInactive}
                   >
                     {item.count} 个
                   </Text>

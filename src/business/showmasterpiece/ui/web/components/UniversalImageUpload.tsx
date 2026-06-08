@@ -131,7 +131,7 @@ export const UniversalImageUpload: React.FC<UniversalImageUploadProps> = ({
 
     return (
       <div 
-        className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-blue-400 hover:bg-slate-50 transition-all duration-200 cursor-pointer"
+        className="border-2 border-dashed border-prussian-blue-200/80 rounded-xl p-8 text-center hover:border-blue-400 hover:bg-prussian-blue-50/50 transition-all duration-200 cursor-pointer"
         style={{ position: 'relative', zIndex: 1 }}
       >
         {/* 文件选择器 */}
@@ -154,7 +154,7 @@ export const UniversalImageUpload: React.FC<UniversalImageUploadProps> = ({
         />
         
         {/* 显示内容 */}
-        <div className="text-slate-500 pointer-events-none">
+        <div className="text-prussian-blue-600 pointer-events-none">
           {uploading ? (
             <>
               <div className="animate-spin w-10 h-10 border-3 border-blue-500 border-t-transparent rounded-full mx-auto mb-3"></div>
@@ -162,12 +162,12 @@ export const UniversalImageUpload: React.FC<UniversalImageUploadProps> = ({
             </>
           ) : (
             <>
-              <svg className="w-16 h-16 mx-auto mb-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-16 h-16 mx-auto mb-4 text-prussian-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
-              <p className="text-lg font-semibold text-slate-700 mb-2">{placeholder}</p>
-              <p className="text-sm text-slate-600 mb-1">支持 JPG、PNG、GIF、WebP 格式</p>
-              <p className="text-xs text-blue-600">
+              <p className="text-lg font-semibold text-prussian-blue-700 mb-2">{placeholder}</p>
+              <p className="text-sm text-prussian-blue-600 mb-1">支持 JPG、PNG、GIF、WebP 格式</p>
+              <p className="text-xs text-moonstone">
                 自动上传到云存储，享受CDN加速
               </p>
             </>
@@ -191,7 +191,7 @@ export const UniversalImageUpload: React.FC<UniversalImageUploadProps> = ({
           <img
             src={imageUrl}
             alt={`${businessType === 'cover' ? '封面' : '作品'}预览`}
-            className="max-w-full h-auto max-h-64 rounded-xl border-2 border-slate-200 shadow-sm"
+            className="max-w-full h-auto max-h-64 rounded-xl border-2 border-prussian-blue-200/60 shadow-sm"
             onError={(e) => {
               e.currentTarget.style.display = 'none';
             }}
@@ -215,7 +215,7 @@ export const UniversalImageUpload: React.FC<UniversalImageUploadProps> = ({
     <div className={className}>
       {/* 标签 */}
       {label && (
-        <label className="block text-sm font-medium text-slate-700 mb-3">
+        <label className="block text-sm font-medium text-prussian-blue-700 mb-3">
           {label}
         </label>
       )}
@@ -239,7 +239,7 @@ export const UniversalImageUpload: React.FC<UniversalImageUploadProps> = ({
       {renderPreview()}
       
       {/* 说明文字 */}
-      <div className="mt-3 text-xs text-slate-500">
+      <div className="mt-3 text-xs text-prussian-blue-600">
         {businessType === 'cover' ? '封面图片' : '作品图片'}将自动上传到云存储并通过CDN分发，提供更好的性能和用户体验
       </div>
     </div>

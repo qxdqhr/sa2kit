@@ -107,21 +107,21 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
       <div className="max-w-2xl mx-auto p-6">
         <div className="text-center">
           <div className="text-green-500 text-6xl mb-4">✅</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">预订提交成功！</h2>
-          <p className="text-gray-600 mb-6">
+          <h2 className="text-2xl font-bold text-rich-black mb-4">预订提交成功！</h2>
+          <p className="text-prussian-blue-600 mb-6">
             您的预订已成功提交，我们会尽快与您联系确认。
           </p>
           <div className="space-y-3">
             <button
               onClick={handleNewBooking}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+              className="w-full bg-gradient-to-r from-moonstone to-cerulean text-white py-2 px-4 rounded-lg hover:from-cerulean hover:to-moonstone transition-colors"
             >
               继续预订其他画集
             </button>
             {onClose && (
               <button
                 onClick={onClose}
-                className="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+                className="w-full bg-prussian-blue-200 text-rich-black py-2 px-4 rounded-lg hover:bg-prussian-blue-300 transition-colors"
               >
                 关闭
               </button>
@@ -136,8 +136,8 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
     <div className="max-w-4xl mx-auto p-6">
       {/* 页面标题 */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">预订画集</h1>
-        <p className="text-gray-600">选择您喜欢的画集并填写预订信息</p>
+        <h1 className="text-3xl font-bold text-rich-black mb-2">预订画集</h1>
+        <p className="text-prussian-blue-600">选择您喜欢的画集并填写预订信息</p>
       </div>
 
       {/* 错误提示 */}
@@ -161,22 +161,22 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
       <div className="flex items-center justify-center mb-8">
         <div className="flex items-center">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-            step === 'select' ? 'bg-blue-600 text-white' : 'bg-green-500 text-white'
+            step === 'select' ? 'bg-gradient-to-r from-moonstone to-cerulean text-white' : 'bg-green-500 text-white'
           }`}>
             {step === 'select' ? '1' : '✓'}
           </div>
-          <div className={`ml-2 ${step === 'select' ? 'text-blue-600' : 'text-green-600'}`}>
+          <div className={`ml-2 ${step === 'select' ? 'text-moonstone' : 'text-green-600'}`}>
             选择画集
           </div>
         </div>
-        <div className="w-16 h-0.5 bg-gray-300 mx-4"></div>
+        <div className="w-16 h-0.5 bg-prussian-blue-300 mx-4"></div>
         <div className="flex items-center">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-            step === 'form' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'
+            step === 'form' ? 'bg-gradient-to-r from-moonstone to-cerulean text-white' : 'bg-prussian-blue-300 text-prussian-blue-600'
           }`}>
             2
           </div>
-          <div className={`ml-2 ${step === 'form' ? 'text-blue-600' : 'text-gray-500'}`}>
+          <div className={`ml-2 ${step === 'form' ? 'text-moonstone' : 'text-prussian-blue-600'}`}>
             填写信息
           </div>
         </div>
@@ -186,8 +186,8 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
       {step === 'select' && (
         <div>
           <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">选择要预订的画集</h2>
-            <p className="text-gray-600">点击下方画集卡片进行选择</p>
+            <h2 className="text-xl font-semibold text-rich-black mb-2">选择要预订的画集</h2>
+            <p className="text-prussian-blue-600">点击下方画集卡片进行选择</p>
           </div>
           <CollectionList
             collections={collections}
@@ -203,7 +203,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
           <div className="mb-6">
             <button
               onClick={handleBackToSelect}
-              className="text-blue-600 hover:text-blue-800 flex items-center mb-4"
+              className="text-moonstone hover:text-blue-800 flex items-center mb-4"
             >
               <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -211,10 +211,10 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
               返回选择画集
             </button>
             
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">填写预订信息</h2>
+            <h2 className="text-xl font-semibold text-rich-black mb-4">填写预订信息</h2>
             
             {/* 选中的画集信息 */}
-            <div className="bg-gray-50 rounded-lg p-4 mb-6">
+            <div className="bg-prussian-blue-50/50 rounded-lg p-4 mb-6">
               <div className="flex items-center">
                 {selectedCollection.coverImage ? (
                   <img
@@ -223,14 +223,14 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
                     className="w-16 h-16 object-cover rounded-md mr-4"
                   />
                 ) : (
-                  <div className="w-16 h-16 bg-gray-100 rounded-md mr-4 flex items-center justify-center text-gray-400 text-xs">
+                  <div className="w-16 h-16 bg-prussian-blue-100 rounded-md mr-4 flex items-center justify-center text-prussian-blue-500 text-xs">
                     暂无图片
                   </div>
                 )}
                 <div>
-                  <h3 className="font-semibold text-gray-900">{selectedCollection.title}</h3>
-                  <p className="text-sm text-gray-600">编号：{selectedCollection.number}</p>
-                  <p className="text-sm text-gray-600">
+                  <h3 className="font-semibold text-rich-black">{selectedCollection.title}</h3>
+                  <p className="text-sm text-prussian-blue-600">编号：{selectedCollection.number}</p>
+                  <p className="text-sm text-prussian-blue-600">
                     价格：{selectedCollection.price ? `¥${selectedCollection.price}` : '价格待定'}
                   </p>
                 </div>
@@ -242,7 +242,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* QQ号输入 */}
             <div>
-              <label htmlFor="qqNumber" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="qqNumber" className="block text-sm font-medium text-prussian-blue-700 mb-2">
                 QQ号 <span className="text-red-500">*</span>
               </label>
               <input
@@ -250,8 +250,8 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
                 id="qqNumber"
                 value={formData.qqNumber}
                 onChange={(e) => updateField('qqNumber', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.qqNumber ? 'border-red-300' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 ${
+                  errors.qqNumber ? 'border-red-300' : 'border-prussian-blue-200/80'
                 }`}
                 placeholder="请输入您的QQ号"
                 disabled={submitting}
@@ -263,7 +263,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
 
             {/* 手机号输入 */}
             <div>
-              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="phoneNumber" className="block text-sm font-medium text-prussian-blue-700 mb-2">
                 手机号
               </label>
               <input
@@ -271,8 +271,8 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
                 id="phoneNumber"
                 value={formData.phoneNumber}
                 onChange={(e) => updateField('phoneNumber', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.phoneNumber ? 'border-red-300' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 ${
+                  errors.phoneNumber ? 'border-red-300' : 'border-prussian-blue-200/80'
                 }`}
                 placeholder="请输入您的手机号（可选）"
                 disabled={submitting}
@@ -284,7 +284,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
 
             {/* 预订数量 */}
             <div>
-              <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="quantity" className="block text-sm font-medium text-prussian-blue-700 mb-2">
                 预订数量 <span className="text-red-500">*</span>
               </label>
               <input
@@ -293,8 +293,8 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
                 min="1"
                 value={formData.quantity}
                 onChange={(e) => updateField('quantity', parseInt(e.target.value) || 1)}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.quantity ? 'border-red-300' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25 ${
+                  errors.quantity ? 'border-red-300' : 'border-prussian-blue-200/80'
                 }`}
                 placeholder="请输入预订数量"
                 disabled={submitting}
@@ -306,7 +306,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
 
             {/* 备注信息 */}
             <div>
-              <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="notes" className="block text-sm font-medium text-prussian-blue-700 mb-2">
                 备注信息
               </label>
               <textarea
@@ -314,7 +314,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
                 value={formData.notes}
                 onChange={(e) => updateField('notes', e.target.value)}
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                 placeholder="请输入备注信息（可选）"
                 disabled={submitting}
               />
@@ -327,8 +327,8 @@ export const BookingPage: React.FC<BookingPageProps> = ({ onClose }) => {
                 disabled={submitting}
                 className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
                   submitting
-                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? 'bg-prussian-blue-400 text-prussian-blue-600 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-moonstone to-cerulean text-white hover:from-cerulean hover:to-moonstone'
                 }`}
               >
                 {submitting ? '提交中...' : '提交预订'}

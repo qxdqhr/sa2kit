@@ -350,17 +350,17 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
       {/* 头部 */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-slate-800">弹窗配置管理</h2>
-          <p className="text-sm text-slate-600 mt-1">管理购物车提交时的限时提醒弹窗</p>
+          <h2 className="text-xl font-semibold text-rich-black">弹窗配置管理</h2>
+          <p className="text-sm text-prussian-blue-600 mt-1">管理购物车提交时的限时提醒弹窗</p>
           {/* 调试信息 */}
-          <div className="mt-2 text-xs text-slate-500">
+          <div className="mt-2 text-xs text-prussian-blue-600">
             状态: {loading ? '加载中' : '已加载'} | 配置数量: {configs.length} | 
             {error ? `错误: ${error}` : '正常'}
           </div>
         </div>
         <button
           onClick={handleCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-moonstone to-cerulean text-white rounded-lg hover:from-cerulean hover:to-moonstone transition-colors"
         >
           <Plus size={16} />
           创建配置
@@ -378,81 +378,81 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
       {loading ? (
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-600">加载中...</p>
+          <p className="text-prussian-blue-600">加载中...</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+        <div className="bg-white rounded-lg border border-prussian-blue-200/60 overflow-hidden">
           {configs.length === 0 ? (
             <div className="text-center py-8">
-              <Settings size={40} className="text-slate-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-slate-800 mb-2">暂无配置</h3>
-              <p className="text-slate-600 mb-4">点击"创建配置"开始设置弹窗</p>
+              <Settings size={40} className="text-prussian-blue-500 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-rich-black mb-2">暂无配置</h3>
+              <p className="text-prussian-blue-600 mb-4">点击"创建配置"开始设置弹窗</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-slate-50">
+                <thead className="bg-prussian-blue-50/50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-prussian-blue-600 uppercase tracking-wider">
                       配置信息
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-prussian-blue-600 uppercase tracking-wider">
                       触发条件
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-prussian-blue-600 uppercase tracking-wider">
                       弹窗内容
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-prussian-blue-600 uppercase tracking-wider">
                       流程控制
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-prussian-blue-600 uppercase tracking-wider">
                       状态
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-prussian-blue-600 uppercase tracking-wider">
                       操作
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-slate-200">
+                <tbody className="bg-white divide-y divide-prussian-blue-200/60">
                   {configs.map((config) => (
-                    <tr key={config.id} className="hover:bg-slate-50">
+                    <tr key={config.id} className="hover:bg-prussian-blue-50/50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="text-sm font-medium text-slate-900">
+                          <div className="text-sm font-medium text-rich-black">
                             {config.name}
                           </div>
                           {config.description && (
-                            <div className="text-sm text-slate-500">
+                            <div className="text-sm text-prussian-blue-600">
                               {config.description}
                             </div>
                           )}
-                          <div className="text-xs text-slate-400 mt-1">
+                          <div className="text-xs text-prussian-blue-500 mt-1">
                             {config.businessModule} / {config.businessScene}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-slate-900">
+                        <div className="text-sm text-rich-black">
                           {getTriggerTypeText(config.triggerConfig.triggerType)}
                         </div>
-                        <div className="text-sm text-slate-500">
+                        <div className="text-sm text-prussian-blue-600">
                           {formatDeadlineTime(config.triggerConfig)}
                         </div>
                         {(config.triggerConfig.advanceMinutes || 0) > 0 && (
-                          <div className="text-xs text-slate-400">
+                          <div className="text-xs text-prussian-blue-500">
                             提前 {config.triggerConfig.advanceMinutes} 分钟
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4">
                         <div>
-                          <div className="text-sm font-medium text-slate-900">
+                          <div className="text-sm font-medium text-rich-black">
                             {config.contentConfig.title}
                           </div>
-                          <div className="text-sm text-slate-500 max-w-xs truncate">
+                          <div className="text-sm text-prussian-blue-600 max-w-xs truncate">
                             {config.contentConfig.message}
                           </div>
-                          <div className="text-xs text-slate-400 mt-1">
+                          <div className="text-xs text-prussian-blue-500 mt-1">
                             主题: {getThemeText(config.contentConfig.theme || 'warning')}
                           </div>
                         </div>
@@ -482,7 +482,7 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                           className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
                             config.enabled
                               ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
+                              : 'bg-prussian-blue-100 text-rich-black'
                           }`}
                         >
                           {config.enabled ? <Eye size={12} /> : <EyeOff size={12} />}
@@ -493,7 +493,7 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleEdit(config)}
-                            className="text-blue-600 hover:text-blue-700"
+                            className="text-moonstone hover:text-blue-700"
                           >
                             <Edit size={16} />
                           </button>
@@ -534,49 +534,49 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
           >
             {/* 基本信息 */}
             <div className="space-y-4">
-              <h4 className="font-medium text-slate-800">基本信息</h4>
+              <h4 className="font-medium text-rich-black">基本信息</h4>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                   配置名称 *
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                   placeholder="请输入配置名称"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                   配置描述
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   rows={2}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                   placeholder="请输入配置描述"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                   业务场景 *
                 </label>
                 <select
                   value={formData.businessScene}
                   onChange={(e) => setFormData(prev => ({ ...prev, businessScene: e.target.value }))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                 >
                   <option value="cart_checkout">购物车提交</option>
                   <option value="homepage_visit">主页访问</option>
                   <option value="collection_view">画集浏览</option>
                   <option value="artwork_detail">作品详情</option>
                 </select>
-                <div className="text-xs text-slate-500 mt-1">
+                <div className="text-xs text-prussian-blue-600 mt-1">
                   选择弹窗在哪个场景下触发显示
                 </div>
               </div>
@@ -587,9 +587,9 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                   id="enabled"
                   checked={formData.enabled}
                   onChange={(e) => setFormData(prev => ({ ...prev, enabled: e.target.checked }))}
-                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-prussian-blue-200/80 text-moonstone focus:ring-moonstone/25"
                 />
-                <label htmlFor="enabled" className="text-sm font-medium text-slate-700">
+                <label htmlFor="enabled" className="text-sm font-medium text-prussian-blue-700">
                   启用此配置
                 </label>
               </div>
@@ -597,10 +597,10 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
 
             {/* 触发条件 */}
             <div className="space-y-4">
-              <h4 className="font-medium text-slate-800">触发条件</h4>
+              <h4 className="font-medium text-rich-black">触发条件</h4>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                   触发类型
                 </label>
                 <select
@@ -612,7 +612,7 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                       triggerType: e.target.value as any,
                     }
                   }))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                 >
                   <option value="after_deadline">超过截止时间后显示</option>
                   <option value="before_deadline">截止时间前显示</option>
@@ -622,7 +622,7 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
 
               {formData.triggerConfig.triggerType !== 'always' && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                     截止时间
                   </label>
                   <input
@@ -635,14 +635,14 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                         deadlineTime: e.target.value,
                       }
                     }))}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                   />
                 </div>
               )}
 
               {formData.triggerConfig.triggerType === 'before_deadline' && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                     提前分钟数
                   </label>
                   <input
@@ -656,7 +656,7 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                         advanceMinutes: parseInt(e.target.value) || 0,
                       }
                     }))}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                     placeholder="在截止时间前多少分钟显示"
                   />
                 </div>
@@ -665,10 +665,10 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
 
             {/* 弹窗内容 */}
             <div className="space-y-4">
-              <h4 className="font-medium text-slate-800">弹窗内容</h4>
+              <h4 className="font-medium text-rich-black">弹窗内容</h4>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                   弹窗标题 *
                 </label>
                 <input
@@ -681,13 +681,13 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                       title: e.target.value,
                     }
                   }))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                   placeholder="请输入弹窗标题"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                   弹窗内容 *
                 </label>
                 <textarea
@@ -700,14 +700,14 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                     }
                   }))}
                   rows={4}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                   placeholder="请输入弹窗内容"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                     确认按钮文本
                   </label>
                   <input
@@ -720,12 +720,12 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                         confirmText: e.target.value,
                       }
                     }))}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                     取消按钮文本
                   </label>
                   <input
@@ -738,13 +738,13 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                         cancelText: e.target.value,
                       }
                     }))}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                   弹窗主题
                 </label>
                 <select
@@ -756,7 +756,7 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                       theme: e.target.value as any,
                     }
                   }))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                 >
                   <option value="warning">警告</option>
                   <option value="info">信息</option>
@@ -777,9 +777,9 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                       showCancel: e.target.checked,
                     }
                   }))}
-                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-prussian-blue-200/80 text-moonstone focus:ring-moonstone/25"
                 />
-                <label htmlFor="showCancel" className="text-sm font-medium text-slate-700">
+                <label htmlFor="showCancel" className="text-sm font-medium text-prussian-blue-700">
                   显示取消按钮
                 </label>
               </div>
@@ -787,11 +787,11 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
 
             {/* 显示设置 */}
             <div className="space-y-4">
-              <h4 className="font-medium text-slate-800">显示设置</h4>
+              <h4 className="font-medium text-rich-black">显示设置</h4>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                     弹窗宽度 (px)
                   </label>
                   <input
@@ -806,12 +806,12 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                         width: parseInt(e.target.value) || 400,
                       }
                     }))}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-prussian-blue-700 mb-1">
                     自动关闭 (秒，0=不关闭)
                   </label>
                   <input
@@ -826,7 +826,7 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                         autoCloseSeconds: parseInt(e.target.value) || 0,
                       }
                     }))}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-prussian-blue-200/80 rounded-md focus:outline-none focus:ring-2 focus:ring-moonstone/25"
                   />
                 </div>
               </div>
@@ -843,9 +843,9 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                       maskClosable: e.target.checked,
                     }
                   }))}
-                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-prussian-blue-200/80 text-moonstone focus:ring-moonstone/25"
                 />
-                <label htmlFor="maskClosable" className="text-sm font-medium text-slate-700">
+                <label htmlFor="maskClosable" className="text-sm font-medium text-prussian-blue-700">
                   允许点击遮罩关闭
                 </label>
               </div>
@@ -854,7 +854,7 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
 
           {/* 流程控制设置 */}
           <div>
-            <h4 className="text-sm font-medium text-slate-800 mb-3">流程控制</h4>
+            <h4 className="text-sm font-medium text-rich-black mb-3">流程控制</h4>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <input
@@ -865,13 +865,13 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
                     ...prev,
                     blockProcess: e.target.checked,
                   }))}
-                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-prussian-blue-200/80 text-moonstone focus:ring-moonstone/25"
                 />
-                <label htmlFor="blockProcess" className="text-sm font-medium text-slate-700">
+                <label htmlFor="blockProcess" className="text-sm font-medium text-prussian-blue-700">
                   阻断流程
                 </label>
               </div>
-              <div className="text-xs text-slate-500 pl-6">
+              <div className="text-xs text-prussian-blue-600 pl-6">
                 • 启用时：弹窗显示后阻止用户继续提交，只有关闭弹窗才能停止操作<br/>
                 • 禁用时：弹窗仅作为提醒，用户可以选择继续提交或取消
               </div>
@@ -879,20 +879,20 @@ export const PopupConfigManagement: React.FC<PopupConfigManagementProps> = () =>
           </div>
 
           {/* 操作按钮 */}
-          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-200">
+          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-prussian-blue-200/60">
             <button
               onClick={() => {
                 setShowCreateModal(false);
                 resetForm();
                 setEditingConfig(null);
               }}
-              className="px-4 py-2 text-slate-600 hover:text-slate-700 transition-colors"
+              className="px-4 py-2 text-prussian-blue-600 hover:text-prussian-blue-700 transition-colors"
             >
               取消
             </button>
             <button
               onClick={handleSave}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-moonstone to-cerulean text-white rounded-md hover:from-cerulean hover:to-moonstone transition-colors"
             >
               <Save size={16} />
               {editingConfig ? '更新' : '创建'}

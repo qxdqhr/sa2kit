@@ -133,11 +133,11 @@ export const CartModal: React.FC<CartModalProps> = ({
           onClick={(e) => e.stopPropagation()}
         >
           {/* 头部 */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-            <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-prussian-blue-200/40">
+            <h2 className="text-xl font-semibold text-rich-black">{title}</h2>
             {/* 关闭按钮 */}
             <button
-              className="bg-transparent border-none text-gray-500 cursor-pointer p-2 rounded-lg transition-all hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-w-9 min-h-9 flex items-center justify-center"
+              className="bg-transparent border-none text-prussian-blue-600 cursor-pointer p-2 rounded-lg transition-all hover:bg-prussian-blue-100 hover:text-prussian-blue-700 focus:outline-none focus:ring-2 focus:ring-moonstone/25 focus:ring-offset-2 min-w-9 min-h-9 flex items-center justify-center"
               onClick={onClose}
             >
               <X size={20} />

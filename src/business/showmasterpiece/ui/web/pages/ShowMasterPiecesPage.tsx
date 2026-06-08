@@ -37,6 +37,7 @@ import { DeadlinePopupManager } from '../components/DeadlinePopup';
 import { CartProvider } from '../../../logic/contexts/CartContext';
 import { AuthProvider, useAuth, UserMenu, CustomMenuItem } from '@/auth/legacy';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components';
+import { sm, smCn } from '../../shared/theme';
 
 /**
  * ShowMasterpiece 内容组件
@@ -220,9 +221,9 @@ function ShowMasterPiecesContent() {
    * 渲染加载状态
    */
   const renderLoading = () => (
-    <div className="min-h-screen bg-gradient-to-br from-white to-prussian-blue-900/5 overflow-x-hidden">
+    <div className={smCn(sm.screen, 'overflow-x-hidden')}>
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 p-4">
-        <div className="w-10 h-10 border-4 border-prussian-blue-300 border-t-moonstone rounded-full animate-spin"></div>
+        <div className={sm.spinner}></div>
         <p className="text-prussian-blue-600">加载中...</p>
       </div>
     </div>
@@ -296,9 +297,9 @@ function ShowMasterPiecesContent() {
 
   return (
     <CartProvider userId={userId}>
-      <div className="min-h-screen bg-gradient-to-br from-white to-prussian-blue-900/5 overflow-x-hidden">
+      <div className={smCn(sm.screen, 'overflow-x-hidden')}>
         {/* 顶部导航 */}
-        <div className="bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 border-b border-prussian-blue-200/30 sticky top-0 z-50">
+        <div className={smCn(sm.header, 'sticky top-0 z-50')}>
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex items-center justify-between gap-2 sm:gap-4 min-h-[44px]">
               {/* 左侧：返回按钮和标题 */}

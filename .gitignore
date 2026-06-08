@@ -37,3 +37,6 @@ pnpm-debug.log*
 .cache
 examples/
 *.md
+!README.md
+!CHANGELOG.md
+!docs/REFACTOR_2.0_BACKLOG.md

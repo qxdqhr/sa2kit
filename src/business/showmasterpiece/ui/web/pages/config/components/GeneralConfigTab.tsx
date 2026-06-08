@@ -137,7 +137,7 @@ export function GeneralConfigTab({ configForm, setConfigForm, onSave, onReset }:
               type="checkbox"
               checked={configForm.enableSearch}
               onChange={(e) => setConfigForm(prev => ({ ...prev, enableSearch: e.target.checked }))}
-              className="h-4 w-4 rounded border-gray-300"
+              className="h-4 w-4 rounded border-prussian-blue-200/80"
             />
             <Label htmlFor="enableSearch" className="text-sm font-medium">
               启用搜索功能
@@ -150,15 +150,15 @@ export function GeneralConfigTab({ configForm, setConfigForm, onSave, onReset }:
               type="checkbox"
               checked={configForm.enableCategories}
               onChange={(e) => setConfigForm(prev => ({ ...prev, enableCategories: e.target.checked }))}
-              className="h-4 w-4 rounded border-gray-300"
+              className="h-4 w-4 rounded border-prussian-blue-200/80"
             />
             <Label htmlFor="enableCategories" className="text-sm font-medium">
               启用分类功能
             </Label>
           </div>
 
-          <div className="space-y-2 rounded-xl border border-slate-200 p-3">
-            <p className="text-sm font-medium text-slate-900">小程序悬浮按钮</p>
+          <div className="space-y-2 rounded-xl border border-prussian-blue-200/60 p-3">
+            <p className="text-sm font-medium text-rich-black">小程序悬浮按钮</p>
             <div className="flex items-center space-x-2">
               <input
                 id="miniappShowCart"
@@ -170,7 +170,7 @@ export function GeneralConfigTab({ configForm, setConfigForm, onSave, onReset }:
                     miniappFloatingButtons: { ...prev.miniappFloatingButtons, showCart: e.target.checked },
                   }))
                 }
-                className="h-4 w-4 rounded border-gray-300"
+                className="h-4 w-4 rounded border-prussian-blue-200/80"
               />
               <Label htmlFor="miniappShowCart" className="text-sm font-medium">显示"购物车"按钮</Label>
             </div>
@@ -185,7 +185,7 @@ export function GeneralConfigTab({ configForm, setConfigForm, onSave, onReset }:
                     miniappFloatingButtons: { ...prev.miniappFloatingButtons, showHistory: e.target.checked },
                   }))
                 }
-                className="h-4 w-4 rounded border-gray-300"
+                className="h-4 w-4 rounded border-prussian-blue-200/80"
               />
               <Label htmlFor="miniappShowHistory" className="text-sm font-medium">显示"历史记录"按钮</Label>
             </div>
@@ -200,7 +200,7 @@ export function GeneralConfigTab({ configForm, setConfigForm, onSave, onReset }:
                     miniappFloatingButtons: { ...prev.miniappFloatingButtons, showAddToCart: e.target.checked },
                   }))
                 }
-                className="h-4 w-4 rounded border-gray-300"
+                className="h-4 w-4 rounded border-prussian-blue-200/80"
               />
               <Label htmlFor="miniappShowAddToCart" className="text-sm font-medium">显示"加入购物车"按钮</Label>
             </div>
