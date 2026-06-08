@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "2.0.0-alpha.5",
+  "version": "2.0.0-alpha.6",
   "description": "SA2Kit 2.x — common 通用工具库 + business 业务模块（重构中，见 docs/REFACTOR_2.0_BACKLOG.md）",
   "keywords": [
     "react",
@@ -38,110 +38,55 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+    "./ai/llm/core": {
+      "types": "./dist/ai/llm/core/index.d.ts",
+      "import": "./dist/ai/llm/core/index.mjs",
+      "require": "./dist/ai/llm/core/index.js"
     },
-    "./common": {
-      "types": "./dist/common/index.d.ts",
-      "import": "./dist/common/index.mjs",
-      "require": "./dist/common/index.js"
+    "./ai/llm/electron": {
+      "types": "./dist/ai/llm/electron/index.d.ts",
+      "import": "./dist/ai/llm/electron/index.mjs",
+      "require": "./dist/ai/llm/electron/index.js"
     },
-    "./common/logger": {
-      "types": "./dist/common/logger/index.d.ts",
-      "import": "./dist/common/logger/index.mjs",
-      "require": "./dist/common/logger/index.js"
+    "./ai/llm": {
+      "types": "./dist/ai/llm/index.d.ts",
+      "import": "./dist/ai/llm/index.mjs",
+      "require": "./dist/ai/llm/index.js"
     },
-    "./common/utils": {
-      "types": "./dist/common/utils/index.d.ts",
-      "import": "./dist/common/utils/index.mjs",
-      "require": "./dist/common/utils/index.js"
+    "./ai/llm/miniapp": {
+      "types": "./dist/ai/llm/miniapp/index.d.ts",
+      "import": "./dist/ai/llm/miniapp/index.mjs",
+      "require": "./dist/ai/llm/miniapp/index.js"
     },
-    "./common/storage": {
-      "types": "./dist/common/storage/index.d.ts",
-      "import": "./dist/common/storage/index.mjs",
-      "require": "./dist/common/storage/index.js"
+    "./ai/llm/rn": {
+      "types": "./dist/ai/llm/rn/index.d.ts",
+      "import": "./dist/ai/llm/rn/index.mjs",
+      "require": "./dist/ai/llm/rn/index.js"
     },
-    "./common/request": {
-      "types": "./dist/common/request/index.d.ts",
-      "import": "./dist/common/request/index.mjs",
-      "require": "./dist/common/request/index.js"
+    "./ai/llm/ui/electron": {
+      "types": "./dist/ai/llm/ui/electron/index.d.ts",
+      "import": "./dist/ai/llm/ui/electron/index.mjs",
+      "require": "./dist/ai/llm/ui/electron/index.js"
     },
-    "./common/file": {
-      "types": "./dist/common/file/index.d.ts",
-      "import": "./dist/common/file/index.mjs",
-      "require": "./dist/common/file/index.js"
+    "./ai/llm/ui/miniapp": {
+      "types": "./dist/ai/llm/ui/miniapp/index.d.ts",
+      "import": "./dist/ai/llm/ui/miniapp/index.mjs",
+      "require": "./dist/ai/llm/ui/miniapp/index.js"
     },
-    "./common/file/server": {
-      "types": "./dist/common/file/server/index.d.ts",
-      "import": "./dist/common/file/server/index.mjs",
-      "require": "./dist/common/file/server/index.js"
+    "./ai/llm/ui/rn": {
+      "types": "./dist/ai/llm/ui/rn/index.d.ts",
+      "import": "./dist/ai/llm/ui/rn/index.mjs",
+      "require": "./dist/ai/llm/ui/rn/index.js"
     },
-    "./common/export": {
-      "types": "./dist/common/export/index.d.ts",
-      "import": "./dist/common/export/index.mjs",
-      "require": "./dist/common/export/index.js"
+    "./ai/llm/ui/web": {
+      "types": "./dist/ai/llm/ui/web/index.d.ts",
+      "import": "./dist/ai/llm/ui/web/index.mjs",
+      "require": "./dist/ai/llm/ui/web/index.js"
     },
-    "./common/export/server": {
-      "types": "./dist/common/export/server/index.d.ts",
-      "import": "./dist/common/export/server/index.mjs",
-      "require": "./dist/common/export/server/index.js"
-    },
-    "./business": {
-      "types": "./dist/business/index.d.ts",
-      "import": "./dist/business/index.mjs",
-      "require": "./dist/business/index.js"
-    },
-    "./logger": {
-      "types": "./dist/logger/index.d.ts",
-      "import": "./dist/logger/index.mjs",
-      "require": "./dist/logger/index.js"
-    },
-    "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.mjs",
-      "require": "./dist/utils/index.js"
-    },
-    "./storage": {
-      "types": "./dist/storage/index.d.ts",
-      "import": "./dist/storage/index.mjs",
-      "require": "./dist/storage/index.js"
-    },
-    "./universalFile": {
-      "types": "./dist/universalFile/index.d.ts",
-      "import": "./dist/universalFile/index.mjs",
-      "require": "./dist/universalFile/index.js"
-    },
-    "./universalFile/server": {
-      "types": "./dist/universalFile/server/index.d.ts",
-      "import": "./dist/universalFile/server/index.mjs",
-      "require": "./dist/universalFile/server/index.js"
-    },
-    "./ossFile": {
-      "types": "./dist/ossFile/index.d.ts",
-      "import": "./dist/ossFile/index.mjs",
-      "require": "./dist/ossFile/index.js"
-    },
-    "./ossFile/server": {
-      "types": "./dist/ossFile/server/index.d.ts",
-      "import": "./dist/ossFile/server/index.mjs",
-      "require": "./dist/ossFile/server/index.js"
-    },
-    "./universalExport": {
-      "types": "./dist/universalExport/index.d.ts",
-      "import": "./dist/universalExport/index.mjs",
-      "require": "./dist/universalExport/index.js"
-    },
-    "./universalExport/server": {
-      "types": "./dist/universalExport/server/index.d.ts",
-      "import": "./dist/universalExport/server/index.mjs",
-      "require": "./dist/universalExport/server/index.js"
-    },
-    "./i18n": {
-      "types": "./dist/i18n/index.d.ts",
-      "import": "./dist/i18n/index.mjs",
-      "require": "./dist/i18n/index.js"
+    "./ai/llm/web": {
+      "types": "./dist/ai/llm/web/index.d.ts",
+      "import": "./dist/ai/llm/web/index.mjs",
+      "require": "./dist/ai/llm/web/index.js"
     },
     "./analytics": {
       "types": "./dist/analytics/index.d.ts",
@@ -153,50 +98,15 @@
       "import": "./dist/analytics/server/index.mjs",
       "require": "./dist/analytics/server/index.js"
     },
-    "./request": {
-      "types": "./dist/request/index.d.ts",
-      "import": "./dist/request/index.mjs",
-      "require": "./dist/request/index.js"
-    },
     "./api": {
       "types": "./dist/api/index.d.ts",
       "import": "./dist/api/index.mjs",
       "require": "./dist/api/index.js"
     },
-    "./auth": {
-      "types": "./dist/auth/index.d.ts",
-      "import": "./dist/auth/index.mjs",
-      "require": "./dist/auth/index.js"
-    },
-    "./auth/server": {
-      "types": "./dist/auth/server.d.ts",
-      "import": "./dist/auth/server.mjs",
-      "require": "./dist/auth/server.js"
-    },
-    "./auth/schema": {
-      "types": "./dist/auth/schema/index.d.ts",
-      "import": "./dist/auth/schema/index.mjs",
-      "require": "./dist/auth/schema/index.js"
-    },
-    "./auth/services": {
-      "types": "./dist/auth/services/index.d.ts",
-      "import": "./dist/auth/services/index.mjs",
-      "require": "./dist/auth/services/index.js"
-    },
-    "./auth/routes": {
-      "types": "./dist/auth/routes/index.d.ts",
-      "import": "./dist/auth/routes/index.mjs",
-      "require": "./dist/auth/routes/index.js"
-    },
-    "./auth/middleware": {
-      "types": "./dist/auth/middleware/index.d.ts",
-      "import": "./dist/auth/middleware/index.mjs",
-      "require": "./dist/auth/middleware/index.js"
-    },
-    "./auth/hooks": {
-      "types": "./dist/auth/hooks/index.d.ts",
-      "import": "./dist/auth/hooks/index.mjs",
-      "require": "./dist/auth/hooks/index.js"
+    "./audioDetection": {
+      "types": "./dist/audioDetection/index.d.ts",
+      "import": "./dist/audioDetection/index.mjs",
+      "require": "./dist/audioDetection/index.js"
     },
     "./auth/client": {
       "types": "./dist/auth/client/index.d.ts",
@@ -208,72 +118,162 @@
       "import": "./dist/auth/components/index.mjs",
       "require": "./dist/auth/components/index.js"
     },
-    "./auth/rn": {
-      "types": "./dist/auth/rn/index.d.ts",
-      "import": "./dist/auth/rn/index.mjs",
-      "require": "./dist/auth/rn/index.js"
+    "./auth/hooks": {
+      "types": "./dist/auth/hooks/index.d.ts",
+      "import": "./dist/auth/hooks/index.mjs",
+      "require": "./dist/auth/hooks/index.js"
     },
-    "./auth/legacy": {
-      "types": "./dist/auth/legacy/index.d.ts",
-      "import": "./dist/auth/legacy/index.mjs",
-      "require": "./dist/auth/legacy/index.js"
-    },
-    "./auth/legacy/ui/web": {
-      "types": "./dist/auth/legacy/ui/web/index.d.ts",
-      "import": "./dist/auth/legacy/ui/web/index.mjs",
-      "require": "./dist/auth/legacy/ui/web/index.js"
-    },
-    "./auth/legacy/ui/miniapp": {
-      "types": "./dist/auth/legacy/ui/miniapp/index.d.ts",
-      "import": "./dist/auth/legacy/ui/miniapp/index.mjs",
-      "require": "./dist/auth/legacy/ui/miniapp/index.js"
+    "./auth": {
+      "types": "./dist/auth/index.d.ts",
+      "import": "./dist/auth/index.mjs",
+      "require": "./dist/auth/index.js"
     },
     "./auth/legacy/core": {
       "types": "./dist/auth/legacy/core/index.d.ts",
       "import": "./dist/auth/legacy/core/index.mjs",
       "require": "./dist/auth/legacy/core/index.js"
     },
-    "./auth/legacy/web": {
-      "types": "./dist/auth/legacy/web/index.d.ts",
-      "import": "./dist/auth/legacy/web/index.mjs",
-      "require": "./dist/auth/legacy/web/index.js"
+    "./auth/legacy/db": {
+      "types": "./dist/auth/legacy/db/index.d.ts",
+      "import": "./dist/auth/legacy/db/index.mjs",
+      "require": "./dist/auth/legacy/db/index.js"
     },
-    "./auth/legacy/miniapp": {
-      "types": "./dist/auth/legacy/miniapp/index.d.ts",
-      "import": "./dist/auth/legacy/miniapp/index.mjs",
-      "require": "./dist/auth/legacy/miniapp/index.js"
+    "./auth/legacy": {
+      "types": "./dist/auth/legacy/index.d.ts",
+      "import": "./dist/auth/legacy/index.mjs",
+      "require": "./dist/auth/legacy/index.js"
     },
     "./auth/legacy/logic": {
       "types": "./dist/auth/legacy/logic/index.d.ts",
       "import": "./dist/auth/legacy/logic/index.mjs",
       "require": "./dist/auth/legacy/logic/index.js"
     },
-    "./auth/legacy/db": {
-      "types": "./dist/auth/legacy/db/index.d.ts",
-      "import": "./dist/auth/legacy/db/index.mjs",
-      "require": "./dist/auth/legacy/db/index.js"
-    },
-    "./auth/legacy/schema": {
-      "types": "./dist/auth/legacy/schema/index.d.ts",
-      "import": "./dist/auth/legacy/schema/index.mjs",
-      "require": "./dist/auth/legacy/schema/index.js"
-    },
-    "./auth/legacy/services": {
-      "types": "./dist/auth/legacy/services/index.d.ts",
-      "import": "./dist/auth/legacy/services/index.mjs",
-      "require": "./dist/auth/legacy/services/index.js"
+    "./auth/legacy/miniapp": {
+      "types": "./dist/auth/legacy/miniapp/index.d.ts",
+      "import": "./dist/auth/legacy/miniapp/index.mjs",
+      "require": "./dist/auth/legacy/miniapp/index.js"
     },
     "./auth/legacy/routes": {
       "types": "./dist/auth/legacy/routes/index.d.ts",
       "import": "./dist/auth/legacy/routes/index.mjs",
       "require": "./dist/auth/legacy/routes/index.js"
     },
+    "./auth/legacy/schema": {
+      "types": "./dist/auth/legacy/schema/index.d.ts",
+      "import": "./dist/auth/legacy/schema/index.mjs",
+      "require": "./dist/auth/legacy/schema/index.js"
+    },
     "./auth/legacy/server": {
       "types": "./dist/auth/legacy/server/index.d.ts",
       "import": "./dist/auth/legacy/server/index.mjs",
       "require": "./dist/auth/legacy/server/index.js"
     },
-    "./config/hooks": {
+    "./auth/legacy/services": {
+      "types": "./dist/auth/legacy/services/index.d.ts",
+      "import": "./dist/auth/legacy/services/index.mjs",
+      "require": "./dist/auth/legacy/services/index.js"
+    },
+    "./auth/legacy/ui/miniapp": {
+      "types": "./dist/auth/legacy/ui/miniapp/index.d.ts",
+      "import": "./dist/auth/legacy/ui/miniapp/index.mjs",
+      "require": "./dist/auth/legacy/ui/miniapp/index.js"
+    },
+    "./auth/legacy/ui/web": {
+      "types": "./dist/auth/legacy/ui/web/index.d.ts",
+      "import": "./dist/auth/legacy/ui/web/index.mjs",
+      "require": "./dist/auth/legacy/ui/web/index.js"
+    },
+    "./auth/legacy/web": {
+      "types": "./dist/auth/legacy/web/index.d.ts",
+      "import": "./dist/auth/legacy/web/index.mjs",
+      "require": "./dist/auth/legacy/web/index.js"
+    },
+    "./auth/middleware": {
+      "types": "./dist/auth/middleware/index.d.ts",
+      "import": "./dist/auth/middleware/index.mjs",
+      "require": "./dist/auth/middleware/index.js"
+    },
+    "./auth/rn": {
+      "types": "./dist/auth/rn/index.d.ts",
+      "import": "./dist/auth/rn/index.mjs",
+      "require": "./dist/auth/rn/index.js"
+    },
+    "./auth/routes": {
+      "types": "./dist/auth/routes/index.d.ts",
+      "import": "./dist/auth/routes/index.mjs",
+      "require": "./dist/auth/routes/index.js"
+    },
+    "./auth/schema": {
+      "types": "./dist/auth/schema/index.d.ts",
+      "import": "./dist/auth/schema/index.mjs",
+      "require": "./dist/auth/schema/index.js"
+    },
+    "./auth/services": {
+      "types": "./dist/auth/services/index.d.ts",
+      "import": "./dist/auth/services/index.mjs",
+      "require": "./dist/auth/services/index.js"
+    },
+    "./business": {
+      "types": "./dist/business/index.d.ts",
+      "import": "./dist/business/index.mjs",
+      "require": "./dist/business/index.js"
+    },
+    "./calendar": {
+      "types": "./dist/calendar/index.d.ts",
+      "import": "./dist/calendar/index.mjs",
+      "require": "./dist/calendar/index.js"
+    },
+    "./common/export": {
+      "types": "./dist/common/export/index.d.ts",
+      "import": "./dist/common/export/index.mjs",
+      "require": "./dist/common/export/index.js"
+    },
+    "./common/export/server": {
+      "types": "./dist/common/export/server/index.d.ts",
+      "import": "./dist/common/export/server/index.mjs",
+      "require": "./dist/common/export/server/index.js"
+    },
+    "./common/file": {
+      "types": "./dist/common/file/index.d.ts",
+      "import": "./dist/common/file/index.mjs",
+      "require": "./dist/common/file/index.js"
+    },
+    "./common/file/server": {
+      "types": "./dist/common/file/server/index.d.ts",
+      "import": "./dist/common/file/server/index.mjs",
+      "require": "./dist/common/file/server/index.js"
+    },
+    "./common": {
+      "types": "./dist/common/index.d.ts",
+      "import": "./dist/common/index.mjs",
+      "require": "./dist/common/index.js"
+    },
+    "./common/logger": {
+      "types": "./dist/common/logger/index.d.ts",
+      "import": "./dist/common/logger/index.mjs",
+      "require": "./dist/common/logger/index.js"
+    },
+    "./common/request": {
+      "types": "./dist/common/request/index.d.ts",
+      "import": "./dist/common/request/index.mjs",
+      "require": "./dist/common/request/index.js"
+    },
+    "./common/storage": {
+      "types": "./dist/common/storage/index.d.ts",
+      "import": "./dist/common/storage/index.mjs",
+      "require": "./dist/common/storage/index.js"
+    },
+    "./common/utils": {
+      "types": "./dist/common/utils/index.d.ts",
+      "import": "./dist/common/utils/index.mjs",
+      "require": "./dist/common/utils/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.mjs",
+      "require": "./dist/components/index.js"
+    },
+    "./config": {
       "types": "./dist/config/index.d.ts",
       "import": "./dist/config/index.mjs",
       "require": "./dist/config/index.js"
@@ -283,10 +283,60 @@
       "import": "./dist/config/server/index.mjs",
       "require": "./dist/config/server/index.js"
     },
-    "./ar": {
-      "types": "./dist/ar/index.d.ts",
-      "import": "./dist/ar/index.mjs",
-      "require": "./dist/ar/index.js"
+    "./festivalCard": {
+      "types": "./dist/festivalCard/index.d.ts",
+      "import": "./dist/festivalCard/index.mjs",
+      "require": "./dist/festivalCard/index.js"
+    },
+    "./festivalCard/server": {
+      "types": "./dist/festivalCard/server/index.d.ts",
+      "import": "./dist/festivalCard/server/index.mjs",
+      "require": "./dist/festivalCard/server/index.js"
+    },
+    "./huarongdao": {
+      "types": "./dist/huarongdao/index.d.ts",
+      "import": "./dist/huarongdao/index.mjs",
+      "require": "./dist/huarongdao/index.js"
+    },
+    "./i18n": {
+      "types": "./dist/i18n/index.d.ts",
+      "import": "./dist/i18n/index.mjs",
+      "require": "./dist/i18n/index.js"
+    },
+    "./imageCrop": {
+      "types": "./dist/imageCrop/index.d.ts",
+      "import": "./dist/imageCrop/index.mjs",
+      "require": "./dist/imageCrop/index.js"
+    },
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./logger": {
+      "types": "./dist/logger/index.d.ts",
+      "import": "./dist/logger/index.mjs",
+      "require": "./dist/logger/index.js"
+    },
+    "./mikuContest/ui/web": {
+      "types": "./dist/mikuContest/ui/web/index.d.ts",
+      "import": "./dist/mikuContest/ui/web/index.mjs",
+      "require": "./dist/mikuContest/ui/web/index.js"
+    },
+    "./mikuFireworks3D": {
+      "types": "./dist/mikuFireworks3D/index.d.ts",
+      "import": "./dist/mikuFireworks3D/index.mjs",
+      "require": "./dist/mikuFireworks3D/index.js"
+    },
+    "./mikuFlick": {
+      "types": "./dist/mikuFlick/index.d.ts",
+      "import": "./dist/mikuFlick/index.mjs",
+      "require": "./dist/mikuFlick/index.js"
+    },
+    "./mikuFusionGame": {
+      "types": "./dist/mikuFusionGame/index.d.ts",
+      "import": "./dist/mikuFusionGame/index.mjs",
+      "require": "./dist/mikuFusionGame/index.js"
     },
     "./mmd/admin": {
       "types": "./dist/mmd/admin/index.d.ts",
@@ -303,96 +353,6 @@
       "import": "./dist/mmd/server/index.mjs",
       "require": "./dist/mmd/server/index.js"
     },
-    "./audioDetection": {
-      "types": "./dist/audioDetection/index.d.ts",
-      "import": "./dist/audioDetection/index.mjs",
-      "require": "./dist/audioDetection/index.js"
-    },
-    "./calendar": {
-      "types": "./dist/calendar/index.d.ts",
-      "import": "./dist/calendar/index.mjs",
-      "require": "./dist/calendar/index.js"
-    },
-    "./calendar/server": {
-      "types": "./dist/calendar/server.d.ts",
-      "import": "./dist/calendar/server.mjs",
-      "require": "./dist/calendar/server.js"
-    },
-    "./calendar/routes": {
-      "types": "./dist/calendar/routes/index.d.ts",
-      "import": "./dist/calendar/routes/index.mjs",
-      "require": "./dist/calendar/routes/index.js"
-    },
-    "./imageCrop": {
-      "types": "./dist/imageCrop/index.d.ts",
-      "import": "./dist/imageCrop/index.mjs",
-      "require": "./dist/imageCrop/index.js"
-    },
-    "./storage/hooks": {
-      "types": "./dist/storage/index.d.ts",
-      "import": "./dist/storage/index.mjs",
-      "require": "./dist/storage/index.js"
-    },
-    "./testYourself": {
-      "types": "./dist/testYourself/index.d.ts",
-      "import": "./dist/testYourself/index.mjs",
-      "require": "./dist/testYourself/index.js"
-    },
-    "./testYourself/admin": {
-      "types": "./dist/testYourself/admin/index.d.ts",
-      "import": "./dist/testYourself/admin/index.mjs",
-      "require": "./dist/testYourself/admin/index.js"
-    },
-    "./testYourself/server": {
-      "types": "./dist/testYourself/server/index.d.ts",
-      "import": "./dist/testYourself/server/index.mjs",
-      "require": "./dist/testYourself/server/index.js"
-    },
-    "./ai/ocr": {
-      "types": "./dist/ai/ocr/index.d.ts",
-      "import": "./dist/ai/ocr/index.mjs",
-      "require": "./dist/ai/ocr/index.js"
-    },
-    "./ai/background-removal": {
-      "types": "./dist/ai/background-removal/index.d.ts",
-      "import": "./dist/ai/background-removal/index.mjs",
-      "require": "./dist/ai/background-removal/index.js"
-    },
-    "./ai/sentiment-analysis": {
-      "types": "./dist/ai/sentiment-analysis/index.d.ts",
-      "import": "./dist/ai/sentiment-analysis/index.mjs",
-      "require": "./dist/ai/sentiment-analysis/index.js"
-    },
-    "./ai/text-generation": {
-      "types": "./dist/ai/text-generation/index.d.ts",
-      "import": "./dist/ai/text-generation/index.mjs",
-      "require": "./dist/ai/text-generation/index.js"
-    },
-    "./ai/llm": {
-      "types": "./dist/ai/llm/index.d.ts",
-      "import": "./dist/ai/llm/index.mjs",
-      "require": "./dist/ai/llm/index.js"
-    },
-    "./ai/llm/ui/web": {
-      "types": "./dist/ai/llm/ui/web/index.d.ts",
-      "import": "./dist/ai/llm/ui/web/index.mjs",
-      "require": "./dist/ai/llm/ui/web/index.js"
-    },
-    "./ai/llm/ui/miniapp": {
-      "types": "./dist/ai/llm/ui/miniapp/index.d.ts",
-      "import": "./dist/ai/llm/ui/miniapp/index.mjs",
-      "require": "./dist/ai/llm/ui/miniapp/index.js"
-    },
-    "./ai/llm/ui/rn": {
-      "types": "./dist/ai/llm/ui/rn/index.d.ts",
-      "import": "./dist/ai/llm/ui/rn/index.mjs",
-      "require": "./dist/ai/llm/ui/rn/index.js"
-    },
-    "./ai/llm/ui/electron": {
-      "types": "./dist/ai/llm/ui/electron/index.d.ts",
-      "import": "./dist/ai/llm/ui/electron/index.mjs",
-      "require": "./dist/ai/llm/ui/electron/index.js"
-    },
     "./music": {
       "types": "./dist/music/index.d.ts",
       "import": "./dist/music/index.mjs",
@@ -403,210 +363,25 @@
       "import": "./dist/music/server/index.mjs",
       "require": "./dist/music/server/index.js"
     },
-    "./mikuFusionGame": {
-      "types": "./dist/mikuFusionGame/index.d.ts",
-      "import": "./dist/mikuFusionGame/index.mjs",
-      "require": "./dist/mikuFusionGame/index.js"
-    },
-    "./mikuFireworks3D": {
-      "types": "./dist/mikuFireworks3D/index.d.ts",
-      "import": "./dist/mikuFireworks3D/index.mjs",
-      "require": "./dist/mikuFireworks3D/index.js"
-    },
-    "./mikuFireworks3D/server": {
-      "types": "./dist/mikuFireworks3D/server/index.d.ts",
-      "import": "./dist/mikuFireworks3D/server/index.mjs",
-      "require": "./dist/mikuFireworks3D/server/index.js"
-    },
-    "./festivalCard": {
-      "types": "./dist/festivalCard/index.d.ts",
-      "import": "./dist/festivalCard/index.mjs",
-      "require": "./dist/festivalCard/index.js"
-    },
-    "./festivalCard/web": {
-      "types": "./dist/festivalCard/web/index.d.ts",
-      "import": "./dist/festivalCard/web/index.mjs",
-      "require": "./dist/festivalCard/web/index.js"
-    },
-    "./festivalCard/miniapp": {
-      "types": "./dist/festivalCard/miniapp/index.d.ts",
-      "import": "./dist/festivalCard/miniapp/index.mjs",
-      "require": "./dist/festivalCard/miniapp/index.js"
-    },
-    "./festivalCard/core": {
-      "types": "./dist/festivalCard/core/index.d.ts",
-      "import": "./dist/festivalCard/core/index.mjs",
-      "require": "./dist/festivalCard/core/index.js"
-    },
-    "./festivalCard/server": {
-      "types": "./dist/festivalCard/server/index.d.ts",
-      "import": "./dist/festivalCard/server/index.mjs",
-      "require": "./dist/festivalCard/server/index.js"
-    },
-    "./festivalCard/routes": {
-      "types": "./dist/festivalCard/routes/index.d.ts",
-      "import": "./dist/festivalCard/routes/index.mjs",
-      "require": "./dist/festivalCard/routes/index.js"
-    },
-    "./vocaloidBooth": {
-      "types": "./dist/vocaloidBooth/index.d.ts",
-      "import": "./dist/vocaloidBooth/index.mjs",
-      "require": "./dist/vocaloidBooth/index.js"
-    },
-    "./vocaloidBooth/web": {
-      "types": "./dist/vocaloidBooth/web/index.d.ts",
-      "import": "./dist/vocaloidBooth/web/index.mjs",
-      "require": "./dist/vocaloidBooth/web/index.js"
-    },
-    "./vocaloidBooth/server": {
-      "types": "./dist/vocaloidBooth/server/index.d.ts",
-      "import": "./dist/vocaloidBooth/server/index.mjs",
-      "require": "./dist/vocaloidBooth/server/index.js"
-    },
-    "./mikuContest": {
-      "types": "./dist/mikuContest/index.d.ts",
-      "import": "./dist/mikuContest/index.mjs",
-      "require": "./dist/mikuContest/index.js"
-    },
-    "./mikuContest/types": {
-      "types": "./dist/mikuContest/types/index.d.ts",
-      "import": "./dist/mikuContest/types/index.mjs",
-      "require": "./dist/mikuContest/types/index.js"
-    },
-    "./mikuContest/logic": {
-      "types": "./dist/mikuContest/logic/index.d.ts",
-      "import": "./dist/mikuContest/logic/index.mjs",
-      "require": "./dist/mikuContest/logic/index.js"
-    },
-    "./mikuContest/service": {
-      "types": "./dist/mikuContest/service/index.d.ts",
-      "import": "./dist/mikuContest/service/index.mjs",
-      "require": "./dist/mikuContest/service/index.js"
-    },
-    "./mikuContest/ui/web": {
-      "types": "./dist/mikuContest/ui/web/index.d.ts",
-      "import": "./dist/mikuContest/ui/web/index.mjs",
-      "require": "./dist/mikuContest/ui/web/index.js"
-    },
-    "./mikuContest/ui/miniapp": {
-      "types": "./dist/mikuContest/ui/miniapp/index.d.ts",
-      "import": "./dist/mikuContest/ui/miniapp/index.mjs",
-      "require": "./dist/mikuContest/ui/miniapp/index.js"
-    },
-    "./mikuContest/server": {
-      "types": "./dist/mikuContest/server/index.d.ts",
-      "import": "./dist/mikuContest/server/index.mjs",
-      "require": "./dist/mikuContest/server/index.js"
-    },
-    "./mikuContest/routes": {
-      "types": "./dist/mikuContest/routes/index.d.ts",
-      "import": "./dist/mikuContest/routes/index.mjs",
-      "require": "./dist/mikuContest/routes/index.js"
-    },
-    "./huarongdao": {
-      "types": "./dist/huarongdao/index.d.ts",
-      "import": "./dist/huarongdao/index.mjs",
-      "require": "./dist/huarongdao/index.js"
-    },
-    "./huarongdao/types": {
-      "types": "./dist/huarongdao/types/index.d.ts",
-      "import": "./dist/huarongdao/types/index.mjs",
-      "require": "./dist/huarongdao/types/index.js"
-    },
-    "./huarongdao/logic": {
-      "types": "./dist/huarongdao/logic/index.d.ts",
-      "import": "./dist/huarongdao/logic/index.mjs",
-      "require": "./dist/huarongdao/logic/index.js"
-    },
-    "./huarongdao/service": {
-      "types": "./dist/huarongdao/service/index.d.ts",
-      "import": "./dist/huarongdao/service/index.mjs",
-      "require": "./dist/huarongdao/service/index.js"
-    },
-    "./huarongdao/ui/web": {
-      "types": "./dist/huarongdao/ui/web/index.d.ts",
-      "import": "./dist/huarongdao/ui/web/index.mjs",
-      "require": "./dist/huarongdao/ui/web/index.js"
-    },
-    "./huarongdao/server": {
-      "types": "./dist/huarongdao/server/index.d.ts",
-      "import": "./dist/huarongdao/server/index.mjs",
-      "require": "./dist/huarongdao/server/index.js"
-    },
-    "./huarongdao/routes": {
-      "types": "./dist/huarongdao/routes/index.d.ts",
-      "import": "./dist/huarongdao/routes/index.mjs",
-      "require": "./dist/huarongdao/routes/index.js"
-    },
-    "./bubbleShooter": {
-      "types": "./dist/bubbleShooter/index.d.ts",
-      "import": "./dist/bubbleShooter/index.mjs",
-      "require": "./dist/bubbleShooter/index.js"
-    },
-    "./bubbleShooter/types": {
-      "types": "./dist/bubbleShooter/types/index.d.ts",
-      "import": "./dist/bubbleShooter/types/index.mjs",
-      "require": "./dist/bubbleShooter/types/index.js"
-    },
-    "./bubbleShooter/logic": {
-      "types": "./dist/bubbleShooter/logic/index.d.ts",
-      "import": "./dist/bubbleShooter/logic/index.mjs",
-      "require": "./dist/bubbleShooter/logic/index.js"
-    },
-    "./bubbleShooter/ui/web": {
-      "types": "./dist/bubbleShooter/ui/web/index.d.ts",
-      "import": "./dist/bubbleShooter/ui/web/index.mjs",
-      "require": "./dist/bubbleShooter/ui/web/index.js"
-    },
-    "./mikuFlick": {
-      "types": "./dist/mikuFlick/index.d.ts",
-      "import": "./dist/mikuFlick/index.mjs",
-      "require": "./dist/mikuFlick/index.js"
-    },
-    "./mikuFlick/types": {
-      "types": "./dist/mikuFlick/types/index.d.ts",
-      "import": "./dist/mikuFlick/types/index.mjs",
-      "require": "./dist/mikuFlick/types/index.js"
-    },
-    "./mikuFlick/logic": {
-      "types": "./dist/mikuFlick/logic/index.d.ts",
-      "import": "./dist/mikuFlick/logic/index.mjs",
-      "require": "./dist/mikuFlick/logic/index.js"
-    },
-    "./mikuFlick/ui/web": {
-      "types": "./dist/mikuFlick/ui/web/index.d.ts",
-      "import": "./dist/mikuFlick/ui/web/index.mjs",
-      "require": "./dist/mikuFlick/ui/web/index.js"
-    },
-    "./components": {
-      "types": "./dist/components/index.d.ts",
-      "import": "./dist/components/index.mjs",
-      "require": "./dist/components/index.js"
-    },
     "./navigation": {
       "types": "./dist/navigation/index.d.ts",
       "import": "./dist/navigation/index.mjs",
       "require": "./dist/navigation/index.js"
     },
+    "./ossFile": {
+      "types": "./dist/ossFile/index.d.ts",
+      "import": "./dist/ossFile/index.mjs",
+      "require": "./dist/ossFile/index.js"
+    },
+    "./ossFile/server": {
+      "types": "./dist/ossFile/server/index.d.ts",
+      "import": "./dist/ossFile/server/index.mjs",
+      "require": "./dist/ossFile/server/index.js"
+    },
     "./portfolio": {
       "types": "./dist/portfolio/index.d.ts",
       "import": "./dist/portfolio/index.mjs",
       "require": "./dist/portfolio/index.js"
-    },
-    "./iflytek": {
-      "types": "./dist/iflytek/index.d.ts",
-      "import": "./dist/iflytek/index.mjs",
-      "require": "./dist/iflytek/index.js"
-    },
-    "./iflytek/server": {
-      "types": "./dist/iflytek/server.d.ts",
-      "import": "./dist/iflytek/server.mjs",
-      "require": "./dist/iflytek/server.js"
-    },
-    "./qqbot": {
-      "types": "./dist/qqbot/index.d.ts",
-      "import": "./dist/qqbot/index.mjs",
-      "require": "./dist/qqbot/index.js"
     },
     "./qqbot/server": {
       "types": "./dist/qqbot/server/index.d.ts",
@@ -618,75 +393,75 @@
       "import": "./dist/qqbot/ui/web/index.mjs",
       "require": "./dist/qqbot/ui/web/index.js"
     },
+    "./request": {
+      "types": "./dist/request/index.d.ts",
+      "import": "./dist/request/index.mjs",
+      "require": "./dist/request/index.js"
+    },
     "./screenReceiver": {
       "types": "./dist/screenReceiver/index.d.ts",
       "import": "./dist/screenReceiver/index.mjs",
       "require": "./dist/screenReceiver/index.js"
     },
-    "./screenReceiver/server": {
-      "types": "./dist/screenReceiver/server/index.d.ts",
-      "import": "./dist/screenReceiver/server/index.mjs",
-      "require": "./dist/screenReceiver/server/index.js"
+    "./storage": {
+      "types": "./dist/storage/index.d.ts",
+      "import": "./dist/storage/index.mjs",
+      "require": "./dist/storage/index.js"
     },
-    "./ai/llm/core": {
-      "types": "./dist/ai/llm/core/index.d.ts",
-      "import": "./dist/ai/llm/core/index.mjs",
-      "require": "./dist/ai/llm/core/index.js"
+    "./testYourself/admin": {
+      "types": "./dist/testYourself/admin/index.d.ts",
+      "import": "./dist/testYourself/admin/index.mjs",
+      "require": "./dist/testYourself/admin/index.js"
     },
-    "./ai/llm/web": {
-      "types": "./dist/ai/llm/web/index.d.ts",
-      "import": "./dist/ai/llm/web/index.mjs",
-      "require": "./dist/ai/llm/web/index.js"
+    "./testYourself": {
+      "types": "./dist/testYourself/index.d.ts",
+      "import": "./dist/testYourself/index.mjs",
+      "require": "./dist/testYourself/index.js"
     },
-    "./ai/llm/miniapp": {
-      "types": "./dist/ai/llm/miniapp/index.d.ts",
-      "import": "./dist/ai/llm/miniapp/index.mjs",
-      "require": "./dist/ai/llm/miniapp/index.js"
+    "./testYourself/server": {
+      "types": "./dist/testYourself/server/index.d.ts",
+      "import": "./dist/testYourself/server/index.mjs",
+      "require": "./dist/testYourself/server/index.js"
     },
-    "./ai/llm/rn": {
-      "types": "./dist/ai/llm/rn/index.d.ts",
-      "import": "./dist/ai/llm/rn/index.mjs",
-      "require": "./dist/ai/llm/rn/index.js"
+    "./universalExport": {
+      "types": "./dist/universalExport/index.d.ts",
+      "import": "./dist/universalExport/index.mjs",
+      "require": "./dist/universalExport/index.js"
     },
-    "./ai/llm/electron": {
-      "types": "./dist/ai/llm/electron/index.d.ts",
-      "import": "./dist/ai/llm/electron/index.mjs",
-      "require": "./dist/ai/llm/electron/index.js"
+    "./universalExport/server": {
+      "types": "./dist/universalExport/server/index.d.ts",
+      "import": "./dist/universalExport/server/index.mjs",
+      "require": "./dist/universalExport/server/index.js"
     },
-    "./calendar/core": {
-      "types": "./dist/calendar/core/index.d.ts",
-      "import": "./dist/calendar/core/index.mjs",
-      "require": "./dist/calendar/core/index.js"
+    "./universalFile": {
+      "types": "./dist/universalFile/index.d.ts",
+      "import": "./dist/universalFile/index.mjs",
+      "require": "./dist/universalFile/index.js"
     },
-    "./calendar/web": {
-      "types": "./dist/calendar/web/index.d.ts",
-      "import": "./dist/calendar/web/index.mjs",
-      "require": "./dist/calendar/web/index.js"
+    "./universalFile/server": {
+      "types": "./dist/universalFile/server/index.d.ts",
+      "import": "./dist/universalFile/server/index.mjs",
+      "require": "./dist/universalFile/server/index.js"
     },
-    "./qqbot/core": {
-      "types": "./dist/qqbot/core/index.d.ts",
-      "import": "./dist/qqbot/core/index.mjs",
-      "require": "./dist/qqbot/core/index.js"
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.mjs",
+      "require": "./dist/utils/index.js"
     },
-    "./qqbot/web": {
-      "types": "./dist/qqbot/web/index.d.ts",
-      "import": "./dist/qqbot/web/index.mjs",
-      "require": "./dist/qqbot/web/index.js"
+    "./vocaloidBooth": {
+      "types": "./dist/vocaloidBooth/index.d.ts",
+      "import": "./dist/vocaloidBooth/index.mjs",
+      "require": "./dist/vocaloidBooth/index.js"
     },
-    "./screenReceiver/core": {
-      "types": "./dist/screenReceiver/core/index.d.ts",
-      "import": "./dist/screenReceiver/core/index.mjs",
-      "require": "./dist/screenReceiver/core/index.js"
+    "./vocaloidBooth/server": {
+      "types": "./dist/vocaloidBooth/server/index.d.ts",
+      "import": "./dist/vocaloidBooth/server/index.mjs",
+      "require": "./dist/vocaloidBooth/server/index.js"
     },
-    "./screenReceiver/web": {
-      "types": "./dist/screenReceiver/web/index.d.ts",
-      "import": "./dist/screenReceiver/web/index.mjs",
-      "require": "./dist/screenReceiver/web/index.js"
-    },
-    "./screenReceiver/server/next": {
-      "types": "./dist/screenReceiver/server/next.d.ts",
-      "import": "./dist/screenReceiver/server/next.mjs",
-      "require": "./dist/screenReceiver/server/next.js"
+    "./vocaloidBooth/web": {
+      "types": "./dist/vocaloidBooth/web/index.d.ts",
+      "import": "./dist/vocaloidBooth/web/index.mjs",
+      "require": "./dist/vocaloidBooth/web/index.js"
     }
   },
   "files": [
@@ -697,10 +472,13 @@
   ],
   "scripts": {
     "dev": "NODE_OPTIONS='--max-old-space-size=16384' tsup --watch",
-    "build": "pnpm run verify:tsup-entries && pnpm run build:common && pnpm run build:business",
-    "build:common": "NODE_OPTIONS='--max-old-space-size=16384' tsup --config tsup.common.config.ts",
+    "build": "pnpm run verify:tsup-entries && pnpm run exports:verify && pnpm run build:common && pnpm run build:business",
+    "build:common": "NODE_OPTIONS='--max-old-space-size=8192' tsup --config tsup.common.config.ts",
     "build:business": "NODE_OPTIONS='--max-old-space-size=16384' tsup --config tsup.business.config.ts",
     "verify:tsup-entries": "node scripts/verify-tsup-entries.mjs",
+    "exports:sync": "node scripts/generate-exports.mjs",
+    "exports:verify": "node scripts/verify-exports.mjs",
+    "ci:common-build": "node scripts/ci-common-build.mjs",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
@@ -713,7 +491,7 @@
     "clean": "rm -rf dist",
     "snapshot:exports": "node scripts/snapshot-exports.mjs",
     "smoke:exports": "node scripts/smoke-exports.mjs",
-    "prepare": "pnpm run build",
+    "prepare": "node scripts/prepare.mjs",
     "prepublishOnly": "pnpm run build && pnpm run test",
     "publish:beta": "npm publish --tag beta --access public",
     "publish:latest": "npm publish --access public"

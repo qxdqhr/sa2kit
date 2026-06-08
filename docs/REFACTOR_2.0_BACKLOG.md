@@ -218,18 +218,18 @@ flowchart TB
 | ID | 任务 | 优先级 | 工时 | 影响面 | 依赖 | 状态 |
 |----|------|--------|------|--------|------|------|
 | R2-301 | tsup 拆为 `tsup.common.config.ts` + `tsup.business.config.ts` | P0 | 1d | 构建 | R2-101 | ✅ |
-| R2-302 | common 启用 `splitting: true` + 共享 chunk | P0 | 2d | dist 体积 | R2-301 | ⬜ |
-| R2-303 | business 按需 entry：仅保留仍被 profile-v1 引用的 subpath | P0 | 1.5d | exports | R2-301 | ⬜ |
-| R2-304 | exports 从 ~538 收敛到 common ~40 + business ~N（N 逐步减小） | P0 | 1d | package.json | R2-303 | ⬜ |
-| R2-305 | `prepare` 脚本改为仅 build common（business 可选 `--with-business`） | P1 | 0.5d | 安装体验 | R2-301 | ⬜ |
-| R2-306 | CI：common build < 4GB heap；dist common < 10MB（首版目标） | P1 | 1d | CI | R2-302 | ⬜ |
-| R2-307 | 生成 `exports` 自动生成脚本，避免手写 500+ 条 | P1 | 1d |  tooling | R2-304 | ⬜ |
+| R2-302 | common 启用 `splitting: true` + 共享 chunk | P0 | 2d | dist 体积 | R2-301 | ✅ |
+| R2-303 | business 按需 entry：仅保留仍被 profile-v1 引用的 subpath | P0 | 1.5d | exports | R2-301 | ✅ |
+| R2-304 | exports 从 ~538 收敛到 common ~40 + business ~N（N 逐步减小） | P0 | 1d | package.json | R2-303 | ✅ |
+| R2-305 | `prepare` 脚本改为仅 build common（business 可选 `--with-business`） | P1 | 0.5d | 安装体验 | R2-301 | ✅ |
+| R2-306 | CI：common build < 4GB heap；dist common < 10MB（首版目标） | P1 | 1d | CI | R2-302 | ✅ |
+| R2-307 | 生成 `exports` 自动生成脚本，避免手写 500+ 条 | P1 | 1d |  tooling | R2-304 | ✅ |
 
 **Phase 3 验收标准**
 
-- [ ] `pnpm build:common` 在 4GB 内完成
-- [ ] common dist 体积较 1.x 全量下降 ≥ 80%
-- [ ] exports 清单有自动生成与 CI 校验
+- [x] `pnpm build:common` 在 4GB 内完成
+- [x] common dist 体积较 1.x 全量下降 ≥ 80%（common 子树 ≈ 1.8MB）
+- [x] exports 清单有自动生成与 CI 校验
 
 ---
 
@@ -241,7 +241,7 @@ flowchart TB
 |----|------|--------|------|--------|------|------|
 | R2-401 | **删除** sa2kit 内 `business/showmasterpiece` 全部源码与 exports | P0 | 1d | sa2kit、profile-v1 引用扫描 | R2-105、profile-v1 迁移完成 | ✅ |
 | R2-402 | 删除 showmasterpiece 相关 tsup entry（~10 个） | P0 | 0.5d | tsup、dist | R2-401 | ✅ |
-| R2-403 | business 包标记 `deprecated` 的 exports 列表写入 `docs/business-deprecated-exports.md` | P1 | 0.5d | docs | R2-304 | ⬜ |
+| R2-403 | business 包标记 `deprecated` 的 exports 列表写入 `docs/business-deprecated-exports.md` | P1 | 0.5d | docs | R2-304 | ✅ |
 | R2-404 | 拆分 business UI：禁止 business 页面 import `@/components` 整包；改为 peer UI 或 props 注入 | P1 | 3d | showmasterpiece 等 UI | R2-105 | ⬜ |
 | R2-405 | auth/legacy 移入 business 或 profile-v1 专用包；common 只保留新 auth API | P1 | 2d | auth exports | R2-104 | ⬜ |
 | R2-406 | 实验田游戏（huarongdao 等）评估：迁 profile-v1 `testField` 或保留 business | P2 | 1d | 决策文档 | — | ⬜ |
@@ -321,11 +321,11 @@ Week 10  R2-601 → R2-605        2.0 stable
 | 0 启动 | 6 | 6 | 0 | ~3.5d |
 | 1 目录 | 9 | 8 | 0 | ~8.5d |
 | 2 common | 17 | 7 | 0 | ~22d |
-| 3 构建 | 7 | 1 | 0 | ~8d |
+| 3 构建 | 7 | 7 | 0 | ~8d |
 | 4 business | 7 | 2 | 0 | ~9d |
 | 5 profile-v1 | 6 | 4 | 0 | ~4.5d |
 | 6 稳定 | 5 | 0 | 0 | ~3.5d |
-| **合计** | **57** | **28** | **0** | **~59d** |
+| **合计** | **57** | **35** | **0** | **~59d** |
 
 ---
 
@@ -333,7 +333,7 @@ Week 10  R2-601 → R2-605        2.0 stable
 
 | 日期 | 变更 |
 |------|------|
-| 2026-06-08 | **alpha.5**：R2-301 tsup common/business 构建拆分 |
+| 2026-06-08 | **alpha.6**：Phase 3 R2-302~307 构建拆分、exports 自动生成、prepare 仅 common |
 | 2026-06-08 | **alpha.3**：R2-205 bootstrap；删除 showmasterpiece @ sa2kit |
 | 2026-06-08 | 初版：架构目标、57 项 backlog、2.0.0-alpha.0 启动 |
 

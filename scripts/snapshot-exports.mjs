@@ -17,7 +17,7 @@ const snapshot = {
   packageVersion: pkg.version,
   total: keys.length,
   common: keys.filter((k) => k.startsWith('./common')),
-  business: keys.filter((k) => k.startsWith('./business') || k.includes('showmasterpiece')),
+  business: keys.filter((k) => k.startsWith('./business')),
   legacy: keys.filter((k) => !k.startsWith('./common') && !k.startsWith('./business')),
   all: keys,
 };

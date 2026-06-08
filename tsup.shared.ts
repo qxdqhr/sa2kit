@@ -4,6 +4,7 @@ import type { Options } from 'tsup';
 export const tsupSharedOptions: Omit<Options, 'entry' | 'clean'> = {
   format: ['esm', 'cjs'],
   dts: true,
+  /** business 保持 entry 隔离；splitting 仅 common 启用（R2-302） */
   splitting: false,
   sourcemap: true,
   minify: false,

@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.0-alpha.6] - 2026-06-08
+
+### Added
+
+- `scripts/generate-exports.mjs` / `exports:sync` / `exports:verify`（R2-307）
+- `scripts/prepare.mjs`（默认 `build:common`，`SA2KIT_WITH_BUSINESS=1` 全量）（R2-305）
+- `scripts/ci-common-build.mjs`（4GB heap + common dist ≤ 10MB）（R2-306）
+- `docs/business-exports-trimmed.md`（R2-303 / R2-403）
+- `tests/build/generateExports.test.ts`
+
+### Changed
+
+- common 构建启用 `splitting: true` 共享 chunk（R2-302）
+- business tsup entry 收敛至 28 个（profile-v1 按需）
+- `package.json` exports 由 entry 清单自动生成（85 条，R2-304）
+- CI 增加 exports 校验与 common build 门禁
+
 ## [2.0.0-alpha.5] - 2026-06-08
 
 ### Changed
