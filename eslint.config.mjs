@@ -101,6 +101,37 @@ export default [
     },
   },
   {
+    files: [
+      'src/ossFile/client.ts',
+      'src/ossFile/index.ts',
+      'src/common/file/index.ts',
+      'src/universalFile/client.ts',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'ali-oss',
+              message: 'browser entry 禁止静态 import ali-oss（R2-213）',
+            },
+            {
+              name: 'postgres',
+              message: 'browser entry 禁止静态 import postgres（R2-213）',
+            },
+          ],
+          patterns: [
+            {
+              group: ['node:*'],
+              message: 'browser entry 禁止静态 import node: 内置模块（R2-213）',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     ignores: ['node_modules', 'dist', 'coverage', '.turbo', '*.config.js'],
   },
 ];

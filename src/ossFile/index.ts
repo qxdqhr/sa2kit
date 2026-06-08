@@ -27,6 +27,7 @@ export {
   clearConfigCache,
   refreshFileServiceConfig,
   buildModuleUploadPath,
+  resolveUploadFolderPath,
   STANDARD_ALIYUN_OSS_KEYS,
   parseAliyunOssConfigFromMap,
 } from './client';

@@ -10,7 +10,7 @@ import {
   isCompleteOssConfig,
   getOssStorageModeLabelFromConfig,
 } from './shared/ossConfig';
-import { buildModuleUploadPath } from './shared/path';
+import { buildModuleUploadPath, resolveUploadFolderPath } from './shared/path';
 
 export type { UniversalFileClientConfig };
 
@@ -20,6 +20,7 @@ export {
   STANDARD_ALIYUN_OSS_KEYS,
   parseAliyunOssConfigFromMap,
   buildModuleUploadPath,
+  resolveUploadFolderPath,
 };
 
 export interface UploadModuleFileOptions {
@@ -46,13 +47,13 @@ export async function uploadModuleFile(
 ): Promise<UploadModuleFileResult> {
   const uploadUrl = options.uploadUrl ?? API_ENDPOINTS.UPLOAD;
   const fileName = options.file instanceof File ? options.file.name : 'upload.jpg';
-  const folderPath = options.folderPath
-    ?? options.customPath
-    ?? buildModuleUploadPath({
-      moduleId: options.moduleId,
-      businessId: options.businessId,
-      fileName,
-    });
+  const folderPath = resolveUploadFolderPath({
+    moduleId: options.moduleId,
+    businessId: options.businessId,
+    fileName,
+    folderPath: options.folderPath,
+    customPath: options.customPath,
+  });
 
   const formData = new FormData();
   formData.append('file', options.file);

@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.0-alpha.4] - 2026-06-08
+
+### Added
+
+- `resolveUploadFolderPath` / `resolveUploadFolderPathFromFormData`（R2-204）
+- `tests/ossFile/path.test.ts`、`tests/ossFile/uploadGetUrl.integration.test.ts`
+- browser entry ESLint 规则 + `tests/common/browserEntryImports.test.ts`（R2-213）
+
+### Changed
+
+- `uploadModuleFile` 与 API 路由共用路径解析逻辑
+
 ## [2.0.0-alpha.3] - 2026-06-08
 
 ### Added

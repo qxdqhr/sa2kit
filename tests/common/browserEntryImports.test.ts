@@ -1,0 +1,30 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { describe, expect, it } from 'vitest';
+
+const BROWSER_ENTRIES = [
+  'src/ossFile/client.ts',
+  'src/ossFile/index.ts',
+  'src/common/file/index.ts',
+  'src/universalFile/client.ts',
+];
+
+const FORBIDDEN_PATTERNS = [
+  /from\s+['"]ali-oss['"]/,
+  /from\s+['"]postgres['"]/,
+  /from\s+['"]node:crypto['"]/,
+  /require\s*\(\s*['"]ali-oss['"]\s*\)/,
+  /require\s*\(\s*['"]postgres['"]\s*\)/,
+];
+
+describe('common browser entries (R2-213)', () => {
+  for (const relativePath of BROWSER_ENTRIES) {
+    it(`${relativePath} must not statically import node-only deps`, () => {
+      const absolutePath = path.join(process.cwd(), relativePath);
+      const source = fs.readFileSync(absolutePath, 'utf8');
+      for (const pattern of FORBIDDEN_PATTERNS) {
+        expect(source).not.toMatch(pattern);
+      }
+    });
+  }
+});

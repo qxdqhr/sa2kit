@@ -171,10 +171,10 @@ flowchart TB
 | R2-201 | 完成 `ossFile` 构建与 dts 稳定；`ossFile/server` 无 duplicate export | P0 | 1d | sa2kit build | R2-103 | ✅ |
 | R2-202 | 删除 `src/services/universalFile/` 桩实现 | P0 | 0.5d | showmasterpiece、UniversalFileService | R2-201 | ✅ |
 | R2-203 | 移除 `__sa2kitShowmasterpieceResolveFileUrl` globalThis 契约；改为显式 `createFileUrlResolver(deps)` | P0 | 1.5d | universalFile、showmasterpiece DB | R2-202 | ✅ |
-| R2-204 | 统一 upload 字段：`folderPath` / `customPath` 在 client + API 双端兼容 | P0 | 0.5d | ossFile client、profile-v1 upload route | R2-201 | ⬜ |
+| R2-204 | 统一 upload 字段：`folderPath` / `customPath` 在 client + API 双端兼容 | P0 | 0.5d | ossFile client、profile-v1 upload route | R2-201 | ✅ |
 | R2-205 | common 导出 `createOssFileBootstrap({ loadEnv })` 一站式服务端初始化 | P1 | 1d | profile-v1 各 API route | R2-201 | ✅ |
 | R2-206 | 将 Drizzle schema 拆为 `common/file/schema`（可选独立 `@sa2kit/file-schema`） | P1 | 2d | db migration | R2-103 | ⬜ |
-| R2-207 | 补 `ossFile` + `universalFile/server` 集成测试（upload → getUrl） | P0 | 2d | `tests/` | R2-201 | ⬜ |
+| R2-207 | 补 `ossFile` + `universalFile/server` 集成测试（upload → getUrl） | P0 | 2d | `tests/` | R2-201 | ✅ |
 
 ### 6.2 client / server 边界
 
@@ -182,7 +182,7 @@ flowchart TB
 |----|------|--------|------|--------|------|------|
 | R2-211 | 为 common 各模块明确 `index.ts`（browser）与 `server/index.ts`（node） | P0 | 2d | 全部 common 模块 | R2-102 | ⬜ |
 | R2-212 | `package.json` exports 增加 `"browser"` / `"node"` 条件（或 `"import"` 分流） | P0 | 1.5d | exports、webpack | R2-211 | ⬜ |
-| R2-213 | 禁止 common browser entry 静态 import `postgres` / `ali-oss` / `node:crypto` | P0 | 1d | lint + 单测 | R2-211 | ⬜ |
+| R2-213 | 禁止 common browser entry 静态 import `postgres` / `ali-oss` / `node:crypto` | P0 | 1d | lint + 单测 | R2-211 | ✅ |
 
 ### 6.3 跨平台 adapter（Web / Taro / Electron / Hono）
 
@@ -205,9 +205,9 @@ flowchart TB
 **Phase 2 验收标准**
 
 - [ ] profile-v1 仅通过 `sa2kit/common/file`（ossFile）接入上传下载
-- [ ] 无 globalThis 文件 URL 契约
-- [ ] browser bundle 不含 postgres / ali-oss 静态引用
-- [ ] ossFile 集成测试 CI 通过
+- [x] 无 globalThis 文件 URL 契约
+- [x] browser bundle 不含 postgres / ali-oss 静态引用
+- [x] ossFile 集成测试 CI 通过
 
 ---
 
@@ -250,7 +250,7 @@ flowchart TB
 **Phase 4 验收标准**
 
 - [x] sa2kit 中无 showmasterpiece 源码
-- [ ] profile-v1 无 `sa2kit/showmasterpiece` import
+- [x] profile-v1 无 `sa2kit/showmasterpiece` import
 - [ ] business deprecated 清单与移除时间表公开
 
 ---
@@ -261,10 +261,10 @@ flowchart TB
 
 | ID | 任务 | 优先级 | 工时 | 影响面 | 依赖 | 状态 |
 |----|------|--------|------|--------|------|------|
-| R2-501 | 全仓替换 `sa2kit/universalFile` → `sa2kit/common/file`（ossFile） | P0 | 1d | profile-v1 ~20 文件 | R2-201 | 🔄 |
-| R2-502 | 删除 profile-v1 `src/types/sa2kit.d.ts` 过度兜底；按 subpath 精确声明 | P0 | 0.5d | 类型安全 | R2-109 | ⬜ |
+| R2-501 | 全仓替换 `sa2kit/universalFile` → `sa2kit/common/file`（ossFile） | P0 | 1d | profile-v1 ~20 文件 | R2-201 | ✅ |
+| R2-502 | 删除 profile-v1 `src/types/sa2kit.d.ts` 过度兜底；按 subpath 精确声明 | P0 | 0.5d | 类型安全 | R2-109 | ✅ |
 | R2-503 | 统一 `src/lib/ossFile/env.ts` 迁入 common bootstrap 或删冗余 | P1 | 0.5d | profile-v1 | R2-205 | ✅ |
-| R2-504 | skill-manager / fitnessPlan / vocaloidBooth 验证走 ossFile | P1 | 1d | 3 模块 | R2-501 | 🔄 |
+| R2-504 | skill-manager / fitnessPlan / vocaloidBooth 验证走 ossFile | P1 | 1d | 3 模块 | R2-501 | ✅ |
 | R2-505 | 锁定 profile-v1 依赖：`sa2kit@^2.0.0-alpha`；移除 `file:../sa2kit` 联调说明 | P1 | 0.5d | package.json | R2-407 | ⬜ |
 | R2-506 | 扩展 `scripts/smoke-showmasterpiece.sh` → 全站文件 API 冒烟 | P2 | 1d | CI | R2-501 | ⬜ |
 
@@ -320,12 +320,12 @@ Week 10  R2-601 → R2-605        2.0 stable
 |-------|--------|--------|--------|------------|
 | 0 启动 | 6 | 6 | 0 | ~3.5d |
 | 1 目录 | 9 | 8 | 0 | ~8.5d |
-| 2 common | 17 | 3 | 0 | ~22d |
+| 2 common | 17 | 7 | 0 | ~22d |
 | 3 构建 | 7 | 0 | 0 | ~8d |
-| 4 business | 7 | 0 | 0 | ~9d |
-| 5 profile-v1 | 6 | 1 | 2 | ~4.5d |
+| 4 business | 7 | 2 | 0 | ~9d |
+| 5 profile-v1 | 6 | 4 | 0 | ~4.5d |
 | 6 稳定 | 5 | 0 | 0 | ~3.5d |
-| **合计** | **57** | **18** | **2** | **~59d** |
+| **合计** | **57** | **27** | **0** | **~59d** |
 
 ---
 
@@ -333,7 +333,8 @@ Week 10  R2-601 → R2-605        2.0 stable
 
 | 日期 | 变更 |
 |------|------|
-| 2026-06-08 | **alpha.1**：Phase 0 完成；Phase 1 除 R2-104 完成；R2-201/202 完成；common/business exports + smoke |
+| 2026-06-08 | **alpha.4**：R2-204/207/213；profile-v1 R2-501/502/504 |
+| 2026-06-08 | **alpha.3**：R2-205 bootstrap；删除 showmasterpiece @ sa2kit |
 | 2026-06-08 | 初版：架构目标、57 项 backlog、2.0.0-alpha.0 启动 |
 
 ---
