@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.0-alpha.3] - 2026-06-08
+
+### Added
+
+- `createOssFileBootstrap()` / `OssFileBootstrap`（ossFile/server，R2-205）
+- `tests/ossFile/bootstrap.test.ts`
+
+### Removed (breaking)
+
+- **showmasterpiece** 全部源码与 npm exports（已迁回 profile-v1，R2-401/R2-402）
+- showmasterpiece 相关 tsup entry（13 个）与 ESLint 子域规则
+
 ## [2.0.0-alpha.2] - 2026-06-08
 
 ### Added

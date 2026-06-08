@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "2.0.0-alpha.2",
+  "version": "2.0.0-alpha.3",
   "description": "SA2Kit 2.x — common 通用工具库 + business 业务模块（重构中，见 docs/REFACTOR_2.0_BACKLOG.md）",
   "keywords": [
     "react",
@@ -592,76 +592,6 @@
       "types": "./dist/portfolio/index.d.ts",
       "import": "./dist/portfolio/index.mjs",
       "require": "./dist/portfolio/index.js"
-    },
-    "./showmasterpiece": {
-      "types": "./dist/showmasterpiece/index.d.ts",
-      "import": "./dist/showmasterpiece/index.mjs",
-      "require": "./dist/showmasterpiece/index.js"
-    },
-    "./showmasterpiece/core": {
-      "types": "./dist/showmasterpiece/core.d.ts",
-      "import": "./dist/showmasterpiece/core.mjs",
-      "require": "./dist/showmasterpiece/core.js"
-    },
-    "./showmasterpiece/web": {
-      "types": "./dist/showmasterpiece/web/index.d.ts",
-      "import": "./dist/showmasterpiece/web/index.mjs",
-      "require": "./dist/showmasterpiece/web/index.js"
-    },
-    "./showmasterpiece/service": {
-      "types": "./dist/showmasterpiece/service/index.d.ts",
-      "import": "./dist/showmasterpiece/service/index.mjs",
-      "require": "./dist/showmasterpiece/service/index.js"
-    },
-    "./showmasterpiece/service/web": {
-      "types": "./dist/showmasterpiece/service/web/index.d.ts",
-      "import": "./dist/showmasterpiece/service/web/index.mjs",
-      "require": "./dist/showmasterpiece/service/web/index.js"
-    },
-    "./showmasterpiece/service/client-business": {
-      "types": "./dist/showmasterpiece/service/client-business/index.d.ts",
-      "import": "./dist/showmasterpiece/service/client-business/index.mjs",
-      "require": "./dist/showmasterpiece/service/client-business/index.js"
-    },
-    "./showmasterpiece/service/miniapp": {
-      "types": "./dist/showmasterpiece/service/miniapp/index.d.ts",
-      "import": "./dist/showmasterpiece/service/miniapp/index.mjs",
-      "require": "./dist/showmasterpiece/service/miniapp/index.js"
-    },
-    "./showmasterpiece/ui/web": {
-      "types": "./dist/showmasterpiece/ui/web/index.d.ts",
-      "import": "./dist/showmasterpiece/ui/web/index.mjs",
-      "require": "./dist/showmasterpiece/ui/web/index.js"
-    },
-    "./showmasterpiece/ui/miniapp": {
-      "types": "./dist/showmasterpiece/ui/miniapp/index.d.ts",
-      "import": "./dist/showmasterpiece/ui/miniapp/index.mjs",
-      "require": "./dist/showmasterpiece/ui/miniapp/index.js"
-    },
-    "./showmasterpiece/logic": {
-      "types": "./dist/showmasterpiece/logic/index.d.ts",
-      "import": "./dist/showmasterpiece/logic/index.mjs",
-      "require": "./dist/showmasterpiece/logic/index.js"
-    },
-    "./showmasterpiece/db": {
-      "types": "./dist/showmasterpiece/db.d.ts",
-      "import": "./dist/showmasterpiece/db.mjs",
-      "require": "./dist/showmasterpiece/db.js"
-    },
-    "./showmasterpiece/server": {
-      "types": "./dist/showmasterpiece/server/index.d.ts",
-      "import": "./dist/showmasterpiece/server/index.mjs",
-      "require": "./dist/showmasterpiece/server/index.js"
-    },
-    "./showmasterpiece/scripts": {
-      "types": "./dist/showmasterpiece/scripts/index.d.ts",
-      "import": "./dist/showmasterpiece/scripts/index.mjs",
-      "require": "./dist/showmasterpiece/scripts/index.js"
-    },
-    "./showmasterpiece/migration": {
-      "types": "./dist/showmasterpiece/migration/index.d.ts",
-      "import": "./dist/showmasterpiece/migration/index.mjs",
-      "require": "./dist/showmasterpiece/migration/index.js"
     },
     "./iflytek": {
       "types": "./dist/iflytek/index.d.ts",

@@ -12,6 +12,12 @@ export {
 export { buildModuleUploadPath, type BuildModuleUploadPathOptions } from './path';
 
 export {
+  createOssFileBootstrap,
+  type OssFileBootstrap,
+  type OssFileBootstrapOptions,
+} from './bootstrap';
+
+export {
   UniversalFileService,
   createUniversalFileServiceWithConfigManager,
   createUniversalFileServiceFromConfigManager,

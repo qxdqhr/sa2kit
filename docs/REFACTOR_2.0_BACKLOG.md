@@ -172,7 +172,7 @@ flowchart TB
 | R2-202 | 删除 `src/services/universalFile/` 桩实现 | P0 | 0.5d | showmasterpiece、UniversalFileService | R2-201 | ✅ |
 | R2-203 | 移除 `__sa2kitShowmasterpieceResolveFileUrl` globalThis 契约；改为显式 `createFileUrlResolver(deps)` | P0 | 1.5d | universalFile、showmasterpiece DB | R2-202 | ✅ |
 | R2-204 | 统一 upload 字段：`folderPath` / `customPath` 在 client + API 双端兼容 | P0 | 0.5d | ossFile client、profile-v1 upload route | R2-201 | ⬜ |
-| R2-205 | common 导出 `createOssFileBootstrap({ loadEnv })` 一站式服务端初始化 | P1 | 1d | profile-v1 各 API route | R2-201 | ⬜ |
+| R2-205 | common 导出 `createOssFileBootstrap({ loadEnv })` 一站式服务端初始化 | P1 | 1d | profile-v1 各 API route | R2-201 | ✅ |
 | R2-206 | 将 Drizzle schema 拆为 `common/file/schema`（可选独立 `@sa2kit/file-schema`） | P1 | 2d | db migration | R2-103 | ⬜ |
 | R2-207 | 补 `ossFile` + `universalFile/server` 集成测试（upload → getUrl） | P0 | 2d | `tests/` | R2-201 | ⬜ |
 
@@ -239,8 +239,8 @@ flowchart TB
 
 | ID | 任务 | 优先级 | 工时 | 影响面 | 依赖 | 状态 |
 |----|------|--------|------|--------|------|------|
-| R2-401 | **删除** sa2kit 内 `business/showmasterpiece` 全部源码与 exports | P0 | 1d | sa2kit、profile-v1 引用扫描 | R2-105、profile-v1 迁移完成 | ⬜ |
-| R2-402 | 删除 showmasterpiece 相关 tsup entry（~10 个） | P0 | 0.5d | tsup、dist | R2-401 | ⬜ |
+| R2-401 | **删除** sa2kit 内 `business/showmasterpiece` 全部源码与 exports | P0 | 1d | sa2kit、profile-v1 引用扫描 | R2-105、profile-v1 迁移完成 | ✅ |
+| R2-402 | 删除 showmasterpiece 相关 tsup entry（~10 个） | P0 | 0.5d | tsup、dist | R2-401 | ✅ |
 | R2-403 | business 包标记 `deprecated` 的 exports 列表写入 `docs/business-deprecated-exports.md` | P1 | 0.5d | docs | R2-304 | ⬜ |
 | R2-404 | 拆分 business UI：禁止 business 页面 import `@/components` 整包；改为 peer UI 或 props 注入 | P1 | 3d | showmasterpiece 等 UI | R2-105 | ⬜ |
 | R2-405 | auth/legacy 移入 business 或 profile-v1 专用包；common 只保留新 auth API | P1 | 2d | auth exports | R2-104 | ⬜ |
@@ -249,7 +249,7 @@ flowchart TB
 
 **Phase 4 验收标准**
 
-- [ ] sa2kit 中无 showmasterpiece 源码
+- [x] sa2kit 中无 showmasterpiece 源码
 - [ ] profile-v1 无 `sa2kit/showmasterpiece` import
 - [ ] business deprecated 清单与移除时间表公开
 
@@ -263,7 +263,7 @@ flowchart TB
 |----|------|--------|------|--------|------|------|
 | R2-501 | 全仓替换 `sa2kit/universalFile` → `sa2kit/common/file`（ossFile） | P0 | 1d | profile-v1 ~20 文件 | R2-201 | 🔄 |
 | R2-502 | 删除 profile-v1 `src/types/sa2kit.d.ts` 过度兜底；按 subpath 精确声明 | P0 | 0.5d | 类型安全 | R2-109 | ⬜ |
-| R2-503 | 统一 `src/lib/ossFile/env.ts` 迁入 common bootstrap 或删冗余 | P1 | 0.5d | profile-v1 | R2-205 | ⬜ |
+| R2-503 | 统一 `src/lib/ossFile/env.ts` 迁入 common bootstrap 或删冗余 | P1 | 0.5d | profile-v1 | R2-205 | ✅ |
 | R2-504 | skill-manager / fitnessPlan / vocaloidBooth 验证走 ossFile | P1 | 1d | 3 模块 | R2-501 | 🔄 |
 | R2-505 | 锁定 profile-v1 依赖：`sa2kit@^2.0.0-alpha`；移除 `file:../sa2kit` 联调说明 | P1 | 0.5d | package.json | R2-407 | ⬜ |
 | R2-506 | 扩展 `scripts/smoke-showmasterpiece.sh` → 全站文件 API 冒烟 | P2 | 1d | CI | R2-501 | ⬜ |

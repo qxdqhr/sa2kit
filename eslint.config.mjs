@@ -101,26 +101,6 @@ export default [
     },
   },
   {
-    files: ['src/business/showmasterpiece/**/*.{ts,tsx}'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            {
-              group: [
-                '**/business/huarongdao/**',
-                '**/business/bubbleShooter/**',
-                '**/business/mikuFlick/**',
-              ],
-              message: 'showmasterpiece 禁止跨 business 子域引用（R2-107）',
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
     ignores: ['node_modules', 'dist', 'coverage', '.turbo', '*.config.js'],
   },
 ];
