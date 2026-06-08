@@ -40,3 +40,5 @@ examples/
 !README.md
 !CHANGELOG.md
 !docs/REFACTOR_2.0_BACKLOG.md
+!docs/business-deprecated-exports.md
+!docs/business-exports-trimmed.md
