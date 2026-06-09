@@ -1,10 +1,17 @@
 # Changelog
 
+## [2.0.2] - 2026-06-09
+
+### Fixed
+
+- **prepare 钩子**：`npm publish` 时若 `dist` 已含 business 产物则跳过，修复 tarball 仅含 common 导致 consumer 打包失败
+- 从 npm 安装时同样跳过 prepare 构建（2.0.1 已部分修复，2.0.2  tarball 含完整 business dist）
+
 ## [2.0.1] - 2026-06-09
 
 ### Fixed
 
-- **prepare 钩子**：从 npm 安装时跳过构建，避免 `build:common` 覆盖 tarball 内 business `dist`（修复 profile-v1 等 consumer 打包 `Module not found: sa2kit/mmd` 等问题）
+- **prepare 钩子**：从 npm 安装时跳过构建（无 `src/` 目录）
 
 ## [2.0.0] - 2026-06-09
 

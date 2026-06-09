@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "SA2Kit 2.0 — common API 稳定；business 实验田模块逐步迁出 profile-v1",
   "keywords": [
     "react",
