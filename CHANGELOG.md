@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.1] - 2026-06-09
+
+### Fixed
+
+- **prepare 钩子**：从 npm 安装时跳过构建，避免 `build:common` 覆盖 tarball 内 business `dist`（修复 profile-v1 等 consumer 打包 `Module not found: sa2kit/mmd` 等问题）
+
 ## [2.0.0] - 2026-06-09
 
 ### Removed

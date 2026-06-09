@@ -3,7 +3,7 @@
 一个现代的、类型安全的跨平台工具库。**2.0 重构进行中**：拆分为 `common`（通用逻辑，供 Web / Taro / Electron / Hono 等多项目接入）与 `business`（业务逻辑，逐步迁回 profile-v1）。
 
 > 📋 **重构任务 SSOT**：[docs/REFACTOR_2.0_BACKLOG.md](./docs/REFACTOR_2.0_BACKLOG.md)  
-> 当前版本：`2.0.0`（**common API 稳定**；business 实验田模块逐步迁出，见 [COMMON_API_FREEZE.md](./docs/COMMON_API_FREEZE.md)）
+> 当前版本：`2.0.1`（**common API 稳定**；business 实验田模块逐步迁出，见 [COMMON_API_FREEZE.md](./docs/COMMON_API_FREEZE.md)）
 
 ### 2.0 推荐 import（common）
 
