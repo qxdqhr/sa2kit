@@ -10,8 +10,8 @@
 |------|------|------------------|----------------------|------|
 | showmasterpiece | ✅ 已完成 | alpha.3 | alpha.3 | 已迁 profile-v1 |
 | bubbleShooter | ✅ export 已移除 | — | beta.0 前 | profile-v1 已本地化 |
-| huarongdao | 🔄 deprecated | **2.0.0-alpha.9** | **2.0.0-beta.0** | [评估文档](./business-testfield-games-migration.md) |
-| mikuFlick | 🔄 deprecated | **2.0.0-alpha.10** | **2.0.0-beta.0** | 同上 |
+| huarongdao | ✅ 已完成 | 2.0.0 | 2.0.0 | 已迁 profile-v1 `src/modules/huarongdao` |
+| mikuFlick | ✅ 已完成 | 2.0.0 | 2.0.0 | 已迁 profile-v1 `src/modules/mikuFlick` |
 
 ## 恢复或新增导出
 

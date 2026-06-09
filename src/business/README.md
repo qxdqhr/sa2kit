@@ -8,9 +8,9 @@ SA2Kit 2.0 **业务层**：具体产品域实现，后期逐步迁回 profile-v1
 |------|-------------------|-----------------|
 | auth-legacy | `sa2kit/auth/legacy/*`、`sa2kit/auth/rn`（legacy 部分） | P1 — 旧版认证 UI / 路由 |
 | showmasterpiece | `sa2kit/showmasterpiece/*` | P0 — 已在 profile-v1 本地化 |
-| huarongdao | `sa2kit/huarongdao/*` | P1 |
+| huarongdao | 已迁 profile-v1 | — |
 | bubbleShooter | `sa2kit/bubbleShooter/*` | P1 |
-| mikuFlick | `sa2kit/mikuFlick/*` | P1 |
+| mikuFlick | 已迁 profile-v1 | — |
 
 ## 依赖规则
 

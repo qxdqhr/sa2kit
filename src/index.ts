@@ -36,8 +36,6 @@ export * from './screenReceiver';
 export * from './festivalCard';
 export * from './vocaloidBooth';
 export * from './mikuContest';
-export * as huarongdao from './business/huarongdao';
-export * as mikuFlick from './business/mikuFlick';
 export * as bubbleShooter from './business/bubbleShooter';
 
 // Storage - Only export types and hooks, not platform adapters

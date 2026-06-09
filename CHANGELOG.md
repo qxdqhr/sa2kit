@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.0] - 2026-06-09
+
+### Removed
+
+- **huarongdao**、**mikuFlick** npm export 与 `src/business/*` 源码（已迁 profile-v1，`R2-406`）
+- `mikuFlick` 单元测试（逻辑随模块迁出）
+
+### Changed
+
+- business tsup entries：**87**（48 common + 39 business）
+- profile-v1 首个 stable consumer：`^2.0.0`
+
 ## [2.0.0-beta.0] - 2026-06-09
 
 ### Added

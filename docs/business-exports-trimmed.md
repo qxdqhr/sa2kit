@@ -14,8 +14,8 @@
 | screenReceiver | 除 `./screenReceiver` 外 | 页面仅用 Panel 入口 |
 | festivalCard | miniapp/core/routes/web | 保留 index + server |
 | mikuContest | 除 `./mikuContest/ui/web` 外 | 实验田单页引用 |
-| huarongdao | types/logic/service/ui/server/routes | `./huarongdao` barrel 已 re-export |
-| mikuFlick | types/logic/ui/web | `./mikuFlick` barrel 已 re-export |
+| huarongdao | `./huarongdao*` | 2.0.0 已迁 profile-v1，源码与 export 已删 |
+| mikuFlick | `./mikuFlick*` | 2.0.0 已迁 profile-v1，源码与 export 已删 |
 | mikuFireworks3D | `./mikuFireworks3D/server` | 无 profile-v1 引用 |
 
 ## 恢复导出

@@ -39,6 +39,4 @@ export const businessEntries = {
   'vocaloidBooth/web/index': 'src/vocaloidBooth/web/index.ts',
   'vocaloidBooth/server/index': 'src/vocaloidBooth/server/index.ts',
   'mikuContest/ui/web/index': 'src/mikuContest/ui/web/index.ts',
-  'huarongdao/index': 'src/business/huarongdao/index.ts',
-  'mikuFlick/index': 'src/business/mikuFlick/index.ts',
 } as const satisfies Record<string, string>;

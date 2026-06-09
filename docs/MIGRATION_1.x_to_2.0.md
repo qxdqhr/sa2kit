@@ -10,11 +10,11 @@
 |------|----------|------|
 | 1.6.x 维护线 | `sa2kit@^1.6.0` | 仅 critical fix，无新特性 |
 | 2.0 alpha | `sa2kit@^2.0.0-alpha.8` | 历史联调 |
-| 2.0 beta | `sa2kit@^2.0.0-beta.0` | **当前推荐**；common API 冻结 |
-| 2.0 stable | `sa2kit@^2.0.0` | 生产默认可用 |
+| 2.0 beta | `sa2kit@^2.0.0-beta.0` | 历史联调 |
+| 2.0 stable | `sa2kit@^2.0.0` | **当前推荐**；生产默认可用 |
 
 ```bash
-pnpm add sa2kit@^2.0.0-beta.0
+pnpm add sa2kit@^2.0.0
 ```
 
 **本地联调 sa2kit 源码**（可选，勿写入生产 `package.json`）：
@@ -72,8 +72,8 @@ cd ../sa2kit && SA2KIT_WITH_BUSINESS=1 pnpm install
 |------|----------|
 | `sa2kit/showmasterpiece/*` | **已删除**（alpha.3）；迁回 profile-v1 本地模块 |
 | `sa2kit/bubbleShooter/*` | export 已移除；profile-v1 本地化 |
-| `sa2kit/huarongdao` | deprecated，计划 alpha.9 移除 export |
-| `sa2kit/mikuFlick` | deprecated，计划 alpha.10 移除 export |
+| `sa2kit/huarongdao` | **已移除**（2.0.0）；迁 profile-v1 `@/modules/huarongdao` |
+| `sa2kit/mikuFlick` | **已移除**（2.0.0）；迁 profile-v1 `@/modules/mikuFlick` |
 | `sa2kit/auth/legacy/*` | 迁至 business；路径 shim 仍可用 |
 
 详见 [business-deprecated-exports.md](./business-deprecated-exports.md)。
@@ -105,17 +105,17 @@ cd ../sa2kit && SA2KIT_WITH_BUSINESS=1 pnpm install
 ### 4.4 构建体积
 
 - `pnpm build:common` ≈ 1.8MB dist（较 1.x 全量下降 ≥80%）
-- exports 从 ~538 收敛至 ~89（自动生成，见 `pnpm exports:verify`）
+- exports 从 ~538 收敛至 **87**（48 common + 39 business，见 `pnpm exports:verify`）
 
 ## 5. 分步迁移流程
 
 ```text
-1. 升级依赖 → sa2kit@^2.0.0-beta.0
+1. 升级依赖 → sa2kit@^2.0.0
 2. 替换 import → common/*（§3.1）
 3. 文件 API → createOssFileBootstrap + common/file（删除 universalFile 直连）
 4. 删除 sa2kit/showmasterpiece 等已迁回模块的 import
 5. pnpm build && pnpm smoke:exports（sa2kit 侧）/ smoke 脚本（应用侧）
-6. 锁定 alpha 范围，待 beta 再升 ^2.0.0-beta.0
+6. 锁定 `^2.0.0`（stable）
 ```
 
 ## 6. profile-v1 专项
