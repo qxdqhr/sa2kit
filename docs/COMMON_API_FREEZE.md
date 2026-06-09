@@ -1,6 +1,6 @@
 # Common API 冻结清单（R2-601）
 
-> **状态**：alpha.8 起进入 **review 冻结候选**；`2.0.0-beta.0` 发布后本清单视为 semver 契约。  
+> **状态**：**已冻结**（自 `2.0.0-beta.0` / R2-602）。`sa2kit/common/*` breaking 变更需 major 或事先 deprecation。  
 > breaking 变更仅允许 major（`3.0.0`）或事先在本文件登记 deprecation 周期。
 
 ## 冻结范围：`sa2kit/common/*`
@@ -54,8 +54,8 @@
 - [x] `smoke:exports` common 子路径
 - [x] `smoke:file-api` bootstrap 冒烟
 - [x] browser entry 无 `postgres` / `ali-oss` 静态引用
-- [ ] profile-v1 锁定 `^2.0.0-alpha.8` 并跑通 smoke-file-api
-- [ ] 本文件与 `MIGRATION_1.x_to_2.0.md` 随 beta 发布同步
+- [x] profile-v1 锁定 `^2.0.0-alpha.8` 并跑通 smoke-file-api
+- [x] 本文件与 `MIGRATION_1.x_to_2.0.md` 随 beta 发布同步（2.0.0-beta.0）
 
 ## 变更流程
 

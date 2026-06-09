@@ -9,12 +9,12 @@
 | 阶段 | 依赖写法 | 说明 |
 |------|----------|------|
 | 1.6.x 维护线 | `sa2kit@^1.6.0` | 仅 critical fix，无新特性 |
-| 2.0 alpha | `sa2kit@^2.0.0-alpha.8` | 当前推荐联调/预发 |
-| 2.0 beta+ | `sa2kit@^2.0.0-beta.0` | common API 冻结后 |
+| 2.0 alpha | `sa2kit@^2.0.0-alpha.8` | 历史联调 |
+| 2.0 beta | `sa2kit@^2.0.0-beta.0` | **当前推荐**；common API 冻结 |
 | 2.0 stable | `sa2kit@^2.0.0` | 生产默认可用 |
 
 ```bash
-pnpm add sa2kit@^2.0.0-alpha.8
+pnpm add sa2kit@^2.0.0-beta.0
 ```
 
 **本地联调 sa2kit 源码**（可选，勿写入生产 `package.json`）：
@@ -110,7 +110,7 @@ cd ../sa2kit && SA2KIT_WITH_BUSINESS=1 pnpm install
 ## 5. 分步迁移流程
 
 ```text
-1. 升级依赖 → sa2kit@^2.0.0-alpha.8
+1. 升级依赖 → sa2kit@^2.0.0-beta.0
 2. 替换 import → common/*（§3.1）
 3. 文件 API → createOssFileBootstrap + common/file（删除 universalFile 直连）
 4. 删除 sa2kit/showmasterpiece 等已迁回模块的 import

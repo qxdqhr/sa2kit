@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.0.0-beta.0] - 2026-06-09
+
+### Added
+
+- `docs/MAINTENANCE_1.6.md`；分支 `maintenance/1.6`（自 `v1.6.114`，R2-604）
+
+### Changed
+
+- **common API 冻结**：`sa2kit/common/*` 自本版起按 semver 契约维护（见 `docs/COMMON_API_FREEZE.md`，R2-602）
+- README / 迁移指南标注 beta 推荐依赖 `^2.0.0-beta.0`
+
+### Note
+
+- business / auth-legacy 仍可在 beta 内 breaking；2.0.0 stable 前迁出或 deprecated
+
 ## [2.0.0-alpha.8] - 2026-06-09
 
 ### Added

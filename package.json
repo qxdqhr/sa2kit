@@ -1,7 +1,7 @@
 {
   "name": "sa2kit",
-  "version": "2.0.0-alpha.8",
-  "description": "SA2Kit 2.x — common 通用工具库 + business 业务模块（重构中，见 docs/REFACTOR_2.0_BACKLOG.md）",
+  "version": "2.0.0-beta.0",
+  "description": "SA2Kit 2.x — common API 已冻结（beta）；business 逐步迁出，见 docs/REFACTOR_2.0_BACKLOG.md",
   "keywords": [
     "react",
     "typescript",
