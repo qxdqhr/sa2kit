@@ -1,13 +1,2 @@
-export * from '../logic';
-export * from '../types';
-
-export {
-  validatePhoneNumber,
-  validatePassword,
-  isAdmin,
-  isActiveUser,
-  getUserDisplayName,
-  calculateSessionExpiry,
-  isSessionExpired,
-  generateSessionToken,
-} from '../utils/authUtils';
+/** @deprecated 请使用 `sa2kit/business/auth-legacy/core`（R2-405） */
+export * from '../../../business/auth-legacy/core';

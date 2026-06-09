@@ -9,6 +9,8 @@ export * as storage from './storage';
 export * as request from './request';
 export * as file from './file';
 export * as dataExport from './export';
+export * as auth from './auth';
+export * as platform from './platform';
 export * as i18n from '../i18n';
 export * as analytics from '../analytics';
 export * as config from '../config';

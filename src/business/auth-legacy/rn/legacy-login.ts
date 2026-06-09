@@ -1,5 +1,5 @@
-import { validatePhoneNumber } from '../legacy/utils/authUtils';
-import { ReactNativeRequestAdapter } from '../../request/adapters/react-native-adapter';
+import { validatePhoneNumber } from '../utils/authUtils';
+import { ReactNativeRequestAdapter } from '../../../request/adapters/react-native-adapter';
 
 export type LegacyPhoneLoginResult = {
   success: boolean;

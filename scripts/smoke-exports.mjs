@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * common 子路径 import 冒烟（R2-004）
+ * common 子路径 import 冒烟（R2-004 / R2-212）
  * 需先 pnpm build
  */
 import { readFileSync, existsSync } from 'node:fs';
@@ -20,16 +20,37 @@ const COMMON_SUBPATHS = [
   './common/request',
   './common/file',
   './common/file/server',
+  './common/file/schema',
+  './common/platform',
+  './common/auth',
+  './common/auth/server',
   './common/export',
   './common/export/server',
 ];
 
 function resolveImportPath(subpath) {
   const entry = pkg.exports[subpath];
-  if (!entry?.import) {
-    throw new Error(`Missing exports["${subpath}"].import`);
+  if (!entry) {
+    throw new Error(`Missing exports["${subpath}"]`);
   }
-  return join(root, entry.import);
+
+  if (typeof entry.import === 'string') {
+    return join(root, entry.import);
+  }
+
+  const preferNode = subpath.includes('/server');
+  const conditional = preferNode ? entry.node : entry.browser;
+  const importPath =
+    conditional?.import ??
+    entry.default?.import ??
+    entry.node?.import ??
+    entry.browser?.import;
+
+  if (!importPath) {
+    throw new Error(`Missing import target for exports["${subpath}"]`);
+  }
+
+  return join(root, importPath);
 }
 
 let failed = 0;
@@ -44,7 +65,6 @@ for (const subpath of COMMON_SUBPATHS) {
 
   const isServerEntry = subpath.includes('/server');
   if (isServerEntry) {
-    // server bundle 可能依赖 next/postgres 等，冒烟仅校验产物存在
     console.log(`✓ ${subpath} (artifact exists, skip runtime import)`);
     continue;
   }

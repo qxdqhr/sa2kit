@@ -3,7 +3,7 @@
 一个现代的、类型安全的跨平台工具库。**2.0 重构进行中**：拆分为 `common`（通用逻辑，供 Web / Taro / Electron / Hono 等多项目接入）与 `business`（业务逻辑，逐步迁回 profile-v1）。
 
 > 📋 **重构任务 SSOT**：[docs/REFACTOR_2.0_BACKLOG.md](./docs/REFACTOR_2.0_BACKLOG.md)  
-> 当前版本：`2.0.0-alpha.1`（API 不保证稳定，生产环境请暂用 1.6.x 或 pin alpha）
+> 当前版本：`2.0.0-alpha.8`（API 不保证稳定，生产环境请暂用 1.6.x 或 pin alpha）
 
 ### 2.0 推荐 import（common）
 
@@ -19,15 +19,15 @@ import { createOssFileConfigManagerFromEnv } from 'sa2kit/common/file/server';
 
 | 层级 | 入口 | 职责 |
 |------|------|------|
-| **common** | `sa2kit/common/*`（规划中的统一前缀） | logger、utils、storage、request、ossFile、auth 内核等 |
-| **business** | `sa2kit/business/*` | showmasterpiece、mikuContest 等；后期迁回 profile-v1 |
+| **common** | `sa2kit/common/*` | logger、utils、storage、request、ossFile、auth 内核等 |
+| **business** | `sa2kit/business/*` 及 legacy subpath | mikuContest、huarongdao 等；逐步迁回 profile-v1 |
 
 ## 特性
 
 - 🚀 **现代 TypeScript** - 完整的类型安全和 IntelliSense 支持
 - 📦 **Tree-shakeable** - 使用 ESM 支持优化包大小
 - 🔄 **跨平台** - 适用于浏览器和 Node.js 环境
-- ⚡ **零依赖** - 极小的体积（React 作为 peer dependency）
+- ⚡ **按需依赖** - common 子集可 tree-shake；服务端/文件/OSS 等能力依赖 `drizzle-orm`、`ali-oss` 等（见下方说明）
 - 🧩 **模块化** - 仅导入你需要的部分
 - 🎯 **React Hooks** - 常用模式的自定义 Hook
 - 📝 **日志系统** - 统一的日志记录，支持多个适配器
@@ -39,13 +39,25 @@ import { createOssFileConfigManagerFromEnv } from 'sa2kit/common/file/server';
 
 ## 安装
 
+npm 包名：**`sa2kit`**（scope 发布名 `@qhr123/sa2kit` 与 `sa2kit` 指同一产物）。
+
 ```bash
-npm install @qhr123/sa2kit
-# 或
-yarn add @qhr123/sa2kit
+pnpm add sa2kit
 # 或
 pnpm add @qhr123/sa2kit
 ```
+
+### 可选 peer 依赖（按接入能力安装）
+
+| 能力 | 建议安装 |
+|------|----------|
+| React UI / hooks | `react`、`react-dom` |
+| 小程序 | `@tarojs/taro`、`@tarojs/components` |
+| 文件服务服务端 | `drizzle-orm`、`postgres`（或 `pg`） |
+| OSS 上传 | `ali-oss`（已 bundled 于 server 构建） |
+| AI / OCR 等高级模块 | `@xenova/transformers`、`tesseract.js` 等 |
+
+仅使用 `sa2kit/common/logger` 等纯工具子路径时，**无需**安装全部 peer。
 
 ## 快速开始
 
@@ -279,6 +291,8 @@ function MyComponent() {
 
 ## 文档
 
+- [**1.x → 2.0 迁移指南**](./docs/MIGRATION_1.x_to_2.0.md)
+- [Common API 冻结清单](./docs/COMMON_API_FREEZE.md)（beta 前）
 - [Tailwind CSS 设置](./docs/tailwind-setup.md) - **UI 组件配置**
 - [日志文档](./docs/logger.md)
 - [工具函数文档](./docs/utils.md)

@@ -1,18 +1,21 @@
 'use client';
 
-import React from "react";
+import React from 'react';
+import type { CollisionBallsConfig } from '@/components/CollisionBalls';
+import type { TimelineConfig, TimelineItem } from '@/components/Timeline';
 
-import { CollisionBalls, Timeline } from "@/components";
-import type { TimelineConfig, CollisionBallsConfig } from "@/components";
-
-interface AboutProps {
+export interface AboutProps {
   timelineConfig: TimelineConfig;
   collisionBallsConfig: CollisionBallsConfig;
+  Timeline: React.FC<{ items?: TimelineItem[] }>;
+  CollisionBalls: React.FC<{ collisionBallsConfig: CollisionBallsConfig }>;
 }
 
 const About: React.FC<AboutProps> = ({
   timelineConfig,
   collisionBallsConfig,
+  Timeline,
+  CollisionBalls,
 }) => {
   return (
     <section id="about" className="py-16 bg-white">

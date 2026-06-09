@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Modal, ConfirmModal } from '@/components';
+import { useCalendarUi } from '../ui/context';
 import { EventType, RecurrencePattern, EventData, EventTypeService } from '../services/eventTypeService';
 import { CalendarEvent, EventPriority } from '../types';
 import { clsx } from 'clsx';
@@ -23,6 +23,7 @@ const ImprovedEventModal: React.FC<ImprovedEventModalProps> = ({
   event,
   initialDate,
 }) => {
+  const { Modal, ConfirmModal } = useCalendarUi();
   const [eventType, setEventType] = useState<EventType>(EventType.SINGLE);
   const [formData, setFormData] = useState({
     // 基础信息

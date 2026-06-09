@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Modal, ConfirmModal } from '@/components';
+import { useCalendarUi } from '../ui/context';
 import { CalendarEvent, CreateEventRequest, UpdateEventRequest, EventPriority } from '../types';
 import { toLocalISOString } from '../utils/dateUtils';
 import { clsx } from 'clsx';
@@ -23,6 +23,7 @@ const EventModal: React.FC<EventModalProps> = ({
   event,
   initialDate,
 }) => {
+  const { Modal, ConfirmModal } = useCalendarUi();
   const [formData, setFormData] = useState({
     title: '',
     description: '',

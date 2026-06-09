@@ -2,8 +2,8 @@
  * RN 账密登录表单：手机号 → legacy /auth/login；邮箱 → sa2kit LoginForm + BaseApiClient
  */
 import React, { useCallback, useEffect, useState } from 'react';
-import { LoginForm } from '../../components/LoginForm';
-import { initRnAuthClient, resetRnAuthClientCache } from '../client';
+import { LoginForm } from '../../../../common/auth/components/LoginForm';
+import { initRnAuthClient, resetRnAuthClientCache } from '../../../../common/auth/rn/client';
 import { isPhoneAccount, loginWithLegacyPhone } from '../legacy-login';
 import type { RnAccountLoginFormProps } from '../types';
 

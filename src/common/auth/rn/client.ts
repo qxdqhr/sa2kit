@@ -1,6 +1,6 @@
 import { BaseApiClient } from '../client/base-api-client';
-import { ReactNativeStorageAdapter } from '../../storage/adapters/react-native-adapter';
-import { ReactNativeRequestAdapter } from '../../request/adapters/react-native-adapter';
+import { ReactNativeStorageAdapter } from '../../../storage/adapters/react-native-adapter';
+import { ReactNativeRequestAdapter } from '../../../request/adapters/react-native-adapter';
 
 let cached: BaseApiClient | null = null;
 let cachedBase = '';

@@ -1,2 +1,2 @@
-export { LegacyAuthDbService } from './authDbService';
-export type { LegacyAuthDbConfig } from './authDbService';
+/** @deprecated 请使用 `sa2kit/business/auth-legacy/services`（R2-405） */
+export * from '../../../business/auth-legacy/services';

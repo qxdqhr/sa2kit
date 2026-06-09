@@ -42,3 +42,7 @@ examples/
 !docs/REFACTOR_2.0_BACKLOG.md
 !docs/business-deprecated-exports.md
 !docs/business-exports-trimmed.md
+!docs/MIGRATION_1.x_to_2.0.md
+!docs/COMMON_API_FREEZE.md
+!docs/common-platform-adapters.md
+!docs/business-testfield-games-migration.md

@@ -19,6 +19,9 @@ import {
   DEFAULT_UPLOAD_TIMEOUT,
 } from './constants';
 import { createFileError, formatErrorMessage, buildQueryString } from './utils';
+import { createLogger } from '../logger';
+
+const clientLogger = createLogger('UniversalFileClient');
 
 // ============= 配置类型 =============
 
@@ -92,7 +95,7 @@ export class UniversalFileClient {
     }
 
     try {
-      console.log('📤 [UniversalFileClient] 开始上传文件:', {
+      clientLogger.debug('开始上传文件', {
         url,
         fileName: fileInfo.file.name,
         fileSize: fileInfo.file.size,
@@ -131,7 +134,7 @@ export class UniversalFileClient {
 
         // 监听上传完成
         xhr.addEventListener('load', () => {
-          console.log('📥 [UniversalFileClient] 上传响应:', {
+          clientLogger.debug('上传响应', {
             status: xhr.status,
             statusText: xhr.statusText,
             responseLength: xhr.responseText?.length,
@@ -140,7 +143,7 @@ export class UniversalFileClient {
           if (xhr.status >= 200 && xhr.status < 300) {
             try {
               const response = JSON.parse(xhr.responseText);
-              console.log('✅ [UniversalFileClient] 解析响应成功:', response);
+              clientLogger.debug('解析响应成功', response);
               
               // 支持多种响应格式
               const fileData = response.file || response.data || response;
@@ -160,18 +163,22 @@ export class UniversalFileClient {
 
               resolve(fileMetadata);
             } catch (error) {
-              console.error('❌ [UniversalFileClient] 解析响应失败:', error, xhr.responseText);
+              clientLogger.error('解析响应失败', { error, responseText: xhr.responseText });
               reject(new Error('解析响应失败'));
             }
           } else {
-            console.error('❌ [UniversalFileClient] 上传失败:', xhr.status, xhr.statusText, xhr.responseText);
+            clientLogger.error('上传失败', {
+              status: xhr.status,
+              statusText: xhr.statusText,
+              responseText: xhr.responseText,
+            });
             reject(new Error('上传失败: ' + (xhr.statusText)));
           }
         });
 
         // 监听错误
         xhr.addEventListener('error', (event) => {
-          console.error('❌ [UniversalFileClient] 网络错误:', event);
+          clientLogger.error('网络错误', event);
           if (onProgress) {
             onProgress({
               fileId: '',
@@ -314,12 +321,15 @@ export class UniversalFileClient {
       });
 
       if (!response.ok) {
-        console.error('❌ [UniversalFileClient] 查询文件列表失败:', response.status, response.statusText);
+        clientLogger.error('查询文件列表失败', {
+          status: response.status,
+          statusText: response.statusText,
+        });
         throw new Error('查询文件列表失败: ' + (response.statusText));
       }
 
       const data = await response.json();
-      console.log('📥 [UniversalFileClient] 查询文件列表响应:', {
+      clientLogger.debug('查询文件列表响应', {
         itemsCount: data.items?.length,
         total: data.total,
         page: data.page,
@@ -327,7 +337,7 @@ export class UniversalFileClient {
       
       // 防御性检查
       if (!data.items || !Array.isArray(data.items)) {
-        console.error('❌ [UniversalFileClient] 响应格式错误: items 不是数组', data);
+        clientLogger.error('响应格式错误: items 不是数组', data);
         return {
           items: [],
           total: 0,

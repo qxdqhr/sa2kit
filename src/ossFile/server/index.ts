@@ -53,7 +53,7 @@ export {
   ValidationHelper,
 } from '../../universalFile/server';
 
-export * from '../../universalFile/server/drizzle-schemas';
+export * from '../../common/file/schema';
 
 export type {
   AliyunOSSConfig,

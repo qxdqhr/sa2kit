@@ -33,6 +33,8 @@ import ImprovedEventModal from '../components/ImprovedEventModal';
 import DraggableMonthView from '../components/DraggableMonthView';
 import CalendarSettings from '../components/CalendarSettings';
 import type { CalendarSettings as CalendarSettingsType } from '../components/CalendarSettings';
+import { CalendarUiProvider } from '../ui/context';
+import { defaultCalendarUi } from '../ui/defaultComponents';
 
 interface CalendarPageProps {
   /** 当前登录用户信息 */
@@ -598,6 +600,7 @@ export function CalendarPage({
   }, [createEnhancedEvent]);
 
   return (
+    <CalendarUiProvider value={defaultCalendarUi}>
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-4 lg:p-6">
         <div className="mb-6">
@@ -822,5 +825,6 @@ export function CalendarPage({
         initialDate={selectedDate || undefined}
       />
     </div>
+    </CalendarUiProvider>
   );
 }

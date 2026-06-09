@@ -2,7 +2,7 @@
 
 > **单一事实来源（SSOT）**：本文件追踪 sa2kit 从 1.x「工具库 + 业务单体」到 2.x「common / business 分层」的全部重构任务。  
 > **版本线**：自 `2.0.0-alpha.0` 起进入 2.0 重构；稳定版目标为 `2.0.0`。  
-> **最后更新**：2026-06-08
+> **最后更新**：2026-06-09（alpha.8）
 
 ---
 
@@ -145,7 +145,7 @@ flowchart TB
 | R2-101 | 引入 `src/common/`、`src/business/` 顶层目录（或 `packages/common` + `packages/business` monorepo） | P0 | 1d | 全仓库路径 | R2-002 | ✅ |
 | R2-102 | 将 `logger`、`utils`、`storage`、`request` 迁入 `common/` | P0 | 1d | ~4 模块、tsup entry | R2-101 | ✅ |
 | R2-103 | 将 `universalFile`、`ossFile`、`universalExport` 迁入 `common/file`、`common/export` | P0 | 2d | 文件链路、profile-v1 | R2-101 | ✅ |
-| R2-104 | 将 `auth`（非 legacy UI）内核迁入 `common/auth` | P1 | 2d | auth exports | R2-101 | ⬜ |
+| R2-104 | 将 `auth`（非 legacy UI）内核迁入 `common/auth` | P1 | 2d | auth exports | R2-101 | ✅ |
 | R2-105 | 将 `src/business/*` 现有业务统一归入 `src/business/`（含 showmasterpiece） | P0 | 1d | business 全部 | R2-101 | ✅ |
 | R2-106 | 添加 ESLint `no-restricted-imports`：**common 禁止 import business** | P0 | 0.5d | `.eslintrc` | R2-101 | ✅ |
 | R2-107 | 添加 ESLint：**business 禁止 import 其他 business 子域**（除显式 whitelist） | P1 | 0.5d | `.eslintrc` | R2-105 | ✅ |
@@ -173,38 +173,38 @@ flowchart TB
 | R2-203 | 移除 `__sa2kitShowmasterpieceResolveFileUrl` globalThis 契约；改为显式 `createFileUrlResolver(deps)` | P0 | 1.5d | universalFile、showmasterpiece DB | R2-202 | ✅ |
 | R2-204 | 统一 upload 字段：`folderPath` / `customPath` 在 client + API 双端兼容 | P0 | 0.5d | ossFile client、profile-v1 upload route | R2-201 | ✅ |
 | R2-205 | common 导出 `createOssFileBootstrap({ loadEnv })` 一站式服务端初始化 | P1 | 1d | profile-v1 各 API route | R2-201 | ✅ |
-| R2-206 | 将 Drizzle schema 拆为 `common/file/schema`（可选独立 `@sa2kit/file-schema`） | P1 | 2d | db migration | R2-103 | ⬜ |
+| R2-206 | 将 Drizzle schema 拆为 `common/file/schema`（可选独立 `@sa2kit/file-schema`） | P1 | 2d | db migration | R2-103 | ✅ |
 | R2-207 | 补 `ossFile` + `universalFile/server` 集成测试（upload → getUrl） | P0 | 2d | `tests/` | R2-201 | ✅ |
 
 ### 6.2 client / server 边界
 
 | ID | 任务 | 优先级 | 工时 | 影响面 | 依赖 | 状态 |
 |----|------|--------|------|--------|------|------|
-| R2-211 | 为 common 各模块明确 `index.ts`（browser）与 `server/index.ts`（node） | P0 | 2d | 全部 common 模块 | R2-102 | ⬜ |
-| R2-212 | `package.json` exports 增加 `"browser"` / `"node"` 条件（或 `"import"` 分流） | P0 | 1.5d | exports、webpack | R2-211 | ⬜ |
+| R2-211 | 为 common 各模块明确 `index.ts`（browser）与 `server/index.ts`（node） | P0 | 2d | 全部 common 模块 | R2-102 | ✅ |
+| R2-212 | `package.json` exports 增加 `"browser"` / `"node"` 条件（或 `"import"` 分流） | P0 | 1.5d | exports、webpack | R2-211 | ✅ |
 | R2-213 | 禁止 common browser entry 静态 import `postgres` / `ali-oss` / `node:crypto` | P0 | 1d | lint + 单测 | R2-211 | ✅ |
 
 ### 6.3 跨平台 adapter（Web / Taro / Electron / Hono）
 
 | ID | 任务 | 优先级 | 工时 | 影响面 | 依赖 | 状态 |
 |----|------|--------|------|--------|------|------|
-| R2-221 | 定义 `PlatformAdapter` 接口（storage、fetch、file pick） | P1 | 1d | `common/platform` | R2-102 | ⬜ |
-| R2-222 | 提供 `web` / `taro` / `electron` / `node-hono` 四个官方 adapter 骨架 | P1 | 3d | adapters | R2-221 | ⬜ |
-| R2-223 | `ossFile` client 通过 adapter 注入 fetch（便于 Hono SSR / Taro） | P1 | 1d | ossFile | R2-221 | ⬜ |
-| R2-224 | 文档：`docs/common-platform-adapters.md` | P2 | 0.5d | docs | R2-222 | ⬜ |
+| R2-221 | 定义 `PlatformAdapter` 接口（storage、fetch、file pick） | P1 | 1d | `common/platform` | R2-102 | ✅ |
+| R2-222 | 提供 `web` / `taro` / `electron` / `node-hono` 四个官方 adapter 骨架 | P1 | 3d | adapters | R2-221 | ✅ |
+| R2-223 | `ossFile` client 通过 adapter 注入 fetch（便于 Hono SSR / Taro） | P1 | 1d | ossFile | R2-221 | ✅ |
+| R2-224 | 文档：`docs/common-platform-adapters.md` | P2 | 0.5d | docs | R2-222 | ✅ |
 
 ### 6.4 其他 common 清理
 
 | ID | 任务 | 优先级 | 工时 | 影响面 | 依赖 | 状态 |
 |----|------|--------|------|--------|------|------|
-| R2-231 | 统一包名文档为 `sa2kit`（或正式 rename `@sa2kit/common`） | P1 | 0.5d | README、constants | R2-001 | ⬜ |
-| R2-232 | 移除 library 内生产 `console.log`；改用 logger + 可关闭 debug | P2 | 1d | universalFile client 等 | R2-102 | ⬜ |
-| R2-233 | 修正 README「零依赖」表述；拆分 optional peer 文档 | P1 | 0.5d | README | — | ⬜ |
-| R2-234 | 删除 analytics / screenReceiver 等 globalThis 单例，改为 registry | P1 | 1.5d | analytics、screenReceiver | R2-221 | ⬜ |
+| R2-231 | 统一包名文档为 `sa2kit`（或正式 rename `@sa2kit/common`） | P1 | 0.5d | README、constants | R2-001 | ✅ |
+| R2-232 | 移除 library 内生产 `console.log`；改用 logger + 可关闭 debug | P2 | 1d | universalFile client 等 | R2-102 | ✅ |
+| R2-233 | 修正 README「零依赖」表述；拆分 optional peer 文档 | P1 | 0.5d | README | — | ✅ |
+| R2-234 | 删除 analytics / screenReceiver 等 globalThis 单例，改为 registry | P1 | 1.5d | analytics、screenReceiver | R2-221 | ✅ |
 
 **Phase 2 验收标准**
 
-- [ ] profile-v1 仅通过 `sa2kit/common/file`（ossFile）接入上传下载
+- [x] profile-v1 仅通过 `sa2kit/common/file`（ossFile）接入上传下载（R2-501~504）
 - [x] 无 globalThis 文件 URL 契约
 - [x] browser bundle 不含 postgres / ali-oss 静态引用
 - [x] ossFile 集成测试 CI 通过
@@ -242,16 +242,17 @@ flowchart TB
 | R2-401 | **删除** sa2kit 内 `business/showmasterpiece` 全部源码与 exports | P0 | 1d | sa2kit、profile-v1 引用扫描 | R2-105、profile-v1 迁移完成 | ✅ |
 | R2-402 | 删除 showmasterpiece 相关 tsup entry（~10 个） | P0 | 0.5d | tsup、dist | R2-401 | ✅ |
 | R2-403 | business 包标记 `deprecated` 的 exports 列表写入 `docs/business-deprecated-exports.md` | P1 | 0.5d | docs | R2-304 | ✅ |
-| R2-404 | 拆分 business UI：禁止 business 页面 import `@/components` 整包；改为 peer UI 或 props 注入 | P1 | 3d | showmasterpiece 等 UI | R2-105 | ⬜ |
-| R2-405 | auth/legacy 移入 business 或 profile-v1 专用包；common 只保留新 auth API | P1 | 2d | auth exports | R2-104 | ⬜ |
-| R2-406 | 实验田游戏（huarongdao 等）评估：迁 profile-v1 `testField` 或保留 business | P2 | 1d | 决策文档 | — | ⬜ |
+| R2-404 | 拆分 business UI：禁止 business 页面 import `@/components` 整包；改为 peer UI 或 props 注入 | P1 | 3d | showmasterpiece 等 UI | R2-105 | ✅ |
+| R2-405 | auth/legacy 移入 business 或 profile-v1 专用包；common 只保留新 auth API | P1 | 2d | auth exports | R2-104 | ✅ |
+| R2-406 | 实验田游戏（huarongdao 等）评估：迁 profile-v1 `testField` 或保留 business | P2 | 1d | 决策文档 | — | ✅ |
 | R2-407 | 发布 `2.0.0-alpha.N`：移除已迁回模块的首个 breaking alpha | P0 | 0.5d | npm | R2-401 | ⬜ |
 
 **Phase 4 验收标准**
 
 - [x] sa2kit 中无 showmasterpiece 源码
 - [x] profile-v1 无 `sa2kit/showmasterpiece` import
-- [ ] business deprecated 清单与移除时间表公开
+- [x] business deprecated 清单公开（`docs/business-deprecated-exports.md`）
+- [x] business 移除时间表公开（`docs/business-deprecated-exports.md` + R2-406）
 
 ---
 
@@ -265,8 +266,8 @@ flowchart TB
 | R2-502 | 删除 profile-v1 `src/types/sa2kit.d.ts` 过度兜底；按 subpath 精确声明 | P0 | 0.5d | 类型安全 | R2-109 | ✅ |
 | R2-503 | 统一 `src/lib/ossFile/env.ts` 迁入 common bootstrap 或删冗余 | P1 | 0.5d | profile-v1 | R2-205 | ✅ |
 | R2-504 | skill-manager / fitnessPlan / vocaloidBooth 验证走 ossFile | P1 | 1d | 3 模块 | R2-501 | ✅ |
-| R2-505 | 锁定 profile-v1 依赖：`sa2kit@^2.0.0-alpha`；移除 `file:../sa2kit` 联调说明 | P1 | 0.5d | package.json | R2-407 | ⬜ |
-| R2-506 | 扩展 `scripts/smoke-showmasterpiece.sh` → 全站文件 API 冒烟 | P2 | 1d | CI | R2-501 | ⬜ |
+| R2-505 | 锁定 profile-v1 依赖：`sa2kit@^2.0.0-alpha`；移除 `file:../sa2kit` 联调说明 | P1 | 0.5d | package.json | R2-407 | ✅ |
+| R2-506 | 扩展 `scripts/smoke-showmasterpiece.sh` → 全站文件 API 冒烟 | P2 | 1d | CI | R2-501 | ✅ |
 
 ---
 
@@ -274,9 +275,9 @@ flowchart TB
 
 | ID | 任务 | 优先级 | 工时 | 影响面 | 依赖 | 状态 |
 |----|------|--------|------|--------|------|------|
-| R2-601 | common API review 冻结 | P0 | 1d | — | Phase 2–3 | ⬜ |
+| R2-601 | common API review 冻结 | P0 | 1d | — | Phase 2–3 | ✅ |
 | R2-602 | 发布 `2.0.0-beta.0` | P0 | 0.5d | npm | R2-601 | ⬜ |
-| R2-603 | 迁移指南 `docs/MIGRATION_1.x_to_2.0.md` | P0 | 1d | docs | R2-601 | ⬜ |
+| R2-603 | 迁移指南 `docs/MIGRATION_1.x_to_2.0.md` | P0 | 1d | docs | R2-601 | ✅ |
 | R2-604 | 1.x 分支 `maintenance/1.6` 仅 critical fix | P1 | 0.5d | git | — | ⬜ |
 | R2-605 | 发布 `2.0.0` stable | P0 | 0.5d | npm | beta 验证 | ⬜ |
 
@@ -316,16 +317,41 @@ Week 10  R2-601 → R2-605        2.0 stable
 
 ## 13. 进度汇总
 
-| Phase | 任务数 | 已完成 | 进行中 | 预估总工时 |
-|-------|--------|--------|--------|------------|
-| 0 启动 | 6 | 6 | 0 | ~3.5d |
-| 1 目录 | 9 | 8 | 0 | ~8.5d |
-| 2 common | 17 | 7 | 0 | ~22d |
-| 3 构建 | 7 | 7 | 0 | ~8d |
-| 4 business | 7 | 2 | 0 | ~9d |
-| 5 profile-v1 | 6 | 4 | 0 | ~4.5d |
-| 6 稳定 | 5 | 0 | 0 | ~3.5d |
-| **合计** | **57** | **35** | **0** | **~59d** |
+| Phase | 任务数 | 已完成 | 未开始 | 完成率 | 预估总工时 | 剩余工时 |
+|-------|--------|--------|--------|--------|------------|----------|
+| 0 启动 | 6 | 6 | 0 | 100% | ~3.5d | 0 |
+| 1 目录 | 9 | 9 | 0 | 100% | ~8.5d | 0 |
+| 2 common | 18 | 18 | 0 | 100% | ~22d | 0 |
+| 3 构建 | 7 | 7 | 0 | 100% | ~8d | 0 |
+| 4 business | 7 | 6 | 1 | 86% | ~9d | ~0.5d |
+| 5 profile-v1 | 6 | 6 | 0 | 100% | ~4.5d | 0 |
+| 6 稳定 | 5 | 2 | 3 | 40% | ~3.5d | ~2d |
+| **合计** | **58** | **54** | **4** | **93%** | **~59d** | **~3.5d** |
+
+**当前版本**：`2.0.0-alpha.8`
+
+### 13.1 剩余 4 项任务
+
+| ID | 任务摘要 | 优先级 | 工时 |
+|----|----------|--------|------|
+| R2-407 | 发布 `2.0.0-alpha.8` npm tag | P0 | 0.5d |
+| R2-602 | 发布 `2.0.0-beta.0` | P0 | 0.5d |
+| R2-604 | 1.x `maintenance/1.6` 分支 | P1 | 0.5d |
+| R2-605 | 发布 `2.0.0` stable | P0 | 0.5d |
+
+### 13.2 阶段完成度
+
+```text
+Phase 0  ████████████████████ 100%  (6/6)
+Phase 1  ████████████████████ 100%  (9/9)
+Phase 2  ████████████████████ 100%  (18/18)
+Phase 3  ████████████████████ 100%  (7/7)
+Phase 4  █████████████████░░░  86%  (6/7)
+Phase 5  ████████████████████ 100%  (6/6)
+Phase 6  ████████░░░░░░░░░░░░  40%  (2/5)
+```
+
+**关键路径剩余**：`R2-407` → `R2-602` → `R2-605`
 
 ---
 
@@ -333,9 +359,17 @@ Week 10  R2-601 → R2-605        2.0 stable
 
 | 日期 | 变更 |
 |------|------|
+| 2026-06-09 | **alpha.8**：R2-601/603 迁移指南 + API 冻结；R2-505/506 profile-v1 + smoke-file-api |
+| 2026-06-09 | **alpha.8**：R2-234 analytics/screenReceiver registry；R2-232 universalFile client logger |
+| 2026-06-09 | **alpha.8**：R2-206 file schema；R2-406 游戏迁出评估；R2-231/233 README |
+| 2026-06-09 | **alpha.8**：R2-404 business UI 解耦（CalendarUiProvider / About props 注入 + ESLint） |
+| 2026-06-09 | **alpha.8**：R2-223 ossFile fetch 注入；R2-224 platform 文档 |
+| 2026-06-09 | **alpha.8**：R2-405 auth-legacy→business；R2-221/222 PlatformAdapter + 四端骨架 |
+| 2026-06-09 | 进度盘点：38/58 完成（66%），剩余 20 项 ~22.5d；修正 Phase 2 任务数为 18 |
+| 2026-06-08 | **alpha.7**：R2-104 auth→common/auth；R2-211/212 browser/node 条件 exports |
 | 2026-06-08 | **alpha.6**：Phase 3 R2-302~307 构建拆分、exports 自动生成、prepare 仅 common |
 | 2026-06-08 | **alpha.3**：R2-205 bootstrap；删除 showmasterpiece @ sa2kit |
-| 2026-06-08 | 初版：架构目标、57 项 backlog、2.0.0-alpha.0 启动 |
+| 2026-06-08 | 初版：架构目标、58 项 backlog、2.0.0-alpha.0 启动 |
 
 ---
 
@@ -343,4 +377,9 @@ Week 10  R2-601 → R2-605        2.0 stable
 
 - [SDK 项目概览](./SDK_PROJECT_OVERVIEW.md)
 - [Universal File 指南](./UNIVERSAL_FILE_GUIDE.md)
-- profile-v1：`docs/sa2kit-2.0-migration.md`（待 R2-006 创建）
+- [Business deprecated exports](./business-deprecated-exports.md)
+- [Common platform adapters](./common-platform-adapters.md)
+- [实验田游戏迁出评估](./business-testfield-games-migration.md)
+- [1.x → 2.0 迁移指南](./MIGRATION_1.x_to_2.0.md)
+- [Common API 冻结](./COMMON_API_FREEZE.md)
+- profile-v1：`docs/sa2kit-2.0-migration.md`（R2-006 ✅）

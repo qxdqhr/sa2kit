@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "2.0.0-alpha.6",
+  "version": "2.0.0-alpha.8",
   "description": "SA2Kit 2.x — common 通用工具库 + business 业务模块（重构中，见 docs/REFACTOR_2.0_BACKLOG.md）",
   "keywords": [
     "react",
@@ -38,6 +38,126 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
+    "./common/file": {
+      "types": "./dist/common/file/index.d.ts",
+      "browser": {
+        "import": "./dist/common/file/index.mjs",
+        "require": "./dist/common/file/index.js"
+      },
+      "node": {
+        "import": "./dist/common/file/server/index.mjs",
+        "require": "./dist/common/file/server/index.js"
+      },
+      "default": {
+        "import": "./dist/common/file/index.mjs",
+        "require": "./dist/common/file/index.js"
+      }
+    },
+    "./common/export": {
+      "types": "./dist/common/export/index.d.ts",
+      "browser": {
+        "import": "./dist/common/export/index.mjs",
+        "require": "./dist/common/export/index.js"
+      },
+      "node": {
+        "import": "./dist/common/export/server/index.mjs",
+        "require": "./dist/common/export/server/index.js"
+      },
+      "default": {
+        "import": "./dist/common/export/index.mjs",
+        "require": "./dist/common/export/index.js"
+      }
+    },
+    "./common/auth": {
+      "types": "./dist/common/auth/index.d.ts",
+      "browser": {
+        "import": "./dist/common/auth/index.mjs",
+        "require": "./dist/common/auth/index.js"
+      },
+      "node": {
+        "import": "./dist/common/auth/server/index.mjs",
+        "require": "./dist/common/auth/server/index.js"
+      },
+      "default": {
+        "import": "./dist/common/auth/index.mjs",
+        "require": "./dist/common/auth/index.js"
+      }
+    },
+    "./ossFile": {
+      "types": "./dist/ossFile/index.d.ts",
+      "browser": {
+        "import": "./dist/ossFile/index.mjs",
+        "require": "./dist/ossFile/index.js"
+      },
+      "node": {
+        "import": "./dist/ossFile/server/index.mjs",
+        "require": "./dist/ossFile/server/index.js"
+      },
+      "default": {
+        "import": "./dist/ossFile/index.mjs",
+        "require": "./dist/ossFile/index.js"
+      }
+    },
+    "./universalFile": {
+      "types": "./dist/universalFile/index.d.ts",
+      "browser": {
+        "import": "./dist/universalFile/index.mjs",
+        "require": "./dist/universalFile/index.js"
+      },
+      "node": {
+        "import": "./dist/universalFile/server/index.mjs",
+        "require": "./dist/universalFile/server/index.js"
+      },
+      "default": {
+        "import": "./dist/universalFile/index.mjs",
+        "require": "./dist/universalFile/index.js"
+      }
+    },
+    "./universalExport": {
+      "types": "./dist/universalExport/index.d.ts",
+      "browser": {
+        "import": "./dist/universalExport/index.mjs",
+        "require": "./dist/universalExport/index.js"
+      },
+      "node": {
+        "import": "./dist/universalExport/server/index.mjs",
+        "require": "./dist/universalExport/server/index.js"
+      },
+      "default": {
+        "import": "./dist/universalExport/index.mjs",
+        "require": "./dist/universalExport/index.js"
+      }
+    },
+    "./analytics": {
+      "types": "./dist/analytics/index.d.ts",
+      "browser": {
+        "import": "./dist/analytics/index.mjs",
+        "require": "./dist/analytics/index.js"
+      },
+      "node": {
+        "import": "./dist/analytics/server/index.mjs",
+        "require": "./dist/analytics/server/index.js"
+      },
+      "default": {
+        "import": "./dist/analytics/index.mjs",
+        "require": "./dist/analytics/index.js"
+      }
+    },
+    "./config": {
+      "types": "./dist/config/index.d.ts",
+      "browser": {
+        "import": "./dist/config/index.mjs",
+        "require": "./dist/config/index.js"
+      },
+      "node": {
+        "import": "./dist/config/server/index.mjs",
+        "require": "./dist/config/server/index.js"
+      },
+      "default": {
+        "import": "./dist/config/index.mjs",
+        "require": "./dist/config/index.js"
+      }
+    },
     "./ai/llm/core": {
       "types": "./dist/ai/llm/core/index.d.ts",
       "import": "./dist/ai/llm/core/index.mjs",
@@ -88,15 +208,16 @@
       "import": "./dist/ai/llm/web/index.mjs",
       "require": "./dist/ai/llm/web/index.js"
     },
-    "./analytics": {
-      "types": "./dist/analytics/index.d.ts",
-      "import": "./dist/analytics/index.mjs",
-      "require": "./dist/analytics/index.js"
-    },
     "./analytics/server": {
       "types": "./dist/analytics/server/index.d.ts",
-      "import": "./dist/analytics/server/index.mjs",
-      "require": "./dist/analytics/server/index.js"
+      "node": {
+        "import": "./dist/analytics/server/index.mjs",
+        "require": "./dist/analytics/server/index.js"
+      },
+      "default": {
+        "import": "./dist/analytics/server/index.mjs",
+        "require": "./dist/analytics/server/index.js"
+      }
     },
     "./api": {
       "types": "./dist/api/index.d.ts",
@@ -223,25 +344,43 @@
       "import": "./dist/calendar/index.mjs",
       "require": "./dist/calendar/index.js"
     },
-    "./common/export": {
-      "types": "./dist/common/export/index.d.ts",
-      "import": "./dist/common/export/index.mjs",
-      "require": "./dist/common/export/index.js"
+    "./common/auth/server": {
+      "types": "./dist/common/auth/server/index.d.ts",
+      "node": {
+        "import": "./dist/common/auth/server/index.mjs",
+        "require": "./dist/common/auth/server/index.js"
+      },
+      "default": {
+        "import": "./dist/common/auth/server/index.mjs",
+        "require": "./dist/common/auth/server/index.js"
+      }
     },
     "./common/export/server": {
       "types": "./dist/common/export/server/index.d.ts",
-      "import": "./dist/common/export/server/index.mjs",
-      "require": "./dist/common/export/server/index.js"
+      "node": {
+        "import": "./dist/common/export/server/index.mjs",
+        "require": "./dist/common/export/server/index.js"
+      },
+      "default": {
+        "import": "./dist/common/export/server/index.mjs",
+        "require": "./dist/common/export/server/index.js"
+      }
     },
-    "./common/file": {
-      "types": "./dist/common/file/index.d.ts",
-      "import": "./dist/common/file/index.mjs",
-      "require": "./dist/common/file/index.js"
+    "./common/file/schema": {
+      "types": "./dist/common/file/schema/index.d.ts",
+      "import": "./dist/common/file/schema/index.mjs",
+      "require": "./dist/common/file/schema/index.js"
     },
     "./common/file/server": {
       "types": "./dist/common/file/server/index.d.ts",
-      "import": "./dist/common/file/server/index.mjs",
-      "require": "./dist/common/file/server/index.js"
+      "node": {
+        "import": "./dist/common/file/server/index.mjs",
+        "require": "./dist/common/file/server/index.js"
+      },
+      "default": {
+        "import": "./dist/common/file/server/index.mjs",
+        "require": "./dist/common/file/server/index.js"
+      }
     },
     "./common": {
       "types": "./dist/common/index.d.ts",
@@ -252,6 +391,11 @@
       "types": "./dist/common/logger/index.d.ts",
       "import": "./dist/common/logger/index.mjs",
       "require": "./dist/common/logger/index.js"
+    },
+    "./common/platform": {
+      "types": "./dist/common/platform/index.d.ts",
+      "import": "./dist/common/platform/index.mjs",
+      "require": "./dist/common/platform/index.js"
     },
     "./common/request": {
       "types": "./dist/common/request/index.d.ts",
@@ -273,15 +417,16 @@
       "import": "./dist/components/index.mjs",
       "require": "./dist/components/index.js"
     },
-    "./config": {
-      "types": "./dist/config/index.d.ts",
-      "import": "./dist/config/index.mjs",
-      "require": "./dist/config/index.js"
-    },
     "./config/server": {
       "types": "./dist/config/server/index.d.ts",
-      "import": "./dist/config/server/index.mjs",
-      "require": "./dist/config/server/index.js"
+      "node": {
+        "import": "./dist/config/server/index.mjs",
+        "require": "./dist/config/server/index.js"
+      },
+      "default": {
+        "import": "./dist/config/server/index.mjs",
+        "require": "./dist/config/server/index.js"
+      }
     },
     "./festivalCard": {
       "types": "./dist/festivalCard/index.d.ts",
@@ -368,15 +513,16 @@
       "import": "./dist/navigation/index.mjs",
       "require": "./dist/navigation/index.js"
     },
-    "./ossFile": {
-      "types": "./dist/ossFile/index.d.ts",
-      "import": "./dist/ossFile/index.mjs",
-      "require": "./dist/ossFile/index.js"
-    },
     "./ossFile/server": {
       "types": "./dist/ossFile/server/index.d.ts",
-      "import": "./dist/ossFile/server/index.mjs",
-      "require": "./dist/ossFile/server/index.js"
+      "node": {
+        "import": "./dist/ossFile/server/index.mjs",
+        "require": "./dist/ossFile/server/index.js"
+      },
+      "default": {
+        "import": "./dist/ossFile/server/index.mjs",
+        "require": "./dist/ossFile/server/index.js"
+      }
     },
     "./portfolio": {
       "types": "./dist/portfolio/index.d.ts",
@@ -423,25 +569,27 @@
       "import": "./dist/testYourself/server/index.mjs",
       "require": "./dist/testYourself/server/index.js"
     },
-    "./universalExport": {
-      "types": "./dist/universalExport/index.d.ts",
-      "import": "./dist/universalExport/index.mjs",
-      "require": "./dist/universalExport/index.js"
-    },
     "./universalExport/server": {
       "types": "./dist/universalExport/server/index.d.ts",
-      "import": "./dist/universalExport/server/index.mjs",
-      "require": "./dist/universalExport/server/index.js"
-    },
-    "./universalFile": {
-      "types": "./dist/universalFile/index.d.ts",
-      "import": "./dist/universalFile/index.mjs",
-      "require": "./dist/universalFile/index.js"
+      "node": {
+        "import": "./dist/universalExport/server/index.mjs",
+        "require": "./dist/universalExport/server/index.js"
+      },
+      "default": {
+        "import": "./dist/universalExport/server/index.mjs",
+        "require": "./dist/universalExport/server/index.js"
+      }
     },
     "./universalFile/server": {
       "types": "./dist/universalFile/server/index.d.ts",
-      "import": "./dist/universalFile/server/index.mjs",
-      "require": "./dist/universalFile/server/index.js"
+      "node": {
+        "import": "./dist/universalFile/server/index.mjs",
+        "require": "./dist/universalFile/server/index.js"
+      },
+      "default": {
+        "import": "./dist/universalFile/server/index.mjs",
+        "require": "./dist/universalFile/server/index.js"
+      }
     },
     "./utils": {
       "types": "./dist/utils/index.d.ts",
@@ -491,6 +639,7 @@
     "clean": "rm -rf dist",
     "snapshot:exports": "node scripts/snapshot-exports.mjs",
     "smoke:exports": "node scripts/smoke-exports.mjs",
+    "smoke:file-api": "vitest run tests/ossFile/uploadGetUrl.integration.test.ts tests/ossFile/bootstrap.test.ts",
     "prepare": "node scripts/prepare.mjs",
     "prepublishOnly": "pnpm run build && pnpm run test",
     "publish:beta": "npm publish --tag beta --access public",

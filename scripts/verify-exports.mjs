@@ -6,8 +6,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  buildExportEntry,
-  entryKeyToSubpath,
+  exportEntriesEqual,
   generateExportsFromEntryKeys,
 } from './generate-exports.mjs';
 
@@ -37,17 +36,14 @@ const actual = pkg.exports ?? {};
 
 const missing = Object.keys(expected).filter((key) => !actual[key]);
 const extra = Object.keys(actual).filter((key) => !expected[key]);
-const mismatched = Object.keys(expected).filter((key) => {
-  if (!actual[key]) return false;
-  const e = expected[key];
-  const a = actual[key];
-  return e.types !== a.types || e.import !== a.import || e.require !== a.require;
-});
+const mismatched = Object.keys(expected).filter(
+  (key) => actual[key] && !exportEntriesEqual(expected[key], actual[key]),
+);
 
 if (missing.length || extra.length || mismatched.length) {
   if (missing.length) console.error('✗ missing exports:', missing.join(', '));
   if (extra.length) console.error('✗ extra exports:', extra.join(', '));
-  if (mismatched.length) console.error('✗ mismatched dist paths:', mismatched.join(', '));
+  if (mismatched.length) console.error('✗ mismatched exports:', mismatched.join(', '));
   console.error('\nRun: pnpm exports:sync');
   process.exit(1);
 }

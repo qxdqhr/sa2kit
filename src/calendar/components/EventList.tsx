@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState, useCallback } from 'react';
 import { SearchBox } from '../../components/SearchBox';
-import { ConfirmModal } from '@/components';
+import { useCalendarUi } from '../ui/context';
 import { clsx } from 'clsx';
 import { 
   CalendarEvent, 
@@ -29,7 +29,8 @@ export default function EventList({
   loading = false,
   className = ''
 }: EventListProps) {
-  
+  const { ConfirmModal } = useCalendarUi();
+
   // 批量选择状态
   const [selectedEventIds, setSelectedEventIds] = useState<Set<number>>(new Set());
   const [isSelectionMode, setIsSelectionMode] = useState(false);

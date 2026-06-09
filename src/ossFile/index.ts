@@ -9,9 +9,14 @@ export type {
   UploadModuleFileOptions,
   UploadModuleFileResult,
   UniversalFileClientConfig,
+  OssFileFetchFn,
+  OssFileHttpConfig,
 } from './client';
 
 export {
+  configureOssFileHttp,
+  configureOssFileFromPlatform,
+  createOssFileFetchFromAdapter,
   universalFileClient,
   createFileClient,
   uploadModuleFile,

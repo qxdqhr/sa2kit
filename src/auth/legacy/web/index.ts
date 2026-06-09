@@ -1,2 +1,2 @@
-export * from '../ui/web';
-export * from '../core';
+/** @deprecated 请使用 `sa2kit/business/auth-legacy/web`（R2-405） */
+export * from '../../../business/auth-legacy/web';

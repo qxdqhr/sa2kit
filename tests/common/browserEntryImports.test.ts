@@ -6,6 +6,7 @@ const BROWSER_ENTRIES = [
   'src/ossFile/client.ts',
   'src/ossFile/index.ts',
   'src/common/file/index.ts',
+  'src/common/auth/index.ts',
   'src/universalFile/client.ts',
 ];
 

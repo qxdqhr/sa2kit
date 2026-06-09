@@ -1,5 +1,49 @@
 # Changelog
 
+## [2.0.0-alpha.8] - 2026-06-09
+
+### Added
+
+- `docs/MIGRATION_1.x_to_2.0.md`、`docs/COMMON_API_FREEZE.md`（R2-603 / R2-601）
+- `pnpm smoke:file-api` — ossFile bootstrap 集成测试冒烟（R2-506）
+- profile-v1 `scripts/smoke-file-api.sh` — universal-file HTTP 路由冒烟
+- `analytics/registry` — `registerAnalytics` / `getRegisteredAnalytics`（R2-234）
+- `screenReceiver/server/registry` — 进程内 WSS 句柄注册（R2-234）
+- `src/common/file/schema/` — Drizzle 文件表结构 SSOT（R2-206）；`sa2kit/common/file/schema` export
+- `docs/business-testfield-games-migration.md` — 实验田游戏迁出决策（R2-406）
+- `src/business/auth-legacy/` — legacy 认证物理迁入 business（R2-405）
+- `src/common/platform/` — `PlatformAdapter` 接口 + web / taro / electron / node-hono 骨架（R2-221 / R2-222）
+- `configureOssFileHttp` / `configureOssFileFromPlatform` — ossFile fetch 注入（R2-223）
+- `docs/common-platform-adapters.md`（R2-224）
+- `tests/common/platformAdapters.test.ts`
+- `tests/ossFile/httpClient.test.ts`
+
+### Changed
+
+- `UniversalFileClient` 调试输出改用 `createLogger`（生产默认 INFO，可 `localStorage logger-debug=false` 关闭）（R2-232）
+- `registerScreenReceiverForNext` 使用模块 registry，移除 `globalThis.__sa2kit_screen_receiver_wss__`（R2-234）
+- 装饰器 `@Track` 等通过 `registerAnalytics` 解析实例，移除 `globalThis.__analytics__`（R2-234）
+- README：包名统一为 `sa2kit`、修正「零依赖」表述、补充 optional peer 表（R2-231 / R2-233）
+- `business-deprecated-exports.md` 增加 huarongdao / mikuFlick 移除时间表
+- **R2-404**：calendar 通过 `CalendarUiProvider` 注入 Modal；portfolio `About` 支持 UI props（`AboutWithDefaults` 向后兼容）
+- ESLint 禁止 business 子域整包 `import '@/components'`
+- `auth/legacy/*`、`auth/rn`（legacy 部分）tsup entry 迁至 business 构建分区
+- `src/auth/legacy/*` 保留 1.x 兼容 re-export shim
+- `common/auth/rn` 仅导出新 API client；`RnAccountLoginForm` 迁至 `business/auth-legacy/rn`
+
+## [2.0.0-alpha.7] - 2026-06-08
+
+### Added
+
+- `src/common/auth/` 物理目录（schema / services / routes / hooks / client 等，R2-104）
+- `scripts/exports-conditions.mjs` — 8 组 browser/node 条件 exports（R2-212）
+
+### Changed
+
+- auth 内核迁至 `common/auth`；`src/auth/*` 保留 legacy 与 1.x 兼容 re-export
+- `./common/file|export|auth|ossFile|…` exports 增加 `browser` / `node` 条件
+- smoke-exports 支持条件 exports 解析
+
 ## [2.0.0-alpha.6] - 2026-06-08
 
 ### Added

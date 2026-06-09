@@ -1,35 +1,11 @@
-/**
- * React Native 认证子包
- *
- * @example
- * ```tsx
- * import { RnAccountLoginForm, initRnAuthClient } from 'sa2kit/auth/rn';
- *
- * <RnAccountLoginForm
- *   authApiBase="http://10.0.2.2:3000/api"
- *   defaultAuthApiBase="http://10.0.2.2:3000/api"
- *   onAuthApiBaseChange={setAuthBase}
- *   onSuccess={(token) => saveToken(token)}
- * />
- * ```
- */
-
-export {
-  createRnAuthClient,
-  initRnAuthClient,
-  resetRnAuthClientCache,
-} from './client';
-
+/** 1.x 兼容：common RN client + legacy 手机号登录表单 */
+export * from '../../common/auth/rn';
 export {
   loginWithLegacyPhone,
   isPhoneAccount,
+  RnAccountLoginForm,
   type LegacyPhoneLoginResult,
-} from './legacy-login';
-
-export { RnAccountLoginForm } from './components/AccountLoginForm';
-
-export type {
-  RnAccountLoginFormProps,
-  RnAccountLoginTheme,
-  RnAccountLoginLabels,
-} from './types';
+  type RnAccountLoginFormProps,
+  type RnAccountLoginTheme,
+  type RnAccountLoginLabels,
+} from '../../business/auth-legacy/rn';

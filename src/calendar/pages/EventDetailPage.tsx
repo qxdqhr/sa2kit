@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { CalendarEvent, useEvents, formatDate, formatTime } from '../index';
 import EventModal from '../components/EventModal';
-import { ConfirmModal } from '@/components';
+import { CalendarUiProvider, useCalendarUi } from '../ui/context';
+import { defaultCalendarUi } from '../ui/defaultComponents';
 import { clsx } from 'clsx';
 
 interface EventDetailPageProps {
@@ -13,12 +14,13 @@ interface EventDetailPageProps {
   onDelete?: (eventId: number) => void;
 }
 
-const EventDetailPage: React.FC<EventDetailPageProps> = ({
+const EventDetailPageContent: React.FC<EventDetailPageProps> = ({
   eventId,
   onBack,
   onEdit,
   onDelete,
 }) => {
+  const { ConfirmModal } = useCalendarUi();
   const [event, setEvent] = useState<CalendarEvent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -309,4 +311,10 @@ const EventDetailPage: React.FC<EventDetailPageProps> = ({
   );
 };
 
-export default EventDetailPage; 
+const EventDetailPage: React.FC<EventDetailPageProps> = props => (
+  <CalendarUiProvider value={defaultCalendarUi}>
+    <EventDetailPageContent {...props} />
+  </CalendarUiProvider>
+);
+
+export default EventDetailPage;

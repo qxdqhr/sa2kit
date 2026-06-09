@@ -7,6 +7,14 @@
 
 // 核心类
 export { Analytics } from './core/Analytics';
+export {
+  registerAnalytics,
+  getRegisteredAnalytics,
+  unregisterAnalytics,
+  clearAnalyticsRegistry,
+  setGlobalAnalytics,
+  getGlobalAnalytics,
+} from './registry';
 export { EventQueue } from './core/EventQueue';
 export { Uploader } from './core/Uploader';
 

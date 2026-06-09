@@ -28,7 +28,7 @@ import {
   type NewFileShare,
   type NewFileAccessLog,
   type NewFileThumbnail,
-} from '../../drizzle-schemas';
+} from '../../../../common/file/schema';
 
 interface FileQueryOptions {
   moduleId?: string;

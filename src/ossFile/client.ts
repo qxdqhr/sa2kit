@@ -11,6 +11,22 @@ import {
   getOssStorageModeLabelFromConfig,
 } from './shared/ossConfig';
 import { buildModuleUploadPath, resolveUploadFolderPath } from './shared/path';
+import {
+  configureOssFileFromPlatform,
+  configureOssFileHttp,
+  createOssFileFetchFromAdapter,
+  ossFileFetch,
+  type OssFileFetchFn,
+  type OssFileHttpConfig,
+} from './shared/httpClient';
+
+export {
+  configureOssFileHttp,
+  configureOssFileFromPlatform,
+  createOssFileFetchFromAdapter,
+  type OssFileFetchFn,
+  type OssFileHttpConfig,
+};
 
 export type { UniversalFileClientConfig };
 
@@ -35,6 +51,8 @@ export interface UploadModuleFileOptions {
   permission?: 'public' | 'private' | 'authenticated' | 'owner-only';
   metadata?: Record<string, unknown>;
   extraFields?: Record<string, string>;
+  /** 单次请求覆盖全局注入的 fetch（R2-223） */
+  fetch?: OssFileFetchFn;
 }
 
 export interface UploadModuleFileResult {
@@ -75,11 +93,14 @@ export async function uploadModuleFile(
     }
   }
 
-  const response = await fetch(uploadUrl, {
-    method: 'POST',
-    body: formData,
-    credentials: 'include',
-  });
+  const response = await ossFileFetch(
+    uploadUrl,
+    {
+      method: 'POST',
+      body: formData,
+    },
+    options.fetch,
+  );
 
   const payload = await response.json().catch(() => ({}));
   if (!response.ok || payload.success === false) {
@@ -111,10 +132,13 @@ export async function uploadArtworkImage(
 export async function getModuleFileAccessUrl(
   fileId: string,
   apiBase = '',
+  fetchOverride?: OssFileFetchFn,
 ): Promise<string> {
-  const response = await fetch(`${apiBase}/api/universal-file/${fileId}`, {
-    credentials: 'include',
-  });
+  const response = await ossFileFetch(
+    `${apiBase}/api/universal-file/${fileId}`,
+    { method: 'GET' },
+    fetchOverride,
+  );
   if (!response.ok) {
     throw new Error(`获取文件 URL 失败: HTTP ${response.status}`);
   }
@@ -133,10 +157,13 @@ export const getArtworkImageUrl = getModuleFileAccessUrl;
 
 let cachedOssConfig: ReturnType<typeof parseAliyunOssConfigFromMap> = null;
 
-async function loadOssConfigFromItemsApi(itemsApiUrl: string) {
+async function loadOssConfigFromItemsApi(
+  itemsApiUrl: string,
+  fetchOverride?: OssFileFetchFn,
+) {
   const keys = Object.values(STANDARD_ALIYUN_OSS_KEYS).join(',');
   const url = `${itemsApiUrl}${itemsApiUrl.includes('?') ? '&' : '?'}keys=${encodeURIComponent(keys)}`;
-  const response = await fetch(url, { credentials: 'include' });
+  const response = await ossFileFetch(url, { method: 'GET' }, fetchOverride);
   if (!response.ok) return null;
 
   const data = await response.json();

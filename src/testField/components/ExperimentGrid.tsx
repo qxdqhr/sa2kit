@@ -3,8 +3,8 @@
 import React from "react";
 import { ExperimentCard } from '@/portfolio/ExperimentCard';
 import type { ExperimentItem } from '../types';
-import { Grid } from '@/components';
-import type { GridItem, GridColumns, GridGap } from '@/components';
+import { Grid } from '@/components/Grid';
+import type { GridItem, GridColumns, GridGap } from '@/components/Grid';
 
 /** 实验项目网格项接口 */
 export interface ExperimentGridItem extends GridItem {

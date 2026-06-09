@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 /**
- * 由 tsup entry 清单生成 package.json exports（R2-307）
+ * 由 tsup entry 清单生成 package.json exports（R2-307 / R2-212）
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  BROWSER_SERVER_EXPORT_PAIRS,
+  NODE_ONLY_SUBPATHS,
+} from './exports-conditions.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -52,13 +56,86 @@ export function buildExportEntry(entryKey) {
   };
 }
 
+export function buildBrowserNodeConditionalExport(browserEntryKey, serverEntryKey) {
+  const browserBase = entryKeyToDistBase(browserEntryKey);
+  const serverBase = entryKeyToDistBase(serverEntryKey);
+  return {
+    types: `./${browserBase}.d.ts`,
+    browser: {
+      import: `./${browserBase}.mjs`,
+      require: `./${browserBase}.js`,
+    },
+    node: {
+      import: `./${serverBase}.mjs`,
+      require: `./${serverBase}.js`,
+    },
+    default: {
+      import: `./${browserBase}.mjs`,
+      require: `./${browserBase}.js`,
+    },
+  };
+}
+
+export function buildNodeOnlyExport(entryKey) {
+  const distBase = entryKeyToDistBase(entryKey);
+  return {
+    types: `./${distBase}.d.ts`,
+    node: {
+      import: `./${distBase}.mjs`,
+      require: `./${distBase}.js`,
+    },
+    default: {
+      import: `./${distBase}.mjs`,
+      require: `./${distBase}.js`,
+    },
+  };
+}
+
+const pairByBrowserKey = new Map(
+  BROWSER_SERVER_EXPORT_PAIRS.map((pair) => [pair.browser, pair]),
+);
+const pairByServerKey = new Map(
+  BROWSER_SERVER_EXPORT_PAIRS.map((pair) => [pair.server, pair]),
+);
+const nodeOnlySubpaths = new Set(NODE_ONLY_SUBPATHS);
+
 export function generateExportsFromEntryKeys(entryKeys) {
   const exportsMap = {};
-  for (const key of entryKeys.sort()) {
-    exportsMap[entryKeyToSubpath(key)] = buildExportEntry(key);
+  const handled = new Set();
+
+  for (const pair of BROWSER_SERVER_EXPORT_PAIRS) {
+    if (!entryKeys.includes(pair.browser) || !entryKeys.includes(pair.server)) {
+      continue;
+    }
+    exportsMap[pair.subpath] = buildBrowserNodeConditionalExport(
+      pair.browser,
+      pair.server,
+    );
+    handled.add(pair.browser);
+    handled.add(pair.server);
   }
+
+  for (const key of [...entryKeys].sort()) {
+    if (handled.has(key)) {
+      const subpath = entryKeyToSubpath(key);
+      if (nodeOnlySubpaths.has(subpath)) {
+        exportsMap[subpath] = buildNodeOnlyExport(key);
+      }
+      continue;
+    }
+
+    const subpath = entryKeyToSubpath(key);
+    exportsMap[subpath] = buildExportEntry(key);
+  }
+
   return exportsMap;
 }
+
+function exportEntriesEqual(a, b) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
+export { exportEntriesEqual };
 
 function main() {
   const commonKeys = parseEntryKeys('tsup.entries.common.ts');
@@ -72,17 +149,19 @@ function main() {
 
   const mainExport = generated['.'];
   if (mainExport) {
-    pkg.main = mainExport.require;
-    pkg.module = mainExport.import;
+    pkg.main = mainExport.require ?? mainExport.default?.require;
+    pkg.module = mainExport.import ?? mainExport.default?.import;
     pkg.types = mainExport.types;
   }
 
   writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`, 'utf8');
 
-  const commonCount = commonKeys.length;
-  const businessCount = businessKeys.length;
+  const conditionalCount = BROWSER_SERVER_EXPORT_PAIRS.filter(
+    (pair) => pair.subpath in generated && generated[pair.subpath].browser,
+  ).length;
+
   console.log(
-    `✓ synced ${Object.keys(generated).length} exports (${commonCount} common + ${businessCount} business entries)`,
+    `✓ synced ${Object.keys(generated).length} exports (${commonKeys.length} common + ${businessKeys.length} business entries, ${conditionalCount} browser/node pairs)`,
   );
 }
 

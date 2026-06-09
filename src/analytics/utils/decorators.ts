@@ -4,6 +4,7 @@
  */
 
 import type { Analytics } from '../core/Analytics';
+import { getRegisteredAnalytics } from '../registry';
 import { EventType, EventPriority } from '../types';
 
 /**
@@ -165,22 +166,13 @@ function getAnalyticsInstance(instance: any): Analytics | null {
   if (instance._analytics) {
     return instance._analytics;
   }
-  if ((globalThis as any).__analytics__) {
-    return (globalThis as any).__analytics__;
-  }
-  return null;
+  return getRegisteredAnalytics();
 }
 
-/**
- * 设置全局 Analytics 实例
- */
-export function setGlobalAnalytics(analytics: Analytics): void {
-  (globalThis as any).__analytics__ = analytics;
-}
-
-/**
- * 获取全局 Analytics 实例
- */
-export function getGlobalAnalytics(): Analytics | null {
-  return (globalThis as any).__analytics__ || null;
-}
+export {
+  registerAnalytics,
+  getRegisteredAnalytics,
+  unregisterAnalytics,
+  setGlobalAnalytics,
+  getGlobalAnalytics,
+} from '../registry';

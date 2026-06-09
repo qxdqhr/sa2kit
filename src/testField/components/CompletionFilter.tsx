@@ -3,7 +3,7 @@
 import React from "react";
 import type { CompletionFilter } from '../types';
 import { getCompletionFilterDisplayName } from '../utils';
-import { FilterButtonGroup } from '@/components';
+import { FilterButtonGroup } from '@/components/FilterButtonGroup';
 
 interface CompletionFilterProps {
   completionFilter: CompletionFilter;
