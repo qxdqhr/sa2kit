@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.4] - 2026-06-09
+
+### Added
+
+- `./common/file/client`、`./ossFile/client`、`./universalExport/client` — 无 node 条件，供 Next.js SSR 正确解析浏览器 API
+
 ## [2.0.3] - 2026-06-09
 
 ### Added

@@ -46,6 +46,15 @@ export const BROWSER_SERVER_EXPORT_PAIRS = [
   },
 ];
 
+/**
+ * 无 node 条件的 client 别名（Next.js SSR 打包时避免误解析 server 入口）
+ */
+export const CLIENT_ONLY_ALIASES = [
+  { subpath: './common/file/client', browser: 'common/file/index' },
+  { subpath: './ossFile/client', browser: 'ossFile/index' },
+  { subpath: './universalExport/client', browser: 'universalExport/index' },
+];
+
 /** 显式 server subpath（node 优先，保留 1.x 深路径） */
 export const NODE_ONLY_SUBPATHS = [
   './common/file/server',

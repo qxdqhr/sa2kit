@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "SA2Kit 2.0 — common API 稳定；business 实验田模块逐步迁出 profile-v1",
   "keywords": [
     "react",
@@ -610,6 +610,21 @@
       "types": "./dist/vocaloidBooth/web/index.d.ts",
       "import": "./dist/vocaloidBooth/web/index.mjs",
       "require": "./dist/vocaloidBooth/web/index.js"
+    },
+    "./common/file/client": {
+      "types": "./dist/common/file/index.d.ts",
+      "import": "./dist/common/file/index.mjs",
+      "require": "./dist/common/file/index.js"
+    },
+    "./ossFile/client": {
+      "types": "./dist/ossFile/index.d.ts",
+      "import": "./dist/ossFile/index.mjs",
+      "require": "./dist/ossFile/index.js"
+    },
+    "./universalExport/client": {
+      "types": "./dist/universalExport/index.d.ts",
+      "import": "./dist/universalExport/index.mjs",
+      "require": "./dist/universalExport/index.js"
     }
   },
   "files": [

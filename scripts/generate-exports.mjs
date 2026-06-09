@@ -7,6 +7,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   BROWSER_SERVER_EXPORT_PAIRS,
+  CLIENT_ONLY_ALIASES,
   NODE_ONLY_SUBPATHS,
 } from './exports-conditions.mjs';
 
@@ -126,6 +127,12 @@ export function generateExportsFromEntryKeys(entryKeys) {
 
     const subpath = entryKeyToSubpath(key);
     exportsMap[subpath] = buildExportEntry(key);
+  }
+
+  for (const alias of CLIENT_ONLY_ALIASES) {
+    if (entryKeys.includes(alias.browser) && !(alias.subpath in exportsMap)) {
+      exportsMap[alias.subpath] = buildExportEntry(alias.browser);
+    }
   }
 
   return exportsMap;
