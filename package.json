@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "SA2Kit 2.0 — common API 稳定；business 实验田模块逐步迁出 profile-v1",
   "keywords": [
     "react",
@@ -344,6 +344,11 @@
       "import": "./dist/calendar/index.mjs",
       "require": "./dist/calendar/index.js"
     },
+    "./calendar/routes": {
+      "types": "./dist/calendar/routes/index.d.ts",
+      "import": "./dist/calendar/routes/index.mjs",
+      "require": "./dist/calendar/routes/index.js"
+    },
     "./common/auth/server": {
       "types": "./dist/common/auth/server/index.d.ts",
       "node": {
@@ -432,6 +437,11 @@
       "types": "./dist/festivalCard/index.d.ts",
       "import": "./dist/festivalCard/index.mjs",
       "require": "./dist/festivalCard/index.js"
+    },
+    "./festivalCard/routes": {
+      "types": "./dist/festivalCard/routes/index.d.ts",
+      "import": "./dist/festivalCard/routes/index.mjs",
+      "require": "./dist/festivalCard/routes/index.js"
     },
     "./festivalCard/server": {
       "types": "./dist/festivalCard/server/index.d.ts",

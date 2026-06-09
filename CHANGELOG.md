@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.3] - 2026-06-09
+
+### Added
+
+- 恢复 profile-v1 依赖的 `./calendar/routes`、`./festivalCard/routes` export
+
 ## [2.0.2] - 2026-06-09
 
 ### Fixed

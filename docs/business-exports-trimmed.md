@@ -9,10 +9,10 @@
 | ar | `./ar` | profile-v1 使用 `sa2kit/mmd` AR 能力 |
 | iflytek | `./iflytek*` | profile-v1 无直接引用 |
 | bubbleShooter | `./bubbleShooter*` | 实验田已本地化 `src/modules/bubbleShooter` |
-| calendar | `./calendar/core` 等 | 仅 `./calendar` 入口 |
+| calendar | `./calendar/core` 等 | 保留 `./calendar` + `./calendar/routes`（profile-v1 API） |
 | qqbot | `./qqbot` `./qqbot/core` `./qqbot/web` | 保留 `./qqbot/server` `./qqbot/ui/web` |
 | screenReceiver | 除 `./screenReceiver` 外 | 页面仅用 Panel 入口 |
-| festivalCard | miniapp/core/routes/web | 保留 index + server |
+| festivalCard | miniapp/core/web | 保留 index + server + `./festivalCard/routes` |
 | mikuContest | 除 `./mikuContest/ui/web` 外 | 实验田单页引用 |
 | huarongdao | `./huarongdao*` | 2.0.0 已迁 profile-v1，源码与 export 已删 |
 | mikuFlick | `./mikuFlick*` | 2.0.0 已迁 profile-v1，源码与 export 已删 |
