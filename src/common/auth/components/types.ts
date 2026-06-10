@@ -82,25 +82,6 @@ export interface HeadlessVerifyOtpFormProps {
   children: (state: VerifyOtpFormState) => React.ReactNode;
 }
 
-/** @deprecated 2.x */
-export interface BaseFormProps {
-  apiClient: import('../types').IAuthClient;
-  onSuccess?: (user: unknown) => void;
-  onError?: (error: string) => void;
-}
-
-/** @deprecated 使用 HeadlessSignInFormProps */
-export interface HeadlessLoginFormProps extends BaseFormProps {
-  children: (state: import('./types.legacy').LoginFormState) => React.ReactNode;
-}
-
-/** @deprecated */
-export interface HeadlessRegisterFormPropsLegacy extends BaseFormProps {
-  children: (state: import('./types.legacy').RegisterFormState) => React.ReactNode;
-}
-
-export type { LoginFormState, RegisterFormState } from './types.legacy';
-
 export interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;

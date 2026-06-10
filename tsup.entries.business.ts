@@ -2,8 +2,6 @@
 export const businessEntries = {
   index: 'src/index.ts',
   'business/index': 'src/business/index.ts',
-  /** @deprecated 1.x 兼容 alias，SSOT 在 common/auth/rn */
-  'auth/rn/index': 'src/common/auth/rn/index.ts',
   'mmd/index': 'src/mmd/index.ts',
   'mmd/admin/index': 'src/mmd/admin/index.ts',
   'mmd/server/index': 'src/mmd/server/index.ts',

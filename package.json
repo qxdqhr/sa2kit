@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "SA2Kit 2.0 — common API 稳定；business 实验田模块逐步迁出 profile-v1",
   "keywords": [
     "react",
@@ -228,41 +228,6 @@
       "types": "./dist/audioDetection/index.d.ts",
       "import": "./dist/audioDetection/index.mjs",
       "require": "./dist/audioDetection/index.js"
-    },
-    "./auth/client": {
-      "types": "./dist/auth/client/index.d.ts",
-      "import": "./dist/auth/client/index.mjs",
-      "require": "./dist/auth/client/index.js"
-    },
-    "./auth/components": {
-      "types": "./dist/auth/components/index.d.ts",
-      "import": "./dist/auth/components/index.mjs",
-      "require": "./dist/auth/components/index.js"
-    },
-    "./auth/hooks": {
-      "types": "./dist/auth/hooks/index.d.ts",
-      "import": "./dist/auth/hooks/index.mjs",
-      "require": "./dist/auth/hooks/index.js"
-    },
-    "./auth": {
-      "types": "./dist/auth/index.d.ts",
-      "import": "./dist/auth/index.mjs",
-      "require": "./dist/auth/index.js"
-    },
-    "./auth/rn": {
-      "types": "./dist/auth/rn/index.d.ts",
-      "import": "./dist/auth/rn/index.mjs",
-      "require": "./dist/auth/rn/index.js"
-    },
-    "./auth/schema": {
-      "types": "./dist/auth/schema/index.d.ts",
-      "import": "./dist/auth/schema/index.mjs",
-      "require": "./dist/auth/schema/index.js"
-    },
-    "./auth/services": {
-      "types": "./dist/auth/services/index.d.ts",
-      "import": "./dist/auth/services/index.mjs",
-      "require": "./dist/auth/services/index.js"
     },
     "./business": {
       "types": "./dist/business/index.d.ts",

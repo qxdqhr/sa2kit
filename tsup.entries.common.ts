@@ -34,13 +34,6 @@ export const commonEntries = {
   'i18n/index': 'src/i18n/index.ts',
   'analytics/index': 'src/analytics/index.ts',
   'analytics/server/index': 'src/analytics/server/index.ts',
-  /** @deprecated 1.x 兼容 alias，源码 SSOT 在 common/auth */
-  'auth/index': 'src/auth/index.ts',
-  'auth/schema/index': 'src/common/auth/schema/index.ts',
-  'auth/services/index': 'src/common/auth/services/index.ts',
-  'auth/hooks/index': 'src/common/auth/hooks/index.ts',
-  'auth/client/index': 'src/common/auth/client/index.ts',
-  'auth/components/index': 'src/common/auth/components/index.ts',
   'config/index': 'src/config/index.ts',
   'config/server/index': 'src/config/server/index.ts',
   'imageCrop/index': 'src/imageCrop/index.ts',

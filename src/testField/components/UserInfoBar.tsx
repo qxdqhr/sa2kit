@@ -1,27 +1,22 @@
 'use client';
 
 import React from 'react';
-import { BaseApiClient, useAuth } from '@/auth';
+import { useAuthContext } from '../../common/auth/react';
 import { LogOut, User, FlaskConical } from 'lucide-react';
 
-export interface UserInfoBarProps {
-  apiClient: BaseApiClient;
-}
-
-export const UserInfoBar: React.FC<UserInfoBarProps> = ({ apiClient }) => {
-  const { user, logout, isLoggedIn } = useAuth(apiClient);
+export const UserInfoBar: React.FC = () => {
+  const { user, signOut, isAuthenticated } = useAuthContext();
 
   const handleLogout = async () => {
     try {
-      await logout();
-      // 登出后重定向到首页
+      await signOut();
       window.location.href = '/';
     } catch (error) {
       console.error('登出失败:', error);
     }
   };
 
-  if (!isLoggedIn || !user) {
+  if (!isAuthenticated || !user) {
     return null;
   }
 
@@ -41,13 +36,13 @@ export const UserInfoBar: React.FC<UserInfoBarProps> = ({ apiClient }) => {
             )}
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-1 text-sm text-gray-500">
             <FlaskConical className="w-4 h-4" />
             <span>实验田</span>
           </div>
-          
+
           <button
             onClick={handleLogout}
             className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"

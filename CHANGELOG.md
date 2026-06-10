@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.1.0] - 2026-06-10
+
+### Removed
+
+- 移除 `sa2kit/auth/*` 全部 deprecated 导出路径
+- 移除 2.x auth：`useAuth`、`useAuthForm`、`BaseApiClient`（auth 版）、`LoginForm`、`RegisterForm`、`AdminLoginPage`
+- 移除 `types.legacy.ts`、`rn/legacy-client.ts`
+
+### Changed
+
+- **Breaking**：Web 认证统一使用 `sa2kit/common/auth/react` 的 `AuthProvider` + `useAuthContext`
+- sa2kit 内置 `UserInfoBar` / `PermissionGuard` 不再接受 `apiClient` prop
+
 ## [3.0.0] - 2026-06-09
 
 ### Removed

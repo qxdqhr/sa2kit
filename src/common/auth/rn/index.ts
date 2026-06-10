@@ -36,10 +36,3 @@ export {
   type RnAccountLoginTheme,
   type RnAccountLoginLabels,
 } from './components/AccountLoginForm';
-
-/** @deprecated 3.0 使用 initSa2kitRnAuthClient */
-export {
-  createRnAuthClient,
-  initRnAuthClient,
-  resetRnAuthClientCache,
-} from './legacy-client';
