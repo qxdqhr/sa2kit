@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyPromptTemplate } from '../../../src/ai/llm';
+import { applyPromptTemplate } from '../../../src/common/ai/llm';
 
 describe('applyPromptTemplate', () => {
   it('replaces variables', () => {

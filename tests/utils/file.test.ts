@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { fileUtils } from '../../src/utils';
+import { fileUtils } from '../../src/common/utils';
 
 describe('fileUtils', () => {
   describe('formatFileSize', () => {

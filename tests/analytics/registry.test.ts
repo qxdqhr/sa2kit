@@ -4,7 +4,7 @@ import {
   getRegisteredAnalytics,
   registerAnalytics,
   unregisterAnalytics,
-} from '../../src/analytics/registry';
+} from '../../src/common/analytics/registry';
 
 afterEach(() => {
   clearAnalyticsRegistry();

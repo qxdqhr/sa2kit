@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { FireworksRoomHub } from '../../src/mikuFireworks3D/server/FireworksRoomHub';
-import type { FireworksServerMessage } from '../../src/mikuFireworks3D/server/types';
+import { FireworksRoomHub } from '../../src/business/mikuFireworks3D/server/FireworksRoomHub';
+import type { FireworksServerMessage } from '../../src/business/mikuFireworks3D/server/types';
 
 function createClient(hub: FireworksRoomHub, id: string) {
   const inbox: FireworksServerMessage[] = [];

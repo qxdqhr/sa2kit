@@ -1,4 +1,4 @@
 /**
  * @package sa2kit/common/export/server
  */
-export * from '../../../universalExport/server';
+export * from '../../universalExport/server';

@@ -5,8 +5,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { createOssFileBootstrap } from '../../src/ossFile/server/bootstrap';
-import { uploadFileAndResolveAccessUrl } from '../../src/ossFile/server/service';
+import { createOssFileBootstrap } from '../../src/common/ossFile/server/bootstrap';
+import { uploadFileAndResolveAccessUrl } from '../../src/common/ossFile/server/service';
 
 describe('ossFile upload → getUrl integration (local storage)', () => {
   const tempDirs: string[] = [];

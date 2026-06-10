@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { DEFAULT_MIKU_FUSION_CONFIG } from '../../src/mikuFusionGame/constants';
-import { mergeSameLevelOrbs } from '../../src/mikuFusionGame/engine/merge';
-import type { FusionOrb } from '../../src/mikuFusionGame/types';
+import { DEFAULT_MIKU_FUSION_CONFIG } from '../../src/business/mikuFusionGame/constants';
+import { mergeSameLevelOrbs } from '../../src/business/mikuFusionGame/engine/merge';
+import type { FusionOrb } from '../../src/business/mikuFusionGame/types';
 
 describe('mergeSameLevelOrbs', () => {
   it('merges two touching level-1 orbs into one level-2 orb', () => {

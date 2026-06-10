@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { stringUtils } from '../../src/utils';
+import { stringUtils } from '../../src/common/utils';
 
 describe('stringUtils', () => {
   describe('truncate', () => {

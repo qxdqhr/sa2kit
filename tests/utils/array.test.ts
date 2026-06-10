@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { arrayUtils } from '../../src/utils';
+import { arrayUtils } from '../../src/common/utils';
 
 describe('arrayUtils', () => {
   describe('unique', () => {

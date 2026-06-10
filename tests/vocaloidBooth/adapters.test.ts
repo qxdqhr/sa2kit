@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import type { BoothUploadRecord } from '../../src/vocaloidBooth/types';
-import { RepositoryBoothVaultStore, signRecordFiles } from '../../src/vocaloidBooth/server';
+import type { BoothUploadRecord } from '../../src/business/vocaloidBooth/types';
+import { RepositoryBoothVaultStore, signRecordFiles } from '../../src/business/vocaloidBooth/server';
 
 const mockRecord: BoothUploadRecord = {
   id: 'r1',

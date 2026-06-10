@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateMatchCode, normalizeMatchCode } from '../../src/vocaloidBooth/core';
+import { generateMatchCode, normalizeMatchCode } from '../../src/business/vocaloidBooth/core';
 
 describe('vocaloidBooth code helpers', () => {
   it('normalizes match code', () => {

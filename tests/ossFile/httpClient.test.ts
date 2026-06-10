@@ -1,13 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { RequestAdapter } from '../../src/request/types/types';
+import type { RequestAdapter } from '../../src/common/request/types/types';
 import {
   configureOssFileFromPlatform,
   configureOssFileHttp,
   createOssFileFetchFromAdapter,
   ossFileFetch,
   resetOssFileHttpForTesting,
-} from '../../src/ossFile/shared/httpClient';
-import { uploadModuleFile } from '../../src/ossFile/client';
+} from '../../src/common/ossFile/shared/httpClient';
+import { uploadModuleFile } from '../../src/common/ossFile/client';
 
 afterEach(() => {
   resetOssFileHttpForTesting();

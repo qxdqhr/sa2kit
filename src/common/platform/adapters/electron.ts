@@ -1,5 +1,5 @@
-import { WebRequestAdapter } from '../../../request/adapters/web-adapter';
-import { ElectronStorageAdapter } from '../../../storage/adapters/electron-adapter';
+import { WebRequestAdapter } from '../../request/adapters/web-adapter';
+import { ElectronStorageAdapter } from '../../storage/adapters/electron-adapter';
 import { createWebPlatformAdapter } from './web';
 import type { PlatformAdapter } from '../types';
 

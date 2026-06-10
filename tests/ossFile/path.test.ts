@@ -3,7 +3,7 @@ import {
   buildModuleUploadPath,
   resolveUploadFolderPath,
   resolveUploadFolderPathFromFormData,
-} from '../../src/ossFile/shared/path';
+} from '../../src/common/ossFile/shared/path';
 
 describe('resolveUploadFolderPath', () => {
   it('prefers folderPath over customPath', () => {

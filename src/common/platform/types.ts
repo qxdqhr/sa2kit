@@ -1,5 +1,5 @@
-import type { RequestAdapter } from '../../request/types/types';
-import type { StorageAdapter } from '../../storage/types';
+import type { RequestAdapter } from '../request/types/types';
+import type { StorageAdapter } from '../storage/types';
 
 /** 用户选择的文件（跨平台最小公共形态） */
 export type PickedFile = {

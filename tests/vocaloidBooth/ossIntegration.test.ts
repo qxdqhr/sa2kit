@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { BoothVaultService } from '../../src/vocaloidBooth/core';
-import { InMemoryBoothVaultStore, uploadToOSSAndCreateBoothRecord } from '../../src/vocaloidBooth/server';
+import { BoothVaultService } from '../../src/business/vocaloidBooth/core';
+import { InMemoryBoothVaultStore, uploadToOSSAndCreateBoothRecord } from '../../src/business/vocaloidBooth/server';
 
 describe('vocaloidBooth oss integration', () => {
   it('uploads via fileService and creates booth record', async () => {

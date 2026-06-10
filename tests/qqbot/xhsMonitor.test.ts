@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { XhsMonitorService } from '../../src/qqbot/server/xhsMonitor/service';
-import { XhsMonitorState, XhsMonitorStateStore, XhsNotifier, XhsPost, XhsSource } from '../../src/qqbot/server/xhsMonitor/types';
+import { XhsMonitorService } from '../../src/business/qqbot/server/xhsMonitor/service';
+import { XhsMonitorState, XhsMonitorStateStore, XhsNotifier, XhsPost, XhsSource } from '../../src/business/qqbot/server/xhsMonitor/types';
 
 class MemoryStateStore implements XhsMonitorStateStore {
   state: XhsMonitorState = {

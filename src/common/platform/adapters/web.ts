@@ -1,5 +1,5 @@
-import { WebRequestAdapter } from '../../../request/adapters/web-adapter';
-import { WebStorageAdapter } from '../../../storage/adapters/web-adapter';
+import { WebRequestAdapter } from '../../request/adapters/web-adapter';
+import { WebStorageAdapter } from '../../storage/adapters/web-adapter';
 import type {
   FilePickAdapter,
   FilePickOptions,

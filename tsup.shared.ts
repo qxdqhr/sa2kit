@@ -1,4 +1,8 @@
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { Options } from 'tsup';
+
+const root = join(fileURLToPath(import.meta.url), '..');
 
 /** 2.0 common + business 构建共享选项（R2-301） */
 export const tsupSharedOptions: Omit<Options, 'entry' | 'clean'> = {
@@ -40,4 +44,11 @@ export const tsupSharedOptions: Omit<Options, 'entry' | 'clean'> = {
   treeshake: true,
   outDir: 'dist',
   platform: 'neutral',
+  esbuildOptions(options) {
+    options.alias = {
+      ...(options.alias ?? {}),
+      '@/components': join(root, 'src/common/components'),
+      '@/utils': join(root, 'src/common/utils'),
+    };
+  },
 };

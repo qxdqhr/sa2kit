@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validators } from '../../src/utils';
+import { validators } from '../../src/common/utils';
 
 describe('validators', () => {
   describe('isValidEmail', () => {

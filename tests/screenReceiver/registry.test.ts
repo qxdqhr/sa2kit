@@ -3,7 +3,7 @@ import {
   clearScreenReceiverRegistry,
   getScreenReceiverServer,
   setScreenReceiverServer,
-} from '../../src/screenReceiver/server/registry';
+} from '../../src/business/screenReceiver/server/registry';
 
 afterEach(() => {
   clearScreenReceiverRegistry();

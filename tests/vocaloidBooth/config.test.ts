@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   defaultVocaloidBoothConfig,
   normalizeVocaloidBoothConfig,
-} from '../../src/vocaloidBooth/core';
+} from '../../src/business/vocaloidBooth/core';
 
 describe('vocaloidBooth config', () => {
   it('normalizes invalid numeric values', () => {

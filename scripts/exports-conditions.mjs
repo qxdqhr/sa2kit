@@ -1,7 +1,5 @@
 /**
  * browser / node 条件 exports 配置（R2-212）
- *
- * 每项：npm subpath + 对应 tsup entry key（browser 与 server）
  */
 export const BROWSER_SERVER_EXPORT_PAIRS = [
   {
@@ -20,42 +18,38 @@ export const BROWSER_SERVER_EXPORT_PAIRS = [
     server: 'common/auth/server/index',
   },
   {
-    subpath: './ossFile',
-    browser: 'ossFile/index',
-    server: 'ossFile/server/index',
+    subpath: './common/ossFile',
+    browser: 'common/ossFile/index',
+    server: 'common/ossFile/server/index',
   },
   {
-    subpath: './universalFile',
-    browser: 'universalFile/index',
-    server: 'universalFile/server/index',
+    subpath: './common/universalFile',
+    browser: 'common/universalFile/index',
+    server: 'common/universalFile/server/index',
   },
   {
-    subpath: './universalExport',
-    browser: 'universalExport/index',
-    server: 'universalExport/server/index',
+    subpath: './common/universalExport',
+    browser: 'common/universalExport/index',
+    server: 'common/universalExport/server/index',
   },
   {
-    subpath: './analytics',
-    browser: 'analytics/index',
-    server: 'analytics/server/index',
+    subpath: './common/analytics',
+    browser: 'common/analytics/index',
+    server: 'common/analytics/server/index',
   },
   {
-    subpath: './config',
-    browser: 'config/index',
-    server: 'config/server/index',
+    subpath: './common/config',
+    browser: 'common/config/index',
+    server: 'common/config/server/index',
   },
 ];
 
-/**
- * 无 node 条件的 client 别名（Next.js SSR 打包时避免误解析 server 入口）
- */
 export const CLIENT_ONLY_ALIASES = [
   { subpath: './common/file/client', browser: 'common/file/index' },
-  { subpath: './ossFile/client', browser: 'ossFile/index' },
-  { subpath: './universalExport/client', browser: 'universalExport/index' },
+  { subpath: './common/ossFile/client', browser: 'common/ossFile/index' },
+  { subpath: './common/universalExport/client', browser: 'common/universalExport/index' },
 ];
 
-/** 显式 server subpath（node 优先，保留 1.x 深路径） */
 export const NODE_ONLY_SUBPATHS = [
   './common/file/server',
   './common/export/server',
@@ -64,11 +58,11 @@ export const NODE_ONLY_SUBPATHS = [
   './common/auth/services',
   './common/auth/routes',
   './common/auth/middleware',
-  './ossFile/server',
-  './universalFile/server',
-  './universalExport/server',
-  './analytics/server',
-  './config/server',
+  './common/ossFile/server',
+  './common/universalFile/server',
+  './common/universalExport/server',
+  './common/analytics/server',
+  './common/config/server',
 ];
 
 export function browserServerPairBySubpath() {

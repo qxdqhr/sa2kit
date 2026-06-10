@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { WebSocketTransport } from '../../src/mikuFireworks3D/client/WebSocketTransport';
+import { WebSocketTransport } from '../../src/business/mikuFireworks3D/client/WebSocketTransport';
 
 class MockWebSocket {
   static instances: MockWebSocket[] = [];

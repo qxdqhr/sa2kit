@@ -35,7 +35,7 @@ if (overlap.length > 0) {
 }
 
 const mergedCount = commonKeys.length + businessKeys.length;
-const expectedTotal = 75;
+const expectedTotal = 71;
 
 console.log(
   `✓ ${commonKeys.length} common + ${businessKeys.length} business entries (${mergedCount} total)`,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { BoothVaultService, generateMatchCode } from '../../src/vocaloidBooth/core';
-import { InMemoryBoothVaultStore } from '../../src/vocaloidBooth/server';
+import { BoothVaultService, generateMatchCode } from '../../src/business/vocaloidBooth/core';
+import { InMemoryBoothVaultStore } from '../../src/business/vocaloidBooth/server';
 
 describe('vocaloidBooth', () => {
   it('generateMatchCode should avoid ambiguous chars and keep length', async () => {

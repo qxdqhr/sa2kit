@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createFileUrlResolver } from '../../src/ossFile/server/service';
+import { createFileUrlResolver } from '../../src/common/ossFile/server/service';
 
 describe('createFileUrlResolver', () => {
   it('returns an async resolver function', () => {

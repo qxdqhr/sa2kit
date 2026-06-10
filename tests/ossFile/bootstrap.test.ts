@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createOssFileBootstrap } from '../../src/ossFile/server/bootstrap';
+import { createOssFileBootstrap } from '../../src/common/ossFile/server/bootstrap';
 
 describe('createOssFileBootstrap', () => {
   const mockConfigManager = {

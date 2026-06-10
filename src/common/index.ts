@@ -11,10 +11,12 @@ export * as file from './file';
 export * as dataExport from './export';
 export * as auth from './auth';
 export * as platform from './platform';
-export * as i18n from '../i18n';
-export * as analytics from '../analytics';
-export * as config from '../config';
-export * as api from '../api';
+export * as i18n from './i18n';
+export * as analytics from './analytics';
+export * as config from './config';
+export * as api from './api';
+export * as components from './components';
+export * as imageCrop from './imageCrop';
 
 /** 文件 SSOT 快捷导出 */
 export * from './file';

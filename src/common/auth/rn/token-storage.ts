@@ -1,7 +1,7 @@
 /**
  * RN Bearer Token 持久化（AsyncStorage）
  */
-import { ReactNativeStorageAdapter } from '../../../storage/adapters/react-native-adapter';
+import { ReactNativeStorageAdapter } from '../../storage/adapters/react-native-adapter';
 
 export const RN_BEARER_TOKEN_KEY = 'sa2kit_auth_bearer_token';
 

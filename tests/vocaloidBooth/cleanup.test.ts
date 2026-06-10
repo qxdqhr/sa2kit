@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { InMemoryBoothVaultStore, expireBoothRecords } from '../../src/vocaloidBooth/server';
-import type { BoothUploadRecord } from '../../src/vocaloidBooth/types';
+import { InMemoryBoothVaultStore, expireBoothRecords } from '../../src/business/vocaloidBooth/server';
+import type { BoothUploadRecord } from '../../src/business/vocaloidBooth/types';
 
 const makeRecord = (id: string, expiresAt: string): BoothUploadRecord => ({
   id,

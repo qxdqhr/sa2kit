@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { BoothVaultService } from '../../src/vocaloidBooth/core';
-import { InMemoryBoothVaultStore } from '../../src/vocaloidBooth/server';
+import { BoothVaultService } from '../../src/business/vocaloidBooth/core';
+import { InMemoryBoothVaultStore } from '../../src/business/vocaloidBooth/server';
 
 describe('BoothVaultService', () => {
   it('creates upload record and retrieves by match code', async () => {

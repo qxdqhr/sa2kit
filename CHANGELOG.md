@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.2.0] - 2026-06-10
+
+### Changed
+
+- **Breaking**：源码与 npm 导出统一为 `src/common/` + `src/business/` 物理目录；仅保留 `sa2kit/common/*` 与 `sa2kit/business/*` 子路径
+- 移除 1.x/2.x legacy alias（如 `sa2kit/logger`、`sa2kit/mmd`、`sa2kit/file` 等）
+
+### Fixed
+
+- 修复 business 模块 barrel 误 re-export `common/components` 导致组件缺失（music、testYourself、mikuFireworks3D 等）
+- 修复 `vocaloidBooth` 主入口携带 React 组件，污染 API route 服务端 bundle
+- 修复 `common/ossFile/server` 未导出 `resolveUploadFolderPathFromFormData`
+- 修复 AI LLM UI 组件相对路径与 `cn` import
+
 ## [3.1.0] - 2026-06-10
 
 ### Removed

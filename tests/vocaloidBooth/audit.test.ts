@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { BoothVaultService } from '../../src/vocaloidBooth/core';
+import { BoothVaultService } from '../../src/business/vocaloidBooth/core';
 import {
   BoothRedeemGuard,
   InMemoryBoothAuditSink,
   InMemoryBoothVaultStore,
   createAuditLogger,
   expireBoothRecords,
-} from '../../src/vocaloidBooth/server';
+} from '../../src/business/vocaloidBooth/server';
 
 describe('vocaloidBooth audit', () => {
   it('captures upload/redeem audit events', async () => {

@@ -4,8 +4,8 @@ import {
   configureCalendarApiAuth,
   configureCalendarApiWithBetterAuth,
   resetCalendarApiAuth,
-} from '../../src/calendar/api/auth-config';
-import { createDefaultCalendarRouteConfig } from '../../src/calendar/api/_shared';
+} from '../../src/business/calendar/api/auth-config';
+import { createDefaultCalendarRouteConfig } from '../../src/business/calendar/api/_shared';
 import { createSa2kitAuth } from '../../src/common/auth/server/create-auth';
 
 describe('calendar api auth-config', () => {

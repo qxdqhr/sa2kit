@@ -4,10 +4,10 @@ import { describe, expect, it } from 'vitest';
 
 const BUSINESS_DIRS = [
   'src/business',
-  'src/calendar',
-  'src/portfolio',
-  'src/profile',
-  'src/testField',
+  'src/business/calendar',
+  'src/business/portfolio',
+  'src/business/profile',
+  'src/business/testField',
 ];
 
 const BARREL_IMPORT = /from\s+['"]@\/components['"]/;

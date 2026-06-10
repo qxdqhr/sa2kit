@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createSkillRegistry } from '../../../src/ai/llm';
+import { createSkillRegistry } from '../../../src/common/ai/llm';
 
 describe('skill registry', () => {
   it('registers and executes skills', async () => {

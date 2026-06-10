@@ -1,6 +1,6 @@
 import type { FilePickAdapter, PlatformAdapter } from '../types';
-import type { RequestAdapter } from '../../../request/types/types';
-import type { StorageAdapter } from '../../../storage/types';
+import type { RequestAdapter } from '../../request/types/types';
+import type { StorageAdapter } from '../../storage/types';
 
 /** 内存 storage，适用于无持久化需求的 Node / Hono SSR */
 class MemoryStorageAdapter implements StorageAdapter {

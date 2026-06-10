@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "SA2Kit 2.0 — common API 稳定；business 实验田模块逐步迁出 profile-v1",
   "keywords": [
     "react",
@@ -83,166 +83,276 @@
         "require": "./dist/common/auth/index.js"
       }
     },
-    "./ossFile": {
-      "types": "./dist/ossFile/index.d.ts",
+    "./common/ossFile": {
+      "types": "./dist/common/ossFile/index.d.ts",
       "browser": {
-        "import": "./dist/ossFile/index.mjs",
-        "require": "./dist/ossFile/index.js"
+        "import": "./dist/common/ossFile/index.mjs",
+        "require": "./dist/common/ossFile/index.js"
       },
       "node": {
-        "import": "./dist/ossFile/server/index.mjs",
-        "require": "./dist/ossFile/server/index.js"
+        "import": "./dist/common/ossFile/server/index.mjs",
+        "require": "./dist/common/ossFile/server/index.js"
       },
       "default": {
-        "import": "./dist/ossFile/index.mjs",
-        "require": "./dist/ossFile/index.js"
+        "import": "./dist/common/ossFile/index.mjs",
+        "require": "./dist/common/ossFile/index.js"
       }
     },
-    "./universalFile": {
-      "types": "./dist/universalFile/index.d.ts",
+    "./common/universalFile": {
+      "types": "./dist/common/universalFile/index.d.ts",
       "browser": {
-        "import": "./dist/universalFile/index.mjs",
-        "require": "./dist/universalFile/index.js"
+        "import": "./dist/common/universalFile/index.mjs",
+        "require": "./dist/common/universalFile/index.js"
       },
       "node": {
-        "import": "./dist/universalFile/server/index.mjs",
-        "require": "./dist/universalFile/server/index.js"
+        "import": "./dist/common/universalFile/server/index.mjs",
+        "require": "./dist/common/universalFile/server/index.js"
       },
       "default": {
-        "import": "./dist/universalFile/index.mjs",
-        "require": "./dist/universalFile/index.js"
+        "import": "./dist/common/universalFile/index.mjs",
+        "require": "./dist/common/universalFile/index.js"
       }
     },
-    "./universalExport": {
-      "types": "./dist/universalExport/index.d.ts",
+    "./common/universalExport": {
+      "types": "./dist/common/universalExport/index.d.ts",
       "browser": {
-        "import": "./dist/universalExport/index.mjs",
-        "require": "./dist/universalExport/index.js"
+        "import": "./dist/common/universalExport/index.mjs",
+        "require": "./dist/common/universalExport/index.js"
       },
       "node": {
-        "import": "./dist/universalExport/server/index.mjs",
-        "require": "./dist/universalExport/server/index.js"
+        "import": "./dist/common/universalExport/server/index.mjs",
+        "require": "./dist/common/universalExport/server/index.js"
       },
       "default": {
-        "import": "./dist/universalExport/index.mjs",
-        "require": "./dist/universalExport/index.js"
+        "import": "./dist/common/universalExport/index.mjs",
+        "require": "./dist/common/universalExport/index.js"
       }
     },
-    "./analytics": {
-      "types": "./dist/analytics/index.d.ts",
+    "./common/analytics": {
+      "types": "./dist/common/analytics/index.d.ts",
       "browser": {
-        "import": "./dist/analytics/index.mjs",
-        "require": "./dist/analytics/index.js"
+        "import": "./dist/common/analytics/index.mjs",
+        "require": "./dist/common/analytics/index.js"
       },
       "node": {
-        "import": "./dist/analytics/server/index.mjs",
-        "require": "./dist/analytics/server/index.js"
+        "import": "./dist/common/analytics/server/index.mjs",
+        "require": "./dist/common/analytics/server/index.js"
       },
       "default": {
-        "import": "./dist/analytics/index.mjs",
-        "require": "./dist/analytics/index.js"
+        "import": "./dist/common/analytics/index.mjs",
+        "require": "./dist/common/analytics/index.js"
       }
     },
-    "./config": {
-      "types": "./dist/config/index.d.ts",
+    "./common/config": {
+      "types": "./dist/common/config/index.d.ts",
       "browser": {
-        "import": "./dist/config/index.mjs",
-        "require": "./dist/config/index.js"
+        "import": "./dist/common/config/index.mjs",
+        "require": "./dist/common/config/index.js"
       },
       "node": {
-        "import": "./dist/config/server/index.mjs",
-        "require": "./dist/config/server/index.js"
+        "import": "./dist/common/config/server/index.mjs",
+        "require": "./dist/common/config/server/index.js"
       },
       "default": {
-        "import": "./dist/config/index.mjs",
-        "require": "./dist/config/index.js"
+        "import": "./dist/common/config/index.mjs",
+        "require": "./dist/common/config/index.js"
       }
     },
-    "./ai/llm/core": {
-      "types": "./dist/ai/llm/core/index.d.ts",
-      "import": "./dist/ai/llm/core/index.mjs",
-      "require": "./dist/ai/llm/core/index.js"
+    "./business/audioDetection": {
+      "types": "./dist/business/audioDetection/index.d.ts",
+      "import": "./dist/business/audioDetection/index.mjs",
+      "require": "./dist/business/audioDetection/index.js"
     },
-    "./ai/llm/electron": {
-      "types": "./dist/ai/llm/electron/index.d.ts",
-      "import": "./dist/ai/llm/electron/index.mjs",
-      "require": "./dist/ai/llm/electron/index.js"
+    "./business/calendar": {
+      "types": "./dist/business/calendar/index.d.ts",
+      "import": "./dist/business/calendar/index.mjs",
+      "require": "./dist/business/calendar/index.js"
     },
-    "./ai/llm": {
-      "types": "./dist/ai/llm/index.d.ts",
-      "import": "./dist/ai/llm/index.mjs",
-      "require": "./dist/ai/llm/index.js"
+    "./business/calendar/routes": {
+      "types": "./dist/business/calendar/routes/index.d.ts",
+      "import": "./dist/business/calendar/routes/index.mjs",
+      "require": "./dist/business/calendar/routes/index.js"
     },
-    "./ai/llm/miniapp": {
-      "types": "./dist/ai/llm/miniapp/index.d.ts",
-      "import": "./dist/ai/llm/miniapp/index.mjs",
-      "require": "./dist/ai/llm/miniapp/index.js"
+    "./business/festivalCard": {
+      "types": "./dist/business/festivalCard/index.d.ts",
+      "import": "./dist/business/festivalCard/index.mjs",
+      "require": "./dist/business/festivalCard/index.js"
     },
-    "./ai/llm/rn": {
-      "types": "./dist/ai/llm/rn/index.d.ts",
-      "import": "./dist/ai/llm/rn/index.mjs",
-      "require": "./dist/ai/llm/rn/index.js"
+    "./business/festivalCard/routes": {
+      "types": "./dist/business/festivalCard/routes/index.d.ts",
+      "import": "./dist/business/festivalCard/routes/index.mjs",
+      "require": "./dist/business/festivalCard/routes/index.js"
     },
-    "./ai/llm/ui/electron": {
-      "types": "./dist/ai/llm/ui/electron/index.d.ts",
-      "import": "./dist/ai/llm/ui/electron/index.mjs",
-      "require": "./dist/ai/llm/ui/electron/index.js"
-    },
-    "./ai/llm/ui/miniapp": {
-      "types": "./dist/ai/llm/ui/miniapp/index.d.ts",
-      "import": "./dist/ai/llm/ui/miniapp/index.mjs",
-      "require": "./dist/ai/llm/ui/miniapp/index.js"
-    },
-    "./ai/llm/ui/rn": {
-      "types": "./dist/ai/llm/ui/rn/index.d.ts",
-      "import": "./dist/ai/llm/ui/rn/index.mjs",
-      "require": "./dist/ai/llm/ui/rn/index.js"
-    },
-    "./ai/llm/ui/web": {
-      "types": "./dist/ai/llm/ui/web/index.d.ts",
-      "import": "./dist/ai/llm/ui/web/index.mjs",
-      "require": "./dist/ai/llm/ui/web/index.js"
-    },
-    "./ai/llm/web": {
-      "types": "./dist/ai/llm/web/index.d.ts",
-      "import": "./dist/ai/llm/web/index.mjs",
-      "require": "./dist/ai/llm/web/index.js"
-    },
-    "./analytics/server": {
-      "types": "./dist/analytics/server/index.d.ts",
-      "node": {
-        "import": "./dist/analytics/server/index.mjs",
-        "require": "./dist/analytics/server/index.js"
-      },
-      "default": {
-        "import": "./dist/analytics/server/index.mjs",
-        "require": "./dist/analytics/server/index.js"
-      }
-    },
-    "./api": {
-      "types": "./dist/api/index.d.ts",
-      "import": "./dist/api/index.mjs",
-      "require": "./dist/api/index.js"
-    },
-    "./audioDetection": {
-      "types": "./dist/audioDetection/index.d.ts",
-      "import": "./dist/audioDetection/index.mjs",
-      "require": "./dist/audioDetection/index.js"
+    "./business/festivalCard/server": {
+      "types": "./dist/business/festivalCard/server/index.d.ts",
+      "import": "./dist/business/festivalCard/server/index.mjs",
+      "require": "./dist/business/festivalCard/server/index.js"
     },
     "./business": {
       "types": "./dist/business/index.d.ts",
       "import": "./dist/business/index.mjs",
       "require": "./dist/business/index.js"
     },
-    "./calendar": {
-      "types": "./dist/calendar/index.d.ts",
-      "import": "./dist/calendar/index.mjs",
-      "require": "./dist/calendar/index.js"
+    "./business/mikuContest/ui/web": {
+      "types": "./dist/business/mikuContest/ui/web/index.d.ts",
+      "import": "./dist/business/mikuContest/ui/web/index.mjs",
+      "require": "./dist/business/mikuContest/ui/web/index.js"
     },
-    "./calendar/routes": {
-      "types": "./dist/calendar/routes/index.d.ts",
-      "import": "./dist/calendar/routes/index.mjs",
-      "require": "./dist/calendar/routes/index.js"
+    "./business/mikuFireworks3D": {
+      "types": "./dist/business/mikuFireworks3D/index.d.ts",
+      "import": "./dist/business/mikuFireworks3D/index.mjs",
+      "require": "./dist/business/mikuFireworks3D/index.js"
+    },
+    "./business/mikuFusionGame": {
+      "types": "./dist/business/mikuFusionGame/index.d.ts",
+      "import": "./dist/business/mikuFusionGame/index.mjs",
+      "require": "./dist/business/mikuFusionGame/index.js"
+    },
+    "./business/mmd/admin": {
+      "types": "./dist/business/mmd/admin/index.d.ts",
+      "import": "./dist/business/mmd/admin/index.mjs",
+      "require": "./dist/business/mmd/admin/index.js"
+    },
+    "./business/mmd": {
+      "types": "./dist/business/mmd/index.d.ts",
+      "import": "./dist/business/mmd/index.mjs",
+      "require": "./dist/business/mmd/index.js"
+    },
+    "./business/mmd/server": {
+      "types": "./dist/business/mmd/server/index.d.ts",
+      "import": "./dist/business/mmd/server/index.mjs",
+      "require": "./dist/business/mmd/server/index.js"
+    },
+    "./business/music": {
+      "types": "./dist/business/music/index.d.ts",
+      "import": "./dist/business/music/index.mjs",
+      "require": "./dist/business/music/index.js"
+    },
+    "./business/music/server": {
+      "types": "./dist/business/music/server/index.d.ts",
+      "import": "./dist/business/music/server/index.mjs",
+      "require": "./dist/business/music/server/index.js"
+    },
+    "./business/navigation": {
+      "types": "./dist/business/navigation/index.d.ts",
+      "import": "./dist/business/navigation/index.mjs",
+      "require": "./dist/business/navigation/index.js"
+    },
+    "./business/portfolio": {
+      "types": "./dist/business/portfolio/index.d.ts",
+      "import": "./dist/business/portfolio/index.mjs",
+      "require": "./dist/business/portfolio/index.js"
+    },
+    "./business/qqbot/server": {
+      "types": "./dist/business/qqbot/server/index.d.ts",
+      "import": "./dist/business/qqbot/server/index.mjs",
+      "require": "./dist/business/qqbot/server/index.js"
+    },
+    "./business/qqbot/ui/web": {
+      "types": "./dist/business/qqbot/ui/web/index.d.ts",
+      "import": "./dist/business/qqbot/ui/web/index.mjs",
+      "require": "./dist/business/qqbot/ui/web/index.js"
+    },
+    "./business/screenReceiver": {
+      "types": "./dist/business/screenReceiver/index.d.ts",
+      "import": "./dist/business/screenReceiver/index.mjs",
+      "require": "./dist/business/screenReceiver/index.js"
+    },
+    "./business/testYourself/admin": {
+      "types": "./dist/business/testYourself/admin/index.d.ts",
+      "import": "./dist/business/testYourself/admin/index.mjs",
+      "require": "./dist/business/testYourself/admin/index.js"
+    },
+    "./business/testYourself": {
+      "types": "./dist/business/testYourself/index.d.ts",
+      "import": "./dist/business/testYourself/index.mjs",
+      "require": "./dist/business/testYourself/index.js"
+    },
+    "./business/testYourself/server": {
+      "types": "./dist/business/testYourself/server/index.d.ts",
+      "import": "./dist/business/testYourself/server/index.mjs",
+      "require": "./dist/business/testYourself/server/index.js"
+    },
+    "./business/vocaloidBooth": {
+      "types": "./dist/business/vocaloidBooth/index.d.ts",
+      "import": "./dist/business/vocaloidBooth/index.mjs",
+      "require": "./dist/business/vocaloidBooth/index.js"
+    },
+    "./business/vocaloidBooth/server": {
+      "types": "./dist/business/vocaloidBooth/server/index.d.ts",
+      "import": "./dist/business/vocaloidBooth/server/index.mjs",
+      "require": "./dist/business/vocaloidBooth/server/index.js"
+    },
+    "./business/vocaloidBooth/web": {
+      "types": "./dist/business/vocaloidBooth/web/index.d.ts",
+      "import": "./dist/business/vocaloidBooth/web/index.mjs",
+      "require": "./dist/business/vocaloidBooth/web/index.js"
+    },
+    "./common/ai/llm/core": {
+      "types": "./dist/common/ai/llm/core/index.d.ts",
+      "import": "./dist/common/ai/llm/core/index.mjs",
+      "require": "./dist/common/ai/llm/core/index.js"
+    },
+    "./common/ai/llm/electron": {
+      "types": "./dist/common/ai/llm/electron/index.d.ts",
+      "import": "./dist/common/ai/llm/electron/index.mjs",
+      "require": "./dist/common/ai/llm/electron/index.js"
+    },
+    "./common/ai/llm": {
+      "types": "./dist/common/ai/llm/index.d.ts",
+      "import": "./dist/common/ai/llm/index.mjs",
+      "require": "./dist/common/ai/llm/index.js"
+    },
+    "./common/ai/llm/miniapp": {
+      "types": "./dist/common/ai/llm/miniapp/index.d.ts",
+      "import": "./dist/common/ai/llm/miniapp/index.mjs",
+      "require": "./dist/common/ai/llm/miniapp/index.js"
+    },
+    "./common/ai/llm/rn": {
+      "types": "./dist/common/ai/llm/rn/index.d.ts",
+      "import": "./dist/common/ai/llm/rn/index.mjs",
+      "require": "./dist/common/ai/llm/rn/index.js"
+    },
+    "./common/ai/llm/ui/electron": {
+      "types": "./dist/common/ai/llm/ui/electron/index.d.ts",
+      "import": "./dist/common/ai/llm/ui/electron/index.mjs",
+      "require": "./dist/common/ai/llm/ui/electron/index.js"
+    },
+    "./common/ai/llm/ui/miniapp": {
+      "types": "./dist/common/ai/llm/ui/miniapp/index.d.ts",
+      "import": "./dist/common/ai/llm/ui/miniapp/index.mjs",
+      "require": "./dist/common/ai/llm/ui/miniapp/index.js"
+    },
+    "./common/ai/llm/ui/rn": {
+      "types": "./dist/common/ai/llm/ui/rn/index.d.ts",
+      "import": "./dist/common/ai/llm/ui/rn/index.mjs",
+      "require": "./dist/common/ai/llm/ui/rn/index.js"
+    },
+    "./common/ai/llm/ui/web": {
+      "types": "./dist/common/ai/llm/ui/web/index.d.ts",
+      "import": "./dist/common/ai/llm/ui/web/index.mjs",
+      "require": "./dist/common/ai/llm/ui/web/index.js"
+    },
+    "./common/ai/llm/web": {
+      "types": "./dist/common/ai/llm/web/index.d.ts",
+      "import": "./dist/common/ai/llm/web/index.mjs",
+      "require": "./dist/common/ai/llm/web/index.js"
+    },
+    "./common/analytics/server": {
+      "types": "./dist/common/analytics/server/index.d.ts",
+      "node": {
+        "import": "./dist/common/analytics/server/index.mjs",
+        "require": "./dist/common/analytics/server/index.js"
+      },
+      "default": {
+        "import": "./dist/common/analytics/server/index.mjs",
+        "require": "./dist/common/analytics/server/index.js"
+      }
+    },
+    "./common/api": {
+      "types": "./dist/common/api/index.d.ts",
+      "import": "./dist/common/api/index.mjs",
+      "require": "./dist/common/api/index.js"
     },
     "./common/auth/client": {
       "types": "./dist/common/auth/client/index.d.ts",
@@ -290,6 +400,22 @@
       "import": "./dist/common/auth/services/index.mjs",
       "require": "./dist/common/auth/services/index.js"
     },
+    "./common/components": {
+      "types": "./dist/common/components/index.d.ts",
+      "import": "./dist/common/components/index.mjs",
+      "require": "./dist/common/components/index.js"
+    },
+    "./common/config/server": {
+      "types": "./dist/common/config/server/index.d.ts",
+      "node": {
+        "import": "./dist/common/config/server/index.mjs",
+        "require": "./dist/common/config/server/index.js"
+      },
+      "default": {
+        "import": "./dist/common/config/server/index.mjs",
+        "require": "./dist/common/config/server/index.js"
+      }
+    },
     "./common/export/server": {
       "types": "./dist/common/export/server/index.d.ts",
       "node": {
@@ -317,6 +443,16 @@
         "require": "./dist/common/file/server/index.js"
       }
     },
+    "./common/i18n": {
+      "types": "./dist/common/i18n/index.d.ts",
+      "import": "./dist/common/i18n/index.mjs",
+      "require": "./dist/common/i18n/index.js"
+    },
+    "./common/imageCrop": {
+      "types": "./dist/common/imageCrop/index.d.ts",
+      "import": "./dist/common/imageCrop/index.mjs",
+      "require": "./dist/common/imageCrop/index.js"
+    },
     "./common": {
       "types": "./dist/common/index.d.ts",
       "import": "./dist/common/index.mjs",
@@ -326,6 +462,17 @@
       "types": "./dist/common/logger/index.d.ts",
       "import": "./dist/common/logger/index.mjs",
       "require": "./dist/common/logger/index.js"
+    },
+    "./common/ossFile/server": {
+      "types": "./dist/common/ossFile/server/index.d.ts",
+      "node": {
+        "import": "./dist/common/ossFile/server/index.mjs",
+        "require": "./dist/common/ossFile/server/index.js"
+      },
+      "default": {
+        "import": "./dist/common/ossFile/server/index.mjs",
+        "require": "./dist/common/ossFile/server/index.js"
+      }
     },
     "./common/platform": {
       "types": "./dist/common/platform/index.d.ts",
@@ -342,219 +489,52 @@
       "import": "./dist/common/storage/index.mjs",
       "require": "./dist/common/storage/index.js"
     },
+    "./common/universalExport/server": {
+      "types": "./dist/common/universalExport/server/index.d.ts",
+      "node": {
+        "import": "./dist/common/universalExport/server/index.mjs",
+        "require": "./dist/common/universalExport/server/index.js"
+      },
+      "default": {
+        "import": "./dist/common/universalExport/server/index.mjs",
+        "require": "./dist/common/universalExport/server/index.js"
+      }
+    },
+    "./common/universalFile/server": {
+      "types": "./dist/common/universalFile/server/index.d.ts",
+      "node": {
+        "import": "./dist/common/universalFile/server/index.mjs",
+        "require": "./dist/common/universalFile/server/index.js"
+      },
+      "default": {
+        "import": "./dist/common/universalFile/server/index.mjs",
+        "require": "./dist/common/universalFile/server/index.js"
+      }
+    },
     "./common/utils": {
       "types": "./dist/common/utils/index.d.ts",
       "import": "./dist/common/utils/index.mjs",
       "require": "./dist/common/utils/index.js"
-    },
-    "./components": {
-      "types": "./dist/components/index.d.ts",
-      "import": "./dist/components/index.mjs",
-      "require": "./dist/components/index.js"
-    },
-    "./config/server": {
-      "types": "./dist/config/server/index.d.ts",
-      "node": {
-        "import": "./dist/config/server/index.mjs",
-        "require": "./dist/config/server/index.js"
-      },
-      "default": {
-        "import": "./dist/config/server/index.mjs",
-        "require": "./dist/config/server/index.js"
-      }
-    },
-    "./festivalCard": {
-      "types": "./dist/festivalCard/index.d.ts",
-      "import": "./dist/festivalCard/index.mjs",
-      "require": "./dist/festivalCard/index.js"
-    },
-    "./festivalCard/routes": {
-      "types": "./dist/festivalCard/routes/index.d.ts",
-      "import": "./dist/festivalCard/routes/index.mjs",
-      "require": "./dist/festivalCard/routes/index.js"
-    },
-    "./festivalCard/server": {
-      "types": "./dist/festivalCard/server/index.d.ts",
-      "import": "./dist/festivalCard/server/index.mjs",
-      "require": "./dist/festivalCard/server/index.js"
-    },
-    "./i18n": {
-      "types": "./dist/i18n/index.d.ts",
-      "import": "./dist/i18n/index.mjs",
-      "require": "./dist/i18n/index.js"
-    },
-    "./imageCrop": {
-      "types": "./dist/imageCrop/index.d.ts",
-      "import": "./dist/imageCrop/index.mjs",
-      "require": "./dist/imageCrop/index.js"
     },
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./logger": {
-      "types": "./dist/logger/index.d.ts",
-      "import": "./dist/logger/index.mjs",
-      "require": "./dist/logger/index.js"
-    },
-    "./mikuContest/ui/web": {
-      "types": "./dist/mikuContest/ui/web/index.d.ts",
-      "import": "./dist/mikuContest/ui/web/index.mjs",
-      "require": "./dist/mikuContest/ui/web/index.js"
-    },
-    "./mikuFireworks3D": {
-      "types": "./dist/mikuFireworks3D/index.d.ts",
-      "import": "./dist/mikuFireworks3D/index.mjs",
-      "require": "./dist/mikuFireworks3D/index.js"
-    },
-    "./mikuFusionGame": {
-      "types": "./dist/mikuFusionGame/index.d.ts",
-      "import": "./dist/mikuFusionGame/index.mjs",
-      "require": "./dist/mikuFusionGame/index.js"
-    },
-    "./mmd/admin": {
-      "types": "./dist/mmd/admin/index.d.ts",
-      "import": "./dist/mmd/admin/index.mjs",
-      "require": "./dist/mmd/admin/index.js"
-    },
-    "./mmd": {
-      "types": "./dist/mmd/index.d.ts",
-      "import": "./dist/mmd/index.mjs",
-      "require": "./dist/mmd/index.js"
-    },
-    "./mmd/server": {
-      "types": "./dist/mmd/server/index.d.ts",
-      "import": "./dist/mmd/server/index.mjs",
-      "require": "./dist/mmd/server/index.js"
-    },
-    "./music": {
-      "types": "./dist/music/index.d.ts",
-      "import": "./dist/music/index.mjs",
-      "require": "./dist/music/index.js"
-    },
-    "./music/server": {
-      "types": "./dist/music/server/index.d.ts",
-      "import": "./dist/music/server/index.mjs",
-      "require": "./dist/music/server/index.js"
-    },
-    "./navigation": {
-      "types": "./dist/navigation/index.d.ts",
-      "import": "./dist/navigation/index.mjs",
-      "require": "./dist/navigation/index.js"
-    },
-    "./ossFile/server": {
-      "types": "./dist/ossFile/server/index.d.ts",
-      "node": {
-        "import": "./dist/ossFile/server/index.mjs",
-        "require": "./dist/ossFile/server/index.js"
-      },
-      "default": {
-        "import": "./dist/ossFile/server/index.mjs",
-        "require": "./dist/ossFile/server/index.js"
-      }
-    },
-    "./portfolio": {
-      "types": "./dist/portfolio/index.d.ts",
-      "import": "./dist/portfolio/index.mjs",
-      "require": "./dist/portfolio/index.js"
-    },
-    "./qqbot/server": {
-      "types": "./dist/qqbot/server/index.d.ts",
-      "import": "./dist/qqbot/server/index.mjs",
-      "require": "./dist/qqbot/server/index.js"
-    },
-    "./qqbot/ui/web": {
-      "types": "./dist/qqbot/ui/web/index.d.ts",
-      "import": "./dist/qqbot/ui/web/index.mjs",
-      "require": "./dist/qqbot/ui/web/index.js"
-    },
-    "./request": {
-      "types": "./dist/request/index.d.ts",
-      "import": "./dist/request/index.mjs",
-      "require": "./dist/request/index.js"
-    },
-    "./screenReceiver": {
-      "types": "./dist/screenReceiver/index.d.ts",
-      "import": "./dist/screenReceiver/index.mjs",
-      "require": "./dist/screenReceiver/index.js"
-    },
-    "./storage": {
-      "types": "./dist/storage/index.d.ts",
-      "import": "./dist/storage/index.mjs",
-      "require": "./dist/storage/index.js"
-    },
-    "./testYourself/admin": {
-      "types": "./dist/testYourself/admin/index.d.ts",
-      "import": "./dist/testYourself/admin/index.mjs",
-      "require": "./dist/testYourself/admin/index.js"
-    },
-    "./testYourself": {
-      "types": "./dist/testYourself/index.d.ts",
-      "import": "./dist/testYourself/index.mjs",
-      "require": "./dist/testYourself/index.js"
-    },
-    "./testYourself/server": {
-      "types": "./dist/testYourself/server/index.d.ts",
-      "import": "./dist/testYourself/server/index.mjs",
-      "require": "./dist/testYourself/server/index.js"
-    },
-    "./universalExport/server": {
-      "types": "./dist/universalExport/server/index.d.ts",
-      "node": {
-        "import": "./dist/universalExport/server/index.mjs",
-        "require": "./dist/universalExport/server/index.js"
-      },
-      "default": {
-        "import": "./dist/universalExport/server/index.mjs",
-        "require": "./dist/universalExport/server/index.js"
-      }
-    },
-    "./universalFile/server": {
-      "types": "./dist/universalFile/server/index.d.ts",
-      "node": {
-        "import": "./dist/universalFile/server/index.mjs",
-        "require": "./dist/universalFile/server/index.js"
-      },
-      "default": {
-        "import": "./dist/universalFile/server/index.mjs",
-        "require": "./dist/universalFile/server/index.js"
-      }
-    },
-    "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.mjs",
-      "require": "./dist/utils/index.js"
-    },
-    "./vocaloidBooth": {
-      "types": "./dist/vocaloidBooth/index.d.ts",
-      "import": "./dist/vocaloidBooth/index.mjs",
-      "require": "./dist/vocaloidBooth/index.js"
-    },
-    "./vocaloidBooth/server": {
-      "types": "./dist/vocaloidBooth/server/index.d.ts",
-      "import": "./dist/vocaloidBooth/server/index.mjs",
-      "require": "./dist/vocaloidBooth/server/index.js"
-    },
-    "./vocaloidBooth/web": {
-      "types": "./dist/vocaloidBooth/web/index.d.ts",
-      "import": "./dist/vocaloidBooth/web/index.mjs",
-      "require": "./dist/vocaloidBooth/web/index.js"
-    },
     "./common/file/client": {
       "types": "./dist/common/file/index.d.ts",
       "import": "./dist/common/file/index.mjs",
       "require": "./dist/common/file/index.js"
     },
-    "./ossFile/client": {
-      "types": "./dist/ossFile/index.d.ts",
-      "import": "./dist/ossFile/index.mjs",
-      "require": "./dist/ossFile/index.js"
+    "./common/ossFile/client": {
+      "types": "./dist/common/ossFile/index.d.ts",
+      "import": "./dist/common/ossFile/index.mjs",
+      "require": "./dist/common/ossFile/index.js"
     },
-    "./universalExport/client": {
-      "types": "./dist/universalExport/index.d.ts",
-      "import": "./dist/universalExport/index.mjs",
-      "require": "./dist/universalExport/index.js"
+    "./common/universalExport/client": {
+      "types": "./dist/common/universalExport/index.d.ts",
+      "import": "./dist/common/universalExport/index.mjs",
+      "require": "./dist/common/universalExport/index.js"
     }
   },
   "files": [

@@ -1,54 +1,31 @@
 /**
  * SA2Kit
  * A modern, type-safe React utility library with cross-platform support
- *
- * Version: 0.3.0
- * Features: Logger, Utils, Storage, Hooks, File Upload, Data Export, i18n, Analytics, Music, Calendar
  */
 
-// Logger
-export * from './logger';
+export * from './common/logger';
+export * from './common/utils';
+export * from './common/components';
 
-// AI
-export * from './ai/ocr';
-export * from './ai/background-removal';
-export * from './ai/sentiment-analysis';
-export * from './ai/text-generation';
-export * from './ai/llm';
-
-// Utils
-export * from './utils';
-
-// Components (Foundation UI)
-export * from './components';
-
-// Architecture Modules
-export * as business from './business';
 export * as common from './common';
+export * as business from './business';
 
-// Business Logic Components
-export * from './profile';
-export * from './portfolio';
-export * from './navigation';
-export * from './testField';
-export * from './mikuFireworks3D';
-export * from './screenReceiver';
-export * from './festivalCard';
-export * from './vocaloidBooth';
-export * from './mikuContest';
+export * from './common/ai/ocr';
+export * from './common/ai/background-removal';
+export * from './common/ai/sentiment-analysis';
+export * from './common/ai/text-generation';
+export * from './common/ai/llm';
+
+export * from './business/profile';
+export * from './business/portfolio';
+export * from './business/navigation';
+export * from './business/testField';
+export * from './business/mikuFireworks3D';
+export * from './business/screenReceiver';
+export * from './business/festivalCard';
+export * from './business/vocaloidBooth';
+export * from './business/mikuContest';
 export * as bubbleShooter from './business/bubbleShooter';
 
-// Storage - Only export types and hooks, not platform adapters
-// Platform adapters should be imported from '@qhr123/sa2kit/storage' subpath
-export type { StorageAdapter, StorageChangeEvent } from './storage/types';
-export * from './storage/hooks';
-
-// Note: The following modules are available as separate subpath exports
-// to avoid naming conflicts and reduce bundle size. Import them directly:
-// - File Management: import { universalFileClient } from '@qhr123/sa2kit/universalFile';
-// - Data Export: import { universalExportClient } from '@qhr123/sa2kit/universalExport';
-// - Internationalization: import { createI18n, useTranslation } from '@qhr123/sa2kit/i18n';
-// - Analytics: import { Analytics } from '@qhr123/sa2kit/analytics';
-// - Music: import { MusicPlayer, musicService } from '@qhr123/sa2kit/music';
-// - Calendar: import { useEvents, CalendarPage } from '@qhr123/sa2kit/calendar';
-// - Vocaloid Booth Vault: import { BoothVaultService } from '@qhr123/sa2kit/vocaloidBooth';
+export type { StorageAdapter, StorageChangeEvent } from './common/storage/types';
+export * from './common/storage/hooks';

@@ -11,14 +11,16 @@ describe('generate-exports helpers', () => {
     const { entryKeyToSubpath } = await import('../../scripts/generate-exports.mjs');
     expect(entryKeyToSubpath('index')).toBe('.');
     expect(entryKeyToSubpath('common/file/index')).toBe('./common/file');
-    expect(entryKeyToSubpath('calendar/server')).toBe('./calendar/server');
+    expect(entryKeyToSubpath('business/calendar/routes/index')).toBe(
+      './business/calendar/routes',
+    );
   });
 
   it('builds flat export triple', () => {
-    expect(buildExportEntry('logger/index')).toEqual({
-      types: './dist/logger/index.d.ts',
-      import: './dist/logger/index.mjs',
-      require: './dist/logger/index.js',
+    expect(buildExportEntry('common/logger/index')).toEqual({
+      types: './dist/common/logger/index.d.ts',
+      import: './dist/common/logger/index.mjs',
+      require: './dist/common/logger/index.js',
     });
   });
 
@@ -42,10 +44,10 @@ describe('generate-exports helpers', () => {
     const map = generateExportsFromEntryKeys([
       'common/auth/index',
       'common/auth/server/index',
-      'logger/index',
+      'common/logger/index',
     ]);
     expect(map['./common/auth'].browser).toBeTruthy();
     expect(map['./common/auth/server'].node).toBeTruthy();
-    expect(map['./logger'].import).toBe('./dist/logger/index.mjs');
+    expect(map['./common/logger'].import).toBe('./dist/common/logger/index.mjs');
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BoothRedeemGuard, validateUploadFiles } from '../../src/vocaloidBooth/server';
+import { BoothRedeemGuard, validateUploadFiles } from '../../src/business/vocaloidBooth/server';
 
 describe('vocaloidBooth security', () => {
   it('blocks requester after too many failed attempts', () => {

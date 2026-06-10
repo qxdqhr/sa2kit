@@ -3,15 +3,15 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const BROWSER_ENTRIES = [
-  'src/ossFile/client.ts',
-  'src/ossFile/index.ts',
+  'src/common/ossFile/client.ts',
+  'src/common/ossFile/index.ts',
   'src/common/file/index.ts',
   'src/common/auth/index.ts',
   'src/common/auth/client/index.ts',
   'src/common/auth/hooks/index.ts',
   'src/common/auth/components/index.ts',
   'src/common/auth/rn/index.ts',
-  'src/universalFile/client.ts',
+  'src/common/universalFile/client.ts',
 ];
 
 const FORBIDDEN_PATTERNS = [

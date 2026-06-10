@@ -3,7 +3,7 @@
 一个现代的、类型安全的跨平台工具库。**2.0 重构进行中**：拆分为 `common`（通用逻辑，供 Web / Taro / Electron / Hono 等多项目接入）与 `business`（业务逻辑，逐步迁回 profile-v1）。
 
 > 📋 **重构任务 SSOT**：[docs/REFACTOR_2.0_BACKLOG.md](./docs/REFACTOR_2.0_BACKLOG.md)  
-> 当前版本：`2.0.4`（**common API 稳定**；business 实验田模块逐步迁出，见 [COMMON_API_FREEZE.md](./docs/COMMON_API_FREEZE.md)）
+> 当前版本：`3.2.0`（**common API 稳定**；business 实验田模块逐步迁出，见 [COMMON_API_FREEZE.md](./docs/COMMON_API_FREEZE.md)）
 
 ### 2.0 推荐 import（common）
 
@@ -13,14 +13,14 @@ import { uploadModuleFile } from 'sa2kit/common/file';
 import { createOssFileConfigManagerFromEnv } from 'sa2kit/common/file/server';
 ```
 
-旧路径（`sa2kit/logger`、`sa2kit/ossFile`）在 2.x 仍可用，后续标记 deprecated。
+npm 子路径仅保留 `sa2kit/common/*` 与 `sa2kit/business/*`（3.x 起已移除 `sa2kit/logger`、`sa2kit/mmd` 等旧 alias）。
 
 ## 2.0 目标架构（摘要）
 
 | 层级 | 入口 | 职责 |
 |------|------|------|
 | **common** | `sa2kit/common/*` | logger、utils、storage、request、ossFile、auth 内核等 |
-| **business** | `sa2kit/business/*` 及 legacy subpath | mikuContest、huarongdao 等；逐步迁回 profile-v1 |
+| **business** | `sa2kit/business/*` | mikuContest、calendar、mmd 等；逐步迁回 profile-v1 |
 
 ## 特性
 
@@ -64,7 +64,7 @@ pnpm add @qhr123/sa2kit
 ### 日志 (Logger)
 
 ```typescript
-import { logger, createLogger, LogLevel } from '@qhr123/sa2kit/logger';
+import { logger, createLogger, LogLevel } from '@qhr123/sa2kit/common/logger';
 
 // 使用默认日志记录器
 logger.info('应用程序已启动');
@@ -83,7 +83,7 @@ apiLogger.info('API 请求已完成');
 ### 工具函数 (Utility Functions)
 
 ```typescript
-import { stringUtils, arrayUtils, fileUtils } from '@qhr123/sa2kit/utils';
+import { stringUtils, arrayUtils, fileUtils } from '@qhr123/sa2kit/common/utils';
 
 // 字符串工具
 const capitalized = stringUtils.capitalize('hello world');

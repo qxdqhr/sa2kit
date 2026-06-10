@@ -101,21 +101,7 @@ export default [
     },
   },
   {
-    files: [
-      'src/business/**/*.{ts,tsx}',
-      'src/calendar/**/*.{ts,tsx}',
-      'src/portfolio/**/*.{ts,tsx}',
-      'src/profile/**/*.{ts,tsx}',
-      'src/testField/**/*.{ts,tsx}',
-      'src/mmd/**/*.{ts,tsx}',
-      'src/vocaloidBooth/**/*.{ts,tsx}',
-      'src/festivalCard/**/*.{ts,tsx}',
-      'src/mikuContest/**/*.{ts,tsx}',
-      'src/mikuFusionGame/**/*.{ts,tsx}',
-      'src/mikuFireworks3D/**/*.{ts,tsx}',
-      'src/music/**/*.{ts,tsx}',
-      'src/testYourself/**/*.{ts,tsx}',
-    ],
+    files: ['src/business/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -133,15 +119,15 @@ export default [
   },
   {
     files: [
-      'src/ossFile/client.ts',
-      'src/ossFile/index.ts',
+      'src/common/ossFile/client.ts',
+      'src/common/ossFile/index.ts',
       'src/common/file/index.ts',
       'src/common/auth/index.ts',
       'src/common/auth/client/index.ts',
       'src/common/auth/hooks/index.ts',
       'src/common/auth/components/index.ts',
       'src/common/auth/rn/index.ts',
-      'src/universalFile/client.ts',
+      'src/common/universalFile/client.ts',
     ],
     rules: {
       'no-restricted-imports': [
