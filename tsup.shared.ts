@@ -14,6 +14,8 @@ export const tsupSharedOptions: Omit<Options, 'entry' | 'clean'> = {
     'react-dom',
     'swr',
     'drizzle-orm',
+    'better-auth',
+    '@better-auth/drizzle-adapter',
     'lucide-react',
     'postgres',
     'bcryptjs',

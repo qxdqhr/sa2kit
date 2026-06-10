@@ -1,5 +1,28 @@
 # Changelog
 
+## [3.0.0] - 2026-06-09
+
+### Removed
+
+- **business/auth-legacy** 与 **auth/legacy/** 全部 export 路径（3.0 不再提供兼容 shim）
+- Legacy `createLegacyLoginHandler` 等路由工厂、`LegacyAuthDbService`、`useAuth`（fetch 版）
+
+### Added
+
+- **Better Auth 3.0** 统一认证：`createSa2kitAuth`、`createSa2kitAuthClient`、`AuthProvider`、headless + styled UI
+- RN Bearer 客户端：`initSa2kitRnAuthClient`、`RnAccountLoginForm`
+- Calendar API：`configureCalendarApiWithBetterAuth`
+
+### Changed
+
+- **Breaking**：认证 SSOT 为 `sa2kit/common/auth/*`；`auth/legacy/*`、`business/auth-legacy/*` 已删除，请迁移至 `common/auth`
+- 数据库 schema 改为 Better Auth 小写表（`user`/`session`/`account`/`verification`），需清库重建
+- 服务端默认启用 `bearer` 插件（RN / 无 Cookie 客户端）
+
+### Migration
+
+见 [MIGRATION_2.x_to_3.0.md](./docs/MIGRATION_2.x_to_3.0.md) 与 [docs/auth.md](./docs/auth.md)。
+
 ## [2.0.4] - 2026-06-09
 
 ### Added

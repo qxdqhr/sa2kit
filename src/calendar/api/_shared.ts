@@ -1,10 +1,32 @@
 import type { NextRequest } from 'next/server';
-import { validateApiAuthNumeric } from '../../auth/server';
-import { calendarDbService } from '../server';
+import { calendarDbService } from '../db/calendarDbService';
 import type { CalendarRouteConfig } from '../routes';
+import {
+  resolveCalendarAuthValidator,
+  type CalendarAuthValidator,
+} from './auth-config';
 
-export async function requireCalendarUser(request: NextRequest) {
-  return validateApiAuthNumeric(request);
+export {
+  configureCalendarApiAuth,
+  configureCalendarApiWithBetterAuth,
+  resetCalendarApiAuth,
+  type CalendarAuthValidator,
+} from './auth-config';
+
+/**
+ * 创建 calendar 路由所需的 validateAuth（由 Better Auth session 注入）
+ *
+ * @example
+ * ```ts
+ * configureCalendarApiWithBetterAuth(auth, { db });
+ * const routeConfig = createDefaultCalendarRouteConfig();
+ * export const GET = createGetEventsHandler(routeConfig);
+ * ```
+ */
+export function createCalendarAuthRequirement(
+  validateAuth: CalendarAuthValidator,
+): CalendarAuthValidator {
+  return validateAuth;
 }
 
 export function ensureCalendarDbReady() {
@@ -20,9 +42,11 @@ export function ensureCalendarDbReady() {
   );
 }
 
-export function createDefaultCalendarRouteConfig(): CalendarRouteConfig {
+export function createDefaultCalendarRouteConfig(
+  validateAuth?: CalendarAuthValidator,
+): CalendarRouteConfig {
   return {
-    validateAuth: requireCalendarUser,
+    validateAuth: resolveCalendarAuthValidator(validateAuth),
   };
 }
 

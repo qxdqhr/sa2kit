@@ -1,47 +1,26 @@
 /**
- * Auth Schema - User Table
- * 用户表定义
+ * Better Auth — user 表（3.0 SSOT）
  */
-
-import { pgTable, text, boolean, jsonb, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 import { userRole } from './enums';
 
-/**
- * 用户表
- */
-export const user = pgTable(
-  'User',
-  {
-    id: text().primaryKey().notNull(),
-    email: text().notNull(),
-    emailVerified: boolean().default(false).notNull(),
-    username: text().notNull(),
-    password: text(),
-    name: text(),
-    nickname: text(),
-    image: text(),
-    avatar: text(),
-    role: userRole().default('USER').notNull(),
-    preferences: jsonb(),
-    createdAt: timestamp({ precision: 3, mode: 'string' })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp({ precision: 3, mode: 'string' }).notNull(),
-    twoFactorEnabled: boolean().default(false).notNull(),
-  },
-  (table) => [
-    uniqueIndex('User_email_key').using('btree', table.email.asc().nullsLast().op('text_ops')),
-    uniqueIndex('User_username_key').using(
-      'btree',
-      table.username.asc().nullsLast().op('text_ops')
-    ),
-  ]
-);
+export const user = pgTable('user', {
+  id: text('id').primaryKey().notNull(),
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  emailVerified: boolean('emailVerified').default(false).notNull(),
+  image: text('image'),
+  phoneNumber: text('phoneNumber'),
+  phoneNumberVerified: boolean('phoneNumberVerified').default(false),
+  role: userRole('role').default('USER').notNull(),
+  createdAt: timestamp('createdAt', { precision: 3, mode: 'date' })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp('updatedAt', { precision: 3, mode: 'date' })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
 
-/**
- * 类型定义
- */
 export type User = typeof user.$inferSelect;
 export type NewUser = typeof user.$inferInsert;
-

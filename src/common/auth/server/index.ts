@@ -1,17 +1,19 @@
 /**
  * @package sa2kit/common/auth/server
  *
- * Node / API 服务端入口（R2-211）。
+ * Better Auth 3.0 服务端入口
  */
 export {
   userRole,
   user,
   session,
   account,
+  verification,
   verifications,
   userRelations,
   sessionRelations,
   accountRelations,
+  authDrizzleSchema,
   type UserRole,
   type User,
   type NewUser,
@@ -23,48 +25,17 @@ export {
   type NewVerification,
 } from '../schema';
 
-export {
-  DrizzleAuthService,
-  hashPassword,
-  verifyPassword,
-  generateToken,
-  verifyJwtToken,
-  getTokenFromRequest,
-  type UserInfo,
-  type AuthResult,
-  type SessionInfo,
-  type VerifyResult,
-  type AuthServiceConfig,
-  type JwtPayload,
-} from '../services';
+export { createSa2kitAuth, type Sa2kitAuthInstance } from './create-auth';
+export type { Sa2kitAuthConfig, Sa2kitSmsProvider, Sa2kitEmailProvider, Sa2kitAuth } from './types';
 
-export { validateApiAuth, validateApiAuthNumeric } from '../server';
+export { mountNextAuthHandler } from './handler/next';
+export { mountAuthHandler, createAuthRouteHandlers } from './handler/hono';
 
 export {
-  createLoginHandler,
-  createLoginOptionsHandler,
-  createRegisterHandler,
-  createRegisterOptionsHandler,
-  createMeHandler,
-  createMeOptionsHandler,
-  createLogoutHandler,
-  createLogoutOptionsHandler,
-  createDefaultBaseConfig,
-  createDefaultLoginConfig,
-  createDefaultRegisterConfig,
-  createAnalyticsAdapter,
-  type BaseRouteConfig,
-  type LoginRouteConfig,
-  type RegisterRouteConfig,
-  type ApiResponse,
-  type AnalyticsEvent,
-  type AnalyticsService,
-} from '../routes';
+  getSessionUser,
+  getSessionUserNumeric,
+  createSessionValidator,
+  type SessionUser,
+} from './session';
 
-export {
-  createAuthMiddleware,
-  type AuthLevel,
-  type RouteContext,
-  type RouteHandler,
-  type AuthMiddlewareConfig,
-} from '../middleware';
+export { defaultPhoneValidator, defaultTempEmailFromPhone } from './plugins/dev-otp';

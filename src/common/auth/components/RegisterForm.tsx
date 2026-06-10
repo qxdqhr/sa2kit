@@ -5,7 +5,8 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../hooks';
-import type { HeadlessRegisterFormProps, RegisterFormState } from './types';
+import type { BaseApiClient } from '../client/base-api-client';
+import type { HeadlessRegisterFormPropsLegacy, RegisterFormState } from './types';
 
 /**
  * Headless 注册表单组件
@@ -45,7 +46,7 @@ export function RegisterForm({
   onSuccess,
   onError,
   children,
-}: HeadlessRegisterFormProps) {
+}: HeadlessRegisterFormPropsLegacy) {
   const { register, loading, error: authError, clearError } = useAuth(apiClient);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -74,11 +75,7 @@ export function RegisterForm({
     const result = await register(email, password, username);
 
     if (result.success) {
-      // 注册成功后 user 会自动更新到 state
-      const currentUser = apiClient.getUser();
-      if (currentUser) {
-        onSuccess?.(currentUser);
-      }
+      onSuccess?.((apiClient as BaseApiClient).getUser());
     } else {
       onError?.(result.error || '注册失败');
     }

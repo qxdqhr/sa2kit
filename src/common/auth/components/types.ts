@@ -1,75 +1,140 @@
 /**
- * Auth Components - Types
- * 组件类型定义
+ * Auth UI 类型（Better Auth 3.0）
  */
+import type { AuthActionsClient } from '../hooks/useAuthActions';
 
-import type { User } from '../client/types';
+export type SignInMode = 'email-password' | 'phone-password' | 'phone-otp' | 'email-otp';
+export type OtpChannel = 'phone' | 'email';
 
-/**
- * 登录表单状态
- */
-export interface LoginFormState {
+export interface SignInFormState {
+  mode: SignInMode;
+  step: 'credentials' | 'otp';
   email: string;
+  phone: string;
   password: string;
+  otp: string;
   loading: boolean;
   error: string | null;
-  handleEmailChange: (value: string) => void;
-  handlePasswordChange: (value: string) => void;
+  setMode: (mode: SignInMode) => void;
+  setEmail: (value: string) => void;
+  setPhone: (value: string) => void;
+  setPassword: (value: string) => void;
+  setOtp: (value: string) => void;
+  sendOtp: () => Promise<void>;
   handleSubmit: (e?: React.FormEvent) => Promise<void>;
 }
 
-/**
- * 注册表单状态
- */
-export interface RegisterFormState {
+export interface RegisterFormHeadlessState {
+  channel: 'email' | 'phone';
+  step: 'credentials' | 'otp';
   email: string;
+  phone: string;
   password: string;
-  username: string;
+  confirmPassword: string;
+  name: string;
+  otp: string;
   loading: boolean;
   error: string | null;
-  handleEmailChange: (value: string) => void;
-  handlePasswordChange: (value: string) => void;
-  handleUsernameChange: (value: string) => void;
+  setChannel: (channel: 'email' | 'phone') => void;
+  setEmail: (value: string) => void;
+  setPhone: (value: string) => void;
+  setPassword: (value: string) => void;
+  setConfirmPassword: (value: string) => void;
+  setName: (value: string) => void;
+  setOtp: (value: string) => void;
+  sendOtp: () => Promise<void>;
   handleSubmit: (e?: React.FormEvent) => Promise<void>;
 }
 
-/**
- * 表单基础属性
- */
+export interface VerifyOtpFormState {
+  channel: OtpChannel;
+  target: string;
+  otp: string;
+  loading: boolean;
+  error: string | null;
+  setOtp: (value: string) => void;
+  resendOtp: () => Promise<void>;
+  handleSubmit: (e?: React.FormEvent) => Promise<void>;
+}
+
+export interface HeadlessSignInFormProps {
+  authClient: AuthActionsClient;
+  initialMode?: SignInMode;
+  onSuccess?: () => void;
+  onError?: (error: string) => void;
+  children: (state: SignInFormState) => React.ReactNode;
+}
+
+export interface HeadlessRegisterFormProps {
+  authClient: AuthActionsClient;
+  initialChannel?: 'email' | 'phone';
+  onSuccess?: () => void;
+  onError?: (error: string) => void;
+  children: (state: RegisterFormHeadlessState) => React.ReactNode;
+}
+
+export interface HeadlessVerifyOtpFormProps {
+  authClient: AuthActionsClient;
+  channel: OtpChannel;
+  target: string;
+  onSuccess?: () => void;
+  onError?: (error: string) => void;
+  children: (state: VerifyOtpFormState) => React.ReactNode;
+}
+
+/** @deprecated 2.x */
 export interface BaseFormProps {
-  /**
-   * API 客户端实例
-   */
-  apiClient: any;
-
-  /**
-   * 成功回调
-   */
-  onSuccess?: (user: User) => void;
-
-  /**
-   * 错误回调
-   */
+  apiClient: import('../types').IAuthClient;
+  onSuccess?: (user: unknown) => void;
   onError?: (error: string) => void;
 }
 
-/**
- * Headless 登录表单属性
- */
+/** @deprecated 使用 HeadlessSignInFormProps */
 export interface HeadlessLoginFormProps extends BaseFormProps {
-  /**
-   * Render prop 函数
-   */
-  children: (state: LoginFormState) => React.ReactNode;
+  children: (state: import('./types.legacy').LoginFormState) => React.ReactNode;
 }
 
-/**
- * Headless 注册表单属性
- */
-export interface HeadlessRegisterFormProps extends BaseFormProps {
-  /**
-   * Render prop 函数
-   */
-  children: (state: RegisterFormState) => React.ReactNode;
+/** @deprecated */
+export interface HeadlessRegisterFormPropsLegacy extends BaseFormProps {
+  children: (state: import('./types.legacy').RegisterFormState) => React.ReactNode;
 }
 
+export type { LoginFormState, RegisterFormState } from './types.legacy';
+
+export interface LoginModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+  onSwitchToRegister?: () => void;
+  defaultMode?: SignInMode;
+}
+
+export interface RegisterModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+  onSwitchToLogin?: () => void;
+}
+
+export interface ForgotPasswordModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+}
+
+export interface AuthGuardProps {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+  requireAuth?: boolean;
+}
+
+export interface UserMenuProps {
+  customMenuItems?: Array<{
+    id: string;
+    label: string;
+    icon?: React.ComponentType<{ size?: number }>;
+    onClick: () => void;
+    requireAuth?: boolean;
+  }>;
+  className?: string;
+}

@@ -14,7 +14,7 @@ import type { IAuthClient } from '../types';
  *
  * @example
  * ```typescript
- * import { BaseApiClient } from '@qhr123/sa2kit/auth/client';
+ * import { BaseApiClient } from '@qhr123/sa2kit/common/auth/client';
  * import { WebStorageAdapter } from '@qhr123/sa2kit/storage';
  * import { WebRequestAdapter } from '@qhr123/sa2kit/request';
  *

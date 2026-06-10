@@ -1,179 +1,144 @@
 # Auth Module Documentation
 
-Sa2kit 的完整认证解决方案。
+Sa2kit 3.0 认证基于 **Better Auth**，统一入口为 `sa2kit/common/auth`。
 
-## 📦 安装
+> 迁移指南见 [MIGRATION_2.x_to_3.0.md](./MIGRATION_2.x_to_3.0.md) · ADR [001-auth-better-auth.md](./adr/001-auth-better-auth.md)
+
+## 安装
 
 ```bash
-pnpm add @qhr123/sa2kit bcryptjs jsonwebtoken drizzle-orm postgres
+pnpm add @qhr123/sa2kit better-auth drizzle-orm
 ```
 
-## 🚀 快速开始
-
-### 1. 数据库 Schema
+## 服务端（Next.js App Router）
 
 ```typescript
-// drizzle/schema.ts
+// lib/auth.ts
+import { createSa2kitAuth } from 'sa2kit/common/auth/server';
+import { db } from './db';
+
+export const auth = createSa2kitAuth({
+  db,
+  baseURL: process.env.BETTER_AUTH_URL!,
+  secret: process.env.BETTER_AUTH_SECRET!,
+  trustedOrigins: [process.env.BETTER_AUTH_URL!],
+  sms: {
+    sendOTP: async (phone, code) => {
+      await yourSmsProvider.send(phone, code);
+    },
+  },
+  email: {
+    sendVerificationOTP: async (email, otp, type) => {
+      await yourMailer.send(email, otp, type);
+    },
+  },
+});
+```
+
+```typescript
+// app/api/auth/[...all]/route.ts
+import { auth } from '@/lib/auth';
+import { mountNextAuthHandler } from 'sa2kit/common/auth/server';
+
+export const { GET, POST, PUT, PATCH, DELETE } = mountNextAuthHandler(auth);
+```
+
+### 受保护 API
+
+```typescript
+import { createSessionValidator } from 'sa2kit/common/auth/server';
+
+const { getSessionUser } = createSessionValidator(auth);
+
+export async function GET(request: Request) {
+  const user = await getSessionUser(request);
+  if (!user) return new Response('Unauthorized', { status: 401 });
+  // ...
+}
+```
+
+## 客户端（Web / React）
+
+```tsx
+'use client';
+
+import { createSa2kitAuthClient, AuthProvider } from 'sa2kit/common/auth/react';
+import { LoginModal, UserMenu } from 'sa2kit/common/auth/components';
+
+export const authClient = createSa2kitAuthClient({
+  baseURL: process.env.NEXT_PUBLIC_APP_URL!,
+});
+
+export function AppProviders({ children }: { children: React.ReactNode }) {
+  return <AuthProvider authClient={authClient}>{children}</AuthProvider>;
+}
+
+export function Header() {
+  return <UserMenu />;
+}
+```
+
+Headless 表单（自定义 UI）：
+
+```tsx
+import { SignInForm } from 'sa2kit/common/auth/components';
+
+<SignInForm authClient={authClient} onSuccess={() => router.push('/')}>
+  {(state) => (/* 自定义 UI */)}
+</SignInForm>
+```
+
+## Calendar 模块接入
+
+在应用启动时（如 `instrumentation.ts` 或 route 模块顶部）配置 Better Auth：
+
+```typescript
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db';
+import { configureCalendarApiWithBetterAuth } from 'sa2kit/calendar/routes';
+
+configureCalendarApiWithBetterAuth(auth, { db });
+```
+
+复制或 re-export `sa2kit/calendar/api/**/route.ts` 到 `app/api/calendar/**` 即可。
+
+## Legacy 兼容（3.0 shim）
+
+`sa2kit/business/auth-legacy` 与 `sa2kit/auth/legacy/*` 在 3.0 仅为 **re-export shim**，指向 `common/auth`。旧 API（`useAuth`、`createLegacyLoginHandler`、`LegacyAuthDbService`）调用时将抛出迁移提示。
+
+- 新应用：直接使用 `sa2kit/common/auth/*`
+
+## React Native
+
+服务端已启用 `bearer` 插件；RN 客户端通过 `set-auth-token` 响应头持久化 Bearer token（AsyncStorage）。
+
+```typescript
+import { initSa2kitRnAuthClient, RnAccountLoginForm, getRnBearerToken } from 'sa2kit/common/auth/rn';
+
+const client = await initSa2kitRnAuthClient('http://10.0.2.2:3000/api');
+const token = await getRnBearerToken();
+```
+
+详见 [MIGRATION §7](./MIGRATION_2.x_to_3.0.md)。
+
+## Schema
+
+```typescript
 export {
   user,
   session,
   account,
-  verifications,
-  userRole,
-} from '@qhr123/sa2kit/auth/schema';
+  verification,
+} from 'sa2kit/common/auth/schema';
 ```
 
-### 2. 创建认证服务
+## 登录方式
 
-```typescript
-// lib/auth.ts
-import { DrizzleAuthService } from '@qhr123/sa2kit/auth/services';
-import { db } from './db';
+| 方式 | Client API |
+|------|------------|
+| 邮箱 + 密码 | `authClient.signIn.email({ email, password })` |
+| 手机 + 密码 | `authClient.signIn.phoneNumber({ phoneNumber, password })` |
+| 邮箱 OTP | `emailOtp.sendVerificationOtp` / `signIn.emailOtp` |
+| 手机 OTP | `phoneNumber.sendOtp` / `verify` |
 
-export const authService = new DrizzleAuthService({
-  db,
-  jwtSecret: process.env.JWT_SECRET!,
-  jwtExpiresIn: '7d',
-});
-```
-
-### 3. API 路由 (Next.js App Router)
-
-```typescript
-// app/api/auth/login/route.ts
-import { createLoginHandler } from '@qhr123/sa2kit/auth/routes';
-import { authService } from '@/lib/auth';
-
-export const POST = createLoginHandler({
-  authService,
-});
-```
-
-```typescript
-// app/api/auth/register/route.ts
-import { createRegisterHandler } from '@qhr123/sa2kit/auth/routes';
-import { authService } from '@/lib/auth';
-
-export const POST = createRegisterHandler({
-  authService,
-  defaultRole: 'USER',
-});
-```
-
-### 4. 受保护的路由
-
-```typescript
-// app/api/admin/users/route.ts
-import { createAuthMiddleware } from '@qhr123/sa2kit/auth/middleware';
-import { authService } from '@/lib/auth';
-
-const { requireAdmin } = createAuthMiddleware({ authService });
-
-export const GET = requireAdmin(async (request, context) => {
-  const { user } = context; // 自动注入
-  // ... 业务逻辑
-});
-```
-
-### 5. 前端使用
-
-```typescript
-// hooks
-import { useAuth } from '@qhr123/sa2kit/auth/hooks';
-import { apiClient } from './api-client';
-
-function LoginPage() {
-  const { login, loading, error } = useAuth(apiClient);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const result = await login(email, password);
-    if (result.success) {
-      router.push('/dashboard');
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      {/* 表单内容 */}
-    </form>
-  );
-}
-```
-
-## 📚 API 参考
-
-### DrizzleAuthService
-
-- `signUp(email, password, username?, role?)` - 用户注册
-- `signIn(email, password)` - 用户登录
-- `verifyToken(token)` - 验证 Token
-- `signOut(token)` - 登出
-- `requireAdmin(token)` - 检查管理员权限
-- `getUserById(userId)` - 通过 ID 获取用户
-- `getUserByEmail(email)` - 通过邮箱获取用户
-
-### 路由处理器
-
-- `createLoginHandler(config)` - 登录路由
-- `createRegisterHandler(config)` - 注册路由
-- `createMeHandler(config)` - 获取当前用户
-- `createLogoutHandler(config)` - 登出路由
-
-### 中间件
-
-- `createAuthMiddleware(config)` - 创建中间件
-  - `withAuth(handler, level)` - 通用认证
-  - `requireAuth(handler)` - 需要登录
-  - `requireAdmin(handler)` - 需要管理员
-  - `requireSuperAdmin(handler)` - 需要超级管理员
-
-## 🔧 配置选项
-
-### AuthServiceConfig
-
-```typescript
-{
-  db: any;              // Drizzle 数据库实例
-  jwtSecret: string;    // JWT 密钥
-  jwtExpiresIn?: string; // 过期时间，默认 '7d'
-  saltRounds?: number;  // bcrypt 加密轮数，默认 12
-  checkSecretStrength?: boolean; // 生产环境检查密钥强度，默认 true
-}
-```
-
-### LoginRouteConfig
-
-```typescript
-{
-  authService: DrizzleAuthService;
-  analytics?: {
-    track: (eventName: string, properties: any) => Promise<void>;
-  };
-  cookieOptions?: {
-    name?: string;        // Cookie 名称，默认 'auth_token'
-    httpOnly?: boolean;   // 默认 true
-    secure?: boolean;     // 生产环境默认 true
-    sameSite?: 'strict' | 'lax' | 'none'; // 默认 'lax'
-    maxAge?: number;      // 默认 7 天
-    path?: string;        // 默认 '/'
-  };
-}
-```
-
-## 📖 更多示例
-
-查看 [LOGIN_FLOW_EXTRACTION_PLAN.md](../LOGIN_FLOW_EXTRACTION_PLAN.md) 获取完整的使用示例。
-
-## 🔒 安全最佳实践
-
-1. **JWT Secret**: 至少 32 字符，生产环境强制检查
-2. **Cookie 设置**: 使用 `httpOnly` 和 `secure`
-3. **密码哈希**: 使用 bcrypt，默认 12 轮加密
-4. **HTTPS**: 生产环境必须使用 HTTPS
-5. **CORS**: 正确配置跨域请求
-
-## 📝 许可证
-
-MIT
-
+完整 API：[Better Auth 文档](https://www.better-auth.com/docs)

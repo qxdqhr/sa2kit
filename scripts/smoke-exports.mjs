@@ -24,6 +24,9 @@ const COMMON_SUBPATHS = [
   './common/platform',
   './common/auth',
   './common/auth/server',
+  './common/auth/schema',
+  './common/auth/client',
+  './common/auth/hooks',
   './common/export',
   './common/export/server',
 ];

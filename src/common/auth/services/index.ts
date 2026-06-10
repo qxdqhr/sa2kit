@@ -1,27 +1,4 @@
 /**
- * Auth Services
- * 认证服务模块
- *
- * @example
- * ```typescript
- * import { DrizzleAuthService } from '@qhr123/sa2kit/auth/services';
- *
- * const authService = new DrizzleAuthService({
- *   db: myDb,
- *   jwtSecret: process.env.JWT_SECRET!,
- * });
- * ```
+ * @deprecated 3.0 认证逻辑由 Better Auth 接管；仅保留密码工具供非 auth 场景使用
  */
-
-export { DrizzleAuthService } from './drizzle-auth-service';
 export { hashPassword, verifyPassword } from './password-utils';
-export { generateToken, verifyJwtToken, getTokenFromRequest } from './token-utils';
-export type {
-  AuthServiceConfig,
-  UserInfo,
-  AuthResult,
-  SessionInfo,
-  VerifyResult,
-} from './types';
-export type { JwtPayload } from './token-utils';
-

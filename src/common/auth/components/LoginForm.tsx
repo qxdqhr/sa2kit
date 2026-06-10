@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../hooks';
+import type { BaseApiClient } from '../client/base-api-client';
 import type { HeadlessLoginFormProps, LoginFormState } from './types';
 
 /**
@@ -51,11 +52,7 @@ export function LoginForm({ apiClient, onSuccess, onError, children }: HeadlessL
     const result = await login(email, password);
 
     if (result.success) {
-      // 登录成功后 user 会自动更新到 state
-      const currentUser = apiClient.getUser();
-      if (currentUser) {
-        onSuccess?.(currentUser);
-      }
+      onSuccess?.((apiClient as BaseApiClient).getUser());
     } else {
       onError?.(result.error || '登录失败');
     }

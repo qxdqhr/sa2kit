@@ -1,37 +1,24 @@
 /**
- * Auth Schema - Verification Table
- * 验证码表定义
+ * Better Auth — verification 表（OTP / magic link，3.0 SSOT）
  */
-
-import { pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
-/**
- * 验证码表（邮箱验证、密码重置等）
- */
-export const verifications = pgTable(
-  'verifications',
-  {
-    id: text().primaryKey().notNull(),
-    identifier: text().notNull(), // 邮箱或手机号
-    value: text().notNull(), // 验证码
-    expiresAt: timestamp({ precision: 3, mode: 'string' }).notNull(),
-    createdAt: timestamp({ precision: 3, mode: 'string' })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-  },
-  (table) => [
-    uniqueIndex('verifications_identifier_value_key').using(
-      'btree',
-      table.identifier.asc().nullsLast().op('text_ops'),
-      table.value.asc().nullsLast().op('text_ops')
-    ),
-  ]
-);
+export const verification = pgTable('verification', {
+  id: text('id').primaryKey().notNull(),
+  identifier: text('identifier').notNull(),
+  value: text('value').notNull(),
+  expiresAt: timestamp('expiresAt', { precision: 3, mode: 'date' }).notNull(),
+  createdAt: timestamp('createdAt', { precision: 3, mode: 'date' })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp('updatedAt', { precision: 3, mode: 'date' })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
 
-/**
- * 类型定义
- */
-export type Verification = typeof verifications.$inferSelect;
-export type NewVerification = typeof verifications.$inferInsert;
+export type Verification = typeof verification.$inferSelect;
+export type NewVerification = typeof verification.$inferInsert;
 
+/** @deprecated 3.0 使用 `verification` */
+export const verifications = verification;

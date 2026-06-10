@@ -1,13 +1,4 @@
-import type { NextRequest } from 'next/server';
-import { createBatchDeleteEventsHandler } from '../../../routes';
-import {
-  createDefaultCalendarRouteConfig,
-  withCalendarDbGuard,
-} from '../../_shared';
+import { createCalendarBatchDeleteRouteHandlers } from '../../route-handlers';
 
-const routeConfig = createDefaultCalendarRouteConfig();
-const batchDeleteEventsHandler = createBatchDeleteEventsHandler(routeConfig);
-
-export const DELETE = withCalendarDbGuard((request: NextRequest) =>
-  batchDeleteEventsHandler(request),
-);
+const { DELETE } = createCalendarBatchDeleteRouteHandlers();
+export { DELETE };
