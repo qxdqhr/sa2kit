@@ -6,8 +6,6 @@ export const businessEntries = {
   'business/mmd/admin/index': 'src/business/mmd/admin/index.ts',
   'business/mmd/server/index': 'src/business/mmd/server/index.ts',
   'business/audioDetection/index': 'src/business/audioDetection/index.ts',
-  'business/calendar/index': 'src/business/calendar/index.ts',
-  'business/calendar/routes/index': 'src/business/calendar/routes/index.ts',
   'business/testYourself/index': 'src/business/testYourself/index.ts',
   'business/testYourself/admin/index': 'src/business/testYourself/admin/index.ts',
   'business/testYourself/server/index': 'src/business/testYourself/server/index.ts',

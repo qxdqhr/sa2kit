@@ -4,7 +4,6 @@ import { describe, expect, it } from 'vitest';
 
 const BUSINESS_DIRS = [
   'src/business',
-  'src/business/calendar',
   'src/business/portfolio',
   'src/business/profile',
   'src/business/testField',

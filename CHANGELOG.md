@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.0] - 2026-06-12
+
+### Removed
+
+- **Breaking**：移除 `business/calendar` 模块及 npm 导出（`sa2kit/business/calendar`、`/routes`）
+- 日历业务由 profile-v1 `@/modules/calendar` 维护
+
 ## [3.6.0] - 2026-06-12
 
 ### Added

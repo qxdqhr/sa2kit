@@ -15,13 +15,11 @@ const REQUIRED_DIST = [
   'dist/common/components/index.js',
   'dist/common/file/server/index.js',
   'dist/business/mmd/index.js',
-  'dist/business/calendar/index.js',
   'dist/business/music/server/index.js',
 ];
 
 const REQUIRED_TARBALL_PREFIXES = [
   'dist/business/mmd/index.js',
-  'dist/business/calendar/routes/index.js',
   'dist/common/components/index.js',
 ];
 

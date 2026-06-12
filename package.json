@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "3.6.0",
+  "version": "3.7.0",
   "description": "SA2Kit 2.0 — common API 稳定；business 实验田模块逐步迁出 profile-v1",
   "keywords": [
     "react",
@@ -162,16 +162,6 @@
       "types": "./dist/business/audioDetection/index.d.ts",
       "import": "./dist/business/audioDetection/index.mjs",
       "require": "./dist/business/audioDetection/index.js"
-    },
-    "./business/calendar": {
-      "types": "./dist/business/calendar/index.d.ts",
-      "import": "./dist/business/calendar/index.mjs",
-      "require": "./dist/business/calendar/index.js"
-    },
-    "./business/calendar/routes": {
-      "types": "./dist/business/calendar/routes/index.d.ts",
-      "import": "./dist/business/calendar/routes/index.mjs",
-      "require": "./dist/business/calendar/routes/index.js"
     },
     "./business/festivalCard": {
       "types": "./dist/business/festivalCard/index.d.ts",
