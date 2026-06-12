@@ -1,0 +1,60 @@
+import type { AiClientSettings, AudioStrategy } from '../types';
+
+export interface AiApiSettings {
+  apiKey: string;
+  baseUrl: string;
+  visionModel: string;
+  textModel?: string;
+  audioModel?: string;
+  audioStrategy?: AudioStrategy;
+}
+
+export const DEFAULT_AI_API_SETTINGS: AiApiSettings = {
+  apiKey: '',
+  baseUrl: 'https://api.openai.com/v1',
+  visionModel: 'gpt-4o-mini',
+  textModel: 'gpt-4o-mini',
+  audioModel: 'whisper-1',
+  audioStrategy: 'auto',
+};
+
+export const AI_API_SETTINGS_STORAGE_KEY = 'ai-api-settings';
+
+export function loadAiApiSettings(storageKey = AI_API_SETTINGS_STORAGE_KEY): AiApiSettings {
+  if (typeof window === 'undefined') return DEFAULT_AI_API_SETTINGS;
+  try {
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) return DEFAULT_AI_API_SETTINGS;
+    return { ...DEFAULT_AI_API_SETTINGS, ...JSON.parse(raw) };
+  } catch {
+    return DEFAULT_AI_API_SETTINGS;
+  }
+}
+
+export function saveAiApiSettings(
+  settings: AiApiSettings,
+  storageKey = AI_API_SETTINGS_STORAGE_KEY
+): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(storageKey, JSON.stringify(settings));
+}
+
+export function toClientSettings(settings: AiApiSettings): AiClientSettings | undefined {
+  const client: AiClientSettings = {};
+  if (settings.apiKey.trim()) client.apiKey = settings.apiKey.trim();
+  if (settings.baseUrl.trim()) client.baseUrl = settings.baseUrl.trim();
+  const visionModel = settings.visionModel.trim();
+  const textModel = settings.textModel?.trim() || visionModel;
+  const audioModel = settings.audioModel?.trim();
+  if (visionModel) client.visionModel = visionModel;
+  if (textModel) client.textModel = textModel;
+  if (audioModel) client.audioModel = audioModel;
+  if (settings.audioStrategy) client.audioStrategy = settings.audioStrategy;
+  return Object.keys(client).length > 0 ? client : undefined;
+}
+
+export function pickClientSettingsFromStorage(
+  storageKey = AI_API_SETTINGS_STORAGE_KEY
+): AiClientSettings | undefined {
+  return toClientSettings(loadAiApiSettings(storageKey));
+}

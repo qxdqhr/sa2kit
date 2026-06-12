@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.6.0] - 2026-06-12
+
+### Added
+
+- **`common/aiApi`**：OpenAI 兼容大模型薄封装（`callChat`、`callMultimodalChat`、`runAiTask`）
+- **多模态 auto 混合**：图片 + 语音；`audioStrategy: auto` 优先 chat 内嵌音频，失败或未支持时 Whisper STT 转写后 chat
+- **导出路径**：`sa2kit/common/aiApi`、`/client`、`/server`
+- **内置任务**：`core.llmCompletion`、`core.structuredMultimodal`、`core.connectivityTest`
+- **测试**：`tests/aiApi/*`
+
+### Removed
+
+- **Breaking**：移除 `common/ai/llm` 全部模块与 npm 导出（对话 UI、skills、provider 栈等）
+- 移除 `callVisionChat`、`callLlm` 及 deprecated 类型别名；多模态统一 `callMultimodalChat` + `media`
+
 ## [3.4.0] - 2026-06-11
 
 ### Added

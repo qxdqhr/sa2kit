@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "3.4.0",
+  "version": "3.6.0",
   "description": "SA2Kit 2.0 — common API 稳定；business 实验田模块逐步迁出 profile-v1",
   "keywords": [
     "react",
@@ -288,55 +288,20 @@
       "import": "./dist/business/vocaloidBooth/web/index.mjs",
       "require": "./dist/business/vocaloidBooth/web/index.js"
     },
-    "./common/ai/llm/core": {
-      "types": "./dist/common/ai/llm/core/index.d.ts",
-      "import": "./dist/common/ai/llm/core/index.mjs",
-      "require": "./dist/common/ai/llm/core/index.js"
+    "./common/aiApi/client": {
+      "types": "./dist/common/aiApi/client/index.d.ts",
+      "import": "./dist/common/aiApi/client/index.mjs",
+      "require": "./dist/common/aiApi/client/index.js"
     },
-    "./common/ai/llm/electron": {
-      "types": "./dist/common/ai/llm/electron/index.d.ts",
-      "import": "./dist/common/ai/llm/electron/index.mjs",
-      "require": "./dist/common/ai/llm/electron/index.js"
+    "./common/aiApi": {
+      "types": "./dist/common/aiApi/index.d.ts",
+      "import": "./dist/common/aiApi/index.mjs",
+      "require": "./dist/common/aiApi/index.js"
     },
-    "./common/ai/llm": {
-      "types": "./dist/common/ai/llm/index.d.ts",
-      "import": "./dist/common/ai/llm/index.mjs",
-      "require": "./dist/common/ai/llm/index.js"
-    },
-    "./common/ai/llm/miniapp": {
-      "types": "./dist/common/ai/llm/miniapp/index.d.ts",
-      "import": "./dist/common/ai/llm/miniapp/index.mjs",
-      "require": "./dist/common/ai/llm/miniapp/index.js"
-    },
-    "./common/ai/llm/rn": {
-      "types": "./dist/common/ai/llm/rn/index.d.ts",
-      "import": "./dist/common/ai/llm/rn/index.mjs",
-      "require": "./dist/common/ai/llm/rn/index.js"
-    },
-    "./common/ai/llm/ui/electron": {
-      "types": "./dist/common/ai/llm/ui/electron/index.d.ts",
-      "import": "./dist/common/ai/llm/ui/electron/index.mjs",
-      "require": "./dist/common/ai/llm/ui/electron/index.js"
-    },
-    "./common/ai/llm/ui/miniapp": {
-      "types": "./dist/common/ai/llm/ui/miniapp/index.d.ts",
-      "import": "./dist/common/ai/llm/ui/miniapp/index.mjs",
-      "require": "./dist/common/ai/llm/ui/miniapp/index.js"
-    },
-    "./common/ai/llm/ui/rn": {
-      "types": "./dist/common/ai/llm/ui/rn/index.d.ts",
-      "import": "./dist/common/ai/llm/ui/rn/index.mjs",
-      "require": "./dist/common/ai/llm/ui/rn/index.js"
-    },
-    "./common/ai/llm/ui/web": {
-      "types": "./dist/common/ai/llm/ui/web/index.d.ts",
-      "import": "./dist/common/ai/llm/ui/web/index.mjs",
-      "require": "./dist/common/ai/llm/ui/web/index.js"
-    },
-    "./common/ai/llm/web": {
-      "types": "./dist/common/ai/llm/web/index.d.ts",
-      "import": "./dist/common/ai/llm/web/index.mjs",
-      "require": "./dist/common/ai/llm/web/index.js"
+    "./common/aiApi/server": {
+      "types": "./dist/common/aiApi/server/index.d.ts",
+      "import": "./dist/common/aiApi/server/index.mjs",
+      "require": "./dist/common/aiApi/server/index.js"
     },
     "./common/analytics/server": {
       "types": "./dist/common/analytics/server/index.d.ts",
