@@ -15,7 +15,6 @@ export * from './common/ai/background-removal';
 export * from './common/ai/sentiment-analysis';
 export * from './common/ai/text-generation';
 export * from './common/aiApi';
-export * from './common/aiApi/client';
 
 export * from './business/profile';
 export * from './business/portfolio';
