@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "3.2.0",
+  "version": "3.4.0",
   "description": "SA2Kit 2.0 — common API 稳定；business 实验田模块逐步迁出 profile-v1",
   "keywords": [
     "react",
@@ -405,6 +405,11 @@
       "import": "./dist/common/components/index.mjs",
       "require": "./dist/common/components/index.js"
     },
+    "./common/config/bootstrap": {
+      "types": "./dist/common/config/bootstrap/index.d.ts",
+      "import": "./dist/common/config/bootstrap/index.mjs",
+      "require": "./dist/common/config/bootstrap/index.js"
+    },
     "./common/config/server": {
       "types": "./dist/common/config/server/index.d.ts",
       "node": {
@@ -564,9 +569,12 @@
     "clean": "rm -rf dist",
     "snapshot:exports": "node scripts/snapshot-exports.mjs",
     "smoke:exports": "node scripts/smoke-exports.mjs",
+    "verify:publish-artifact": "node scripts/verify-publish-artifact.mjs",
+    "auth:env-check": "pnpm run build:common && node scripts/check-auth-env.mjs",
+    "config:doctor": "pnpm run build:common && node scripts/config-doctor.mjs",
     "smoke:file-api": "vitest run tests/ossFile/uploadGetUrl.integration.test.ts tests/ossFile/bootstrap.test.ts",
     "prepare": "node scripts/prepare.mjs",
-    "prepublishOnly": "pnpm run build && pnpm run test",
+    "prepublishOnly": "pnpm run build && pnpm run verify:publish-artifact && pnpm run test",
     "publish:beta": "npm publish --tag beta --access public",
     "publish:latest": "npm publish --access public"
   },
@@ -612,6 +620,9 @@
     },
     "ws": {
       "optional": true
+    },
+    "@alicloud/pop-core": {
+      "optional": true
     }
   },
   "devDependencies": {
@@ -654,6 +665,9 @@
     "vitest": "^1.2.0",
     "ws": "^8.19.0"
   },
+  "optionalDependencies": {
+    "@alicloud/pop-core": "^1.7.12"
+  },
   "engines": {
     "node": ">=18.0.0"
   },
@@ -679,6 +693,7 @@
     "three-stdlib": "^2.36.0",
     "uuid": "^13.0.0",
     "xlsx": "^0.18.5",
+    "yaml": "^2.8.0",
     "zod": "^4.4.3"
   }
 }

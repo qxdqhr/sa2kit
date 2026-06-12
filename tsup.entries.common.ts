@@ -25,6 +25,7 @@ export const commonEntries = {
   'common/analytics/server/index': 'src/common/analytics/server/index.ts',
   'common/config/index': 'src/common/config/index.ts',
   'common/config/server/index': 'src/common/config/server/index.ts',
+  'common/config/bootstrap/index': 'src/common/config/bootstrap/index.ts',
   'common/i18n/index': 'src/common/i18n/index.ts',
   'common/imageCrop/index': 'src/common/imageCrop/index.ts',
   'common/components/index': 'src/common/components/index.ts',

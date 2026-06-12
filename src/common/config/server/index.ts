@@ -131,3 +131,24 @@ export {
   validateDatabaseConfig,
   getDatabaseConfigForDisplay,
 } from './database-config';
+
+// ==================== AppConfig Bootstrap（YAML + SOPS 明文运行时） ====================
+export {
+  appConfigSchema,
+  loadAppConfig,
+  getAppConfig,
+  readAppConfigFile,
+  resetAppConfigCache,
+  checkAppConfigFromFile,
+  applyAppConfigToProcessEnv,
+  diagnoseAppConfig,
+  logConfigDoctorReport,
+  resolveAppConfigPath,
+  resolveAppConfigEnv,
+  resolveAuthConfigFromAppConfig,
+  SOPS_ENCRYPTED_PATH,
+  type AppConfig,
+  type AppConfigInput,
+  type ConfigDoctorReport,
+  type LoadAppConfigOptions,
+} from '../bootstrap';

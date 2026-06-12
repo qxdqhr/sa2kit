@@ -37,6 +37,26 @@ export function RegisterFormHeadless({
         fail('请输入正确的手机号');
         return;
       }
+      const pwd = validatePassword(password);
+      if (!pwd.valid) {
+        fail(pwd.message ?? '密码无效');
+        return;
+      }
+      if (password !== confirmPassword) {
+        fail('两次密码不一致');
+        return;
+      }
+
+      const intentResponse = await fetch('/api/auth/phone-signup-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: phone.trim(), password }),
+      });
+      if (!intentResponse.ok) {
+        fail('无法保存注册信息，请稍后重试');
+        return;
+      }
+
       const result = await actions.sendPhoneOtp(phone.trim());
       if (!result.success) {
         fail(result.error);

@@ -1,5 +1,57 @@
 # Changelog
 
+## [3.4.0] - 2026-06-11
+
+### Added
+
+- **`common/config/server` 再导出 AppConfig Bootstrap**：可从 `sa2kit/common/config/server` 直接 import `loadAppConfig`、`diagnoseAppConfig` 等
+- **CLI**：`auth:env-check`、`config:doctor` 脚本
+- **依赖**：`yaml`（AppConfig 解析）；`@alicloud/pop-core` 作为 optionalDependency（阿里云 PNVS SMS）
+
+### Changed
+
+- **`RegisterFormHeadless`**：手机号注册在发送 OTP 前校验密码并调用 `phone-signup-intent` 暂存
+- **`createSa2kitAuth`**：手机号验证通过后通过 `callbackOnVerification` 自动写入 credential 密码
+
+### Fixed
+
+- **AppConfig Bootstrap**：`NEXT_PHASE=phase-production-build` 时回退 `app.config.example.yaml`，与 Auth env 构建阶段行为对齐
+- 移除无用 `taro-components.d.ts` stub
+
+## [3.3.0] - 2026-06-11
+
+### Added
+
+- **AppConfig Bootstrap**：`sa2kit/common/config/bootstrap` — 统一 YAML 配置加载、Zod 校验、`diagnoseAppConfig` / `config:doctor`
+- **`createSa2kitAuthFromAppConfig`**：从 AppConfig 创建 Auth（替代散落 env）
+- 文档 `docs/app-config.md`
+
+## [3.2.3] - 2026-06-11
+
+### Fixed
+
+- **Next.js 构建**：`NEXT_PHASE=phase-production-build` 时允许使用 dev secret 占位，避免 Docker 运行时 env 尚未注入导致 `next build` 失败
+
+## [3.2.2] - 2026-06-11
+
+### Added
+
+- **SMS**：`sa2kit/common/auth/server/sms` — `console` / `aliyun-pnvs` provider，`createSmsProviderFromEnv()`
+- **Env SSOT**：`docs/auth-env.md`、`checkAuthEnv()` / `createSa2kitAuthFromEnv()` 启动时自动提醒缺失配置
+- **手机号注册**：`phone-signup-intent` API + 验证通过后写入 credential 密码
+
+### Fixed
+
+- `sendOTP` 改为 `await`，发送失败不再被静默吞掉
+
+## [3.2.1] - 2026-06-11
+
+### Fixed
+
+- **prepare 钩子**：business 产物检测路径更新为 `dist/business/mmd/index.js`（3.2.0 重构后旧路径 `dist/mmd` 失效）
+- 修复 `npm publish` / `npm pack` 时 prepare 误跑 `build:common`（`clean: true`）导致 tarball **仅含 common、缺 business** 的问题
+- 新增 `verify:publish-artifact`：发布前校验 dist 与 `npm pack` tarball 必须包含 business 产物（`prepublishOnly` 与 CI publish workflow）
+
 ## [3.2.0] - 2026-06-10
 
 ### Changed

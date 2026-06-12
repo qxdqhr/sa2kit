@@ -13,6 +13,8 @@ import {
   defaultPhoneValidator,
   defaultTempEmailFromPhone,
 } from './plugins/dev-otp';
+import { upsertCredentialPassword } from './credential-password';
+import { consumePhoneSignupPassword } from './phone-signup-intent';
 
 export type { Sa2kitAuthInstance } from './types';
 
@@ -63,7 +65,13 @@ export function createSa2kitAuth(config: Sa2kitAuthConfig): Sa2kitAuthInstance {
         async sendOTP({ phoneNumber: phone, code }) {
           devLog?.('sms', phone, code);
           if (config.sms?.sendOTP) {
-            void config.sms.sendOTP(phone, code);
+            await config.sms.sendOTP(phone, code);
+          }
+        },
+        async callbackOnVerification({ phoneNumber: phone, user }) {
+          const pendingPassword = consumePhoneSignupPassword(phone);
+          if (pendingPassword && user?.id) {
+            await upsertCredentialPassword(config.db, String(user.id), pendingPassword);
           }
         },
         signUpOnVerification: {

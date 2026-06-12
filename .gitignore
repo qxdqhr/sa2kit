@@ -47,3 +47,5 @@ examples/
 !docs/common-platform-adapters.md
 !docs/business-testfield-games-migration.md
 !docs/MAINTENANCE_1.6.md
+!docs/auth-env.md
+!docs/app-config.md

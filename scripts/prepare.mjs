@@ -11,7 +11,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const businessMarker = join(root, 'dist', 'mmd', 'index.js');
+/** 3.2+ business 产物位于 dist/business/*（旧版为 dist/mmd 等扁平路径） */
+const businessMarker = join(root, 'dist', 'business', 'mmd', 'index.js');
 
 if (!existsSync(join(root, 'src'))) {
   console.log('[prepare] skip — published package (prebuilt dist in tarball)');
