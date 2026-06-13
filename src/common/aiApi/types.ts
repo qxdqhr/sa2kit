@@ -145,6 +145,15 @@ export interface ConnectivityTestOutput {
   reply: string;
 }
 
+/** GET /api/ai/config 响应（宿主实现，不暴露 apiKey） */
+export interface AiServerConfigStatus {
+  serverConfigured: boolean;
+  baseUrl?: string;
+  visionModel?: string;
+  textModel?: string;
+  error?: string;
+}
+
 export interface AiModelsListRequest {
   clientSettings?: AiClientSettings;
 }

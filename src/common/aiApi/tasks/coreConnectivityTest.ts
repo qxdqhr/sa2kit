@@ -21,26 +21,21 @@ export const coreConnectivityTestTask: AiTaskDefinition<Record<string, never>, C
         baseUrl: config.baseUrl,
         apiKey: config.apiKey,
         model: config.textModel,
-        systemPrompt: 'You are a connectivity probe. Reply with JSON only.',
-        userPrompt: 'Return JSON: {"ok":true,"reply":"OK"}',
+        systemPrompt: 'You are a connectivity probe. Reply briefly.',
+        userPrompt: 'Say OK',
         temperature: 0,
         maxTokens: 32,
         timeoutMs: config.timeoutMs,
       });
 
-      let ok = false;
+      // HTTP 请求成功即视为连通；尽量解析回复内容用于展示
       let reply = result.content.trim();
 
       try {
         const json = extractJsonObject(result.content);
-        ok = json.ok === true || json.ok === 'true';
-        reply = String(json.reply ?? result.content).trim();
+        reply = String(json.reply ?? json.message ?? result.content).trim();
       } catch {
-        ok = /ok/i.test(result.content);
-      }
-
-      if (!ok && !reply) {
-        throw new Error('模型未返回有效响应');
+        // 非 JSON 回复也接受
       }
 
       return {

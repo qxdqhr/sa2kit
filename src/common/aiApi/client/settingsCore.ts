@@ -20,14 +20,17 @@ export const DEFAULT_AI_API_SETTINGS: AiApiSettings = {
 
 export const AI_API_SETTINGS_STORAGE_KEY = 'ai-api-settings';
 
-export function loadAiApiSettings(storageKey = AI_API_SETTINGS_STORAGE_KEY): AiApiSettings {
-  if (typeof window === 'undefined') return DEFAULT_AI_API_SETTINGS;
+export function loadAiApiSettings(
+  storageKey = AI_API_SETTINGS_STORAGE_KEY,
+  defaults: AiApiSettings = DEFAULT_AI_API_SETTINGS
+): AiApiSettings {
+  if (typeof window === 'undefined') return defaults;
   try {
     const raw = localStorage.getItem(storageKey);
-    if (!raw) return DEFAULT_AI_API_SETTINGS;
-    return { ...DEFAULT_AI_API_SETTINGS, ...JSON.parse(raw) };
+    if (!raw) return defaults;
+    return { ...defaults, ...JSON.parse(raw) };
   } catch {
-    return DEFAULT_AI_API_SETTINGS;
+    return defaults;
   }
 }
 
@@ -53,8 +56,21 @@ export function toClientSettings(settings: AiApiSettings): AiClientSettings | un
   return Object.keys(client).length > 0 ? client : undefined;
 }
 
+/**
+ * 浏览器未填写 API Key 时，完全依赖服务端环境变量（AI_API_KEY 等），
+ * 避免 localStorage 中的 baseUrl/model 覆盖宿主 YAML 配置。
+ */
+export function toServerClientSettings(settings: AiApiSettings): AiClientSettings | undefined {
+  if (!settings.apiKey.trim()) {
+    return undefined;
+  }
+  return toClientSettings(settings);
+}
+
+/** 仅当浏览器填写了 API Key 时才向服务端传递 clientSettings */
 export function pickClientSettingsFromStorage(
-  storageKey = AI_API_SETTINGS_STORAGE_KEY
+  storageKey = AI_API_SETTINGS_STORAGE_KEY,
+  defaults: AiApiSettings = DEFAULT_AI_API_SETTINGS
 ): AiClientSettings | undefined {
-  return toClientSettings(loadAiApiSettings(storageKey));
+  return toServerClientSettings(loadAiApiSettings(storageKey, defaults));
 }

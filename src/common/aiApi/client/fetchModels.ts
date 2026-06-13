@@ -7,11 +7,16 @@ export async function fetchAiModels(
   const fetchFn = options?.fetchImpl ?? fetch;
   const endpoint = options?.modelsEndpoint ?? '/api/ai/models';
 
+  const body: { clientSettings?: AiClientSettings } = {};
+  if (clientSettings) {
+    body.clientSettings = clientSettings;
+  }
+
   const response = await fetchFn(endpoint, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ clientSettings }),
+    body: JSON.stringify(body),
     signal: options?.signal,
   });
 
