@@ -34,7 +34,11 @@ export async function runAiTask<TInput, TOutput>(
 ): Promise<AiApiResponse<TOutput>> {
   const fetchFn = options?.fetchImpl ?? fetch;
   const endpoint = options?.runEndpoint ?? '/api/ai/run';
-  const clientSettings = options?.clientSettings ?? pickClientSettingsFromStorage();
+  // 显式传入 clientSettings: undefined 表示完全走服务端配置，不回退 localStorage
+  const clientSettings =
+    options !== undefined && 'clientSettings' in options
+      ? options.clientSettings
+      : pickClientSettingsFromStorage();
 
   const payload: AiApiRunRequest<TInput> = {
     taskId,
