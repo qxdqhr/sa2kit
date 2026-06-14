@@ -38,4 +38,6 @@ export const commonEntries = {
   'common/aiApi/index': 'src/common/aiApi/index.ts',
   'common/aiApi/client/index': 'src/common/aiApi/client/index.ts',
   'common/aiApi/server/index': 'src/common/aiApi/server/index.ts',
+  'common/appLauncher/index': 'src/common/appLauncher/index.ts',
+  'common/appLauncher/rn/index': 'src/common/appLauncher/rn/index.ts',
 } as const satisfies Record<string, string>;

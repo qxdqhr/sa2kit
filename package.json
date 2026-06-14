@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "3.8.0",
+  "version": "3.9.0",
   "description": "SA2Kit 2.0 — common API 稳定；business 实验田模块逐步迁出 profile-v1",
   "keywords": [
     "react",
@@ -308,6 +308,16 @@
       "types": "./dist/common/api/index.d.ts",
       "import": "./dist/common/api/index.mjs",
       "require": "./dist/common/api/index.js"
+    },
+    "./common/appLauncher": {
+      "types": "./dist/common/appLauncher/index.d.ts",
+      "import": "./dist/common/appLauncher/index.mjs",
+      "require": "./dist/common/appLauncher/index.js"
+    },
+    "./common/appLauncher/rn": {
+      "types": "./dist/common/appLauncher/rn/index.d.ts",
+      "import": "./dist/common/appLauncher/rn/index.mjs",
+      "require": "./dist/common/appLauncher/rn/index.js"
     },
     "./common/auth/client": {
       "types": "./dist/common/auth/client/index.d.ts",
