@@ -1,5 +1,5 @@
 /** 支持的第三方 App 提供方 */
-export type AppProviderId = 'amap' | 'wechat' | 'qq' | 'generic';
+export type AppProviderId = 'amap' | 'baidu' | 'google' | 'wechat' | 'qq' | 'generic';
 
 /** 运行平台 */
 export type AppLaunchPlatform = 'web' | 'rn';

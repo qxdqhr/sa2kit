@@ -1,11 +1,15 @@
 import type { AppLaunchProvider, AppProviderId } from '../types';
 import { amapProvider } from './amap';
+import { baiduProvider } from './baidu';
 import { genericProvider } from './generic';
+import { googleProvider } from './google';
 import { qqProvider } from './qq';
 import { wechatProvider } from './wechat';
 
 const builtinProviders: Record<AppProviderId, AppLaunchProvider> = {
   amap: amapProvider,
+  baidu: baiduProvider,
+  google: googleProvider,
   wechat: wechatProvider,
   qq: qqProvider,
   generic: genericProvider,
@@ -29,4 +33,4 @@ export function listAppProviders(): AppProviderId[] {
   return [...ids];
 }
 
-export { amapProvider, wechatProvider, qqProvider, genericProvider };
+export { amapProvider, baiduProvider, googleProvider, wechatProvider, qqProvider, genericProvider };

@@ -19,8 +19,10 @@ import {
 import { isAndroid, isIOS, isMobileDevice } from './detect';
 import {
   amapProvider,
+  baiduProvider,
   genericProvider,
   getAppProvider,
+  googleProvider,
   listAppProviders,
   qqProvider,
   registerAppProvider,
@@ -28,11 +30,16 @@ import {
 } from './providers/registry';
 import {
   buildAmapNavigationUrl,
+  buildBaiduNavigationUrl,
+  buildGoogleNavigationUrl,
   launchAmapNavigation,
   launchGenericUrl,
+  launchMapNavigation,
   launchQqShare,
   launchWechatShare,
+  MAP_NAVIGATION_OPTIONS,
   openAmapNavigation,
+  openMapNavigation,
 } from './shortcuts';
 
 export type {
@@ -62,6 +69,8 @@ export {
   getAppProvider,
   listAppProviders,
   amapProvider,
+  baiduProvider,
+  googleProvider,
   wechatProvider,
   qqProvider,
   genericProvider,
@@ -76,12 +85,22 @@ export {
   isIOS,
   isMobileDevice,
   buildAmapNavigationUrl,
+  buildBaiduNavigationUrl,
+  buildGoogleNavigationUrl,
   launchAmapNavigation,
   openAmapNavigation,
   launchWechatShare,
   launchQqShare,
   launchGenericUrl,
+  MAP_NAVIGATION_OPTIONS,
+  launchMapNavigation,
+  openMapNavigation,
 };
 
 export type { RnLinkingLike } from './adapters/rn';
 export type { AmapNavigationOptions, QqShareOptions, WechatShareOptions } from './shortcuts';
+export type {
+  MapNavigationOption,
+  MapNavigationOptions,
+  MapNavigationProviderId,
+} from './shortcuts/map-navigation';

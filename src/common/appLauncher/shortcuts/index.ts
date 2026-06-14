@@ -1,5 +1,7 @@
 import { launchApp } from '../core/launcher';
 import { buildAmapNavigationUrl } from '../providers/amap';
+import { buildBaiduNavigationUrl } from '../providers/baidu';
+import { buildGoogleNavigationUrl } from '../providers/google';
 import type { AppLaunchCallbacks, AppLaunchOptions, AppLaunchResult } from '../types';
 
 export type AmapNavigationOptions = AppLaunchOptions & {
@@ -84,3 +86,15 @@ export async function launchGenericUrl(
     callbacks,
   });
 }
+
+export {
+  MAP_NAVIGATION_OPTIONS,
+  launchMapNavigation,
+  openMapNavigation,
+  type MapNavigationOption,
+  type MapNavigationOptions,
+  type MapNavigationProviderId,
+} from './map-navigation';
+
+export { buildBaiduNavigationUrl } from '../providers/baidu';
+export { buildGoogleNavigationUrl } from '../providers/google';

@@ -31,6 +31,9 @@ export {
   launchGenericUrl,
   launchQqShare,
   launchWechatShare,
+  launchMapNavigation,
+  openMapNavigation,
+  MAP_NAVIGATION_OPTIONS,
   notifyAppReturn,
   parseReturnUrl,
   registerAppProvider,
@@ -39,6 +42,7 @@ export {
   type AppLaunchOptions,
   type AppLaunchResult,
   type AppReturnPayload,
+  type MapNavigationProviderId,
   type RnLinkingLike,
 } from '../index';
 

@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { amapProvider } from '../../src/common/appLauncher/providers/amap';
+import { baiduProvider } from '../../src/common/appLauncher/providers/baidu';
+import { googleProvider } from '../../src/common/appLauncher/providers/google';
 import { qqProvider } from '../../src/common/appLauncher/providers/qq';
 import { wechatProvider } from '../../src/common/appLauncher/providers/wechat';
 import { parseReturnUrl } from '../../src/common/appLauncher/core/return-handler';
-import { buildAmapNavigationUrl } from '../../src/common/appLauncher/shortcuts';
+import {
+  buildAmapNavigationUrl,
+  MAP_NAVIGATION_OPTIONS,
+} from '../../src/common/appLauncher/shortcuts';
 import { AppLaunchError } from '../../src/common/appLauncher/types';
 
 describe('common/appLauncher providers', () => {
@@ -23,6 +28,29 @@ describe('common/appLauncher providers', () => {
     expect(urls.fallback).toContain('uri.amap.com');
   });
 
+  it('baidu navigate 生成 baidumap scheme', () => {
+    const urls = baiduProvider.buildUrls(
+      'navigate',
+      { destination: '天安门' },
+      context,
+    );
+
+    expect(urls.primary.startsWith('baidumap://map/navi')).toBe(true);
+    expect(decodeURIComponent(urls.primary)).toContain('天安门');
+    expect(urls.fallback).toContain('map.baidu.com');
+  });
+
+  it('google navigate 生成 Google Maps 链接', () => {
+    const urls = googleProvider.buildUrls(
+      'navigate',
+      { destination: 'Tokyo Tower' },
+      context,
+    );
+
+    expect(urls.primary).toMatch(/comgooglemaps:|google\.navigation:/);
+    expect(urls.fallback).toContain('google.com/maps');
+  });
+
   it('buildAmapNavigationUrl 与 provider 一致', () => {
     const fromShortcut = buildAmapNavigationUrl('测试地点', 'profile-v1');
     const fromProvider = amapProvider.buildUrls(
@@ -32,6 +60,14 @@ describe('common/appLauncher providers', () => {
     ).primary;
 
     expect(fromShortcut).toBe(fromProvider);
+  });
+
+  it('MAP_NAVIGATION_OPTIONS 包含三家地图', () => {
+    expect(MAP_NAVIGATION_OPTIONS.map(item => item.id)).toEqual([
+      'amap',
+      'baidu',
+      'google',
+    ]);
   });
 
   it('qq share 生成 mqqapi scheme', () => {
