@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '../../utils';
-import type { HTMLAttributes } from 'react';
+import React, { type HTMLAttributes } from 'react';
 
 export function Badge({
   className,

@@ -4,7 +4,7 @@ import {
   Button as Sa2Button,
   type ButtonProps as Sa2ButtonProps,
 } from '@sa2kit-ui/react';
-import type { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 
 type ShadcnVariant = 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
 type ShadcnSize = 'default' | 'sm' | 'lg' | 'icon';

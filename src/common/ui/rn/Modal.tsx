@@ -4,7 +4,7 @@ import {
   Button,
   type ModalProps as Sa2ModalProps,
 } from '@sa2kit-ui/rn';
-import type { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 
 export type ModalProps = Omit<Sa2ModalProps, 'open'> & {
   open?: boolean;

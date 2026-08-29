@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '../../utils';
-import type { HTMLAttributes } from 'react';
+import React, { type HTMLAttributes } from 'react';
 
 export function CardHeader({ className, ...rest }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn('sa2-card-header flex flex-col gap-1.5 p-4 pb-2', className)} {...rest} />;

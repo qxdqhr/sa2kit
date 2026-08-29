@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 export type TimelineItem = {
   date: string;
   title: string;

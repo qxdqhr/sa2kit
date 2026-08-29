@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '../../utils';
-import type { TextareaHTMLAttributes } from 'react';
+import React, { type TextareaHTMLAttributes } from 'react';
 import { forwardRef } from 'react';
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(

@@ -1,6 +1,6 @@
 'use client';
 
-import type { ChangeEvent } from 'react';
+import React, { type ChangeEvent } from 'react';
 import { Input } from '../admin/Input';
 
 export type SearchBoxProps = {

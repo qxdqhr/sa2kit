@@ -1,3 +1,4 @@
+import React from 'react';
 
 import { Loading as Sa2Loading, type LoadingProps } from '@sa2kit-ui/rn';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';

@@ -1,6 +1,6 @@
 'use client';
 
-import type { ComponentProps, ReactNode } from 'react';
+import React, { type ComponentProps, type ReactNode } from 'react';
 import { Modal } from '../admin/Modal';
 import { Button } from '../admin/Button';
 import { Input } from '../admin/Input';
@@ -87,7 +87,9 @@ export function AuthField({
   );
 }
 
-export function AuthTextInput(props: ComponentProps<typeof Input> & { id?: string }) {
+export type AuthTextInputProps = ComponentProps<typeof Input> & { id?: string };
+
+export function AuthTextInput(props: AuthTextInputProps) {
   return <Input size="large" shadow={false} {...props} />;
 }
 

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Input as Sa2Input } from '@sa2kit-ui/rn';
 import type { MobileInputProps } from '@sa2kit-ui/shared';
 import { View, type TextInputProps } from 'react-native';

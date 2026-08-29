@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '../../utils';
-import type { LabelHTMLAttributes } from 'react';
+import React, { type LabelHTMLAttributes } from 'react';
 
 export function Label({ className, ...rest }: LabelHTMLAttributes<HTMLLabelElement>) {
   return (
