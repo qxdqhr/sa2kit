@@ -1,6 +1,6 @@
 {
   "name": "sa2kit",
-  "version": "3.9.3",
+  "version": "3.9.4",
   "description": "SA2Kit — 多端可复用 SDK（接单弹药库）；common 稳定；UI 经 sa2kit/common/ui 门面",
   "keywords": [
     "react",

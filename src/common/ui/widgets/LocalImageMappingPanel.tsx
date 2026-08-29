@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocalStorage } from '../../storage/hooks/useLocalStorage';
+import { useLocalStorage } from 'sa2kit/common/storage';
 import {
   ImageMappingPanel,
   type ImageMappingItem,
