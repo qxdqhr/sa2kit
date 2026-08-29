@@ -593,8 +593,7 @@
     "publish:latest": "npm publish --access public"
   },
   "peerDependencies": {
-    "@sa2kit-ui/react": "npm:@qhr123/sa2kit-ui-react@^0.1.6",
-    "@sa2kit-ui/rn": "*",
+    "@sa2kit-ui/react": "npm:@qhr123/sa2kit-ui-react@^0.1.7",
     "@imgly/background-removal": "^1.7.0",
     "@tarojs/components": "^4.1.1",
     "@tarojs/taro": "^4.1.1",
@@ -608,9 +607,6 @@
   },
   "peerDependenciesMeta": {
     "@sa2kit-ui/react": {
-      "optional": true
-    },
-    "@sa2kit-ui/rn": {
       "optional": true
     },
     "react": {
@@ -695,7 +691,7 @@
   },
   "packageManager": "pnpm@9.15.2",
   "dependencies": {
-    "@sa2kit-ui/react": "npm:@qhr123/sa2kit-ui-react@0.1.6",
+    "@sa2kit-ui/react": "npm:@qhr123/sa2kit-ui-react@0.1.7",
     "@ar-js-org/ar.js": "3.4.7",
     "@better-auth/drizzle-adapter": "^1.6.15",
     "@dnd-kit/core": "^6.3.1",
@@ -718,5 +714,12 @@
     "xlsx": "^0.18.5",
     "yaml": "^2.8.0",
     "zod": "^4.4.3"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "@sa2kit-ui/rn"
+      ]
+    }
   }
 }

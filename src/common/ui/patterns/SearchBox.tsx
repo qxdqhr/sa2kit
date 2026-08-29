@@ -1,5 +1,6 @@
 'use client';
 
+import type { ChangeEvent } from 'react';
 import { Input } from '../admin/Input';
 
 export type SearchBoxProps = {
@@ -31,7 +32,7 @@ export function SearchBox({
       value={searchQuery}
       placeholder={placeholder}
       allowClear
-      onChange={(e) => onSearchChange(e.target.value)}
+      onChange={(e: ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
       onClear={() => onSearchChange('')}
     />
   );
