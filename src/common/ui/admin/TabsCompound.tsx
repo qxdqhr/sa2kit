@@ -10,7 +10,7 @@ import {
   type ReactNode,
   type ButtonHTMLAttributes,
 } from 'react';
-import { cn } from '../../utils';
+import { cn } from 'sa2kit/common/utils';
 
 type TabsCtx = {
   value: string;

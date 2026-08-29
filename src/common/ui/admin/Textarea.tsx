@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '../../utils';
+import { cn } from 'sa2kit/common/utils';
 import React, { type TextareaHTMLAttributes } from 'react';
 import { forwardRef } from 'react';
 

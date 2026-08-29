@@ -5,7 +5,7 @@ import { Modal } from '../admin/Modal';
 import { Button } from '../admin/Button';
 import { Input } from '../admin/Input';
 import { Label } from '../admin/Label';
-import { cn } from '../../utils';
+import { cn } from 'sa2kit/common/utils';
 
 export function AuthError({ message }: { message?: string | null }) {
   if (!message) return null;

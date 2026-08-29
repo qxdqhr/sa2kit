@@ -1,7 +1,7 @@
 'use client';
 
 import React, { type CSSProperties, type ReactNode } from 'react';
-import { cn } from '../../utils';
+import { cn } from 'sa2kit/common/utils';
 
 type AvatarProps = {
   className?: string;

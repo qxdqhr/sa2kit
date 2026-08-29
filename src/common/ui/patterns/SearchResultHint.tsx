@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { cn } from '../../utils';
+import { cn } from 'sa2kit/common/utils';
 
 export type SearchResultHintProps = {
   searchQuery: string;
