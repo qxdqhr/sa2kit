@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocalStorage } from 'sa2kit/common/storage';
+import { useWebLocalStorage } from './useWebLocalStorage';
 import {
   ImageMappingPanel,
   type ImageMappingItem,
@@ -20,7 +20,7 @@ export function LocalImageMappingPanel({
   onValueChange,
   ...panelProps
 }: LocalImageMappingPanelProps) {
-  const [value, setValue] = useLocalStorage<ImageMappingValue>(storageKey, defaultValue);
+  const [value, setValue] = useWebLocalStorage<ImageMappingValue>(storageKey, defaultValue);
 
   return (
     <ImageMappingPanel
@@ -35,4 +35,3 @@ export function LocalImageMappingPanel({
 }
 
 export type { ImageMappingItem };
-
