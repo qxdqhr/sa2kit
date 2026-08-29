@@ -163,10 +163,10 @@ export function generateExportsFromEntryKeys(entryKeys) {
     default: './src/common/ui/patterns/index.ts',
   };
   exportsMap['./common/ui/patterns/next'] = {
-    types: './src/common/ui/patterns/next.ts',
-    import: './src/common/ui/patterns/next.ts',
-    require: './src/common/ui/patterns/next.ts',
-    default: './src/common/ui/patterns/next.ts',
+    types: './src/common/ui/patterns/next.tsx',
+    import: './src/common/ui/patterns/next.tsx',
+    require: './src/common/ui/patterns/next.tsx',
+    default: './src/common/ui/patterns/next.tsx',
   };
   exportsMap['./common/ui/widgets'] = {
     types: './src/common/ui/widgets/index.ts',
