@@ -3,7 +3,7 @@
 import React from "react";
 import type { ViewMode } from '../types';
 import { getCategoryDisplayName } from '../utils';
-import { FilterButtonGroup } from '@/components/FilterButtonGroup';
+import { FilterButtonGroup } from '../../../common/ui/patterns/FilterButtonGroup';
 
 interface CategoryFilterProps {
   viewMode: ViewMode;

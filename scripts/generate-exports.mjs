@@ -135,6 +135,52 @@ export function generateExportsFromEntryKeys(entryKeys) {
     }
   }
 
+  // UI 门面：不经 tsup（external re-export 会被打空）；由 write-ui-facade.mjs 写 dist
+  exportsMap['./common/ui'] = {
+    types: './dist/common/ui/index.d.ts',
+    import: './dist/common/ui/index.mjs',
+    require: './dist/common/ui/index.js',
+  };
+  exportsMap['./common/ui/style'] = './src/common/ui/style.css';
+  // 管理台兼容层（源码入口，由宿主 transpile）
+  exportsMap['./common/ui/admin'] = {
+    types: './src/common/ui/admin/index.ts',
+    import: './src/common/ui/admin/index.ts',
+    require: './src/common/ui/admin/index.ts',
+    default: './src/common/ui/admin/index.ts',
+  };
+  // types 走 dist（消费方解析 @sa2kit-ui/rn）；运行时源码供 Metro transpile
+  exportsMap['./common/ui/rn'] = {
+    types: './dist/common/ui/rn/index.d.ts',
+    import: './src/common/ui/rn/index.ts',
+    require: './src/common/ui/rn/index.ts',
+    default: './src/common/ui/rn/index.ts',
+  };
+  exportsMap['./common/ui/patterns'] = {
+    types: './src/common/ui/patterns/index.ts',
+    import: './src/common/ui/patterns/index.ts',
+    require: './src/common/ui/patterns/index.ts',
+    default: './src/common/ui/patterns/index.ts',
+  };
+  exportsMap['./common/ui/patterns/next'] = {
+    types: './src/common/ui/patterns/next.ts',
+    import: './src/common/ui/patterns/next.ts',
+    require: './src/common/ui/patterns/next.ts',
+    default: './src/common/ui/patterns/next.ts',
+  };
+  exportsMap['./common/ui/widgets'] = {
+    types: './src/common/ui/widgets/index.ts',
+    import: './src/common/ui/widgets/index.ts',
+    require: './src/common/ui/widgets/index.ts',
+    default: './src/common/ui/widgets/index.ts',
+  };
+  exportsMap['./common/ui/auth'] = {
+    types: './src/common/ui/auth/index.ts',
+    import: './src/common/ui/auth/index.ts',
+    require: './src/common/ui/auth/index.ts',
+    default: './src/common/ui/auth/index.ts',
+  };
+
   return exportsMap;
 }
 

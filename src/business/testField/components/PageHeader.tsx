@@ -1,7 +1,7 @@
 'use client';
 
 import React from "react";
-import { BackButton } from '@/components/BackButton';
+import { BackButton } from '../../../common/ui/patterns/next';
 
 export interface PageHeaderProps {
   counts: { all: number; utility: number; leisure: number; completed: number };

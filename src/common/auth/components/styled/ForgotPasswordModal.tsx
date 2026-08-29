@@ -1,11 +1,18 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Phone, Lock, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuthContext } from '../../context/AuthProvider';
 import type { ForgotPasswordModalProps } from '../types';
 import { validatePassword, validatePhoneNumber } from '../utils';
-import { AuthModalPortal, authModalStyles } from './modal-shared';
+import {
+  AuthModalShell,
+  AuthField,
+  AuthTextInput,
+  AuthError,
+  AuthLinkButton,
+  AuthSubmitButton,
+} from '../../../ui/auth';
 
 export function ForgotPasswordModal({ isOpen, onClose, onSuccess }: ForgotPasswordModalProps) {
   const { requestPhonePasswordReset, resetPhonePassword } = useAuthContext();
@@ -73,127 +80,90 @@ export function ForgotPasswordModal({ isOpen, onClose, onSuccess }: ForgotPasswo
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <AuthModalPortal>
-      <div className={authModalStyles.overlayClass} style={{ margin: 0 }} onClick={(e) => e.target === e.currentTarget && onClose()}>
-        <div className={authModalStyles.panelClass} onClick={(e) => e.stopPropagation()}>
-          <button type="button" className={authModalStyles.closeBtnClass} onClick={onClose}>
-            <X size={20} />
-          </button>
+    <AuthModalShell
+      open={isOpen}
+      onClose={onClose}
+      title="重置密码"
+      description="请输入手机号和验证码重置密码"
+    >
+      <form onSubmit={handleSubmit}>
+        <AuthField id="reset-phone" label="手机号">
+          <AuthTextInput
+            id="reset-phone"
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="请输入手机号"
+            disabled={loading}
+          />
+        </AuthField>
 
-          <div className="px-6 pt-6 pb-4 text-center border-b border-gray-100">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">重置密码</h2>
-            <p className="text-gray-500 text-sm">请输入手机号和验证码重置密码</p>
-          </div>
+        <AuthField id="reset-otp" label="验证码">
+          <AuthTextInput
+            id="reset-otp"
+            type="text"
+            inputMode="numeric"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            placeholder="请输入验证码"
+            disabled={loading}
+            maxLength={8}
+            suffix={
+              <AuthLinkButton onClick={handleSendCode} disabled={loading || countdown > 0}>
+                {countdown > 0 ? `${countdown}秒后重试` : '发送验证码'}
+              </AuthLinkButton>
+            }
+          />
+        </AuthField>
 
-          <form onSubmit={handleSubmit} className="p-6">
-            <div className="mb-5">
-              <label htmlFor="reset-phone" className="block mb-1.5 text-sm font-medium text-gray-700">
-                手机号
-              </label>
-              <div className="relative flex items-center">
-                <Phone size={18} className="absolute left-4 text-gray-400 z-[1] pointer-events-none" />
-                <input
-                  id="reset-phone"
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="请输入手机号"
-                  className={authModalStyles.inputClass}
-                  disabled={loading}
-                />
-              </div>
-            </div>
+        <AuthField id="reset-password" label="新密码">
+          <AuthTextInput
+            id="reset-password"
+            type={showPassword ? 'text' : 'password'}
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder="请输入新密码"
+            disabled={loading}
+            suffix={
+              <button
+                type="button"
+                className="border-none bg-transparent p-0 text-[var(--sa2-text-muted,#8a7b66)]"
+                onClick={() => setShowPassword((v) => !v)}
+                disabled={loading}
+                aria-label={showPassword ? '隐藏密码' : '显示密码'}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            }
+          />
+        </AuthField>
 
-            <div className="mb-5">
-              <label htmlFor="reset-otp" className="block mb-1.5 text-sm font-medium text-gray-700">
-                验证码
-              </label>
-              <div className="relative flex items-center">
-                <input
-                  id="reset-otp"
-                  type="text"
-                  inputMode="numeric"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  placeholder="请输入验证码"
-                  className="w-full py-3 px-4 pr-28 border-2 border-gray-200 rounded-lg text-base transition-all box-border min-h-12 bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
-                  disabled={loading}
-                  maxLength={8}
-                />
-                <button
-                  type="button"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-none text-blue-500 text-sm font-medium cursor-pointer px-2 py-1 rounded transition-all whitespace-nowrap hover:bg-blue-50 disabled:text-gray-400 disabled:cursor-not-allowed"
-                  onClick={handleSendCode}
-                  disabled={loading || countdown > 0}
-                >
-                  {countdown > 0 ? `${countdown}秒后重试` : '发送验证码'}
-                </button>
-              </div>
-            </div>
+        <AuthField id="reset-confirm-password" label="确认密码">
+          <AuthTextInput
+            id="reset-confirm-password"
+            type={showConfirmPassword ? 'text' : 'password'}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="请再次输入新密码"
+            disabled={loading}
+            suffix={
+              <button
+                type="button"
+                className="border-none bg-transparent p-0 text-[var(--sa2-text-muted,#8a7b66)]"
+                onClick={() => setShowConfirmPassword((v) => !v)}
+                disabled={loading}
+                aria-label={showConfirmPassword ? '隐藏密码' : '显示密码'}
+              >
+                {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            }
+          />
+        </AuthField>
 
-            <div className="mb-5">
-              <label htmlFor="reset-password" className="block mb-1.5 text-sm font-medium text-gray-700">
-                新密码
-              </label>
-              <div className="relative flex items-center">
-                <Lock size={18} className="absolute left-4 text-gray-400 z-[1] pointer-events-none" />
-                <input
-                  id="reset-password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="请输入新密码"
-                  className={`${authModalStyles.inputClass} pr-12`}
-                  disabled={loading}
-                />
-                <button
-                  type="button"
-                  className="absolute right-4 bg-transparent border-none text-gray-400 cursor-pointer p-1 rounded transition-all flex items-center justify-center min-w-6 min-h-6 hover:text-gray-600 hover:bg-gray-100"
-                  onClick={() => setShowPassword((v) => !v)}
-                  disabled={loading}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            <div className="mb-5">
-              <label htmlFor="reset-confirm-password" className="block mb-1.5 text-sm font-medium text-gray-700">
-                确认密码
-              </label>
-              <div className="relative flex items-center">
-                <Lock size={18} className="absolute left-4 text-gray-400 z-[1] pointer-events-none" />
-                <input
-                  id="reset-confirm-password"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="请再次输入新密码"
-                  className={`${authModalStyles.inputClass} pr-12`}
-                  disabled={loading}
-                />
-                <button
-                  type="button"
-                  className="absolute right-4 bg-transparent border-none text-gray-400 cursor-pointer p-1 rounded transition-all flex items-center justify-center min-w-6 min-h-6 hover:text-gray-600 hover:bg-gray-100"
-                  onClick={() => setShowConfirmPassword((v) => !v)}
-                  disabled={loading}
-                >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            {error && <div className={authModalStyles.errorClass}>{error}</div>}
-
-            <button type="submit" className={authModalStyles.submitClass} disabled={loading}>
-              {loading ? '提交中...' : '重置密码'}
-            </button>
-          </form>
-        </div>
-      </div>
-    </AuthModalPortal>
+        <AuthError message={error} />
+        <AuthSubmitButton loading={loading}>{loading ? '提交中...' : '重置密码'}</AuthSubmitButton>
+      </form>
+    </AuthModalShell>
   );
 }

@@ -66,6 +66,19 @@ export default [
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
 
+      // U6：禁止 animal-island-ui
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'animal-island-ui',
+              message: '已统一到 sa2kit/common/ui* / @sa2kit-ui；勿再引入 animal-island-ui',
+            },
+          ],
+        },
+      ],
+
       // General rules
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'prefer-const': 'error',

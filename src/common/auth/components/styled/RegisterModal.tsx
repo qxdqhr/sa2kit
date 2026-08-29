@@ -1,11 +1,26 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, User, Lock, Phone, Mail, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuthContext } from '../../context/AuthProvider';
 import { RegisterFormHeadless } from '../headless/RegisterForm';
 import type { RegisterModalProps } from '../types';
-import { AuthModalPortal, authModalStyles } from './modal-shared';
+import {
+  AuthModalShell,
+  AuthField,
+  AuthTextInput,
+  AuthModeChips,
+  AuthError,
+  AuthSubmitButton,
+  AuthSwitchRow,
+} from '../../../ui/auth';
+
+type Channel = 'phone' | 'email';
+
+const CHANNEL_OPTIONS: { value: Channel; label: string }[] = [
+  { value: 'phone', label: '手机号注册' },
+  { value: 'email', label: '邮箱注册' },
+];
 
 export function RegisterModal({ isOpen, onClose, onSuccess, onSwitchToLogin }: RegisterModalProps) {
   const { authClient, refreshSession } = useAuthContext();
@@ -17,214 +32,151 @@ export function RegisterModal({ isOpen, onClose, onSuccess, onSwitchToLogin }: R
     onSuccess?.();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <AuthModalPortal>
-      <div className={authModalStyles.overlayClass} style={{ margin: 0 }} onClick={(e) => e.target === e.currentTarget && onClose()}>
-        <RegisterFormHeadless authClient={authClient} initialChannel="phone" onSuccess={handleSuccess}>
-          {(state) => (
-            <div className={authModalStyles.panelClass} onClick={(e) => e.stopPropagation()}>
-              <button type="button" className={authModalStyles.closeBtnClass} onClick={onClose}>
-                <X size={20} />
-              </button>
+    <AuthModalShell
+      open={isOpen}
+      onClose={onClose}
+      title="用户注册"
+      description="请填写以下信息创建账户"
+    >
+      <RegisterFormHeadless authClient={authClient} initialChannel="phone" onSuccess={handleSuccess}>
+        {(state) => (
+          <>
+            <AuthModeChips
+              options={CHANNEL_OPTIONS}
+              value={state.channel}
+              onChange={state.setChannel}
+            />
 
-              <div className="px-6 pt-6 pb-4 text-center border-b border-gray-100">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">用户注册</h2>
-                <p className="text-gray-500 text-sm">请填写以下信息创建账户</p>
-              </div>
+            <form onSubmit={state.handleSubmit} className="mt-4">
+              {state.channel === 'email' && (
+                <AuthField id="register-email" label="邮箱 *">
+                  <AuthTextInput
+                    id="register-email"
+                    type="email"
+                    autoComplete="email"
+                    value={state.email}
+                    onChange={(e) => state.setEmail(e.target.value)}
+                    placeholder="请输入邮箱"
+                    disabled={state.loading}
+                  />
+                </AuthField>
+              )}
 
-              <div className="px-6 pt-4 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => state.setChannel('phone')}
-                  className={`px-3 py-1.5 text-xs rounded-full border transition-all ${
-                    state.channel === 'phone'
-                      ? 'bg-blue-500 text-white border-blue-500'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'
-                  }`}
-                >
-                  手机号注册
-                </button>
-                <button
-                  type="button"
-                  onClick={() => state.setChannel('email')}
-                  className={`px-3 py-1.5 text-xs rounded-full border transition-all ${
-                    state.channel === 'email'
-                      ? 'bg-blue-500 text-white border-blue-500'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'
-                  }`}
-                >
-                  邮箱注册
-                </button>
-              </div>
+              {state.channel === 'phone' && state.step === 'credentials' && (
+                <AuthField id="register-phone" label="手机号 *">
+                  <AuthTextInput
+                    id="register-phone"
+                    type="tel"
+                    autoComplete="tel"
+                    value={state.phone}
+                    onChange={(e) => state.setPhone(e.target.value)}
+                    placeholder="请输入手机号"
+                    disabled={state.loading}
+                  />
+                </AuthField>
+              )}
 
-              <form onSubmit={state.handleSubmit} className="p-6">
-                {state.channel === 'email' && (
-                  <div className="mb-5">
-                    <label htmlFor="register-email" className="block mb-1.5 text-sm font-medium text-gray-700">
-                      邮箱 *
-                    </label>
-                    <div className="relative flex items-center">
-                      <Mail size={18} className="absolute left-4 text-gray-400 z-[1] pointer-events-none" />
-                      <input
-                        id="register-email"
-                        type="email"
-                        autoComplete="email"
-                        value={state.email}
-                        onChange={(e) => state.setEmail(e.target.value)}
-                        placeholder="请输入邮箱"
-                        className={authModalStyles.inputClass}
-                        disabled={state.loading}
-                      />
-                    </div>
-                  </div>
-                )}
+              {state.channel === 'email' && (
+                <AuthField id="register-name" label="昵称 *">
+                  <AuthTextInput
+                    id="register-name"
+                    type="text"
+                    autoComplete="name"
+                    value={state.name}
+                    onChange={(e) => state.setName(e.target.value)}
+                    placeholder="请输入昵称"
+                    disabled={state.loading}
+                  />
+                </AuthField>
+              )}
 
-                {state.channel === 'phone' && state.step === 'credentials' && (
-                  <div className="mb-5">
-                    <label htmlFor="register-phone" className="block mb-1.5 text-sm font-medium text-gray-700">
-                      手机号 *
-                    </label>
-                    <div className="relative flex items-center">
-                      <Phone size={18} className="absolute left-4 text-gray-400 z-[1] pointer-events-none" />
-                      <input
-                        id="register-phone"
-                        type="tel"
-                        autoComplete="tel"
-                        value={state.phone}
-                        onChange={(e) => state.setPhone(e.target.value)}
-                        placeholder="请输入手机号"
-                        className={authModalStyles.inputClass}
-                        disabled={state.loading}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {state.channel === 'email' && (
-                  <div className="mb-5">
-                    <label htmlFor="register-name" className="block mb-1.5 text-sm font-medium text-gray-700">
-                      昵称 *
-                    </label>
-                    <div className="relative flex items-center">
-                      <User size={18} className="absolute left-4 text-gray-400 z-[1] pointer-events-none" />
-                      <input
-                        id="register-name"
-                        type="text"
-                        autoComplete="name"
-                        value={state.name}
-                        onChange={(e) => state.setName(e.target.value)}
-                        placeholder="请输入昵称"
-                        className={authModalStyles.inputClass}
-                        disabled={state.loading}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {state.step === 'credentials' && (
-                  <>
-                    <div className="mb-5">
-                      <label htmlFor="register-password" className="block mb-1.5 text-sm font-medium text-gray-700">
-                        密码 *
-                      </label>
-                      <div className="relative flex items-center">
-                        <Lock size={18} className="absolute left-4 text-gray-400 z-[1] pointer-events-none" />
-                        <input
-                          id="register-password"
-                          type={showPassword ? 'text' : 'password'}
-                          autoComplete="new-password"
-                          value={state.password}
-                          onChange={(e) => state.setPassword(e.target.value)}
-                          placeholder="请输入密码（至少6位）"
-                          className={`${authModalStyles.inputClass} pr-12`}
-                          disabled={state.loading}
-                        />
+              {state.step === 'credentials' && (
+                <>
+                  <AuthField id="register-password" label="密码 *">
+                    <AuthTextInput
+                      id="register-password"
+                      type={showPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
+                      value={state.password}
+                      onChange={(e) => state.setPassword(e.target.value)}
+                      placeholder="请输入密码（至少6位）"
+                      disabled={state.loading}
+                      suffix={
                         <button
                           type="button"
-                          className="absolute right-4 bg-transparent border-none text-gray-400 cursor-pointer p-1 rounded transition-all flex items-center justify-center min-w-6 min-h-6 hover:text-gray-600 hover:bg-gray-100"
+                          className="border-none bg-transparent p-0 text-[var(--sa2-text-muted,#8a7b66)]"
                           onClick={() => setShowPassword((v) => !v)}
                           disabled={state.loading}
+                          aria-label={showPassword ? '隐藏密码' : '显示密码'}
                         >
-                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                         </button>
-                      </div>
-                    </div>
+                      }
+                    />
+                  </AuthField>
 
-                    <div className="mb-5">
-                      <label htmlFor="register-confirm-password" className="block mb-1.5 text-sm font-medium text-gray-700">
-                        确认密码 *
-                      </label>
-                      <div className="relative flex items-center">
-                        <Lock size={18} className="absolute left-4 text-gray-400 z-[1] pointer-events-none" />
-                        <input
-                          id="register-confirm-password"
-                          type={showConfirmPassword ? 'text' : 'password'}
-                          autoComplete="new-password"
-                          value={state.confirmPassword}
-                          onChange={(e) => state.setConfirmPassword(e.target.value)}
-                          placeholder="请再次输入密码"
-                          className={`${authModalStyles.inputClass} pr-12`}
-                          disabled={state.loading}
-                        />
+                  <AuthField id="register-confirm-password" label="确认密码 *">
+                    <AuthTextInput
+                      id="register-confirm-password"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
+                      value={state.confirmPassword}
+                      onChange={(e) => state.setConfirmPassword(e.target.value)}
+                      placeholder="请再次输入密码"
+                      disabled={state.loading}
+                      suffix={
                         <button
                           type="button"
-                          className="absolute right-4 bg-transparent border-none text-gray-400 cursor-pointer p-1 rounded transition-all flex items-center justify-center min-w-6 min-h-6 hover:text-gray-600 hover:bg-gray-100"
+                          className="border-none bg-transparent p-0 text-[var(--sa2-text-muted,#8a7b66)]"
                           onClick={() => setShowConfirmPassword((v) => !v)}
                           disabled={state.loading}
+                          aria-label={showConfirmPassword ? '隐藏密码' : '显示密码'}
                         >
-                          {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                          {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                         </button>
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {state.channel === 'phone' && state.step === 'otp' && (
-                  <div className="mb-5">
-                    <label htmlFor="register-otp" className="block mb-1.5 text-sm font-medium text-gray-700">
-                      验证码 *
-                    </label>
-                    <input
-                      id="register-otp"
-                      type="text"
-                      inputMode="numeric"
-                      value={state.otp}
-                      onChange={(e) => state.setOtp(e.target.value)}
-                      placeholder="请输入验证码"
-                      className="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-base transition-all box-border min-h-12 bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
-                      disabled={state.loading}
-                      maxLength={8}
+                      }
                     />
-                  </div>
-                )}
+                  </AuthField>
+                </>
+              )}
 
-                {state.error && <div className={authModalStyles.errorClass}>{state.error}</div>}
+              {state.channel === 'phone' && state.step === 'otp' && (
+                <AuthField id="register-otp" label="验证码 *">
+                  <AuthTextInput
+                    id="register-otp"
+                    type="text"
+                    inputMode="numeric"
+                    value={state.otp}
+                    onChange={(e) => state.setOtp(e.target.value)}
+                    placeholder="请输入验证码"
+                    disabled={state.loading}
+                    maxLength={8}
+                  />
+                </AuthField>
+              )}
 
-                <button type="submit" className={authModalStyles.submitClass} disabled={state.loading}>
-                  {state.loading
-                    ? '处理中...'
-                    : state.channel === 'phone' && state.step === 'credentials'
-                      ? '发送验证码'
-                      : state.channel === 'phone' && state.step === 'otp'
-                        ? '完成注册'
-                        : '注册'}
-                </button>
+              <AuthError message={state.error} />
 
-                {onSwitchToLogin && (
-                  <div className="text-center mt-5 pt-4 border-t border-gray-100">
-                    <span className="text-gray-500 text-sm mr-1">已有账号？</span>
-                    <button type="button" onClick={onSwitchToLogin} className={authModalStyles.linkBtnClass}>
-                      立即登录
-                    </button>
-                  </div>
-                )}
-              </form>
-            </div>
-          )}
-        </RegisterFormHeadless>
-      </div>
-    </AuthModalPortal>
+              <AuthSubmitButton loading={state.loading}>
+                {state.loading
+                  ? '处理中...'
+                  : state.channel === 'phone' && state.step === 'credentials'
+                    ? '发送验证码'
+                    : state.channel === 'phone' && state.step === 'otp'
+                      ? '完成注册'
+                      : '注册'}
+              </AuthSubmitButton>
+
+              <AuthSwitchRow
+                hint="已有账号？"
+                actionLabel="立即登录"
+                onAction={onSwitchToLogin}
+              />
+            </form>
+          </>
+        )}
+      </RegisterFormHeadless>
+    </AuthModalShell>
   );
 }

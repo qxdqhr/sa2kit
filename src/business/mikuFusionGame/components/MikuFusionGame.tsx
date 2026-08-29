@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { LocalImageMappingPanel } from '../../../common/components/LocalImageMappingPanel';
+import { LocalImageMappingPanel } from '../../../common/ui/widgets/LocalImageMappingPanel';
 import type { MikuFusionGameCallbacks, MikuFusionGameConfig, OrbImageMapping } from '../types';
 import { useMikuFusionGame } from '../hooks/useMikuFusionGame';
 import { useResponsiveCanvas } from '../hooks/useResponsiveCanvas';

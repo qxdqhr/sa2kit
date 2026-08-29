@@ -6,6 +6,8 @@ import { useAuthContext } from '../../context/AuthProvider';
 import type { UserMenuProps } from '../types';
 import { LoginModal } from './LoginModal';
 import { RegisterModal } from './RegisterModal';
+import { Button } from '../../../ui/admin/Button';
+import { cn } from '../../../utils';
 
 export function UserMenu({ customMenuItems = [], className }: UserMenuProps) {
   const { user, isAuthenticated, signOut, refreshSession } = useAuthContext();
@@ -34,64 +36,69 @@ export function UserMenu({ customMenuItems = [], className }: UserMenuProps) {
   const displayName = user?.name || user?.phoneNumber || user?.email || '用户';
 
   return (
-    <div className={`relative inline-block ${className ?? ''}`}>
-      <button
-        type="button"
-        className="flex items-center gap-2 px-3 py-2 bg-slate-50 text-slate-500 border border-slate-200 rounded-lg cursor-pointer transition-all min-w-11 min-h-11 text-sm font-medium hover:bg-slate-200 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/10"
+    <div className={cn('relative inline-block', className)}>
+      <Button
+        type="default"
+        size="small"
+        className="gap-2"
         onClick={() => setIsOpen((v) => !v)}
       >
-        <User size={24} />
-        {isAuthenticated && user && (
-          <span className="max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">{displayName}</span>
-        )}
-      </button>
+        <User size={18} />
+        {isAuthenticated && user ? (
+          <span className="max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">
+            {displayName}
+          </span>
+        ) : null}
+      </Button>
 
-      {isOpen && (
+      {isOpen ? (
         <div
-          className="absolute top-[calc(100%+0.5rem)] right-0 z-[1000] min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-lg max-h-[90vh] overflow-y-auto p-2"
+          className="absolute right-0 top-[calc(100%+0.5rem)] z-[1000] max-h-[90vh] min-w-[200px] overflow-y-auto rounded-[18px] border-2 border-[var(--sa2-border-light,#e8e2d6)] bg-[var(--sa2-bg-panel,#fff)] p-2 shadow-lg"
           onClick={(e) => e.stopPropagation()}
         >
           {isAuthenticated && user ? (
             <>
-              <div className="p-3 mb-2 bg-slate-50 rounded-lg">
-                <div className="text-sm font-semibold text-slate-800 mb-1 overflow-hidden text-ellipsis whitespace-nowrap">
+              <div className="mb-2 rounded-[12px] bg-[var(--sa2-bg-secondary,#f0e8d8)] p-3">
+                <div className="mb-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold text-[var(--sa2-text,#794f27)]">
                   {user.name || '未设置名称'}
                 </div>
-                <div className="text-xs text-slate-500 mb-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                <div className="mb-1 overflow-hidden text-ellipsis whitespace-nowrap text-xs text-[var(--sa2-text-secondary,#9f927d)]">
                   {user.phoneNumber || user.email}
                 </div>
-                {user.role && (
-                  <div className="text-xs text-blue-500 font-medium">{user.role === 'admin' ? '管理员' : '普通用户'}</div>
-                )}
+                {user.role ? (
+                  <div className="text-xs font-medium text-[var(--sa2-primary,#19c8b9)]">
+                    {user.role === 'admin' ? '管理员' : '普通用户'}
+                  </div>
+                ) : null}
               </div>
 
-              {visibleCustomMenuItems.length > 0 && (
+              {visibleCustomMenuItems.length > 0 ? (
                 <>
-                  <div className="h-px bg-slate-200 my-2" />
+                  <div className="my-2 h-px bg-[var(--sa2-border-light,#e8e2d6)]" />
                   {visibleCustomMenuItems.map((item) => {
                     const IconComponent = item.icon;
                     return (
                       <button
                         key={item.id}
                         type="button"
-                        className="flex items-center gap-3 w-full p-3 bg-transparent border-none rounded-lg text-gray-700 text-sm font-medium cursor-pointer transition-all text-left min-h-11 hover:bg-slate-100 hover:text-slate-800"
+                        className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-[12px] border-none bg-transparent p-3 text-left text-sm font-medium text-[var(--sa2-text,#794f27)] transition-all hover:bg-[var(--sa2-primary-bg,#e6f9f6)]"
                         onClick={() => {
                           item.onClick();
                           setIsOpen(false);
                         }}
                       >
-                        {IconComponent && <IconComponent size={16} />}
+                        {IconComponent ? <IconComponent size={16} /> : null}
                         <span>{item.label}</span>
                       </button>
                     );
                   })}
                 </>
-              )}
+              ) : null}
 
-              <div className="h-px bg-slate-200 my-2" />
+              <div className="my-2 h-px bg-[var(--sa2-border-light,#e8e2d6)]" />
               <button
                 type="button"
-                className="flex items-center gap-3 w-full p-3 bg-transparent border-none rounded-lg text-gray-700 text-sm font-medium cursor-pointer transition-all text-left min-h-11 hover:bg-red-50 hover:text-red-600"
+                className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-[12px] border-none bg-transparent p-3 text-left text-sm font-medium text-[var(--sa2-text,#794f27)] transition-all hover:bg-[var(--sa2-error,#e05a5a)]/10 hover:text-[var(--sa2-error,#e05a5a)]"
                 onClick={async () => {
                   await signOut();
                   setIsOpen(false);
@@ -105,7 +112,7 @@ export function UserMenu({ customMenuItems = [], className }: UserMenuProps) {
             <>
               <button
                 type="button"
-                className="flex items-center gap-3 w-full p-3 bg-transparent border-none rounded-lg text-gray-700 text-sm font-medium cursor-pointer transition-all text-left min-h-11 hover:bg-slate-100 hover:text-slate-800"
+                className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-[12px] border-none bg-transparent p-3 text-left text-sm font-medium text-[var(--sa2-text,#794f27)] transition-all hover:bg-[var(--sa2-primary-bg,#e6f9f6)]"
                 onClick={() => {
                   setShowLoginModal(true);
                   setIsOpen(false);
@@ -116,7 +123,7 @@ export function UserMenu({ customMenuItems = [], className }: UserMenuProps) {
               </button>
               <button
                 type="button"
-                className="flex items-center gap-3 w-full p-3 bg-transparent border-none rounded-lg text-gray-700 text-sm font-medium cursor-pointer transition-all text-left min-h-11 hover:bg-slate-100 hover:text-slate-800"
+                className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-[12px] border-none bg-transparent p-3 text-left text-sm font-medium text-[var(--sa2-text,#794f27)] transition-all hover:bg-[var(--sa2-primary-bg,#e6f9f6)]"
                 onClick={() => {
                   setShowRegisterModal(true);
                   setIsOpen(false);
@@ -126,32 +133,32 @@ export function UserMenu({ customMenuItems = [], className }: UserMenuProps) {
                 <span>注册</span>
               </button>
 
-              {visibleCustomMenuItems.length > 0 && (
+              {visibleCustomMenuItems.length > 0 ? (
                 <>
-                  <div className="h-px bg-slate-200 my-2" />
+                  <div className="my-2 h-px bg-[var(--sa2-border-light,#e8e2d6)]" />
                   {visibleCustomMenuItems.map((item) => {
                     const IconComponent = item.icon;
                     return (
                       <button
                         key={item.id}
                         type="button"
-                        className="flex items-center gap-3 w-full p-3 bg-transparent border-none rounded-lg text-gray-700 text-sm font-medium cursor-pointer transition-all text-left min-h-11 hover:bg-slate-100 hover:text-slate-800"
+                        className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-[12px] border-none bg-transparent p-3 text-left text-sm font-medium text-[var(--sa2-text,#794f27)] transition-all hover:bg-[var(--sa2-primary-bg,#e6f9f6)]"
                         onClick={() => {
                           item.onClick();
                           setIsOpen(false);
                         }}
                       >
-                        {IconComponent && <IconComponent size={16} />}
+                        {IconComponent ? <IconComponent size={16} /> : null}
                         <span>{item.label}</span>
                       </button>
                     );
                   })}
                 </>
-              )}
+              ) : null}
             </>
           )}
         </div>
-      )}
+      ) : null}
 
       <LoginModal
         isOpen={showLoginModal}

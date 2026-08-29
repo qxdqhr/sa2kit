@@ -1,24 +1,18 @@
-// UI Components (Atomic - internal implementation)
-export * from './Button';
-export * from './Card';
-export * from './Badge';
-export * from './Input';
-export * from './Label';
-export * from './Tabs';
-export * from './Dialog';
-export * from './AlertDialog';
-export * from './DropdownMenu';
-export * from './Popover';
-export * from './Progress';
-export * from './ScrollArea';
-export * from './Select';
-export * from './Separator';
-export * from './Sheet';
-export * from './Textarea';
-export * from './Tooltip';
-export * from './Avatar';
+/**
+ * @deprecated 请优先 `sa2kit/common/ui` / `ui/admin` / `ui/patterns` / `ui/widgets`。
+ * 本入口仅保留过渡再导出与 Next 专用适配。
+ */
 
-// UI Components (Custom Generic)
+export { Button, type ButtonProps } from './Button';
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
+export { Badge } from './Badge';
+export { Input } from './Input';
+export { Label } from './Label';
+export { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
+export { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './Select';
+export { Textarea } from './Textarea';
+export { Tooltip } from './Tooltip';
+
 export { Grid } from './Grid';
 export type { GridProps, GridItem, GridColumns, GridGap } from './Grid';
 export { SearchBox } from './SearchBox';
@@ -28,6 +22,7 @@ export { CollisionBalls } from './CollisionBalls';
 export type { Ball, CollisionBallsConfig } from './CollisionBalls';
 export { GenericOrderManager } from './GenericOrderManager';
 export type { GenericOrderManagerProps, OrderableItem, OrderManagerOperations } from './GenericOrderManager';
+export { Avatar } from './Avatar';
 export { BackButton } from './BackButton';
 export type { BackButtonProps } from './BackButton';
 export { FilterButtonGroup } from './FilterButtonGroup';

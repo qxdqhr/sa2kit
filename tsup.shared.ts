@@ -39,6 +39,8 @@ export const tsupSharedOptions: Omit<Options, 'entry' | 'clean'> = {
     'onnxruntime-web',
     'ws',
     'crypto',
+    '@sa2kit-ui/react',
+    '@sa2kit-ui/rn',
   ],
   skipNodeModulesBundle: true,
   treeshake: true,

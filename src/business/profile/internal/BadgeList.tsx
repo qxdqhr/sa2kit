@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge } from '@/components/Badge';
+import { Badge } from '../../../common/ui/admin/Badge';
 import { cn } from '@/common/utils';
 import { BadgeType } from '../types';
     

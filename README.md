@@ -1,16 +1,22 @@
 # SA2Kit
 
-一个现代的、类型安全的跨平台工具库。**2.0 重构进行中**：拆分为 `common`（通用逻辑，供 Web / Taro / Electron / Hono 等多项目接入）与 `business`（业务逻辑，逐步迁回 profile-v1）。
+多端可复用产品 SDK（**接单弹药库**）：`common` 提供登录、OSS、配置、AI、UI 门面等，可直接接入**付费客户项目**；`business` 提供可选业务域（多端同仓，**不**迁回 profile）。
 
-> 📋 **重构任务 SSOT**：[docs/REFACTOR_2.0_BACKLOG.md](./docs/REFACTOR_2.0_BACKLOG.md)  
-> 当前版本：`3.2.0`（**common API 稳定**；business 实验田模块逐步迁出，见 [COMMON_API_FREEZE.md](./docs/COMMON_API_FREEZE.md)）
+> **北极星**：新宿主（含未来客户仓）应能 `import 'sa2kit/common/auth'|…/file` 等即用，无需复制 profile-v1 源码。  
+> profile-v1 是首个完整验证场。蓝图 SSOT 见 profile 仓 `doc/code-review/libraries/BLUEPRINT-multiplatform-sa2kit.md` §0。  
+> ADR：[docs/adr/002-client-ready-multiplatform-sdk.md](./docs/adr/002-client-ready-multiplatform-sdk.md)
 
-### 2.0 推荐 import（common）
+> 📋 历史重构任务：[docs/REFACTOR_2.0_BACKLOG.md](./docs/REFACTOR_2.0_BACKLOG.md)（其中「business 迁回 profile」已由 ADR-002 **作废**）  
+> 当前消费方 pin：`3.9.1`（以 npm / profile lock 为准）
+
+### 推荐 import（common）
 
 ```typescript
 import { logger } from 'sa2kit/common/logger';
 import { uploadModuleFile } from 'sa2kit/common/file';
 import { createOssFileConfigManagerFromEnv } from 'sa2kit/common/file/server';
+import { Button, ThemeProvider } from 'sa2kit/common/ui';
+import 'sa2kit/common/ui/style';
 ```
 
 npm 子路径仅保留 `sa2kit/common/*` 与 `sa2kit/business/*`（3.x 起已移除 `sa2kit/logger`、`sa2kit/mmd` 等旧 alias）。
@@ -19,8 +25,8 @@ npm 子路径仅保留 `sa2kit/common/*` 与 `sa2kit/business/*`（3.x 起已移
 
 | 层级 | 入口 | 职责 |
 |------|------|------|
-| **common** | `sa2kit/common/*` | logger、utils、storage、request、ossFile、auth 内核等 |
-| **business** | `sa2kit/business/*` | mikuContest、calendar、mmd 等；逐步迁回 profile-v1 |
+| **common** | `sa2kit/common/*` | logger、auth、file/OSS、config、aiApi、ui 门面等——**客户仓应直接依赖** |
+| **business** | `sa2kit/business/*` | 可选业务域；多端同仓，按需引用，不强制迁出 |
 
 ## 特性
 

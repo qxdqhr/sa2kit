@@ -1,7 +1,7 @@
 {
   "name": "sa2kit",
-  "version": "3.9.1",
-  "description": "SA2Kit 2.0 — common API 稳定；business 实验田模块逐步迁出 profile-v1",
+  "version": "3.9.2",
+  "description": "SA2Kit — 多端可复用 SDK（接单弹药库）；common 稳定；UI 经 sa2kit/common/ui 门面",
   "keywords": [
     "react",
     "typescript",
@@ -505,10 +505,58 @@
       "types": "./dist/common/universalExport/index.d.ts",
       "import": "./dist/common/universalExport/index.mjs",
       "require": "./dist/common/universalExport/index.js"
+    },
+    "./common/ui": {
+      "types": "./dist/common/ui/index.d.ts",
+      "import": "./dist/common/ui/index.mjs",
+      "require": "./dist/common/ui/index.js"
+    },
+    "./common/ui/style": "./src/common/ui/style.css",
+    "./common/ui/admin": {
+      "types": "./src/common/ui/admin/index.ts",
+      "import": "./src/common/ui/admin/index.ts",
+      "require": "./src/common/ui/admin/index.ts",
+      "default": "./src/common/ui/admin/index.ts"
+    },
+    "./common/ui/rn": {
+      "types": "./dist/common/ui/rn/index.d.ts",
+      "import": "./src/common/ui/rn/index.ts",
+      "require": "./src/common/ui/rn/index.ts",
+      "default": "./src/common/ui/rn/index.ts"
+    },
+    "./common/ui/patterns": {
+      "types": "./src/common/ui/patterns/index.ts",
+      "import": "./src/common/ui/patterns/index.ts",
+      "require": "./src/common/ui/patterns/index.ts",
+      "default": "./src/common/ui/patterns/index.ts"
+    },
+    "./common/ui/patterns/next": {
+      "types": "./src/common/ui/patterns/next.ts",
+      "import": "./src/common/ui/patterns/next.ts",
+      "require": "./src/common/ui/patterns/next.ts",
+      "default": "./src/common/ui/patterns/next.ts"
+    },
+    "./common/ui/widgets": {
+      "types": "./src/common/ui/widgets/index.ts",
+      "import": "./src/common/ui/widgets/index.ts",
+      "require": "./src/common/ui/widgets/index.ts",
+      "default": "./src/common/ui/widgets/index.ts"
+    },
+    "./common/ui/auth": {
+      "types": "./src/common/ui/auth/index.ts",
+      "import": "./src/common/ui/auth/index.ts",
+      "require": "./src/common/ui/auth/index.ts",
+      "default": "./src/common/ui/auth/index.ts"
     }
   },
   "files": [
     "dist",
+    "src/common/ui/style.css",
+    "src/common/ui/admin",
+    "src/common/ui/rn",
+    "src/common/ui/patterns",
+    "src/common/ui/widgets",
+    "src/common/ui/auth",
     "tailwind.animations.js",
     "README.md",
     "LICENSE"
@@ -516,7 +564,7 @@
   "scripts": {
     "dev": "NODE_OPTIONS='--max-old-space-size=16384' tsup --watch",
     "build": "pnpm run verify:tsup-entries && pnpm run exports:verify && pnpm run build:common && pnpm run build:business",
-    "build:common": "NODE_OPTIONS='--max-old-space-size=8192' tsup --config tsup.common.config.ts",
+    "build:common": "NODE_OPTIONS='--max-old-space-size=8192' tsup --config tsup.common.config.ts && node scripts/write-ui-facade.mjs",
     "build:business": "NODE_OPTIONS='--max-old-space-size=16384' tsup --config tsup.business.config.ts",
     "verify:tsup-entries": "node scripts/verify-tsup-entries.mjs",
     "exports:sync": "node scripts/generate-exports.mjs",
@@ -524,6 +572,7 @@
     "ci:common-build": "node scripts/ci-common-build.mjs",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.tsx",
+    "gate:ui": "node scripts/check-ui-unification-gate.mjs",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
@@ -544,6 +593,8 @@
     "publish:latest": "npm publish --access public"
   },
   "peerDependencies": {
+    "@sa2kit-ui/react": "npm:@qhr123/sa2kit-ui-react@^0.1.6",
+    "@sa2kit-ui/rn": "*",
     "@imgly/background-removal": "^1.7.0",
     "@tarojs/components": "^4.1.1",
     "@tarojs/taro": "^4.1.1",
@@ -556,6 +607,12 @@
     "ws": "^8.0.0"
   },
   "peerDependenciesMeta": {
+    "@sa2kit-ui/react": {
+      "optional": true
+    },
+    "@sa2kit-ui/rn": {
+      "optional": true
+    },
     "react": {
       "optional": true
     },
@@ -638,6 +695,7 @@
   },
   "packageManager": "pnpm@9.15.2",
   "dependencies": {
+    "@sa2kit-ui/react": "npm:@qhr123/sa2kit-ui-react@0.1.6",
     "@ar-js-org/ar.js": "3.4.7",
     "@better-auth/drizzle-adapter": "^1.6.15",
     "@dnd-kit/core": "^6.3.1",

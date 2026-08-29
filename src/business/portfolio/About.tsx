@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import type { CollisionBallsConfig } from '@/components/CollisionBalls';
-import type { TimelineConfig, TimelineItem } from '@/components/Timeline';
+import type { CollisionBallsConfig } from '../../common/ui/widgets/CollisionBalls';
+import type { TimelineConfig, TimelineItem } from '../../common/ui/widgets/Timeline';
 
 export interface AboutProps {
   timelineConfig: TimelineConfig;
