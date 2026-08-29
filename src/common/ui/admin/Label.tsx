@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from 'sa2kit/common/utils';
+import { cn } from '../cn';
 import React, { type LabelHTMLAttributes } from 'react';
 
 export function Label({ className, ...rest }: LabelHTMLAttributes<HTMLLabelElement>) {

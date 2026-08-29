@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from 'sa2kit/common/utils';
+import { cn } from '../cn';
 import React, { type HTMLAttributes } from 'react';
 
 export function Badge({

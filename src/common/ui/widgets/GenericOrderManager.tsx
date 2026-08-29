@@ -9,7 +9,7 @@ import {
   RotateCcw,
   AlertCircle
 } from 'lucide-react';
-import { cn } from 'sa2kit/common/utils';
+import { cn } from '../cn';
 
 export interface OrderableItem {
   id: number;

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { cn } from 'sa2kit/common/utils';
+import { cn } from '../cn';
 import { Button } from '../admin/Button';
 
 export type BackButtonProps = {

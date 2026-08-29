@@ -11,7 +11,7 @@ import {
   type HTMLAttributes,
   type ReactNode,
 } from 'react';
-import { cn } from 'sa2kit/common/utils';
+import { cn } from '../cn';
 
 type SelectCtx = {
   value?: string;
