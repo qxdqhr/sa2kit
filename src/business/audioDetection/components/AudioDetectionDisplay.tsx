@@ -29,15 +29,17 @@ export interface AudioDetectionDisplayProps extends UseAudioDetectionOptions {
 /**
  * 音频检测显示组件
  */
-export const AudioDetectionDisplay: React.FC<AudioDetectionDisplayProps> = ({
+export function AudioDetectionDisplay({
   className = '',
   showDebugInfo = false,
-  renderNote,
-  renderChord,
+  // 默认 undefined：business 构建 dts:false 时宿主 allowJs 会从 JS 推断 props，
+  // 无默认值的解构参数会被当成必填，导致示例页类型检查失败。
+  renderNote = undefined,
+  renderChord = undefined,
   startButtonText = '开始检测',
   stopButtonText = '停止检测',
   ...options
-}) => {
+}: AudioDetectionDisplayProps) {
   const { result, state, isDetecting, error, start, stop } = useAudioDetection(options);
 
   const handleToggle = async () => {
@@ -119,7 +121,7 @@ export const AudioDetectionDisplay: React.FC<AudioDetectionDisplayProps> = ({
       )}
     </div>
   );
-};
+}
 
 /**
  * 默认音符显示

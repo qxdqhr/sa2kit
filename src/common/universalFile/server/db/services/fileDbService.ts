@@ -3,7 +3,6 @@
  * 提供基础的文件数据库CRUD操作
  */
 
-import { drizzle } from 'drizzle-orm/postgres-js';
 import { eq, and, desc, sql, isNull, asc } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { cacheManager } from '../../cache/CacheManager';
@@ -41,7 +40,10 @@ interface FileQueryOptions {
 }
 
 export class FileDbService {
-  constructor(private db: ReturnType<typeof drizzle>) {}
+  // 宿主 db 多为 PostgresJsDatabase<HostSchema>；与库内 ReturnType<typeof drizzle>
+  // 在多份 drizzle-orm / session 方差下无法安全赋值，故接受任意 drizzle 实例。
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  constructor(private db: any) {}
 
   async getDefaultStorageProvider(): Promise<FileStorageProvider | null> {
     const result = await this.db
