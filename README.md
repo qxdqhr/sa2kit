@@ -3,7 +3,8 @@
 多端可复用产品 SDK（**接单弹药库**）：`common` 提供登录、OSS、配置、AI、UI 门面等，可直接接入**付费客户项目**；`business` 提供可选业务域（多端同仓，**不**迁回 profile）。
 
 > **北极星**：新宿主（含未来客户仓）应能 `import 'sa2kit/common/auth'|…/file` 等即用，无需复制 profile-v1 源码。  
-> profile-v1 是首个完整验证场。蓝图 SSOT 见 profile 仓 `doc/code-review/libraries/BLUEPRINT-multiplatform-sa2kit.md` §0。  
+> profile-v1 是首个完整验证场。蓝图 SSOT 见 profile 仓 `docs/code-review/libraries/BLUEPRINT-multiplatform-sa2kit.md` §0。  
+> **新宿主接入**：[docs/HOST-ONBOARDING.md](./docs/HOST-ONBOARDING.md) · **按端 exports**：[docs/COMMON-PLATFORMS-EXPORTS.md](./docs/COMMON-PLATFORMS-EXPORTS.md)  
 > ADR：[docs/adr/002-client-ready-multiplatform-sdk.md](./docs/adr/002-client-ready-multiplatform-sdk.md)
 
 > 📋 历史重构任务：[docs/REFACTOR_2.0_BACKLOG.md](./docs/REFACTOR_2.0_BACKLOG.md)（其中「business 迁回 profile」已由 ADR-002 **作废**）  

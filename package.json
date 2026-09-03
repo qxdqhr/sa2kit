@@ -168,6 +168,26 @@
       "import": "./dist/business/festivalCard/index.mjs",
       "require": "./dist/business/festivalCard/index.js"
     },
+    "./business/festivalCard/domain": {
+      "types": "./dist/business/festivalCard/domain/index.d.ts",
+      "import": "./dist/business/festivalCard/domain/index.mjs",
+      "require": "./dist/business/festivalCard/domain/index.js"
+    },
+    "./business/festivalCard/ui/web": {
+      "types": "./dist/business/festivalCard/ui/web/index.d.ts",
+      "import": "./dist/business/festivalCard/ui/web/index.mjs",
+      "require": "./dist/business/festivalCard/ui/web/index.js"
+    },
+    "./business/festivalCard/ui/taro": {
+      "types": "./dist/business/festivalCard/ui/taro/index.d.ts",
+      "import": "./dist/business/festivalCard/ui/taro/index.mjs",
+      "require": "./dist/business/festivalCard/ui/taro/index.js"
+    },
+    "./business/festivalCard/ui/rn": {
+      "types": "./dist/business/festivalCard/ui/rn/index.d.ts",
+      "import": "./dist/business/festivalCard/ui/rn/index.mjs",
+      "require": "./dist/business/festivalCard/ui/rn/index.js"
+    },
     "./business/festivalCard/routes": {
       "types": "./dist/business/festivalCard/routes/index.d.ts",
       "import": "./dist/business/festivalCard/routes/index.mjs",
@@ -574,6 +594,7 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.tsx",
     "gate:ui": "node scripts/check-ui-unification-gate.mjs",
+    "measure:dist": "node scripts/measure-dist-footprint.mjs",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",

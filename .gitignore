@@ -49,3 +49,8 @@ examples/
 !docs/MAINTENANCE_1.6.md
 !docs/auth-env.md
 !docs/app-config.md
+!docs/HOST-ONBOARDING.md
+!docs/COMMON-PLATFORMS-EXPORTS.md
+!docs/PACKAGE-SPLIT-ROADMAP.md
+!docs/adr/002-client-ready-multiplatform-sdk.md
+!src/business/festivalCard/PLATFORMS.md

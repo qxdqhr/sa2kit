@@ -2,7 +2,9 @@
 
 > **单一事实来源（SSOT）**：本文件追踪 sa2kit 从 1.x「工具库 + 业务单体」到 2.x「common / business 分层」的全部重构任务。  
 > **版本线**：自 `2.0.0-alpha.0` 起进入 2.0 重构；稳定版目标为 `2.0.0`。  
-> **最后更新**：2026-06-09（alpha.8）
+> **最后更新**：2026-09-03（ADR-002 启明星 · business 不再迁出 profile）
+
+> **启明星 / ADR-002**：business **留在 sa2kit**、多端同仓；profile 与客户仓为薄宿主。详见 [docs/adr/002-client-ready-multiplatform-sdk.md](./adr/002-client-ready-multiplatform-sdk.md) 与 [HOST-ONBOARDING.md](./HOST-ONBOARDING.md)。下文 §1.2 流程图中「迁回 profile-v1」**已作废**。
 
 ---
 

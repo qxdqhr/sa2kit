@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import { Button } from 'sa2kit/common/ui';
 import { normalizeFestivalCardConfig } from '../core';
 import type { FestivalCardConfig, FestivalCardElement, FestivalCardPage } from '../types';
 import FloatingMenu from '../../navigation/FloatingMenu';
@@ -264,22 +265,12 @@ export const FestivalCardBook3D: React.FC<FestivalCardBook3DProps> = ({
         </div>
 
         <div className="mt-4 flex justify-center gap-3">
-          <button
-            type="button"
-            disabled={!canPrev}
-            onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
-            className="rounded-full bg-white px-5 py-2 text-sm font-medium text-slate-900 disabled:cursor-not-allowed disabled:opacity-45"
-          >
+          <Button type="default" disabled={!canPrev} onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}>
             上一页
-          </button>
-          <button
-            type="button"
-            disabled={!canNext}
-            onClick={() => setCurrentPage((p) => Math.min(pages.length - 1, p + 1))}
-            className="rounded-full bg-sky-300 px-5 py-2 text-sm font-medium text-slate-900 disabled:cursor-not-allowed disabled:opacity-45"
-          >
+          </Button>
+          <Button type="primary" disabled={!canNext} onClick={() => setCurrentPage((p) => Math.min(pages.length - 1, p + 1))}>
             下一页
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -303,14 +294,15 @@ export const FestivalCardBook3D: React.FC<FestivalCardBook3DProps> = ({
           menu={
             <div className="grid gap-2">
               <div className="text-xs font-semibold tracking-wide text-slate-500">贺卡工具</div>
-              <button
-                type="button"
-                onClick={() => void handleExportCurrentPage()}
+              <Button
+                type="primary"
+                block
+                loading={exporting}
                 disabled={exporting}
-                className="rounded-lg bg-sky-600 px-3 py-2 text-left text-sm font-medium text-white disabled:opacity-60"
+                onClick={() => void handleExportCurrentPage()}
               >
                 {exporting ? '导出中...' : `导出第 ${currentPage + 1} 页 PNG`}
-              </button>
+              </Button>
             </div>
           }
           triggerClassName="bg-white/95 backdrop-blur"

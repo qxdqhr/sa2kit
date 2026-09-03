@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Button } from 'sa2kit/common/ui';
 import { FestivalCardStudio } from './FestivalCardStudio';
 import { normalizeFestivalCardConfig } from '../core';
 import type { FestivalCardConfig, FestivalCardConfigSummary } from '../types';
@@ -129,9 +130,9 @@ export const FestivalCardConfigPage: React.FC<FestivalCardConfigPageProps> = ({
             </option>
           ))}
         </select>
-        <button type="button" onClick={() => void createNew()} className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white">
+        <Button type="primary" size="small" onClick={() => void createNew()}>
           新建卡片
-        </button>
+        </Button>
         <a href={mainLink} className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-700">
           打开主页面
         </a>

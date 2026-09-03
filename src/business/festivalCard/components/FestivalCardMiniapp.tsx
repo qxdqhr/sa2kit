@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import { Button } from 'sa2kit/common/ui';
 import { normalizeFestivalCardConfig } from '../core';
 import type { FestivalCardConfig } from '../types';
 import { FestivalCardPageRenderer } from './FestivalCardPageRenderer';
@@ -21,20 +22,21 @@ export const FestivalCardMiniapp: React.FC<FestivalCardMiniappProps> = ({ config
       <div style={{ height: 420 }}>
         <FestivalCardPageRenderer page={page} />
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>
-        <button type="button" disabled={index <= 0} onClick={() => setIndex((v) => Math.max(0, v - 1))}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12, alignItems: 'center' }}>
+        <Button type="default" size="small" disabled={index <= 0} onClick={() => setIndex((v) => Math.max(0, v - 1))}>
           上一页
-        </button>
+        </Button>
         <div>
           {index + 1}/{normalized.pages.length}
         </div>
-        <button
-          type="button"
+        <Button
+          type="default"
+          size="small"
           disabled={index >= normalized.pages.length - 1}
           onClick={() => setIndex((v) => Math.min(normalized.pages.length - 1, v + 1))}
         >
           下一页
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import { Button } from 'sa2kit/common/ui';
 import { resizeFestivalCardPages } from '../core';
 import type { FestivalCardConfig, FestivalCardElement } from '../types';
 
@@ -202,8 +203,9 @@ export const FestivalCardConfigEditor: React.FC<FestivalCardConfigEditorProps> =
       {canEditPage ? (
         <div className="mt-4">
           <div className="mb-3 flex gap-2">
-            <button
-              type="button"
+            <Button
+              type="primary"
+              size="small"
               onClick={() =>
                 onChange({
                   ...value,
@@ -212,12 +214,12 @@ export const FestivalCardConfigEditor: React.FC<FestivalCardConfigEditorProps> =
                   ),
                 })
               }
-              className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white"
             >
               + 文字
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              type="primary"
+              size="small"
               onClick={() =>
                 onChange({
                   ...value,
@@ -226,10 +228,9 @@ export const FestivalCardConfigEditor: React.FC<FestivalCardConfigEditorProps> =
                   ),
                 })
               }
-              className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white"
             >
               + 图片
-            </button>
+            </Button>
           </div>
 
           <div className="grid max-h-[340px] gap-2.5 overflow-auto pr-1">
@@ -242,13 +243,9 @@ export const FestivalCardConfigEditor: React.FC<FestivalCardConfigEditorProps> =
               >
                 <div className="mb-2 flex items-center justify-between">
                   <div className="text-xs font-semibold tracking-wide text-slate-500">{element.type.toUpperCase()}</div>
-                  <button
-                    type="button"
-                    onClick={() => removeElement(element.id)}
-                    className="rounded-md border border-rose-300 bg-rose-50 px-2 py-1 text-xs font-medium text-rose-700"
-                  >
+                  <Button type="default" size="small" danger onClick={() => removeElement(element.id)}>
                     删除
-                  </button>
+                  </Button>
                 </div>
                 {element.type === 'text' ? (
                   <div className="grid gap-2">

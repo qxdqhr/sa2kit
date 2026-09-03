@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { Button } from 'sa2kit/common/ui';
 import { normalizeFestivalCardConfig } from '../core';
 import { useFestivalCardConfig } from '../hooks/useFestivalCardConfig';
 import type { FestivalCardConfig, FestivalCardElement } from '../types';
@@ -73,14 +74,16 @@ export const FestivalCardStudio: React.FC<FestivalCardStudioProps> = ({ initialC
           selectedElementId={selectedElementId}
         />
         {onSave ? (
-          <button
-            type="button"
-            onClick={() => void save()}
+          <Button
+            type="primary"
+            block
+            loading={saving}
             disabled={saving}
-            className="mt-3 w-full rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-60"
+            onClick={() => void save()}
+            className="mt-3"
           >
             {saving ? '保存中...' : '保存配置'}
-          </button>
+          </Button>
         ) : null}
       </div>
     </div>
