@@ -7,7 +7,8 @@ const root = join(fileURLToPath(import.meta.url), '..');
 /** 2.0 common + business 构建共享选项（R2-301） */
 export const tsupSharedOptions: Omit<Options, 'entry' | 'clean'> = {
   format: ['esm', 'cjs'],
-  dts: true,
+  // profile-v1 monorepo Docker/CI：宿主 React 19 类型与 lucide 冲突，设 SA2KIT_SKIP_DTS=1 跳过声明产物
+  dts: process.env.SA2KIT_SKIP_DTS === '1' ? false : true,
   /** business 保持 entry 隔离；splitting 仅 common 启用（R2-302） */
   splitting: false,
   sourcemap: true,
