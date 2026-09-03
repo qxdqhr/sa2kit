@@ -62,7 +62,7 @@
 | `…/rn` | ⬜ | ✅ | ⬜ | ⬜ |
 | `…/style` | ✅ | ⬜ | ⬜ | ✅ |
 
-完整 UI 矩阵见 profile `UI-UNIFICATION-PLAN.md`。
+完整 UI 矩阵见蓝图 `BLUEPRINT-multiplatform-sa2kit.md` §5；门禁 `pnpm gate:ui`。
 
 ## 宿主引用速查
 

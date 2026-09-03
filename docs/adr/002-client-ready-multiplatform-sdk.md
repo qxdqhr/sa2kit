@@ -38,5 +38,4 @@ Phase U（UI 统一化）已于 2026-08-29 验收；宿主 submodule + workspace
 
 ## 相关
 
-- [REFACTOR_2.0_BACKLOG.md](../REFACTOR_2.0_BACKLOG.md) — 2.0 目录/构建任务（business 迁出优先级列 **作废**）  
 - [MIGRATION_1.x_to_2.0.md](../MIGRATION_1.x_to_2.0.md)

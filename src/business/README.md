@@ -1,16 +1,6 @@
 # sa2kit/business
 
-SA2Kit 2.0 **业务层**：具体产品域实现，后期逐步迁回 profile-v1。
-
-## 子模块
-
-| 目录 | npm 入口（legacy） | 迁回 profile-v1 |
-|------|-------------------|-----------------|
-| auth-legacy | 已删除（3.0）→ `common/auth` | 已收敛 |
-| showmasterpiece | `sa2kit/showmasterpiece/*` | P0 — 已在 profile-v1 本地化 |
-| huarongdao | 已迁 profile-v1 | — |
-| bubbleShooter | `sa2kit/bubbleShooter/*` | P1 |
-| mikuFlick | 已迁 profile-v1 | — |
+SA2Kit **业务层**：可选产品域；**多端同仓**，按 `domain/` + `server/` + `ui/{web,rn,taro}` 组织（启明星 ADR-002）。
 
 ## 依赖规则
 
@@ -18,4 +8,12 @@ SA2Kit 2.0 **业务层**：具体产品域实现，后期逐步迁回 profile-v1
 - ❌ 不可被 `common` 引用
 - ❌ 子域之间避免交叉引用（见 ESLint `no-restricted-imports`）
 
-详见 [REFACTOR_2.0_BACKLOG.md](../../docs/REFACTOR_2.0_BACKLOG.md)。
+## 模板
+
+- 试点：[festivalCard/PLATFORMS.md](./festivalCard/PLATFORMS.md)
+- 大域迁移计划：profile `docs/modules/*/DOMAIN-MIGRATION.md`
+
+## 文档
+
+- [ADR-002 多端 SDK](../../docs/adr/002-client-ready-multiplatform-sdk.md)
+- [HOST-ONBOARDING](../../docs/HOST-ONBOARDING.md)

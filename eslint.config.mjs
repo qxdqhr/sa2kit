@@ -106,7 +106,7 @@ export default [
           patterns: [
             {
               group: ['**/business/**', '@/business/**', '@business/**'],
-              message: 'common 模块禁止依赖 business（见 REFACTOR_2.0_BACKLOG R2-106）',
+              message: 'common 模块禁止依赖 business（见 ADR-002 / eslint 分层）',
             },
           ],
         },

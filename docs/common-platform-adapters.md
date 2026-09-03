@@ -95,5 +95,5 @@ business/*       →  可依赖 common/platform、common/file
 
 ## 相关文档
 
-- [REFACTOR_2.0_BACKLOG.md](./REFACTOR_2.0_BACKLOG.md) — R2-221 ~ R2-224
+- [ADR-002](./adr/002-client-ready-multiplatform-sdk.md) — R2-221 ~ R2-224
 - [UNIVERSAL_FILE_GUIDE.md](./UNIVERSAL_FILE_GUIDE.md)

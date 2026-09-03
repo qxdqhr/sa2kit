@@ -2,7 +2,7 @@
 
 > 目标读者：profile-v1 及其他消费方维护者  
 > 对应 backlog：**R2-603**  
-> SSOT 进度：[REFACTOR_2.0_BACKLOG.md](./REFACTOR_2.0_BACKLOG.md)
+> SSOT 进度：[ADR-002](./adr/002-client-ready-multiplatform-sdk.md)（2.0 架构已落地）
 
 ## 1. 版本与安装
 

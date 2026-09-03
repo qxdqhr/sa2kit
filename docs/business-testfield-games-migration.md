@@ -39,4 +39,4 @@
 
 - [business-exports-trimmed.md](./business-exports-trimmed.md)
 - [business-deprecated-exports.md](./business-deprecated-exports.md)
-- [REFACTOR_2.0_BACKLOG.md](./REFACTOR_2.0_BACKLOG.md) — R2-406 / R2-605
+- [ADR-002](./adr/002-client-ready-multiplatform-sdk.md) — business 分层

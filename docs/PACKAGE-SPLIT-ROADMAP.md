@@ -1,7 +1,7 @@
 # sa2kit 包体拆分路线图（Phase E）
 
 > 目标：接单客户仓 / RN / 小程序 **只装所需 entry**，避免 30MB+ `dist/` 全家桶误 import。  
-> 关联：profile `docs/code-review/libraries/PHASE-E-S2-EVALUATION.md`（大域 S1/S2）
+> 关联：profile `docs/code-review/libraries/DOMAIN-MIGRATION-ROADMAP.md`（Phase F 大域）
 
 ## 现状（2026-09-03 实测）
 

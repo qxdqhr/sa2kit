@@ -7,7 +7,7 @@
 > **新宿主接入**：[docs/HOST-ONBOARDING.md](./docs/HOST-ONBOARDING.md) · **按端 exports**：[docs/COMMON-PLATFORMS-EXPORTS.md](./docs/COMMON-PLATFORMS-EXPORTS.md)  
 > ADR：[docs/adr/002-client-ready-multiplatform-sdk.md](./docs/adr/002-client-ready-multiplatform-sdk.md)
 
-> 📋 历史重构任务：[docs/REFACTOR_2.0_BACKLOG.md](./docs/REFACTOR_2.0_BACKLOG.md)（其中「business 迁回 profile」已由 ADR-002 **作废**）  
+> 📋 2.0 架构与 ADR：[docs/adr/002-client-ready-multiplatform-sdk.md](./docs/adr/002-client-ready-multiplatform-sdk.md) · 迁移：[MIGRATION_1.x_to_2.0.md](./docs/MIGRATION_1.x_to_2.0.md)
 > 当前消费方 pin：`3.9.1`（以 npm / profile lock 为准）
 
 ### 推荐 import（common）
