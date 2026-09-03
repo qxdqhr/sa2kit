@@ -14,6 +14,14 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 /** 3.2+ business 产物位于 dist/business/*（旧版为 dist/mmd 等扁平路径） */
 const businessMarker = join(root, 'dist', 'business', 'mmd', 'index.js');
 
+if (
+  process.env.SA2KIT_SKIP_PREPARE === '1' ||
+  process.env.SA2KIT_SKIP_PREPARE === 'true'
+) {
+  console.log('[prepare] skip — SA2KIT_SKIP_PREPARE=1（由宿主 monorepo 统一 build:libs）');
+  process.exit(0);
+}
+
 if (!existsSync(join(root, 'src'))) {
   console.log('[prepare] skip — published package (prebuilt dist in tarball)');
   process.exit(0);
