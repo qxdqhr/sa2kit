@@ -22,6 +22,9 @@ export type BookingRouteConfig = {
   db: unknown;
   getSessionUser: (request: Request) => Promise<ShowmasterpieceSessionUser | null>;
   isAdminUser: (user: ShowmasterpieceSessionUser | null) => boolean;
+  /** 管理端 POST 强制刷新 DB（宿主注入，如 @profile/db） */
+  forceRefreshDatabase?: () => Promise<void>;
+  getDatabaseConnectionStatus?: () => Promise<unknown>;
 };
 
 type IdRouteContext = { params: Promise<{ id: string }> };
@@ -243,6 +246,298 @@ export function createCreateBookingHandler(config: BookingRouteConfig) {
       }
       console.error('创建预订失败:', error);
       return apiError('创建预订失败', 500);
+    }
+  };
+}
+
+async function requireAdminOrFail(
+  config: BookingRouteConfig,
+  request: Request,
+): Promise<ShowmasterpieceSessionUser | Response> {
+  const user = await config.getSessionUser(request);
+  if (!user) {
+    return apiError('未授权的访问', 401);
+  }
+  if (!config.isAdminUser(user)) {
+    return apiError('需要管理员权限', 403);
+  }
+  return user;
+}
+
+function parseAdminSearchParams(request: Request) {
+  let searchParams = new URLSearchParams();
+  try {
+    searchParams = new URL(request.url).searchParams;
+  } catch {
+    // ignore
+  }
+  const qqNumber = searchParams.get('qqNumber');
+  const phoneNumber = searchParams.get('phoneNumber');
+  const statusParam = searchParams.get('status');
+  const status =
+    statusParam && statusParam !== 'all' ? statusParam : null;
+  return { qqNumber, phoneNumber, status };
+}
+
+function withNoCache(response: Response): Response {
+  const headers = new Headers(response.headers);
+  headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+  headers.set('Pragma', 'no-cache');
+  headers.set('Expires', '0');
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+/** 管理端列表 + 统计 */
+export function createListAdminBookingsHandler(config: BookingRouteConfig) {
+  const query = createBookingQueryService(config.db);
+  return async (request: Request) => {
+    const auth = await requireAdminOrFail(config, request);
+    if (auth instanceof Response) return auth;
+
+    try {
+      const { qqNumber, phoneNumber, status } = parseAdminSearchParams(request);
+      const result = await query.getAdminBookings({
+        qqNumber,
+        phoneNumber,
+        status,
+        applyFiltersToStats: true,
+      });
+      return withNoCache(
+        json({
+          bookings: result.bookings,
+          stats: result.stats,
+          _timestamp: Date.now(),
+        }),
+      );
+    } catch (error) {
+      console.error('获取预订管理数据失败:', error);
+      return apiError('获取预订管理数据失败', 500);
+    }
+  };
+}
+
+/** 管理端强制刷新 DB 后查询（副作用；刷新实现由宿主注入） */
+export function createAdminRefreshBookingsHandler(config: BookingRouteConfig) {
+  const query = createBookingQueryService(config.db);
+  return async (request: Request) => {
+    const auth = await requireAdminOrFail(config, request);
+    if (auth instanceof Response) return auth;
+
+    try {
+      const { qqNumber, phoneNumber, status } = parseAdminSearchParams(request);
+      if (config.getDatabaseConnectionStatus) {
+        await config.getDatabaseConnectionStatus();
+      }
+      if (config.forceRefreshDatabase) {
+        await config.forceRefreshDatabase();
+      }
+
+      const result = await query.getAdminBookings({
+        qqNumber,
+        phoneNumber,
+        status,
+        applyFiltersToStats: false,
+      });
+
+      return new Response(
+        JSON.stringify({
+          bookings: result.bookings,
+          stats: result.stats,
+          _timestamp: Date.now(),
+          _refreshType: 'FORCE_REFRESH',
+        }),
+        {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control':
+              'no-cache, no-store, must-revalidate, max-age=0, private',
+            Pragma: 'no-cache',
+            Expires: '0',
+          },
+        },
+      );
+    } catch (error) {
+      console.error('强制刷新预订数据失败:', error);
+      return apiError('强制刷新预订数据失败', 500);
+    }
+  };
+}
+
+/** 管理端删单 */
+export function createAdminDeleteBookingHandler(config: BookingRouteConfig) {
+  const command = createBookingCommandService(config.db);
+  return async (_request: Request, context: IdRouteContext) => {
+    const auth = await requireAdminOrFail(config, _request);
+    if (auth instanceof Response) return auth;
+
+    try {
+      const { id: idStr } = await context.params;
+      const id = parseInt(idStr, 10);
+      if (Number.isNaN(id)) {
+        return apiError('无效的预订ID', 400);
+      }
+
+      await command.deleteBooking(id, { asAdmin: true });
+      return json({ data: { message: '预订删除成功', bookingId: id } });
+    } catch (error) {
+      if (error instanceof BookingCommandError) {
+        const status = error.code === 'BOOKING_NOT_FOUND' ? 404 : 400;
+        return json({ error: error.message }, status);
+      }
+      console.error('删除预订失败:', error);
+      return apiError('删除预订失败', 500);
+    }
+  };
+}
+
+/** 管理端更新状态 */
+export function createAdminUpdateBookingStatusHandler(config: BookingRouteConfig) {
+  const command = createBookingCommandService(config.db);
+  return async (request: Request, context: IdRouteContext) => {
+    const auth = await requireAdminOrFail(config, request);
+    if (auth instanceof Response) return auth;
+
+    try {
+      const { id: idStr } = await context.params;
+      const bookingId = parseInt(idStr, 10);
+      if (Number.isNaN(bookingId)) {
+        return apiError('无效的预订ID', 400);
+      }
+
+      const body = (await request.json()) as {
+        status?: string;
+        adminNotes?: string;
+      };
+      const updatedBooking = await command.updateBookingStatus(
+        bookingId,
+        String(body.status ?? ''),
+        body.adminNotes,
+      );
+
+      return json({
+        id: updatedBooking.id,
+        collectionId: updatedBooking.collectionId,
+        qqNumber: updatedBooking.qqNumber,
+        phoneNumber: updatedBooking.phoneNumber,
+        quantity: updatedBooking.quantity,
+        status: updatedBooking.status,
+        notes: updatedBooking.notes,
+        adminNotes: updatedBooking.adminNotes,
+        createdAt:
+          updatedBooking.createdAt?.toISOString?.() ?? updatedBooking.createdAt,
+        updatedAt:
+          updatedBooking.updatedAt?.toISOString?.() ?? updatedBooking.updatedAt,
+        confirmedAt:
+          updatedBooking.confirmedAt?.toISOString?.() ?? updatedBooking.confirmedAt,
+        completedAt:
+          updatedBooking.completedAt?.toISOString?.() ?? updatedBooking.completedAt,
+        cancelledAt:
+          updatedBooking.cancelledAt?.toISOString?.() ?? updatedBooking.cancelledAt,
+      });
+    } catch (error) {
+      if (error instanceof BookingCommandError) {
+        const statusCode = error.code === 'BOOKING_NOT_FOUND' ? 404 : 400;
+        return json({ error: error.message }, statusCode);
+      }
+      console.error('更新预订状态失败:', error);
+      return apiError('更新预订状态失败', 500);
+    }
+  };
+}
+
+/** 管理端导出 CSV */
+export function createExportBookingsCsvHandler(config: BookingRouteConfig) {
+  const query = createBookingQueryService(config.db);
+  return async (request: Request) => {
+    const auth = await requireAdminOrFail(config, request);
+    if (auth instanceof Response) return auth;
+
+    try {
+      const { searchParams } = new URL(request.url);
+      const format = searchParams.get('format') || 'csv';
+      if (format !== 'csv') {
+        return apiError('目前只支持CSV格式导出', 400);
+      }
+
+      const csvContent = await query.exportBookingsCsv();
+      const fileName = `bookings_${new Date().toISOString().split('T')[0]}.csv`;
+      return new Response(csvContent, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': `attachment; filename="${fileName}"`,
+        },
+      });
+    } catch (error) {
+      console.error('导出预订数据失败:', error);
+      return apiError('导出预订数据失败', 500);
+    }
+  };
+}
+
+/** 可预订画集列表（公开） */
+export function createListBookableCollectionsHandler(config: BookingRouteConfig) {
+  const query = createBookingQueryService(config.db);
+  return async (request: Request) => {
+    try {
+      const { searchParams } = new URL(request.url);
+      const categoryId = searchParams.get('categoryId')
+        ? parseInt(searchParams.get('categoryId')!, 10)
+        : undefined;
+      const limit = searchParams.get('limit')
+        ? parseInt(searchParams.get('limit')!, 10)
+        : 50;
+      const orderBy = searchParams.get('orderBy') || 'displayOrder';
+
+      const collections = await query.getBookableCollections({
+        categoryId,
+        limit,
+        orderBy,
+      });
+      return json(collections);
+    } catch (error) {
+      console.error('获取可预订画集列表失败:', error);
+      return apiError('获取画集列表失败', 500);
+    }
+  };
+}
+
+const MAX_BATCH_ITEMS = 50;
+
+/** 批量预订（限流由宿主包装） */
+export function createBatchCreateBookingsHandler(config: BookingRouteConfig) {
+  const command = createBookingCommandService(config.db);
+  return async (request: Request) => {
+    try {
+      const body = (await request.json()) as {
+        qqNumber?: string;
+        phoneNumber?: string;
+        items?: unknown[];
+      };
+      const qqNumber = String(body?.qqNumber ?? '').trim();
+      const phoneNumber = String(body?.phoneNumber ?? '').trim();
+      const items = body?.items;
+
+      if (!qqNumber || !phoneNumber || !Array.isArray(items) || items.length === 0) {
+        return apiError('缺少必要参数：QQ 号、手机号、预订项列表', 400);
+      }
+      if (items.length > MAX_BATCH_ITEMS) {
+        return apiError(`单次批量预订最多 ${MAX_BATCH_ITEMS} 项`, 400);
+      }
+
+      const result = await command.batchCreateBookings(body);
+      return json(result, 201);
+    } catch (error) {
+      if (error instanceof BookingCommandError) {
+        return json({ error: error.message }, 400);
+      }
+      console.error('批量预订失败:', error);
+      return apiError('批量预订失败', 500);
     }
   };
 }

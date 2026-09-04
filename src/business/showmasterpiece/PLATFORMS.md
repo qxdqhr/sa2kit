@@ -8,7 +8,7 @@
 |----|------|------|------|
 | **domain** | `sa2kit/business/showmasterpiece/domain` | 🟡 | booking / popup + bookingAccess；全集类型仍在 `*-core` |
 | **Server** | `sa2kit/business/showmasterpiece/server` | 🟡 | schema ✅；booking Query/Command/Delete ✅；其它 DbService ⬜ |
-| **API routes** | `sa2kit/business/showmasterpiece/routes` | 🟡 | list/get/create/update/delete booking 工厂；admin 全家桶 ⬜ |
+| **API routes** | `sa2kit/business/showmasterpiece/routes` | ✅ | 公开 + admin booking 全家桶 + collections/batch |
 | **Web** | `sa2kit/business/showmasterpiece/ui/web` | ⬜ | SMP2 |
 | **RN** | `sa2kit/business/showmasterpiece/ui/rn` | ⬜ | 暂无 RN 计划 |
 | **Taro** | — | ⬜ | 历史小程序不恢复 |
@@ -18,8 +18,8 @@
 | 路径 | 职责 |
 |------|------|
 | `app_web/showmasterpiece` | 薄 page + Docker + ThemeRoot |
-| `app/api/showmasterpiece/bookings*` | core 薄 → sa2kit handlers |
-| `@profile/showmasterpiece-core` | booking services 已 re-export；其它 DbService 仍 core |
+| `app/api/showmasterpiece/bookings*` | core 薄 → sa2kit handlers（限流 / DB refresh 注入） |
+| `@profile/showmasterpiece-core` | booking 已 re-export；其它 DbService 仍 core |
 
 ## UI 约定
 
@@ -28,7 +28,7 @@
 ## 后续
 
 - [x] schema 下沉 + `@profile/db` 聚合
-- [x] booking Query/Command + public booking route 工厂
-- [ ] 其余 DbService / admin routes
+- [x] booking Query/Command + 全套 booking route 工厂
+- [ ] 其余 DbService（collections / config / popup）
 - [ ] SMP2 ui/web
 - [ ] SMP3 删 core 冗余 / 可选独立 npm
