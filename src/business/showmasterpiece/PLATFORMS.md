@@ -9,7 +9,7 @@
 | **domain** | `sa2kit/business/showmasterpiece/domain` | 🟡 | booking / popup / homeTab + bookingAccess；全集类型仍在 `*-core` |
 | **Server** | `sa2kit/business/showmasterpiece/server` | 🟡 | schema ✅；booking + popup/config/basic + collections/artworks DbService ✅ |
 | **API routes** | `sa2kit/business/showmasterpiece/routes` | ✅ | booking + catalog + popup + site config + artwork image |
-| **Web** | `sa2kit/business/showmasterpiece/ui/web` | 🟡 | SMP2：pages/components + client hooks/services；core Auth 壳 |
+| **Web** | `sa2kit/business/showmasterpiece/ui/web` | ✅ | SMP2 pages + SMP3 client；core 仅 Auth 壳 + 薄 re-export / miniapp |
 | **RN** | `sa2kit/business/showmasterpiece/ui/rn` | ⬜ | 暂无 RN 计划 |
 | **Taro** | — | ⬜ | 历史小程序不恢复 |
 
@@ -32,4 +32,5 @@
 - [x] popup / config / basic（categories·tags·site config）DbService
 - [x] `collectionsDbService` / `artworksDbService`（宿主注入 db + fileUrlResolver）
 - [x] SMP2 ui/web（pages/components + client hooks/services；core Auth 薄壳）
-- [ ] SMP3 删 core 冗余 / 可选独立 npm
+- [x] SMP3：core logic/types/services/utils 改为薄 re-export；保留 miniapp + wechat hook
+- [ ] 可选独立 npm `@sa2kit/business-showmasterpiece`

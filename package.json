@@ -273,6 +273,12 @@
       "import": "./dist/business/showmasterpiece/ui/web/index.mjs",
       "require": "./dist/business/showmasterpiece/ui/web/index.js"
     },
+    "./business/showmasterpiece/ui/web/client": {
+      "types": "./dist/business/showmasterpiece/ui/web/client.d.ts",
+      "import": "./dist/business/showmasterpiece/ui/web/client.mjs",
+      "require": "./dist/business/showmasterpiece/ui/web/client.js"
+    },
+    "./business/showmasterpiece/ui/web/*": "./src/business/showmasterpiece/ui/web/*",
     "./business/showmasterpiece/ui/rn": {
       "types": "./dist/business/showmasterpiece/ui/rn/index.d.ts",
       "import": "./dist/business/showmasterpiece/ui/rn/index.mjs",

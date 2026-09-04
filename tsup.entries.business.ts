@@ -40,6 +40,7 @@ export const businessEntries = {
   'business/showmasterpiece/index': 'src/business/showmasterpiece/index.ts',
   'business/showmasterpiece/domain/index': 'src/business/showmasterpiece/domain/index.ts',
   'business/showmasterpiece/ui/web/index': 'src/business/showmasterpiece/ui/web/index.ts',
+  'business/showmasterpiece/ui/web/client': 'src/business/showmasterpiece/ui/web/client.ts',
   'business/showmasterpiece/ui/rn/index': 'src/business/showmasterpiece/ui/rn/index.ts',
   'business/showmasterpiece/server/index': 'src/business/showmasterpiece/server/index.ts',
   'business/showmasterpiece/routes/index': 'src/business/showmasterpiece/routes/index.ts',
