@@ -10,8 +10,19 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-/** 需要真实类型的入口 */
-const SRC_SHIM_ENTRIES = new Set(['business/audioDetection/index']);
+/** 需要真实类型的入口（纯 domain / 无 next·three 双版本冲突） */
+const SRC_SHIM_ENTRIES = new Set([
+  'business/audioDetection/index',
+  'business/calendar/index',
+  'business/calendar/domain/index',
+  'business/calendar/ui/rn/index',
+  'business/teachHub/index',
+  'business/teachHub/domain/index',
+  'business/teachHub/ui/rn/index',
+  'business/showmasterpiece/index',
+  'business/showmasterpiece/domain/index',
+  'business/showmasterpiece/ui/rn/index',
+]);
 
 function parseBusinessEntries() {
   const source = readFileSync(join(root, 'tsup.entries.business.ts'), 'utf8');

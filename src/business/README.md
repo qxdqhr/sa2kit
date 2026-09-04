@@ -11,7 +11,11 @@ SA2Kit **业务层**：可选产品域；**多端同仓**，按 `domain/` + `ser
 ## 模板
 
 - 试点：[festivalCard/PLATFORMS.md](./festivalCard/PLATFORMS.md)
-- 大域迁移计划：profile `docs/modules/*/DOMAIN-MIGRATION.md`
+- Phase F 大域：
+  - [calendar/PLATFORMS.md](./calendar/PLATFORMS.md)
+  - [teachHub/PLATFORMS.md](./teachHub/PLATFORMS.md)
+  - [showmasterpiece/PLATFORMS.md](./showmasterpiece/PLATFORMS.md)
+- 迁移计划：profile `docs/modules/*/DOMAIN-MIGRATION.md`
 
 ## 文档
 
