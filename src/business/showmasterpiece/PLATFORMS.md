@@ -6,8 +6,8 @@
 
 | 端 | 入口 | 状态 | 说明 |
 |----|------|------|------|
-| **domain** | `sa2kit/business/showmasterpiece/domain` | 🟡 | booking / popup + bookingAccess；全集类型仍在 `*-core` |
-| **Server** | `sa2kit/business/showmasterpiece/server` | 🟡 | schema ✅；booking Query/Command/Delete ✅；其它 DbService ⬜ |
+| **domain** | `sa2kit/business/showmasterpiece/domain` | 🟡 | booking / popup / homeTab + bookingAccess；全集类型仍在 `*-core` |
+| **Server** | `sa2kit/business/showmasterpiece/server` | 🟡 | schema ✅；booking + popup/config/basic DbService ✅；`masterpiecesDbService` ⬜ |
 | **API routes** | `sa2kit/business/showmasterpiece/routes` | ✅ | 公开 + admin booking 全家桶 + collections/batch |
 | **Web** | `sa2kit/business/showmasterpiece/ui/web` | ⬜ | SMP2 |
 | **RN** | `sa2kit/business/showmasterpiece/ui/rn` | ⬜ | 暂无 RN 计划 |
@@ -19,7 +19,7 @@
 |------|------|
 | `app_web/showmasterpiece` | 薄 page + Docker + ThemeRoot |
 | `app/api/showmasterpiece/bookings*` | core 薄 → sa2kit handlers（限流 / DB refresh 注入） |
-| `@profile/showmasterpiece-core` | booking 已 re-export；其它 DbService 仍 core |
+| `@profile/showmasterpiece-core` | booking / popup / config / basic 已 re-export；`masterpiecesDbService` 仍 core |
 
 ## UI 约定
 
@@ -29,6 +29,7 @@
 
 - [x] schema 下沉 + `@profile/db` 聚合
 - [x] booking Query/Command + 全套 booking route 工厂
-- [ ] 其余 DbService（collections / config / popup）
+- [x] popup / config / basic（categories·tags·site config）DbService
+- [ ] `masterpiecesDbService`（collections 主服务，体量大）
 - [ ] SMP2 ui/web
 - [ ] SMP3 删 core 冗余 / 可选独立 npm

@@ -20,3 +20,22 @@ export {
   isBookingDeleteUnauthorized,
   type DeleteBookingGuardOptions,
 } from './bookingDelete';
+
+export {
+  PopupConfigService,
+  createPopupConfigService,
+} from './popupConfigService';
+
+export {
+  MasterpiecesConfigDbService,
+  CategoriesDbService,
+  TagsDbService,
+  createMasterpiecesConfigDbService,
+  createCategoriesDbService,
+  createTagsDbService,
+} from './basicDbService';
+
+export {
+  ShowmasterConfigService,
+  createShowmasterConfigService,
+} from './configService';

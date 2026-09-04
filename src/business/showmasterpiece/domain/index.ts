@@ -121,6 +121,16 @@ export {
   bookingMatchesLookup,
 } from './bookingAccess';
 
+export {
+  buildDefaultHomeTabConfig,
+  normalizeHomeTabConfig,
+  normalizeMiniappFloatingButtonsConfig,
+  defaultMiniappFloatingButtonsConfig,
+  type HomeTabConfigItem,
+  type MiniappFloatingButtonsConfig,
+  type CollectionCategoryType,
+} from './homeTabConfig';
+
 /** 权限规则：完整校验在 server / 宿主 Guard（SMP1） */
 export function isBookingCancellable(status: BookingStatus): boolean {
   return status === 'pending' || status === 'confirmed';
