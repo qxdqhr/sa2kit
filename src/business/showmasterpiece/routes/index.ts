@@ -543,3 +543,4 @@ export function createBatchCreateBookingsHandler(config: BookingRouteConfig) {
 }
 
 export * from './catalogRoutes';
+export * from './popupRoutes';
