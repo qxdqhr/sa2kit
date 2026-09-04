@@ -63,10 +63,13 @@ interface ArtworkFormData {
 }
 
 
-export type FileUrlResolver = (fileId: string) => Promise<string | null | undefined>;
+/** 画集/作品 fileId→URL；与 `sa2kit/common/file` 的 FileUrlResolver 区分，避免 @profile/db schema star-export 冲突 */
+export type ShowmasterpieceFileUrlResolver = (
+  fileId: string,
+) => Promise<string | null | undefined>;
 
 async function resolveFileUrlMap(
-  fileUrlResolver: FileUrlResolver | undefined,
+  fileUrlResolver: ShowmasterpieceFileUrlResolver | undefined,
   fileIds: string[],
 ): Promise<Map<string, string>> {
   const fileIdToUrlMap = new Map<string, string>();
@@ -96,7 +99,7 @@ async function resolveFileUrlMap(
 export class CollectionsDbService {
   constructor(
     private readonly db: any,
-    private readonly fileUrlResolver?: FileUrlResolver,
+    private readonly fileUrlResolver?: ShowmasterpieceFileUrlResolver,
   ) {}
 
   // 缓存配置 - 多层缓存策略
@@ -982,7 +985,7 @@ export class ArtworksDbService {
   constructor(
     private readonly db: any,
     private readonly collectionsService: CollectionsDbService,
-    private readonly fileUrlResolver?: FileUrlResolver,
+    private readonly fileUrlResolver?: ShowmasterpieceFileUrlResolver,
   ) {}
 
   // 添加作品到画集
@@ -1484,7 +1487,7 @@ export class ArtworksDbService {
 
 export function createCollectionsDbService(
   db: any,
-  fileUrlResolver?: FileUrlResolver,
+  fileUrlResolver?: ShowmasterpieceFileUrlResolver,
 ): CollectionsDbService {
   return new CollectionsDbService(db, fileUrlResolver);
 }
@@ -1492,7 +1495,7 @@ export function createCollectionsDbService(
 export function createArtworksDbService(
   db: any,
   collectionsService: CollectionsDbService,
-  fileUrlResolver?: FileUrlResolver,
+  fileUrlResolver?: ShowmasterpieceFileUrlResolver,
 ): ArtworksDbService {
   return new ArtworksDbService(db, collectionsService, fileUrlResolver);
 }

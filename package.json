@@ -213,6 +213,12 @@
       "import": "./dist/business/calendar/ui/web/index.mjs",
       "require": "./dist/business/calendar/ui/web/index.js"
     },
+    "./business/calendar/ui/web/*": [
+      "./src/business/calendar/ui/web/*.ts",
+      "./src/business/calendar/ui/web/*.tsx",
+      "./src/business/calendar/ui/web/*/index.ts",
+      "./src/business/calendar/ui/web/*/index.tsx"
+    ],
     "./business/calendar/ui/rn": {
       "types": "./dist/business/calendar/ui/rn/index.d.ts",
       "import": "./dist/business/calendar/ui/rn/index.mjs",
@@ -243,6 +249,12 @@
       "import": "./dist/business/teachHub/ui/web/index.mjs",
       "require": "./dist/business/teachHub/ui/web/index.js"
     },
+    "./business/teachHub/ui/web/*": [
+      "./src/business/teachHub/ui/web/*.ts",
+      "./src/business/teachHub/ui/web/*.tsx",
+      "./src/business/teachHub/ui/web/*/index.ts",
+      "./src/business/teachHub/ui/web/*/index.tsx"
+    ],
     "./business/teachHub/ui/rn": {
       "types": "./dist/business/teachHub/ui/rn/index.d.ts",
       "import": "./dist/business/teachHub/ui/rn/index.mjs",
@@ -278,7 +290,12 @@
       "import": "./dist/business/showmasterpiece/ui/web/client.mjs",
       "require": "./dist/business/showmasterpiece/ui/web/client.js"
     },
-    "./business/showmasterpiece/ui/web/*": "./src/business/showmasterpiece/ui/web/*",
+    "./business/showmasterpiece/ui/web/*": [
+      "./src/business/showmasterpiece/ui/web/*.ts",
+      "./src/business/showmasterpiece/ui/web/*.tsx",
+      "./src/business/showmasterpiece/ui/web/*/index.ts",
+      "./src/business/showmasterpiece/ui/web/*/index.tsx"
+    ],
     "./business/showmasterpiece/ui/rn": {
       "types": "./dist/business/showmasterpiece/ui/rn/index.d.ts",
       "import": "./dist/business/showmasterpiece/ui/rn/index.mjs",

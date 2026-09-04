@@ -45,5 +45,5 @@ export {
   ArtworksDbService,
   createCollectionsDbService,
   createArtworksDbService,
-  type FileUrlResolver,
+  type ShowmasterpieceFileUrlResolver,
 } from './collectionsDbService';

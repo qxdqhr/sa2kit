@@ -36,6 +36,8 @@ export type {
   EventListSort,
   EventListFilter,
   EventListConfig,
+  CalendarService,
+  CalendarDbService,
 } from './types';
 
 export {

@@ -3,12 +3,12 @@
  */
 import { and, eq } from 'drizzle-orm';
 import { comicUniverseArtworks } from '../server';
-import type { FileUrlResolver } from '../server';
+import type { ShowmasterpieceFileUrlResolver } from '../server';
 
 export type ArtworkImageRouteConfig = {
   db: any;
   /** 宿主注入：fileId → OSS/API URL */
-  resolveFileUrl: FileUrlResolver;
+  resolveFileUrl: ShowmasterpieceFileUrlResolver;
 };
 
 type ArtworkImageContext = {
@@ -65,7 +65,7 @@ async function loadArtworkImageRow(
 }
 
 async function resolveArtworkFileUrl(
-  resolveFileUrl: FileUrlResolver,
+  resolveFileUrl: ShowmasterpieceFileUrlResolver,
   fileId: string,
 ): Promise<string | null> {
   try {
