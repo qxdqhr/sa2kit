@@ -2,6 +2,7 @@
 export const commonEntries = {
   'common/index': 'src/common/index.ts',
   'common/logger/index': 'src/common/logger/index.ts',
+  'common/feishu/index': 'src/common/feishu/index.ts',
   'common/utils/index': 'src/common/utils/index.ts',
   'common/storage/index': 'src/common/storage/index.ts',
   'common/request/index': 'src/common/request/index.ts',

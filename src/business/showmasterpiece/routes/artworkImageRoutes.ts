@@ -130,7 +130,7 @@ export function createGetArtworkImageHandler(config: ArtworkImageRouteConfig) {
 
       const decoded = decodeDataUrl(imageData);
       if (decoded) {
-        return new Response(decoded.body, {
+        return new Response(decoded.body as BodyInit, {
           status: 200,
           headers: {
             'Content-Type': decoded.contentType,

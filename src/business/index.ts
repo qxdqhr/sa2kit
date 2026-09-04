@@ -12,5 +12,6 @@ export * as mikuContest from './mikuContest';
 export * as qqbot from './qqbot';
 export * as screenReceiver from './screenReceiver';
 export * as festivalCard from './festivalCard';
+export * as exam from './exam';
 export * as vocaloidBooth from './vocaloidBooth';
 export * as audioDetection from './audioDetection';
