@@ -273,6 +273,11 @@
       "import": "./dist/business/showmasterpiece/ui/rn/index.mjs",
       "require": "./dist/business/showmasterpiece/ui/rn/index.js"
     },
+    "./business/showmasterpiece/server": {
+      "types": "./dist/business/showmasterpiece/server/index.d.ts",
+      "import": "./dist/business/showmasterpiece/server/index.mjs",
+      "require": "./dist/business/showmasterpiece/server/index.js"
+    },
     "./business": {
       "types": "./dist/business/index.d.ts",
       "import": "./dist/business/index.mjs",

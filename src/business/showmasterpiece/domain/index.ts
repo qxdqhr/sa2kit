@@ -55,6 +55,7 @@ export interface BookingListParams {
   status?: BookingStatus;
   collectionId?: number;
   qqNumber?: string;
+  phoneNumber?: string;
   page?: number;
   pageSize?: number;
 }
@@ -115,7 +116,12 @@ export interface PopupConfig {
 
 export type NewPopupConfig = Omit<PopupConfig, 'id' | 'createdAt' | 'updatedAt'>;
 
-/** 权限规则占位：完整校验在 server / 宿主 Guard（SMP1） */
+export {
+  validatePublicBookingLookup,
+  bookingMatchesLookup,
+} from './bookingAccess';
+
+/** 权限规则：完整校验在 server / 宿主 Guard（SMP1） */
 export function isBookingCancellable(status: BookingStatus): boolean {
   return status === 'pending' || status === 'confirmed';
 }
