@@ -8,7 +8,8 @@
 | 端 | 入口 | 状态 | 说明 |
 |----|------|------|------|
 | **domain** | `sa2kit/business/teachHub/domain` | ✅ | Workspace / Lesson / Mission / Progress 类型 + lessonProgress 纯函数 |
-| **Server** | `sa2kit/business/teachHub/server` | 🟡 | schema 已下沉；DbService/OSS/AI routes 仍 core（T2 续） |
+| **Server** | `sa2kit/business/teachHub/server` | ✅ | schema + TeachHubDbService（fileStore 注入） |
+| **API routes** | `sa2kit/business/teachHub/routes` | 🟡 | workspace CRUD + progress；files/generate/import 仍 core |
 | **Web** | `sa2kit/business/teachHub/ui/web` | ⬜ | T3 |
 | **RN** | `sa2kit/business/teachHub/ui/rn` | 🟡 stub | mobile 仍用 core/shared 过渡 |
 | **Taro** | — | ⬜ | 暂无计划 |

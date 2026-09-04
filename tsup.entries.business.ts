@@ -34,6 +34,7 @@ export const businessEntries = {
   'business/teachHub/domain/index': 'src/business/teachHub/domain/index.ts',
   'business/teachHub/ui/rn/index': 'src/business/teachHub/ui/rn/index.ts',
   'business/teachHub/server/index': 'src/business/teachHub/server/index.ts',
+  'business/teachHub/routes/index': 'src/business/teachHub/routes/index.ts',
   'business/showmasterpiece/index': 'src/business/showmasterpiece/index.ts',
   'business/showmasterpiece/domain/index': 'src/business/showmasterpiece/domain/index.ts',
   'business/showmasterpiece/ui/rn/index': 'src/business/showmasterpiece/ui/rn/index.ts',

@@ -243,6 +243,11 @@
       "import": "./dist/business/teachHub/server/index.mjs",
       "require": "./dist/business/teachHub/server/index.js"
     },
+    "./business/teachHub/routes": {
+      "types": "./dist/business/teachHub/routes/index.d.ts",
+      "import": "./dist/business/teachHub/routes/index.mjs",
+      "require": "./dist/business/teachHub/routes/index.js"
+    },
     "./business/showmasterpiece": {
       "types": "./dist/business/showmasterpiece/index.d.ts",
       "import": "./dist/business/showmasterpiece/index.mjs",

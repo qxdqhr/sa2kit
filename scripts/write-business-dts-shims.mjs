@@ -22,6 +22,7 @@ const SRC_SHIM_ENTRIES = new Set([
   'business/teachHub/domain/index',
   'business/teachHub/ui/rn/index',
   'business/teachHub/server/index',
+  'business/teachHub/routes/index',
   'business/showmasterpiece/index',
   'business/showmasterpiece/domain/index',
   'business/showmasterpiece/ui/rn/index',
