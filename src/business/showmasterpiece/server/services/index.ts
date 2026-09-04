@@ -39,3 +39,11 @@ export {
   ShowmasterConfigService,
   createShowmasterConfigService,
 } from './configService';
+
+export {
+  CollectionsDbService,
+  ArtworksDbService,
+  createCollectionsDbService,
+  createArtworksDbService,
+  type FileUrlResolver,
+} from './collectionsDbService';
