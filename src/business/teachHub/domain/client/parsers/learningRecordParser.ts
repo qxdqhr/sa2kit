@@ -1,4 +1,4 @@
-import type { LearningRecord, LearningRecordSection } from '../types';
+import type { LearningRecord, LearningRecordSection } from '../../types';
 import { lessonTitleFromSlug } from '../routes';
 
 const RECORD_FILENAME_PATTERN = /^(\d{4})-(.+)\.md$/i;

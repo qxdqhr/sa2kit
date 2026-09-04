@@ -1,12 +1,12 @@
 /**
- * RN 端占位：`sa2kit/business/teachHub/ui/rn`。
- * teach-hub-mobile 过渡期继续经 @profile/teach-hub-core/shared → domain。
+ * RN 端入口：`sa2kit/business/teachHub/ui/rn`
+ *
+ * 原生 UI 由 teach-hub-mobile 自绘；本入口 re-export domain 供 RN 宿主单路径依赖。
  */
-export const TEACH_HUB_RN_SUPPORTED = false as const;
+export {
+  TEACH_HUB_RN_SUPPORTED,
+  teachHubRnPlatformNote,
+  TeachHubRnStub,
+} from './stub';
 
-export const teachHubRnPlatformNote =
-  'TeachHub RN UI is not implemented yet. Use domain types + host shell, or track PLATFORMS.md.';
-
-export function TeachHubRnStub(): null {
-  return null;
-}
+export * from '../../domain';

@@ -1,4 +1,4 @@
-import type { LearningRecord } from '../types';
+import type { LearningRecord } from '../../types';
 import type { TeachHubApiClient } from '../api/client';
 import { parseLearningRecordMarkdown } from '../parsers/learningRecordParser';
 

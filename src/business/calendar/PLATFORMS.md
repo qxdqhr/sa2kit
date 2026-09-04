@@ -11,7 +11,7 @@
 | **Server** | `sa2kit/business/calendar/server` | ✅ | schema + CalendarDbService 工厂 |
 | **API routes** | `sa2kit/business/calendar/routes` | ✅ | handler 工厂；session 经宿主注入 |
 | **Web** | `sa2kit/business/calendar/ui/web` | ✅ | C3：pages/components/hooks；Auth 壳在 calendar-core |
-| **RN** | `sa2kit/business/calendar/ui/rn` | ⬜ stub | 仅占位 export |
+| **RN** | `sa2kit/business/calendar/ui/rn` | 🟡 | stub + re-export domain；calendar-mobile 自绘 UI 直引 domain |
 | **Taro** | — | ⬜ | 暂无计划 |
 
 ## profile-v1 宿主
@@ -32,5 +32,5 @@
 
 - [x] C2 server
 - [x] C3 ui/web
-- [ ] C4 RN 非 stub
-- [ ] C5 删 core 冗余 components/hooks
+- [x] C4 RN：ui/rn stub + mobile 改引 domain（原生组件仍在 mobile）
+- [x] C5 删 core 冗余 components/hooks

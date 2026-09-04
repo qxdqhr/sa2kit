@@ -1,4 +1,4 @@
 export {
   parseMissionMarkdown,
   extractMissionWhySummary,
-} from '../shared/parsers/missionParser';
+} from 'sa2kit/business/teachHub/domain';

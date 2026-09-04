@@ -7,12 +7,12 @@
 
 | 端 | 入口 | 状态 | 说明 |
 |----|------|------|------|
-| **domain** | `sa2kit/business/teachHub/domain` | ✅ | Workspace / Lesson / Mission / Progress 类型 + lessonProgress 纯函数 |
+| **domain** | `sa2kit/business/teachHub/domain` | ✅ | 类型 + lessonProgress + ApiClient + parsers/templates（跨端 client） |
 | **Server** | `sa2kit/business/teachHub/server` | ✅ | schema + TeachHubDbService（fileStore 注入） |
 | **API routes** | `sa2kit/business/teachHub/routes` | ✅ | workspace/files/import/generate；OSS/AI 经 adapter 注入 |
 | **AI tasks** | `server/tasks` | ✅ | `teach.generateLesson`；core 薄 re-export |
 | **Web** | `sa2kit/business/teachHub/ui/web` | ✅ | T3：pages/layout/components；Auth 壳在 teach-hub-core |
-| **RN** | `sa2kit/business/teachHub/ui/rn` | 🟡 stub | mobile 仍用 core/shared 过渡 |
+| **RN** | `sa2kit/business/teachHub/ui/rn` | 🟡 | stub + re-export domain；mobile 自绘 UI 直引 domain |
 | **Taro** | — | ⬜ | 暂无计划 |
 | **Desktop** | teach-hub-desktop | 🟡 | Web 子集 / WebView |
 
@@ -33,5 +33,5 @@
 
 - [x] T2 server（routes ✅；AI tasks ✅）
 - [x] T3 ui/web
-- [ ] T4 RN / mobile 改引 domain
-- [ ] T5 删 core 冗余
+- [x] T4 RN / mobile 改引 domain（ui/rn stub + domain re-export）
+- [x] T5 删 core 冗余

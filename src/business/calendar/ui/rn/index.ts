@@ -1,12 +1,13 @@
 /**
- * RN 端占位：宿主可 import `sa2kit/business/calendar/ui/rn`。
- * 完整 RN UI 待从 calendar-mobile 抽入；过渡期用 WebView 或 domain + 自绘壳。
+ * RN 端入口：`sa2kit/business/calendar/ui/rn`
+ *
+ * 原生日历 UI 仍由 calendar-mobile 自绘；跨端类型与 API 客户端请从 domain 取
+ *（本入口亦 re-export domain，便于 `ui/rn` 单路径依赖）。
  */
-export const CALENDAR_RN_SUPPORTED = false as const;
+export {
+  CALENDAR_RN_SUPPORTED,
+  calendarRnPlatformNote,
+  CalendarRnStub,
+} from './stub';
 
-export const calendarRnPlatformNote =
-  'Calendar RN UI is not implemented yet. Import sa2kit/business/calendar/domain for types/client, or track PLATFORMS.md.';
-
-export function CalendarRnStub(): null {
-  return null;
-}
+export * from '../../domain';

@@ -4,4 +4,4 @@ export {
   DEFAULT_RESOURCES_MD,
   RESOURCE_CATEGORY_LABELS,
   RESOURCE_CATEGORY_DESCRIPTIONS,
-} from '../shared/parsers/resourcesParser';
+} from 'sa2kit/business/teachHub/domain';

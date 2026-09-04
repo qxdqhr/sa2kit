@@ -3,12 +3,12 @@ import type {
   LessonIndex,
   MissionFormData,
   TeachLessonProgress,
-} from '../types';
+} from '../../types';
 
 export {
   DEFAULT_MISSION_TEMPLATE,
   composeMissionMarkdown,
-} from '../../utils/workspaceTemplates';
+} from './missionMarkdown';
 
 export function isMissionReady(mission: MissionFormData): boolean {
   return Boolean(mission.why.trim());

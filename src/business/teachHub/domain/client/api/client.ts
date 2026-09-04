@@ -8,7 +8,7 @@ import type {
   TeachWorkspaceSummary,
   UpdateProgressInput,
   WorkspaceStatus,
-} from '../types';
+} from '../../types';
 
 export type { GenerateLessonTrigger };
 export type ApiEnvelope<T> = { success: true; data: T } | { success: false; error: string };

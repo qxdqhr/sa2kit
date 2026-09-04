@@ -4,4 +4,4 @@ export {
   recordSummary,
   composeLearningRecordMarkdown,
   listReferenceSlugs,
-} from '../shared/parsers/learningRecordParser';
+} from 'sa2kit/business/teachHub/domain';

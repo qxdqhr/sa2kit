@@ -1,7 +1,7 @@
 import {
   TeachHubApiClient,
   type GenerateLessonTrigger,
-} from '../shared/api/client';
+} from 'sa2kit/business/teachHub/domain';
 
 export type { GenerateLessonTrigger };
 

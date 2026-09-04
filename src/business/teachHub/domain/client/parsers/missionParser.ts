@@ -1,4 +1,4 @@
-import type { MissionFormData } from 'sa2kit/business/teachHub/domain';
+import type { MissionFormData } from '../../types';
 
 export function parseMissionMarkdown(content: string): MissionFormData {
   const result: MissionFormData = {

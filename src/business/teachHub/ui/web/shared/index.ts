@@ -1,39 +1,35 @@
-export type * from './types';
-export { TeachHubApiClient, type TeachHubApiConfig, type ApiEnvelope } from './api/client';
+/** @deprecated 请改引 `sa2kit/business/teachHub/domain` */
+export type * from 'sa2kit/business/teachHub/domain';
 export {
+  TeachHubApiClient,
+  type TeachHubApiConfig,
+  type ApiEnvelope,
   TEACH_HUB_API_PREFIX,
   WORKSPACE_TABS,
   lessonTitleFromSlug,
   lessonFilenameFromSlug,
   type TeachHubScreen,
   type WorkspaceTabId,
-} from './routes';
-export { parseMissionMarkdown, extractMissionWhySummary } from './parsers/missionParser';
-export {
+  parseMissionMarkdown,
+  extractMissionWhySummary,
   parseLearningRecordMarkdown,
   parseLearningRecordPath,
   recordSummary,
   composeLearningRecordMarkdown,
   listReferenceSlugs,
-} from './parsers/learningRecordParser';
-export { fetchLearningRecords } from './services/learningRecords';
-export {
+  fetchLearningRecords,
   parseResourcesMarkdown,
   composeResourcesMarkdown,
   DEFAULT_RESOURCES_MD,
   RESOURCE_CATEGORY_LABELS,
   RESOURCE_CATEGORY_DESCRIPTIONS,
-} from './parsers/resourcesParser';
-export {
   lessonProgressMap,
   mergeLessonsWithProgress,
   lessonProgressLabel,
   completedLessonCount,
-} from './utils/lessonProgress';
-export {
   DEFAULT_MISSION_TEMPLATE,
   composeMissionMarkdown,
   isMissionReady,
   resolveGenerateLessonTrigger,
   generateLessonButtonLabel,
-} from './templates/mission';
+} from 'sa2kit/business/teachHub/domain';

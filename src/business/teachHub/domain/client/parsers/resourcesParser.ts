@@ -1,4 +1,4 @@
-import type { ResourceCategory, ResourceItem, ResourcesFormData } from '../types';
+import type { ResourceCategory, ResourceItem, ResourcesFormData } from '../../types';
 
 const PLACEHOLDER_RE = /^（.+）$/;
 
