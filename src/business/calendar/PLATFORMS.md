@@ -8,7 +8,8 @@
 | 端 | 入口 | 状态 | 说明 |
 |----|------|------|------|
 | **domain** | `sa2kit/business/calendar/domain` | ✅ | 类型、dateUtils、纯 eventDisplay、ApiClient |
-| **Server** | `sa2kit/business/calendar/server` | ⬜ | C2：handler 工厂 + schema |
+| **Server** | `sa2kit/business/calendar/server` | ✅ | schema + CalendarDbService 工厂 |
+| **API routes** | `sa2kit/business/calendar/routes` | ✅ | handler 工厂；session 经宿主注入 |
 | **Web** | `sa2kit/business/calendar/ui/web` | ⬜ | C3：自 calendar-core pages/components |
 | **RN** | `sa2kit/business/calendar/ui/rn` | ⬜ stub | 仅占位 export |
 | **Taro** | — | ⬜ | 暂无计划 |

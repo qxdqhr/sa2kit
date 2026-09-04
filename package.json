@@ -213,6 +213,16 @@
       "import": "./dist/business/calendar/ui/rn/index.mjs",
       "require": "./dist/business/calendar/ui/rn/index.js"
     },
+    "./business/calendar/server": {
+      "types": "./dist/business/calendar/server/index.d.ts",
+      "import": "./dist/business/calendar/server/index.mjs",
+      "require": "./dist/business/calendar/server/index.js"
+    },
+    "./business/calendar/routes": {
+      "types": "./dist/business/calendar/routes/index.d.ts",
+      "import": "./dist/business/calendar/routes/index.mjs",
+      "require": "./dist/business/calendar/routes/index.js"
+    },
     "./business/teachHub": {
       "types": "./dist/business/teachHub/index.d.ts",
       "import": "./dist/business/teachHub/index.mjs",
@@ -227,6 +237,11 @@
       "types": "./dist/business/teachHub/ui/rn/index.d.ts",
       "import": "./dist/business/teachHub/ui/rn/index.mjs",
       "require": "./dist/business/teachHub/ui/rn/index.js"
+    },
+    "./business/teachHub/server": {
+      "types": "./dist/business/teachHub/server/index.d.ts",
+      "import": "./dist/business/teachHub/server/index.mjs",
+      "require": "./dist/business/teachHub/server/index.js"
     },
     "./business/showmasterpiece": {
       "types": "./dist/business/showmasterpiece/index.d.ts",

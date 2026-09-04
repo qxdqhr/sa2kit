@@ -158,3 +158,36 @@ export function formatViewTitleMonth(date: Date, locale = 'zh-CN'): string {
 }
 
 export const WEEKDAY_LABELS = ['一', '二', '三', '四', '五', '六', '日'];
+
+/** API wire 默认按东八区解析无偏移时间串 */
+export const CALENDAR_WIRE_TIMEZONE_OFFSET = '+08:00';
+
+function normalizeTimePartForWire(timePart: string): string {
+  const [hms, ms = '000'] = timePart.split('.');
+  const segments = hms.split(':');
+  const hours = String(Number(segments[0]) || 0).padStart(2, '0');
+  const minutes = String(Number(segments[1]) || 0).padStart(2, '0');
+  const seconds = String(Number(segments[2]) || 0).padStart(2, '0');
+  const millis = ms.replace(/\D/g, '').padEnd(3, '0').slice(0, 3);
+  return `${hours}:${minutes}:${seconds}.${millis}`;
+}
+
+/**
+ * 解析 API 请求体中的本地时间字符串（固定东八区）
+ * 避免 Docker/Node 以 UTC 解析导致日期写入错误。
+ */
+export function parseWireLocalISOString(
+  value: string,
+  offset: string = CALENDAR_WIRE_TIMEZONE_OFFSET,
+): Date {
+  const trimmed = value.trim();
+  if (!trimmed) return new Date(NaN);
+
+  if (/[zZ]$|[+-]\d{2}:\d{2}$/.test(trimmed)) {
+    return new Date(trimmed);
+  }
+
+  const [datePart, timePart = '00:00:00'] = trimmed.split('T');
+  const normalizedTime = normalizeTimePartForWire(timePart);
+  return new Date(`${datePart}T${normalizedTime}${offset}`);
+}
