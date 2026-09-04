@@ -27,6 +27,7 @@ const SRC_SHIM_ENTRIES = new Set([
   'business/showmasterpiece/domain/index',
   'business/showmasterpiece/ui/rn/index',
   'business/showmasterpiece/server/index',
+  'business/showmasterpiece/routes/index',
 ]);
 
 function parseBusinessEntries() {

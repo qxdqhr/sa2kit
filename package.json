@@ -278,6 +278,11 @@
       "import": "./dist/business/showmasterpiece/server/index.mjs",
       "require": "./dist/business/showmasterpiece/server/index.js"
     },
+    "./business/showmasterpiece/routes": {
+      "types": "./dist/business/showmasterpiece/routes/index.d.ts",
+      "import": "./dist/business/showmasterpiece/routes/index.mjs",
+      "require": "./dist/business/showmasterpiece/routes/index.js"
+    },
     "./business": {
       "types": "./dist/business/index.d.ts",
       "import": "./dist/business/index.mjs",
