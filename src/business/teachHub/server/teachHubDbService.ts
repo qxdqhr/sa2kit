@@ -21,7 +21,7 @@ import {
   formatTeachHubStorageError,
 } from './templates';
 
-export type DrizzleLikeDb = {
+export type TeachHubDrizzleDb = {
   select: (...args: any[]) => any;
   insert: (...args: any[]) => any;
   update: (...args: any[]) => any;
@@ -155,7 +155,7 @@ export class TeachHubDbService {
   private readonly formatStorageError: (error: unknown) => string;
 
   constructor(
-    private readonly db: DrizzleLikeDb,
+    private readonly db: TeachHubDrizzleDb,
     private readonly options: TeachHubDbServiceOptions,
   ) {
     this.formatStorageError = options.formatStorageError ?? formatTeachHubStorageError;
@@ -443,6 +443,6 @@ export class TeachHubDbService {
   }
 }
 
-export function createTeachHubDbService(db: DrizzleLikeDb, options: TeachHubDbServiceOptions) {
+export function createTeachHubDbService(db: TeachHubDrizzleDb, options: TeachHubDbServiceOptions) {
   return new TeachHubDbService(db, options);
 }

@@ -10,7 +10,7 @@
 | **domain** | `sa2kit/business/calendar/domain` | ✅ | 类型、dateUtils、纯 eventDisplay、ApiClient |
 | **Server** | `sa2kit/business/calendar/server` | ✅ | schema + CalendarDbService 工厂 |
 | **API routes** | `sa2kit/business/calendar/routes` | ✅ | handler 工厂；session 经宿主注入 |
-| **Web** | `sa2kit/business/calendar/ui/web` | ⬜ | C3：自 calendar-core pages/components |
+| **Web** | `sa2kit/business/calendar/ui/web` | ✅ | C3：pages/components/hooks；Auth 壳在 calendar-core |
 | **RN** | `sa2kit/business/calendar/ui/rn` | ⬜ stub | 仅占位 export |
 | **Taro** | — | ⬜ | 暂无计划 |
 
@@ -20,16 +20,17 @@
 |------|------|
 | `app_web/calendar` | 薄 page + Docker |
 | `app_web/calendar/app/api/calendar/*` | re-export + session 鉴权 |
-| `@profile/calendar-core` | 过渡期 re-export domain；实现仍在 core 直至 C3–C5 |
+| `@profile/calendar-core` | AuthProvider 壳 + 兼容导出；UI 自 sa2kit ui/web |
 
 ## UI 约定
 
 - 基础件经 `sa2kit/common/ui`；禁止 animal-island / 第二套 Button-Modal。
-- 事件 surface CSS 仍在宿主 `calendarStyles`，domain 只导出 `resolveEventSurfaceKey`。
+- 鉴权组件经 `sa2kit/common/auth`；宿主用 `@profile/auth/react` AuthProvider 包裹 CalendarPage。
+- 事件 surface CSS 在 `ui/web/calendarStyles`，domain 只导出 `resolveEventSurfaceKey`。
 
 ## 后续
 
-- [ ] C2 server
-- [ ] C3 ui/web
+- [x] C2 server
+- [x] C3 ui/web
 - [ ] C4 RN 非 stub
-- [ ] C5 删 core 冗余
+- [ ] C5 删 core 冗余 components/hooks

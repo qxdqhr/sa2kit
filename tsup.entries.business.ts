@@ -27,6 +27,7 @@ export const businessEntries = {
   'business/festivalCard/server/index': 'src/business/festivalCard/server/index.ts',
   'business/calendar/index': 'src/business/calendar/index.ts',
   'business/calendar/domain/index': 'src/business/calendar/domain/index.ts',
+  'business/calendar/ui/web/index': 'src/business/calendar/ui/web/index.ts',
   'business/calendar/ui/rn/index': 'src/business/calendar/ui/rn/index.ts',
   'business/calendar/server/index': 'src/business/calendar/server/index.ts',
   'business/calendar/routes/index': 'src/business/calendar/routes/index.ts',

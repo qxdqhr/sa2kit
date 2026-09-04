@@ -6,7 +6,7 @@ import {
   calendarConfigs,
 } from './schema';
 
-export type DrizzleLikeDb = {
+export type CalendarDrizzleDb = {
   select: (...args: any[]) => any;
   insert: (...args: any[]) => any;
   update: (...args: any[]) => any;
@@ -14,7 +14,7 @@ export type DrizzleLikeDb = {
 };
 
 export class CalendarDbService {
-  constructor(private readonly db: DrizzleLikeDb) {}
+  constructor(private readonly db: CalendarDrizzleDb) {}
 
   async getAllEvents(userId: string, startDate?: Date, endDate?: Date) {
     const conditions = [eq(calendarEvents.userId, userId)];
@@ -207,6 +207,6 @@ export class CalendarDbService {
   }
 }
 
-export function createCalendarDbService(db: DrizzleLikeDb) {
+export function createCalendarDbService(db: CalendarDrizzleDb) {
   return new CalendarDbService(db);
 }

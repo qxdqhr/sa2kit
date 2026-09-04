@@ -13,7 +13,7 @@ import {
   rewriteTeachHtmlLinks,
   sanitizeRelativePath,
   shouldRewriteHtml,
-  type DrizzleLikeDb,
+  type TeachHubDrizzleDb,
   type TeachHubDbServiceOptions,
   type TeachHubFileStoreAdapter,
   type TeachHubGenerateAdapter,
@@ -22,7 +22,7 @@ import {
 export type TeachHubSessionUser = { id: string };
 
 export type TeachHubRouteConfig = {
-  db: DrizzleLikeDb;
+  db: TeachHubDrizzleDb;
   getSessionUser: (request: NextRequest) => Promise<TeachHubSessionUser | null>;
   fileStore: TeachHubFileStoreAdapter;
   formatStorageError?: TeachHubDbServiceOptions['formatStorageError'];

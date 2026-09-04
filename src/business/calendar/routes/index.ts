@@ -1,17 +1,17 @@
-import type { NextRequest } from 'next/server';
 import { parseWireLocalISOString } from '../domain';
 import {
   CalendarDbService,
   createCalendarDbService,
   DEFAULT_CALENDAR_CONFIG,
-  type DrizzleLikeDb,
+  type CalendarDrizzleDb,
 } from '../server';
 
 export type CalendarSessionUser = { id: string };
 
+/** 用 Web Request，避免 sa2kit peer next 与宿主 NextRequest 双版本冲突 */
 export type CalendarRouteConfig = {
-  db: DrizzleLikeDb;
-  getSessionUser: (request: NextRequest) => Promise<CalendarSessionUser | null>;
+  db: CalendarDrizzleDb;
+  getSessionUser: (request: Request) => Promise<CalendarSessionUser | null>;
 };
 
 type IdRouteContext = { params: Promise<{ id: string }> };
@@ -36,7 +36,7 @@ async function resolveEventId(context: IdRouteContext): Promise<number | null> {
 
 export function createListEventsHandler(config: CalendarRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest) => {
+  return async (request: Request) => {
     try {
       const user = await config.getSessionUser(request);
       if (!user) return unauthorized();
@@ -73,7 +73,7 @@ export function createListEventsHandler(config: CalendarRouteConfig) {
 
 export function createCreateEventHandler(config: CalendarRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest) => {
+  return async (request: Request) => {
     try {
       const user = await config.getSessionUser(request);
       if (!user) return unauthorized();
@@ -153,7 +153,7 @@ export function createCreateEventHandler(config: CalendarRouteConfig) {
 
 export function createGetEventHandler(config: CalendarRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest, context: IdRouteContext) => {
+  return async (request: Request, context: IdRouteContext) => {
     try {
       const user = await config.getSessionUser(request);
       if (!user) return unauthorized();
@@ -188,7 +188,7 @@ export function createGetEventHandler(config: CalendarRouteConfig) {
 
 export function createUpdateEventHandler(config: CalendarRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest, context: IdRouteContext) => {
+  return async (request: Request, context: IdRouteContext) => {
     try {
       const user = await config.getSessionUser(request);
       if (!user) return unauthorized();
@@ -294,7 +294,7 @@ export function createUpdateEventHandler(config: CalendarRouteConfig) {
 
 export function createDeleteEventHandler(config: CalendarRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest, context: IdRouteContext) => {
+  return async (request: Request, context: IdRouteContext) => {
     try {
       const user = await config.getSessionUser(request);
       if (!user) return unauthorized();
@@ -319,7 +319,7 @@ export function createDeleteEventHandler(config: CalendarRouteConfig) {
 
 export function createBatchDeleteEventsHandler(config: CalendarRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest) => {
+  return async (request: Request) => {
     try {
       const user = await config.getSessionUser(request);
       if (!user) return unauthorized();
@@ -369,7 +369,7 @@ export function createBatchDeleteEventsHandler(config: CalendarRouteConfig) {
 
 export function createGetCalendarConfigHandler(config: CalendarRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest) => {
+  return async (request: Request) => {
     try {
       const user = await config.getSessionUser(request);
       if (!user) return unauthorized();
@@ -418,7 +418,7 @@ export function createGetCalendarConfigHandler(config: CalendarRouteConfig) {
 
 export function createUpsertCalendarConfigHandler(config: CalendarRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest) => {
+  return async (request: Request) => {
     try {
       const user = await config.getSessionUser(request);
       if (!user) return unauthorized();
@@ -515,4 +515,4 @@ export function createUpsertCalendarConfigHandler(config: CalendarRouteConfig) {
 }
 
 /** Re-export service type for host typing */
-export type { CalendarDbService, DrizzleLikeDb } from '../server';
+export type { CalendarDbService, CalendarDrizzleDb } from '../server';

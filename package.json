@@ -208,6 +208,11 @@
       "import": "./dist/business/calendar/domain/index.mjs",
       "require": "./dist/business/calendar/domain/index.js"
     },
+    "./business/calendar/ui/web": {
+      "types": "./dist/business/calendar/ui/web/index.d.ts",
+      "import": "./dist/business/calendar/ui/web/index.mjs",
+      "require": "./dist/business/calendar/ui/web/index.js"
+    },
     "./business/calendar/ui/rn": {
       "types": "./dist/business/calendar/ui/rn/index.d.ts",
       "import": "./dist/business/calendar/ui/rn/index.mjs",
