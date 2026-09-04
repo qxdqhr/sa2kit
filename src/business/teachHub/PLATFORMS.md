@@ -9,7 +9,8 @@
 |----|------|------|------|
 | **domain** | `sa2kit/business/teachHub/domain` | ✅ | Workspace / Lesson / Mission / Progress 类型 + lessonProgress 纯函数 |
 | **Server** | `sa2kit/business/teachHub/server` | ✅ | schema + TeachHubDbService（fileStore 注入） |
-| **API routes** | `sa2kit/business/teachHub/routes` | 🟡 | workspace CRUD + progress；files/generate/import 仍 core |
+| **API routes** | `sa2kit/business/teachHub/routes` | ✅ | workspace/files/import/generate；OSS/AI 经 adapter 注入 |
+| **AI tasks** | `server/tasks` | ⬜ | generateLesson 实现仍在 `*-core`（经 generate adapter） |
 | **Web** | `sa2kit/business/teachHub/ui/web` | ⬜ | T3 |
 | **RN** | `sa2kit/business/teachHub/ui/rn` | 🟡 stub | mobile 仍用 core/shared 过渡 |
 | **Taro** | — | ⬜ | 暂无计划 |

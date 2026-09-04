@@ -5,6 +5,7 @@ import type {
   LessonIndex,
   TeachGenerateJob,
   TeachLessonProgress,
+  TeachStoredFile,
   TeachWorkspace,
   TeachWorkspaceSummary,
   UpdateProgressInput,
@@ -45,6 +46,56 @@ export type TeachHubFileStoreAdapter = {
     userId: string,
     workspace: TeachWorkspace,
   ) => Promise<void>;
+  listWorkspaceFiles: (userId: string, workspaceId: string) => Promise<TeachStoredFile[]>;
+  readWorkspaceFileText: (
+    userId: string,
+    workspaceId: string,
+    relativePath: string,
+  ) => Promise<string>;
+  putWorkspaceFileText: (input: {
+    userId: string;
+    workspaceId: string;
+    relativePath: string;
+    content: string;
+    uploaderId?: string;
+  }) => Promise<{ fileId: string; accessUrl: string }>;
+  importWorkspaceZip: (input: {
+    userId: string;
+    workspaceId: string;
+    zipBuffer: Buffer;
+    uploaderId: string;
+  }) => Promise<{
+    importedFiles: number;
+    skippedFiles: number;
+    validation: {
+      ok: boolean;
+      errors: string[];
+      warnings: string[];
+      lessonCount: number;
+    };
+  }>;
+};
+
+export type TeachHubGenerateAdapter = {
+  checkGeneratePreconditions: (
+    userId: string,
+    workspaceId: string,
+    trigger: 'first_lesson' | 'next_lesson',
+  ) => Promise<{ ok: true; trigger: 'first_lesson' | 'next_lesson' } | { ok: false; reason: string }>;
+  runGenerateLesson: (input: {
+    userId: string;
+    workspaceId: string;
+    trigger: 'first_lesson' | 'next_lesson';
+  }) => Promise<TeachGenerateJob>;
+  listGenerateJobsForUser: (
+    userId: string,
+    workspaceId: string,
+  ) => Promise<TeachGenerateJob[]>;
+  getGenerateJobForUser: (
+    userId: string,
+    workspaceId: string,
+    jobId: string,
+  ) => Promise<TeachGenerateJob | null>;
 };
 
 export type TeachHubDbServiceOptions = {
