@@ -24,3 +24,15 @@ export const DEFAULT_CALENDAR_CONFIG = {
     gray: '#6B7280',
   },
 };
+
+export {
+  validateEventData,
+  validateRecurrenceData,
+  generateRecurrenceInstances,
+  calculateReminderTime,
+  createErrorResponse,
+  createSuccessResponse,
+  checkEventPermission,
+  CALENDAR_SERVER_MODULE_VERSION,
+  CALENDAR_SERVER_MODULE_NAME,
+} from './legacyHelpers';

@@ -10,7 +10,7 @@
 | **domain** | `sa2kit/business/calendar/domain` | ✅ | 类型、dateUtils、纯 eventDisplay、ApiClient |
 | **Server** | `sa2kit/business/calendar/server` | ✅ | schema + CalendarDbService 工厂 |
 | **API routes** | `sa2kit/business/calendar/routes` | ✅ | handler 工厂；session 经宿主注入 |
-| **Web** | `sa2kit/business/calendar/ui/web` | ✅ | C3：pages/components/hooks；Auth 壳在 calendar-core |
+| **Web** | `sa2kit/business/calendar/ui/web` | ✅ | C3：pages/components/hooks；Auth 壳在 `app_web/calendar/lib` |
 | **RN** | `sa2kit/business/calendar/ui/rn` | 🟡 | stub + re-export domain；calendar-mobile 自绘 UI 直引 domain |
 | **Taro** | — | ⬜ | 暂无计划 |
 
@@ -19,8 +19,8 @@
 | 路径 | 职责 |
 |------|------|
 | `app_web/calendar` | 薄 page + Docker |
-| `app_web/calendar/app/api/calendar/*` | re-export + session 鉴权 |
-| `@profile/calendar-core` | AuthProvider 壳 + 兼容导出；UI 自 sa2kit ui/web |
+| `app_web/calendar/lib` | AuthProvider + next/font 壳 |
+| `app_web/calendar/app/api/calendar/*` | 直连 sa2kit routes + session 鉴权 |
 
 ## UI 约定
 
@@ -34,3 +34,4 @@
 - [x] C3 ui/web
 - [x] C4 RN：ui/rn stub + mobile 改引 domain（原生组件仍在 mobile）
 - [x] C5 删 core 冗余 components/hooks
+- [x] G5：删除 `@profile/calendar-core`；export/import/recurrence/reminder → domain
