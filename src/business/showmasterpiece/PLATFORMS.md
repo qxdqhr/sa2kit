@@ -8,7 +8,7 @@
 |----|------|------|------|
 | **domain** | `sa2kit/business/showmasterpiece/domain` | 🟡 | booking / popup / homeTab + bookingAccess；全集类型仍在 `*-core` |
 | **Server** | `sa2kit/business/showmasterpiece/server` | 🟡 | schema ✅；booking + popup/config/basic + collections/artworks DbService ✅ |
-| **API routes** | `sa2kit/business/showmasterpiece/routes` | ✅ | booking + catalog + popup + site config / config items；image 仍宿主 |
+| **API routes** | `sa2kit/business/showmasterpiece/routes` | ✅ | booking + catalog + popup + site config + artwork image |
 | **Web** | `sa2kit/business/showmasterpiece/ui/web` | ⬜ | SMP2 |
 | **RN** | `sa2kit/business/showmasterpiece/ui/rn` | ⬜ | 暂无 RN 计划 |
 | **Taro** | — | ⬜ | 历史小程序不恢复 |

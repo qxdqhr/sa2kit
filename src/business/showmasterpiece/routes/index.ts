@@ -546,3 +546,4 @@ export * from './catalogRoutes';
 export * from './popupRoutes';
 export * from './siteConfigRoutes';
 export * from './configItemsRoutes';
+export * from './artworkImageRoutes';
