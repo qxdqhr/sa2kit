@@ -270,6 +270,37 @@
       "import": "./dist/business/teachHub/routes/index.mjs",
       "require": "./dist/business/teachHub/routes/index.js"
     },
+    "./business/nodeNotes": {
+      "types": "./dist/business/nodeNotes/index.d.ts",
+      "import": "./dist/business/nodeNotes/index.mjs",
+      "require": "./dist/business/nodeNotes/index.js"
+    },
+    "./business/nodeNotes/domain": {
+      "types": "./dist/business/nodeNotes/domain/index.d.ts",
+      "import": "./dist/business/nodeNotes/domain/index.mjs",
+      "require": "./dist/business/nodeNotes/domain/index.js"
+    },
+    "./business/nodeNotes/ui/web": {
+      "types": "./dist/business/nodeNotes/ui/web/index.d.ts",
+      "import": "./dist/business/nodeNotes/ui/web/index.mjs",
+      "require": "./dist/business/nodeNotes/ui/web/index.js"
+    },
+    "./business/nodeNotes/ui/web/*": [
+      "./src/business/nodeNotes/ui/web/*.ts",
+      "./src/business/nodeNotes/ui/web/*.tsx",
+      "./src/business/nodeNotes/ui/web/*/index.ts",
+      "./src/business/nodeNotes/ui/web/*/index.tsx"
+    ],
+    "./business/nodeNotes/server": {
+      "types": "./dist/business/nodeNotes/server/index.d.ts",
+      "import": "./dist/business/nodeNotes/server/index.mjs",
+      "require": "./dist/business/nodeNotes/server/index.js"
+    },
+    "./business/nodeNotes/routes": {
+      "types": "./dist/business/nodeNotes/routes/index.d.ts",
+      "import": "./dist/business/nodeNotes/routes/index.mjs",
+      "require": "./dist/business/nodeNotes/routes/index.js"
+    },
     "./business/showmasterpiece": {
       "types": "./dist/business/showmasterpiece/index.d.ts",
       "import": "./dist/business/showmasterpiece/index.mjs",
@@ -876,13 +907,20 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@meting/core": "^1.6.0",
+    "@xyflow/react": "^12.11.2",
     "adm-zip": "^0.5.16",
     "ali-oss": "^6.23.0",
+    "gray-matter": "^4.0.3",
+    "html-to-image": "^1.11.13",
     "bcryptjs": "^3.0.3",
     "better-auth": "^1.6.15",
     "framer-motion": "^12.23.24",
     "jsonwebtoken": "^9.0.2",
     "jszip": "^3.10.1",
+    "react-hot-toast": "^2.5.2",
+    "react-markdown": "^10.1.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.1",
     "onnxruntime-web": "1.21.0",
     "postgres": "^3.4.7",
     "proxy-agent": "^6.5.0",
