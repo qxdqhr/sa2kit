@@ -52,4 +52,6 @@ examples/
 !docs/COMMON-PLATFORMS-EXPORTS.md
 !docs/PACKAGE-SPLIT-ROADMAP.md
 !docs/adr/002-client-ready-multiplatform-sdk.md
-!src/business/festivalCard/PLATFORMS.md
+!src/business/festivalCard/PLATFORMS.md!src/business/calendar/PLATFORMS.md
+!src/business/teachHub/PLATFORMS.md
+!src/business/showmasterpiece/PLATFORMS.md
