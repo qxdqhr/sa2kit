@@ -33,6 +33,7 @@ export const businessEntries = {
   'business/calendar/routes/index': 'src/business/calendar/routes/index.ts',
   'business/teachHub/index': 'src/business/teachHub/index.ts',
   'business/teachHub/domain/index': 'src/business/teachHub/domain/index.ts',
+  'business/teachHub/ui/web/index': 'src/business/teachHub/ui/web/index.ts',
   'business/teachHub/ui/rn/index': 'src/business/teachHub/ui/rn/index.ts',
   'business/teachHub/server/index': 'src/business/teachHub/server/index.ts',
   'business/teachHub/routes/index': 'src/business/teachHub/routes/index.ts',

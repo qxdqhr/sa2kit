@@ -238,6 +238,11 @@
       "import": "./dist/business/teachHub/domain/index.mjs",
       "require": "./dist/business/teachHub/domain/index.js"
     },
+    "./business/teachHub/ui/web": {
+      "types": "./dist/business/teachHub/ui/web/index.d.ts",
+      "import": "./dist/business/teachHub/ui/web/index.mjs",
+      "require": "./dist/business/teachHub/ui/web/index.js"
+    },
     "./business/teachHub/ui/rn": {
       "types": "./dist/business/teachHub/ui/rn/index.d.ts",
       "import": "./dist/business/teachHub/ui/rn/index.mjs",

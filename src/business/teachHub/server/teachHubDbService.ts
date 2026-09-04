@@ -44,8 +44,8 @@ export type TeachHubFileStoreAdapter = {
   listWorkspaceLessons: (userId: string, workspaceId: string) => Promise<LessonIndex[]>;
   repairWorkspaceSeedFilesIfMissing?: (
     userId: string,
-    workspace: TeachWorkspace,
-  ) => Promise<void>;
+    workspace: Pick<TeachWorkspace, 'id' | 'title' | 'topic' | 'missionSummary'>,
+  ) => Promise<void | boolean>;
   listWorkspaceFiles: (userId: string, workspaceId: string) => Promise<TeachStoredFile[]>;
   readWorkspaceFileText: (
     userId: string,

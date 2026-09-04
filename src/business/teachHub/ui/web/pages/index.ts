@@ -1,0 +1,9 @@
+export { TeachHubHomePage } from './TeachHubHomePage';
+export { NewWorkspacePage } from './NewWorkspacePage';
+export { WorkspacePage } from './WorkspacePage';
+export { LessonPage } from './LessonPage';
+export { MissionPage } from './MissionPage';
+export { ReferencePage } from './ReferencePage';
+export { RecordsPage } from './RecordsPage';
+export { ResourcesPage } from './ResourcesPage';
+export { SettingsPage } from './SettingsPage';

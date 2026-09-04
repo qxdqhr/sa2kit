@@ -1,4 +1,3 @@
-import type { NextRequest } from 'next/server';
 import type {
   CreateWorkspaceInput,
   LessonProgressStatus,
@@ -23,7 +22,7 @@ export type TeachHubSessionUser = { id: string };
 
 export type TeachHubRouteConfig = {
   db: TeachHubDrizzleDb;
-  getSessionUser: (request: NextRequest) => Promise<TeachHubSessionUser | null>;
+  getSessionUser: (request: Request) => Promise<TeachHubSessionUser | null>;
   fileStore: TeachHubFileStoreAdapter;
   formatStorageError?: TeachHubDbServiceOptions['formatStorageError'];
   /** HTML 内链前缀；缺省空串（子应用 basePath 模式） */
@@ -68,7 +67,7 @@ function parseWorkspaceId(raw: string): string | null {
 
 export function createListWorkspacesHandler(config: TeachHubRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest) => {
+  return async (request: Request) => {
     const user = await config.getSessionUser(request);
     if (!user) return jsonError('未授权访问', 401);
     try {
@@ -87,7 +86,7 @@ export function createListWorkspacesHandler(config: TeachHubRouteConfig) {
 
 export function createCreateWorkspaceHandler(config: TeachHubRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest) => {
+  return async (request: Request) => {
     const user = await config.getSessionUser(request);
     if (!user) return jsonError('未授权访问', 401);
     try {
@@ -113,7 +112,7 @@ export function createCreateWorkspaceHandler(config: TeachHubRouteConfig) {
 
 export function createGetWorkspaceHandler(config: TeachHubRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest, context: IdRouteContext) => {
+  return async (request: Request, context: IdRouteContext) => {
     const user = await config.getSessionUser(request);
     if (!user) return jsonError('未授权访问', 401);
     const { id: rawId } = await context.params;
@@ -136,7 +135,7 @@ export function createGetWorkspaceHandler(config: TeachHubRouteConfig) {
 
 export function createPatchWorkspaceHandler(config: TeachHubRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest, context: IdRouteContext) => {
+  return async (request: Request, context: IdRouteContext) => {
     const user = await config.getSessionUser(request);
     if (!user) return jsonError('未授权访问', 401);
     const { id: rawId } = await context.params;
@@ -172,7 +171,7 @@ export function createPatchWorkspaceHandler(config: TeachHubRouteConfig) {
 
 export function createArchiveWorkspaceHandler(config: TeachHubRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest, context: IdRouteContext) => {
+  return async (request: Request, context: IdRouteContext) => {
     const user = await config.getSessionUser(request);
     if (!user) return jsonError('未授权访问', 401);
     const { id: rawId } = await context.params;
@@ -195,7 +194,7 @@ export function createArchiveWorkspaceHandler(config: TeachHubRouteConfig) {
 
 export function createListProgressHandler(config: TeachHubRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest, context: IdRouteContext) => {
+  return async (request: Request, context: IdRouteContext) => {
     const user = await config.getSessionUser(request);
     if (!user) return jsonError('未授权访问', 401);
     const { id: rawId } = await context.params;
@@ -218,7 +217,7 @@ export function createListProgressHandler(config: TeachHubRouteConfig) {
 
 export function createUpsertProgressHandler(config: TeachHubRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest, context: IdRouteContext) => {
+  return async (request: Request, context: IdRouteContext) => {
     const user = await config.getSessionUser(request);
     if (!user) return jsonError('未授权访问', 401);
     const { id: rawId } = await context.params;
@@ -264,7 +263,7 @@ function requireGenerate(config: TeachHubRouteConfig): TeachHubGenerateAdapter {
 
 export function createListFilesHandler(config: TeachHubRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest, context: IdRouteContext) => {
+  return async (request: Request, context: IdRouteContext) => {
     const user = await config.getSessionUser(request);
     if (!user) return jsonError('未授权访问', 401);
     const { id: rawId } = await context.params;
@@ -294,7 +293,7 @@ export function createListFilesHandler(config: TeachHubRouteConfig) {
 
 export function createReadFileHandler(config: TeachHubRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest, context: FilePathRouteContext) => {
+  return async (request: Request, context: FilePathRouteContext) => {
     const user = await config.getSessionUser(request);
     if (!user) return jsonError('未授权访问', 401);
     const { id: rawId, path } = await context.params;
@@ -348,7 +347,7 @@ export function createReadFileHandler(config: TeachHubRouteConfig) {
 
 export function createWriteFileHandler(config: TeachHubRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest, context: FilePathRouteContext) => {
+  return async (request: Request, context: FilePathRouteContext) => {
     const user = await config.getSessionUser(request);
     if (!user) return jsonError('未授权访问', 401);
     const { id: rawId, path } = await context.params;
@@ -392,7 +391,7 @@ export function createWriteFileHandler(config: TeachHubRouteConfig) {
 
 export function createImportZipHandler(config: TeachHubRouteConfig) {
   const service = createService(config);
-  return async (request: NextRequest, context: IdRouteContext) => {
+  return async (request: Request, context: IdRouteContext) => {
     const user = await config.getSessionUser(request);
     if (!user) return jsonError('未授权访问', 401);
     const { id: rawId } = await context.params;
@@ -444,7 +443,7 @@ export function createImportZipHandler(config: TeachHubRouteConfig) {
 export function createGenerateLessonHandler(config: TeachHubRouteConfig) {
   const service = createService(config);
   const generate = requireGenerate(config);
-  return async (request: NextRequest, context: IdRouteContext) => {
+  return async (request: Request, context: IdRouteContext) => {
     const user = await config.getSessionUser(request);
     if (!user) return jsonError('未授权访问', 401);
     const { id: rawId } = await context.params;
@@ -482,7 +481,7 @@ export function createGenerateLessonHandler(config: TeachHubRouteConfig) {
 export function createListGenerateJobsHandler(config: TeachHubRouteConfig) {
   const service = createService(config);
   const generate = requireGenerate(config);
-  return async (request: NextRequest, context: IdRouteContext) => {
+  return async (request: Request, context: IdRouteContext) => {
     const user = await config.getSessionUser(request);
     if (!user) return jsonError('未授权访问', 401);
     const { id: rawId } = await context.params;
@@ -503,7 +502,7 @@ export function createListGenerateJobsHandler(config: TeachHubRouteConfig) {
 export function createGetGenerateJobHandler(config: TeachHubRouteConfig) {
   const service = createService(config);
   const generate = requireGenerate(config);
-  return async (request: NextRequest, context: JobRouteContext) => {
+  return async (request: Request, context: JobRouteContext) => {
     const user = await config.getSessionUser(request);
     if (!user) return jsonError('未授权访问', 401);
     const { id: rawId, jobId } = await context.params;
