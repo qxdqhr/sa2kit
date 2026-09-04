@@ -10,7 +10,7 @@
 | **domain** | `sa2kit/business/teachHub/domain` | ✅ | Workspace / Lesson / Mission / Progress 类型 + lessonProgress 纯函数 |
 | **Server** | `sa2kit/business/teachHub/server` | ✅ | schema + TeachHubDbService（fileStore 注入） |
 | **API routes** | `sa2kit/business/teachHub/routes` | ✅ | workspace/files/import/generate；OSS/AI 经 adapter 注入 |
-| **AI tasks** | `server/tasks` | ⬜ | generateLesson 实现仍在 `*-core`（经 generate adapter） |
+| **AI tasks** | `server/tasks` | ✅ | `teach.generateLesson`；core 薄 re-export |
 | **Web** | `sa2kit/business/teachHub/ui/web` | ✅ | T3：pages/layout/components；Auth 壳在 teach-hub-core |
 | **RN** | `sa2kit/business/teachHub/ui/rn` | 🟡 stub | mobile 仍用 core/shared 过渡 |
 | **Taro** | — | ⬜ | 暂无计划 |
@@ -31,7 +31,7 @@
 
 ## 后续
 
-- [x] T2 server（routes ✅；AI tasks ⬜）
+- [x] T2 server（routes ✅；AI tasks ✅）
 - [x] T3 ui/web
 - [ ] T4 RN / mobile 改引 domain
 - [ ] T5 删 core 冗余
