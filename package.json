@@ -163,30 +163,80 @@
       "import": "./dist/business/audioDetection/index.mjs",
       "require": "./dist/business/audioDetection/index.js"
     },
-    "./business/festivalCard": {
-      "types": "./dist/business/festivalCard/index.d.ts",
-      "import": "./dist/business/festivalCard/index.mjs",
-      "require": "./dist/business/festivalCard/index.js"
+    "./business/calendar/domain": {
+      "types": "./dist/business/calendar/domain/index.d.ts",
+      "import": "./dist/business/calendar/domain/index.mjs",
+      "require": "./dist/business/calendar/domain/index.js"
+    },
+    "./business/calendar": {
+      "types": "./dist/business/calendar/index.d.ts",
+      "import": "./dist/business/calendar/index.mjs",
+      "require": "./dist/business/calendar/index.js"
+    },
+    "./business/calendar/routes": {
+      "types": "./dist/business/calendar/routes/index.d.ts",
+      "import": "./dist/business/calendar/routes/index.mjs",
+      "require": "./dist/business/calendar/routes/index.js"
+    },
+    "./business/calendar/server": {
+      "types": "./dist/business/calendar/server/index.d.ts",
+      "import": "./dist/business/calendar/server/index.mjs",
+      "require": "./dist/business/calendar/server/index.js"
+    },
+    "./business/calendar/ui/rn": {
+      "types": "./dist/business/calendar/ui/rn/index.d.ts",
+      "import": "./dist/business/calendar/ui/rn/index.mjs",
+      "require": "./dist/business/calendar/ui/rn/index.js"
+    },
+    "./business/calendar/ui/web": {
+      "types": "./dist/business/calendar/ui/web/index.d.ts",
+      "import": "./dist/business/calendar/ui/web/index.mjs",
+      "require": "./dist/business/calendar/ui/web/index.js"
+    },
+    "./business/exam/domain": {
+      "types": "./dist/business/exam/domain/index.d.ts",
+      "import": "./dist/business/exam/domain/index.mjs",
+      "require": "./dist/business/exam/domain/index.js"
+    },
+    "./business/exam": {
+      "types": "./dist/business/exam/index.d.ts",
+      "import": "./dist/business/exam/index.mjs",
+      "require": "./dist/business/exam/index.js"
+    },
+    "./business/exam/server": {
+      "types": "./dist/business/exam/server/index.d.ts",
+      "import": "./dist/business/exam/server/index.mjs",
+      "require": "./dist/business/exam/server/index.js"
+    },
+    "./business/exam/ui/desktop": {
+      "types": "./dist/business/exam/ui/desktop/index.d.ts",
+      "import": "./dist/business/exam/ui/desktop/index.mjs",
+      "require": "./dist/business/exam/ui/desktop/index.js"
+    },
+    "./business/exam/ui/rn": {
+      "types": "./dist/business/exam/ui/rn/index.d.ts",
+      "import": "./dist/business/exam/ui/rn/index.mjs",
+      "require": "./dist/business/exam/ui/rn/index.js"
+    },
+    "./business/exam/ui/web": {
+      "types": "./dist/business/exam/ui/web/index.d.ts",
+      "import": "./dist/business/exam/ui/web/index.mjs",
+      "require": "./dist/business/exam/ui/web/index.js"
+    },
+    "./business/exam/ui/wechat": {
+      "types": "./dist/business/exam/ui/wechat/index.d.ts",
+      "import": "./dist/business/exam/ui/wechat/index.mjs",
+      "require": "./dist/business/exam/ui/wechat/index.js"
     },
     "./business/festivalCard/domain": {
       "types": "./dist/business/festivalCard/domain/index.d.ts",
       "import": "./dist/business/festivalCard/domain/index.mjs",
       "require": "./dist/business/festivalCard/domain/index.js"
     },
-    "./business/festivalCard/ui/web": {
-      "types": "./dist/business/festivalCard/ui/web/index.d.ts",
-      "import": "./dist/business/festivalCard/ui/web/index.mjs",
-      "require": "./dist/business/festivalCard/ui/web/index.js"
-    },
-    "./business/festivalCard/ui/taro": {
-      "types": "./dist/business/festivalCard/ui/taro/index.d.ts",
-      "import": "./dist/business/festivalCard/ui/taro/index.mjs",
-      "require": "./dist/business/festivalCard/ui/taro/index.js"
-    },
-    "./business/festivalCard/ui/rn": {
-      "types": "./dist/business/festivalCard/ui/rn/index.d.ts",
-      "import": "./dist/business/festivalCard/ui/rn/index.mjs",
-      "require": "./dist/business/festivalCard/ui/rn/index.js"
+    "./business/festivalCard": {
+      "types": "./dist/business/festivalCard/index.d.ts",
+      "import": "./dist/business/festivalCard/index.mjs",
+      "require": "./dist/business/festivalCard/index.js"
     },
     "./business/festivalCard/routes": {
       "types": "./dist/business/festivalCard/routes/index.d.ts",
@@ -198,189 +248,20 @@
       "import": "./dist/business/festivalCard/server/index.mjs",
       "require": "./dist/business/festivalCard/server/index.js"
     },
-    "./business/calendar": {
-      "types": "./dist/business/calendar/index.d.ts",
-      "import": "./dist/business/calendar/index.mjs",
-      "require": "./dist/business/calendar/index.js"
+    "./business/festivalCard/ui/rn": {
+      "types": "./dist/business/festivalCard/ui/rn/index.d.ts",
+      "import": "./dist/business/festivalCard/ui/rn/index.mjs",
+      "require": "./dist/business/festivalCard/ui/rn/index.js"
     },
-    "./business/calendar/domain": {
-      "types": "./dist/business/calendar/domain/index.d.ts",
-      "import": "./dist/business/calendar/domain/index.mjs",
-      "require": "./dist/business/calendar/domain/index.js"
+    "./business/festivalCard/ui/taro": {
+      "types": "./dist/business/festivalCard/ui/taro/index.d.ts",
+      "import": "./dist/business/festivalCard/ui/taro/index.mjs",
+      "require": "./dist/business/festivalCard/ui/taro/index.js"
     },
-    "./business/calendar/ui/web": {
-      "types": "./dist/business/calendar/ui/web/index.d.ts",
-      "import": "./dist/business/calendar/ui/web/index.mjs",
-      "require": "./dist/business/calendar/ui/web/index.js"
-    },
-    "./business/calendar/ui/web/*": [
-      "./src/business/calendar/ui/web/*.ts",
-      "./src/business/calendar/ui/web/*.tsx",
-      "./src/business/calendar/ui/web/*/index.ts",
-      "./src/business/calendar/ui/web/*/index.tsx"
-    ],
-    "./business/calendar/ui/rn": {
-      "types": "./dist/business/calendar/ui/rn/index.d.ts",
-      "import": "./dist/business/calendar/ui/rn/index.mjs",
-      "require": "./dist/business/calendar/ui/rn/index.js"
-    },
-    "./business/calendar/server": {
-      "types": "./dist/business/calendar/server/index.d.ts",
-      "import": "./dist/business/calendar/server/index.mjs",
-      "require": "./dist/business/calendar/server/index.js"
-    },
-    "./business/calendar/routes": {
-      "types": "./dist/business/calendar/routes/index.d.ts",
-      "import": "./dist/business/calendar/routes/index.mjs",
-      "require": "./dist/business/calendar/routes/index.js"
-    },
-    "./business/teachHub": {
-      "types": "./dist/business/teachHub/index.d.ts",
-      "import": "./dist/business/teachHub/index.mjs",
-      "require": "./dist/business/teachHub/index.js"
-    },
-    "./business/teachHub/domain": {
-      "types": "./dist/business/teachHub/domain/index.d.ts",
-      "import": "./dist/business/teachHub/domain/index.mjs",
-      "require": "./dist/business/teachHub/domain/index.js"
-    },
-    "./business/teachHub/ui/web": {
-      "types": "./dist/business/teachHub/ui/web/index.d.ts",
-      "import": "./dist/business/teachHub/ui/web/index.mjs",
-      "require": "./dist/business/teachHub/ui/web/index.js"
-    },
-    "./business/teachHub/ui/web/*": [
-      "./src/business/teachHub/ui/web/*.ts",
-      "./src/business/teachHub/ui/web/*.tsx",
-      "./src/business/teachHub/ui/web/*/index.ts",
-      "./src/business/teachHub/ui/web/*/index.tsx"
-    ],
-    "./business/teachHub/ui/rn": {
-      "types": "./dist/business/teachHub/ui/rn/index.d.ts",
-      "import": "./dist/business/teachHub/ui/rn/index.mjs",
-      "require": "./dist/business/teachHub/ui/rn/index.js"
-    },
-    "./business/teachHub/server": {
-      "types": "./dist/business/teachHub/server/index.d.ts",
-      "import": "./dist/business/teachHub/server/index.mjs",
-      "require": "./dist/business/teachHub/server/index.js"
-    },
-    "./business/teachHub/routes": {
-      "types": "./dist/business/teachHub/routes/index.d.ts",
-      "import": "./dist/business/teachHub/routes/index.mjs",
-      "require": "./dist/business/teachHub/routes/index.js"
-    },
-    "./business/nodeNotes": {
-      "types": "./dist/business/nodeNotes/index.d.ts",
-      "import": "./dist/business/nodeNotes/index.mjs",
-      "require": "./dist/business/nodeNotes/index.js"
-    },
-    "./business/nodeNotes/domain": {
-      "types": "./dist/business/nodeNotes/domain/index.d.ts",
-      "import": "./dist/business/nodeNotes/domain/index.mjs",
-      "require": "./dist/business/nodeNotes/domain/index.js"
-    },
-    "./business/nodeNotes/ui/web": {
-      "types": "./dist/business/nodeNotes/ui/web/index.d.ts",
-      "import": "./dist/business/nodeNotes/ui/web/index.mjs",
-      "require": "./dist/business/nodeNotes/ui/web/index.js"
-    },
-    "./business/nodeNotes/ui/web/*": [
-      "./src/business/nodeNotes/ui/web/*.ts",
-      "./src/business/nodeNotes/ui/web/*.tsx",
-      "./src/business/nodeNotes/ui/web/*/index.ts",
-      "./src/business/nodeNotes/ui/web/*/index.tsx"
-    ],
-    "./business/nodeNotes/server": {
-      "types": "./dist/business/nodeNotes/server/index.d.ts",
-      "import": "./dist/business/nodeNotes/server/index.mjs",
-      "require": "./dist/business/nodeNotes/server/index.js"
-    },
-    "./business/nodeNotes/routes": {
-      "types": "./dist/business/nodeNotes/routes/index.d.ts",
-      "import": "./dist/business/nodeNotes/routes/index.mjs",
-      "require": "./dist/business/nodeNotes/routes/index.js"
-    },
-    "./business/showmasterpiece": {
-      "types": "./dist/business/showmasterpiece/index.d.ts",
-      "import": "./dist/business/showmasterpiece/index.mjs",
-      "require": "./dist/business/showmasterpiece/index.js"
-    },
-    "./business/showmasterpiece/domain": {
-      "types": "./dist/business/showmasterpiece/domain/index.d.ts",
-      "import": "./dist/business/showmasterpiece/domain/index.mjs",
-      "require": "./dist/business/showmasterpiece/domain/index.js"
-    },
-    "./business/showmasterpiece/ui/web": {
-      "types": "./dist/business/showmasterpiece/ui/web/index.d.ts",
-      "import": "./dist/business/showmasterpiece/ui/web/index.mjs",
-      "require": "./dist/business/showmasterpiece/ui/web/index.js"
-    },
-    "./business/showmasterpiece/ui/web/client": {
-      "types": "./dist/business/showmasterpiece/ui/web/client.d.ts",
-      "import": "./dist/business/showmasterpiece/ui/web/client.mjs",
-      "require": "./dist/business/showmasterpiece/ui/web/client.js"
-    },
-    "./business/showmasterpiece/ui/web/*": [
-      "./src/business/showmasterpiece/ui/web/*.ts",
-      "./src/business/showmasterpiece/ui/web/*.tsx",
-      "./src/business/showmasterpiece/ui/web/*/index.ts",
-      "./src/business/showmasterpiece/ui/web/*/index.tsx"
-    ],
-    "./business/showmasterpiece/ui/rn": {
-      "types": "./dist/business/showmasterpiece/ui/rn/index.d.ts",
-      "import": "./dist/business/showmasterpiece/ui/rn/index.mjs",
-      "require": "./dist/business/showmasterpiece/ui/rn/index.js"
-    },
-    "./business/showmasterpiece/ui/miniapp": {
-      "types": "./dist/business/showmasterpiece/ui/miniapp/index.d.ts",
-      "import": "./dist/business/showmasterpiece/ui/miniapp/index.mjs",
-      "require": "./dist/business/showmasterpiece/ui/miniapp/index.js"
-    },
-    "./business/showmasterpiece/server": {
-      "types": "./dist/business/showmasterpiece/server/index.d.ts",
-      "import": "./dist/business/showmasterpiece/server/index.mjs",
-      "require": "./dist/business/showmasterpiece/server/index.js"
-    },
-    "./business/showmasterpiece/routes": {
-      "types": "./dist/business/showmasterpiece/routes/index.d.ts",
-      "import": "./dist/business/showmasterpiece/routes/index.mjs",
-      "require": "./dist/business/showmasterpiece/routes/index.js"
-    },
-    "./business/exam": {
-      "types": "./dist/business/exam/index.d.ts",
-      "import": "./dist/business/exam/index.mjs",
-      "require": "./dist/business/exam/index.js"
-    },
-    "./business/exam/domain": {
-      "types": "./dist/business/exam/domain/index.d.ts",
-      "import": "./dist/business/exam/domain/index.mjs",
-      "require": "./dist/business/exam/domain/index.js"
-    },
-    "./business/exam/server": {
-      "types": "./dist/business/exam/server/index.d.ts",
-      "import": "./dist/business/exam/server/index.mjs",
-      "require": "./dist/business/exam/server/index.js"
-    },
-    "./business/exam/ui/web": {
-      "types": "./dist/business/exam/ui/web/index.d.ts",
-      "import": "./dist/business/exam/ui/web/index.mjs",
-      "require": "./dist/business/exam/ui/web/index.js"
-    },
-    "./business/exam/ui/rn": {
-      "types": "./dist/business/exam/ui/rn/index.d.ts",
-      "import": "./dist/business/exam/ui/rn/index.mjs",
-      "require": "./dist/business/exam/ui/rn/index.js"
-    },
-    "./business/exam/ui/wechat": {
-      "types": "./dist/business/exam/ui/wechat/index.d.ts",
-      "import": "./dist/business/exam/ui/wechat/index.mjs",
-      "require": "./dist/business/exam/ui/wechat/index.js"
-    },
-    "./business/exam/ui/desktop": {
-      "types": "./dist/business/exam/ui/desktop/index.d.ts",
-      "import": "./dist/business/exam/ui/desktop/index.mjs",
-      "require": "./dist/business/exam/ui/desktop/index.js"
+    "./business/festivalCard/ui/web": {
+      "types": "./dist/business/festivalCard/ui/web/index.d.ts",
+      "import": "./dist/business/festivalCard/ui/web/index.mjs",
+      "require": "./dist/business/festivalCard/ui/web/index.js"
     },
     "./business": {
       "types": "./dist/business/index.d.ts",
@@ -432,6 +313,31 @@
       "import": "./dist/business/navigation/index.mjs",
       "require": "./dist/business/navigation/index.js"
     },
+    "./business/nodeNotes/domain": {
+      "types": "./dist/business/nodeNotes/domain/index.d.ts",
+      "import": "./dist/business/nodeNotes/domain/index.mjs",
+      "require": "./dist/business/nodeNotes/domain/index.js"
+    },
+    "./business/nodeNotes": {
+      "types": "./dist/business/nodeNotes/index.d.ts",
+      "import": "./dist/business/nodeNotes/index.mjs",
+      "require": "./dist/business/nodeNotes/index.js"
+    },
+    "./business/nodeNotes/routes": {
+      "types": "./dist/business/nodeNotes/routes/index.d.ts",
+      "import": "./dist/business/nodeNotes/routes/index.mjs",
+      "require": "./dist/business/nodeNotes/routes/index.js"
+    },
+    "./business/nodeNotes/server": {
+      "types": "./dist/business/nodeNotes/server/index.d.ts",
+      "import": "./dist/business/nodeNotes/server/index.mjs",
+      "require": "./dist/business/nodeNotes/server/index.js"
+    },
+    "./business/nodeNotes/ui/web": {
+      "types": "./dist/business/nodeNotes/ui/web/index.d.ts",
+      "import": "./dist/business/nodeNotes/ui/web/index.mjs",
+      "require": "./dist/business/nodeNotes/ui/web/index.js"
+    },
     "./business/portfolio": {
       "types": "./dist/business/portfolio/index.d.ts",
       "import": "./dist/business/portfolio/index.mjs",
@@ -451,6 +357,76 @@
       "types": "./dist/business/screenReceiver/index.d.ts",
       "import": "./dist/business/screenReceiver/index.mjs",
       "require": "./dist/business/screenReceiver/index.js"
+    },
+    "./business/showmasterpiece/domain": {
+      "types": "./dist/business/showmasterpiece/domain/index.d.ts",
+      "import": "./dist/business/showmasterpiece/domain/index.mjs",
+      "require": "./dist/business/showmasterpiece/domain/index.js"
+    },
+    "./business/showmasterpiece": {
+      "types": "./dist/business/showmasterpiece/index.d.ts",
+      "import": "./dist/business/showmasterpiece/index.mjs",
+      "require": "./dist/business/showmasterpiece/index.js"
+    },
+    "./business/showmasterpiece/routes": {
+      "types": "./dist/business/showmasterpiece/routes/index.d.ts",
+      "import": "./dist/business/showmasterpiece/routes/index.mjs",
+      "require": "./dist/business/showmasterpiece/routes/index.js"
+    },
+    "./business/showmasterpiece/server": {
+      "types": "./dist/business/showmasterpiece/server/index.d.ts",
+      "import": "./dist/business/showmasterpiece/server/index.mjs",
+      "require": "./dist/business/showmasterpiece/server/index.js"
+    },
+    "./business/showmasterpiece/ui/miniapp": {
+      "types": "./dist/business/showmasterpiece/ui/miniapp/index.d.ts",
+      "import": "./dist/business/showmasterpiece/ui/miniapp/index.mjs",
+      "require": "./dist/business/showmasterpiece/ui/miniapp/index.js"
+    },
+    "./business/showmasterpiece/ui/rn": {
+      "types": "./dist/business/showmasterpiece/ui/rn/index.d.ts",
+      "import": "./dist/business/showmasterpiece/ui/rn/index.mjs",
+      "require": "./dist/business/showmasterpiece/ui/rn/index.js"
+    },
+    "./business/showmasterpiece/ui/web/client": {
+      "types": "./dist/business/showmasterpiece/ui/web/client.d.ts",
+      "import": "./dist/business/showmasterpiece/ui/web/client.mjs",
+      "require": "./dist/business/showmasterpiece/ui/web/client.js"
+    },
+    "./business/showmasterpiece/ui/web": {
+      "types": "./dist/business/showmasterpiece/ui/web/index.d.ts",
+      "import": "./dist/business/showmasterpiece/ui/web/index.mjs",
+      "require": "./dist/business/showmasterpiece/ui/web/index.js"
+    },
+    "./business/teachHub/domain": {
+      "types": "./dist/business/teachHub/domain/index.d.ts",
+      "import": "./dist/business/teachHub/domain/index.mjs",
+      "require": "./dist/business/teachHub/domain/index.js"
+    },
+    "./business/teachHub": {
+      "types": "./dist/business/teachHub/index.d.ts",
+      "import": "./dist/business/teachHub/index.mjs",
+      "require": "./dist/business/teachHub/index.js"
+    },
+    "./business/teachHub/routes": {
+      "types": "./dist/business/teachHub/routes/index.d.ts",
+      "import": "./dist/business/teachHub/routes/index.mjs",
+      "require": "./dist/business/teachHub/routes/index.js"
+    },
+    "./business/teachHub/server": {
+      "types": "./dist/business/teachHub/server/index.d.ts",
+      "import": "./dist/business/teachHub/server/index.mjs",
+      "require": "./dist/business/teachHub/server/index.js"
+    },
+    "./business/teachHub/ui/rn": {
+      "types": "./dist/business/teachHub/ui/rn/index.d.ts",
+      "import": "./dist/business/teachHub/ui/rn/index.mjs",
+      "require": "./dist/business/teachHub/ui/rn/index.js"
+    },
+    "./business/teachHub/ui/web": {
+      "types": "./dist/business/teachHub/ui/web/index.d.ts",
+      "import": "./dist/business/teachHub/ui/web/index.mjs",
+      "require": "./dist/business/teachHub/ui/web/index.js"
     },
     "./business/testYourself/admin": {
       "types": "./dist/business/testYourself/admin/index.d.ts",
@@ -601,6 +577,11 @@
         "require": "./dist/common/export/server/index.js"
       }
     },
+    "./common/feishu": {
+      "types": "./dist/common/feishu/index.d.ts",
+      "import": "./dist/common/feishu/index.mjs",
+      "require": "./dist/common/feishu/index.js"
+    },
     "./common/file/schema": {
       "types": "./dist/common/file/schema/index.d.ts",
       "import": "./dist/common/file/schema/index.mjs",
@@ -636,11 +617,6 @@
       "types": "./dist/common/logger/index.d.ts",
       "import": "./dist/common/logger/index.mjs",
       "require": "./dist/common/logger/index.js"
-    },
-    "./common/feishu": {
-      "types": "./dist/common/feishu/index.d.ts",
-      "import": "./dist/common/feishu/index.mjs",
-      "require": "./dist/common/feishu/index.js"
     },
     "./common/ossFile/server": {
       "types": "./dist/common/ossFile/server/index.d.ts",
@@ -757,7 +733,55 @@
       "import": "./src/common/ui/auth/index.ts",
       "require": "./src/common/ui/auth/index.ts",
       "default": "./src/common/ui/auth/index.ts"
-    }
+    },
+    "./business/qqbot/ui/web/*": [
+      "./src/business/qqbot/ui/web/*.ts",
+      "./src/business/qqbot/ui/web/*.tsx",
+      "./src/business/qqbot/ui/web/*/index.ts",
+      "./src/business/qqbot/ui/web/*/index.tsx"
+    ],
+    "./business/festivalCard/ui/web/*": [
+      "./src/business/festivalCard/ui/web/*.ts",
+      "./src/business/festivalCard/ui/web/*.tsx",
+      "./src/business/festivalCard/ui/web/*/index.ts",
+      "./src/business/festivalCard/ui/web/*/index.tsx"
+    ],
+    "./business/calendar/ui/web/*": [
+      "./src/business/calendar/ui/web/*.ts",
+      "./src/business/calendar/ui/web/*.tsx",
+      "./src/business/calendar/ui/web/*/index.ts",
+      "./src/business/calendar/ui/web/*/index.tsx"
+    ],
+    "./business/teachHub/ui/web/*": [
+      "./src/business/teachHub/ui/web/*.ts",
+      "./src/business/teachHub/ui/web/*.tsx",
+      "./src/business/teachHub/ui/web/*/index.ts",
+      "./src/business/teachHub/ui/web/*/index.tsx"
+    ],
+    "./business/nodeNotes/ui/web/*": [
+      "./src/business/nodeNotes/ui/web/*.ts",
+      "./src/business/nodeNotes/ui/web/*.tsx",
+      "./src/business/nodeNotes/ui/web/*/index.ts",
+      "./src/business/nodeNotes/ui/web/*/index.tsx"
+    ],
+    "./business/showmasterpiece/ui/web/*": [
+      "./src/business/showmasterpiece/ui/web/*.ts",
+      "./src/business/showmasterpiece/ui/web/*.tsx",
+      "./src/business/showmasterpiece/ui/web/*/index.ts",
+      "./src/business/showmasterpiece/ui/web/*/index.tsx"
+    ],
+    "./business/mikuContest/ui/web/*": [
+      "./src/business/mikuContest/ui/web/*.ts",
+      "./src/business/mikuContest/ui/web/*.tsx",
+      "./src/business/mikuContest/ui/web/*/index.ts",
+      "./src/business/mikuContest/ui/web/*/index.tsx"
+    ],
+    "./business/exam/ui/web/*": [
+      "./src/business/exam/ui/web/*.ts",
+      "./src/business/exam/ui/web/*.tsx",
+      "./src/business/exam/ui/web/*/index.ts",
+      "./src/business/exam/ui/web/*/index.tsx"
+    ]
   },
   "files": [
     "dist",

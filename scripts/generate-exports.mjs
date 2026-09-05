@@ -183,6 +183,19 @@ export function generateExportsFromEntryKeys(entryKeys) {
     default: './src/common/ui/auth/index.ts',
   };
 
+  // business/*/ui/web 深路径：宿主 transpilePackages 解析子模块（F5 / Phase G）
+  for (const key of entryKeys) {
+    const match = key.match(/^(business\/[^/]+)\/ui\/web\/index$/);
+    if (!match) continue;
+    const domain = match[1];
+    exportsMap[`./${domain}/ui/web/*`] = [
+      `./src/${domain}/ui/web/*.ts`,
+      `./src/${domain}/ui/web/*.tsx`,
+      `./src/${domain}/ui/web/*/index.ts`,
+      `./src/${domain}/ui/web/*/index.tsx`,
+    ];
+  }
+
   return exportsMap;
 }
 
