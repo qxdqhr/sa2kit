@@ -716,9 +716,10 @@
       "require": "./dist/common/universalExport/index.js"
     },
     "./common/ui": {
-      "types": "./dist/common/ui/index.d.ts",
-      "import": "./dist/common/ui/index.mjs",
-      "require": "./dist/common/ui/index.js"
+      "types": "./src/common/ui/index.ts",
+      "import": "./src/common/ui/index.ts",
+      "require": "./src/common/ui/index.ts",
+      "default": "./src/common/ui/index.ts"
     },
     "./common/ui/style": "./src/common/ui/style.css",
     "./common/ui/admin": {
@@ -760,6 +761,7 @@
   },
   "files": [
     "dist",
+    "src/common/ui/index.ts",
     "src/common/ui/style.css",
     "src/common/ui/admin",
     "src/common/ui/rn",

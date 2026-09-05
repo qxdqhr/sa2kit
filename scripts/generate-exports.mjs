@@ -135,11 +135,13 @@ export function generateExportsFromEntryKeys(entryKeys) {
     }
   }
 
-  // UI 门面：不经 tsup（external re-export 会被打空）；由 write-ui-facade.mjs 写 dist
+  // UI 门面：源码再导出（与 widgets/admin 一致，宿主 transpilePackages 可解析）。
+  // dist 仍由 write-ui-facade.mjs 生成，供不读 exports 的深路径/兼容消费。
   exportsMap['./common/ui'] = {
-    types: './dist/common/ui/index.d.ts',
-    import: './dist/common/ui/index.mjs',
-    require: './dist/common/ui/index.js',
+    types: './src/common/ui/index.ts',
+    import: './src/common/ui/index.ts',
+    require: './src/common/ui/index.ts',
+    default: './src/common/ui/index.ts',
   };
   exportsMap['./common/ui/style'] = './src/common/ui/style.css';
   // 管理台兼容层（源码入口，由宿主 transpile）
