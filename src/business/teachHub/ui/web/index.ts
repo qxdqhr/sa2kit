@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * teachHub Web UI — `sa2kit/business/teachHub/ui/web`
  *

@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { Maximize2 } from 'lucide-react';
 import { ColorStyleField } from './ColorStyleField';
 import { DEFAULT_CANVAS_BG } from '../../../domain/nodeStyle';

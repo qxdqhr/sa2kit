@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { Trash2 } from 'lucide-react';
 import type { NodeNoteEdge } from '../../../domain/types';
 import { ColorStyleField } from './ColorStyleField';

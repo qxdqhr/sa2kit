@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { Loader2, MapPin, Plus, X } from 'lucide-react';
 import { ColorStyleField } from './ColorStyleField';
 import { DEFAULT_NODE_BG, DEFAULT_NODE_TEXT } from '../../../domain/nodeStyle';

@@ -4,6 +4,16 @@ import type { Options } from 'tsup';
 
 const root = join(fileURLToPath(import.meta.url), '..');
 
+const injectJsxAutomaticPlugin = {
+  name: 'jsx-automatic',
+  setup(build: any) {
+    build.onResolve({ filter: /\.tsx?$/ }, () => {});
+    const initial = build.initialOptions;
+    initial.jsx = 'automatic';
+    initial.jsxImportSource = 'react';
+  },
+};
+
 /** 2.0 common + business 构建共享选项（R2-301） */
 export const tsupSharedOptions: Omit<Options, 'entry' | 'clean'> = {
   format: ['esm', 'cjs'],
@@ -47,8 +57,8 @@ export const tsupSharedOptions: Omit<Options, 'entry' | 'clean'> = {
   treeshake: true,
   outDir: 'dist',
   platform: 'neutral',
+  esbuildPlugins: [injectJsxAutomaticPlugin],
   esbuildOptions(options) {
-    options.jsx = 'automatic';
     options.alias = {
       ...(options.alias ?? {}),
       '@/components': join(root, 'src/common/components'),

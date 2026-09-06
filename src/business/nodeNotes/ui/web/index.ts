@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * nodeNotes Web UI — `sa2kit/business/nodeNotes/ui/web`
  *

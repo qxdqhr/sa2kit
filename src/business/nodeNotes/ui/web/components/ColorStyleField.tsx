@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { STYLE_PRESETS, normalizeHexColor } from '../../../domain/nodeStyle';
 
 interface ColorStyleFieldProps {
