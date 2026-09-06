@@ -48,6 +48,7 @@ export const tsupSharedOptions: Omit<Options, 'entry' | 'clean'> = {
   outDir: 'dist',
   platform: 'neutral',
   esbuildOptions(options) {
+    options.jsx = 'automatic';
     options.alias = {
       ...(options.alias ?? {}),
       '@/components': join(root, 'src/common/components'),
