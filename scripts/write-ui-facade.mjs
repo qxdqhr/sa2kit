@@ -3,6 +3,8 @@
  * tsup 对 `export * from '@sa2kit-ui/*'`（external）会打出空 chunk。
  * 构建后写入手写门面，保证 `sa2kit/common/ui` / `sa2kit/common/ui/rn` 再导出可用。
  *
+ * 必须用显式 named re-export（勿 export *）：Next/webpack 对 CJS 互操作会丢命名导出。
+ *
  * RN types：自包含声明，避免 link 包 realpath 下解析不到 peer、或把 rn 源码拉进宿主 tsc。
  * 运行时仍走 `src/common/ui/rn`（Metro transpile）。
  */
@@ -17,7 +19,104 @@ const rnOutDir = join(outDir, 'rn');
 mkdirSync(outDir, { recursive: true });
 mkdirSync(rnOutDir, { recursive: true });
 
-const esm = `export * from '@sa2kit-ui/react';\n`;
+const NAMED_VALUES = [
+  'Button',
+  'Input',
+  'Switch',
+  'Card',
+  'Typewriter',
+  'Modal',
+  'Title',
+  'Tabs',
+  'Collapse',
+  'Checkbox',
+  'Radio',
+  'Tooltip',
+  'Select',
+  'Loading',
+  'Divider',
+  'Time',
+  'CodeBlock',
+  'Table',
+  'Icon',
+  'ICON_LIST',
+  'ITEM_COUNT',
+  'ITEM_LIST',
+  'ITEM_URL_MAP',
+  'Footer',
+  'Phone',
+  'Cursor',
+  'Wallet',
+  'WeddingInvitation',
+  'WeddingInvitationExportButton',
+  'ThemeProvider',
+  'useTheme',
+  'SA2_THEMES',
+];
+
+const NAMED_TYPES = [
+  'ButtonProps',
+  'ButtonType',
+  'ButtonSize',
+  'ButtonHTMLType',
+  'InputProps',
+  'InputSize',
+  'SwitchProps',
+  'SwitchSize',
+  'CardProps',
+  'CardType',
+  'CardColor',
+  'ModalProps',
+  'TitleProps',
+  'TitleSize',
+  'TitleColor',
+  'TabsProps',
+  'TabItem',
+  'CollapseProps',
+  'CheckboxProps',
+  'CheckboxOption',
+  'CheckboxSize',
+  'RadioProps',
+  'RadioOption',
+  'RadioSize',
+  'TypewriterProps',
+  'TooltipProps',
+  'TooltipPlacement',
+  'TooltipTrigger',
+  'TooltipVariant',
+  'SelectProps',
+  'SelectOption',
+  'LoadingProps',
+  'DividerProps',
+  'DividerType',
+  'TimeProps',
+  'CodeBlockProps',
+  'TableProps',
+  'TableColumn',
+  'IconProps',
+  'IconName',
+  'FooterProps',
+  'FooterType',
+  'PhoneProps',
+  'CursorProps',
+  'WalletProps',
+  'WalletSize',
+  'WeddingInvitationProps',
+  'WeddingInvitationRef',
+  'WeddingInvitationExportButtonProps',
+  'Sa2ThemeId',
+  'ThemeContextValue',
+  'ThemeProviderProps',
+];
+
+const esm = `export {
+  ${NAMED_VALUES.join(',\n  ')},
+} from '@sa2kit-ui/react';
+export type {
+  ${NAMED_TYPES.join(',\n  ')},
+} from '@sa2kit-ui/react';
+`;
+
 const cjs = `"use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
   if (k2 === undefined) k2 = k;
@@ -30,20 +129,19 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
   if (k2 === undefined) k2 = k;
   o[k2] = m[k];
 }));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-  for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("@sa2kit-ui/react"), exports);
+var react = require("@sa2kit-ui/react");
+${NAMED_VALUES.map((name) => `__createBinding(exports, react, "${name}");`).join('\n')}
 `;
-const dts = `export * from '@sa2kit-ui/react';\n`;
+
+const dts = esm;
 
 writeFileSync(join(outDir, 'index.mjs'), esm);
 writeFileSync(join(outDir, 'index.js'), cjs);
 writeFileSync(join(outDir, 'index.d.ts'), dts);
 writeFileSync(join(outDir, 'index.d.mts'), dts);
 
-console.log('✓ wrote dist/common/ui facade → @sa2kit-ui/react');
+console.log('✓ wrote dist/common/ui facade → @sa2kit-ui/react (named exports)');
 
 const rnModalDts = `import type { ReactNode } from 'react';
 

@@ -799,8 +799,8 @@
   ],
   "scripts": {
     "dev": "NODE_OPTIONS='--max-old-space-size=16384' tsup --watch",
-    "build": "pnpm run verify:tsup-entries && pnpm run exports:verify && pnpm run build:common && pnpm run build:business",
-    "build:common": "NODE_OPTIONS='--max-old-space-size=8192' tsup --config tsup.common.config.ts && node scripts/write-ui-facade.mjs",
+    "build": "pnpm run verify:tsup-entries && pnpm run exports:verify && rm -rf dist && pnpm run build:common && pnpm run build:business",
+    "build:common": "rm -rf dist/common && NODE_OPTIONS='--max-old-space-size=8192' tsup --config tsup.common.config.ts && node scripts/write-ui-facade.mjs",
     "build:business": "NODE_OPTIONS='--max-old-space-size=16384' tsup --config tsup.business.config.ts && node scripts/write-business-dts-shims.mjs && node scripts/inject-use-client.mjs",
     "verify:tsup-entries": "node scripts/verify-tsup-entries.mjs",
     "exports:sync": "node scripts/generate-exports.mjs",
@@ -958,12 +958,5 @@
     "zod": "^4.4.3",
     "clsx": "^2.1.1",
     "tailwind-merge": "^2.6.0"
-  },
-  "pnpm": {
-    "peerDependencyRules": {
-      "ignoreMissing": [
-        "@sa2kit-ui/rn"
-      ]
-    }
   }
 }
