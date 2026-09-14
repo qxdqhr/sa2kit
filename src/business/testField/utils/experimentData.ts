@@ -17,29 +17,6 @@ export const experiments: ExperimentItem[] = [
     createdAt: '2023-01-15',
     updatedAt: '2023-06-20'
   },
-  // 新增悬浮菜单演示
-  {
-    id: 'floating-menu',
-    title: '可拖动悬浮菜单',
-    description: '一个可在页面任意位置拖动的悬浮菜单，根据位置自动调整弹出方向',
-    path: '/testField/FloatingMenuDemo',
-    tags: ['UI组件', '交互', '菜单'],
-    category: 'utility',
-    isCompleted: true,
-    createdAt: '2023-08-15',
-    updatedAt: '2023-08-15'
-  },
-  {
-    id: '2',
-    title: '实时活动',
-    description: '用于展示实时活动状态的实验性功能',
-    path: '/testField/LiveActivity',
-    tags: ['实时', '活动', '实验'],
-    category: 'utility',
-    isCompleted: false,
-    createdAt: '2023-02-10',
-    updatedAt: '2023-07-05'
-  },
   {
     id: "config-default",
     title: "通用考试配置",
@@ -162,14 +139,6 @@ export const experiments: ExperimentItem[] = [
     category: "leisure"
   },
   {
-    id: "share-monitor",
-    title: "手机投屏",
-    description: "手机投屏",
-    path: "/testField/ShareMonitor",
-    tags: ["投屏", "工具"],
-    category: "leisure"
-  },
-  {
     id: "miku-click",
     title: "米库点击",
     description: "测试 点击奏鸣初音未来功能 功能",
@@ -277,15 +246,6 @@ export const experiments: ExperimentItem[] = [
 
   // 新增模块
   {
-    id: "notification",
-    title: "通知中心",
-    description: "查看和管理系统通知，支持筛选和操作",
-    path: "/testField/notification",
-    tags: ["通知", "管理", "系统"],
-    category: "utility",
-    isCompleted: true
-  },
-  {
     id: "filetransfer", 
     title: "文件中转站",
     description: "安全、快速的文件传输服务，支持文件上传和下载",
@@ -389,7 +349,7 @@ export const experiments: ExperimentItem[] = [
     id: "audio-detection-test",
     title: "SA2Kit 音频检测器",
     description: "调试 sa2kit 新增的音频检测模块，涵盖预设 UI、Hook 沙盒和参数调节器，便于验证音符与和弦识别表现",
-    path: "/testField/audio-detection-test",
+    path: "/examples/audio-detection",
     tags: ["音频", "检测", "SA2Kit", "实验"],
     category: "utility",
     isCompleted: false,
