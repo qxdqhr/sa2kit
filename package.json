@@ -553,6 +553,11 @@
       "import": "./dist/business/skillManager/ui/web/index.mjs",
       "require": "./dist/business/skillManager/ui/web/index.js"
     },
+    "./business/solarSystem": {
+      "types": "./dist/business/solarSystem/index.d.ts",
+      "import": "./dist/business/solarSystem/index.mjs",
+      "require": "./dist/business/solarSystem/index.js"
+    },
     "./business/teachHub/domain": {
       "types": "./dist/business/teachHub/domain/index.d.ts",
       "import": "./dist/business/teachHub/domain/index.mjs",
