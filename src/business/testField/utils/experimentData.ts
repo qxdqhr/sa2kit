@@ -158,7 +158,7 @@ export const experiments: ExperimentItem[] = [
     id: "card-maker",
     title: "名片制作器",
     description: "移动端名片制作工具，支持角色头像、背景图片、文字编辑等功能，可创建个性化名片",
-    path: "/testField/cardMaker",
+    path: "/card-maker",
     tags: ["名片", "设计", "移动端", "编辑器", "个性化"],
     category: "utility",
     isCompleted: false

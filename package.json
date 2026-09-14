@@ -413,6 +413,31 @@
       "import": "./dist/business/skillManager/ui/web/index.mjs",
       "require": "./dist/business/skillManager/ui/web/index.js"
     },
+    "./business/cardMaker/domain": {
+      "types": "./dist/business/cardMaker/domain/index.d.ts",
+      "import": "./dist/business/cardMaker/domain/index.mjs",
+      "require": "./dist/business/cardMaker/domain/index.js"
+    },
+    "./business/cardMaker": {
+      "types": "./dist/business/cardMaker/index.d.ts",
+      "import": "./dist/business/cardMaker/index.mjs",
+      "require": "./dist/business/cardMaker/index.js"
+    },
+    "./business/cardMaker/routes": {
+      "types": "./dist/business/cardMaker/routes/index.d.ts",
+      "import": "./dist/business/cardMaker/routes/index.mjs",
+      "require": "./dist/business/cardMaker/routes/index.js"
+    },
+    "./business/cardMaker/server": {
+      "types": "./dist/business/cardMaker/server/index.d.ts",
+      "import": "./dist/business/cardMaker/server/index.mjs",
+      "require": "./dist/business/cardMaker/server/index.js"
+    },
+    "./business/cardMaker/ui/web": {
+      "types": "./dist/business/cardMaker/ui/web/index.d.ts",
+      "import": "./dist/business/cardMaker/ui/web/index.mjs",
+      "require": "./dist/business/cardMaker/ui/web/index.js"
+    },
     "./business/webTools/qrCode/domain": {
       "types": "./dist/business/webTools/qrCode/domain/index.d.ts",
       "import": "./dist/business/webTools/qrCode/domain/index.mjs",
@@ -980,6 +1005,12 @@
       "./src/business/skillManager/ui/web/*.tsx",
       "./src/business/skillManager/ui/web/*/index.ts",
       "./src/business/skillManager/ui/web/*/index.tsx"
+    ],
+    "./business/cardMaker/ui/web/*": [
+      "./src/business/cardMaker/ui/web/*.ts",
+      "./src/business/cardMaker/ui/web/*.tsx",
+      "./src/business/cardMaker/ui/web/*/index.ts",
+      "./src/business/cardMaker/ui/web/*/index.tsx"
     ],
     "./business/webTools/qrCode/ui/web/*": [
       "./src/business/webTools/qrCode/ui/web/*.ts",
