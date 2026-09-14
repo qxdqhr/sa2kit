@@ -64,17 +64,6 @@ export const experiments: ExperimentItem[] = [
   },
 
   {
-    id: "sync-text",
-    title: "多端文本同步",
-    description: "在多个设备间同步和共享文本内容",
-    path: "/testField/SyncText",
-    tags: ["同步", "剪贴板"],
-    category: "utility",
-    isCompleted: false,
-    createdAt: '2023-03-12',
-    updatedAt: '2023-08-01'
-  },
-  {
     id: "home-page-config",
     title: "首页配置",
     description: "首页配置",
@@ -163,16 +152,6 @@ export const experiments: ExperimentItem[] = [
     category: "utility",
     isCompleted: false
   },
-  {
-    id: "tailwind-test",
-    title: "TailwindCSS 测试场",
-    description: "专门用于测试和学习TailwindCSS的实验模块，包含各种样式特性的示例和测试用例",
-    path: "/testField/tailwindTest",
-    tags: ["TailwindCSS", "样式", "测试", "学习", "CSS"],
-    category: "utility",
-    isCompleted: false
-  },
-
   // 休闲娱乐类
   {
     id: "vocaloider",
