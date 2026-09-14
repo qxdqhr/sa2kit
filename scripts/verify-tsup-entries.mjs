@@ -36,7 +36,7 @@ if (overlap.length > 0) {
 
 const mergedCount = commonKeys.length + businessKeys.length;
 // Phase G + H1 domain migrations expanded business entries (thin Next hosts cutover).
-const expectedTotal = 151;
+const expectedTotal = 152;
 
 console.log(
   `✓ ${commonKeys.length} common + ${businessKeys.length} business entries (${mergedCount} total)`,

@@ -428,6 +428,11 @@
       "import": "./dist/business/mmd/server/index.mjs",
       "require": "./dist/business/mmd/server/index.js"
     },
+    "./business/mmd/demos": {
+      "types": "./dist/business/mmd/demos/index.d.ts",
+      "import": "./dist/business/mmd/demos/index.mjs",
+      "require": "./dist/business/mmd/demos/index.js"
+    },
     "./business/music": {
       "types": "./dist/business/music/index.d.ts",
       "import": "./dist/business/music/index.mjs",
