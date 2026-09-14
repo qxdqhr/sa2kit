@@ -938,6 +938,7 @@
       "default": "./src/common/ui/index.ts"
     },
     "./common/ui/style": "./src/common/ui/style.css",
+    "./business/exam/ui/web/style": "./src/business/exam/ui/web/exam-page.css",
     "./common/ui/admin": {
       "types": "./src/common/ui/admin/index.ts",
       "import": "./src/common/ui/admin/index.ts",

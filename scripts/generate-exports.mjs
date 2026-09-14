@@ -144,6 +144,7 @@ export function generateExportsFromEntryKeys(entryKeys) {
     default: './src/common/ui/index.ts',
   };
   exportsMap['./common/ui/style'] = './src/common/ui/style.css';
+  exportsMap['./business/exam/ui/web/style'] = './src/business/exam/ui/web/exam-page.css';
   // 管理台兼容层（源码入口，由宿主 transpile）
   exportsMap['./common/ui/admin'] = {
     types: './src/common/ui/admin/index.ts',
