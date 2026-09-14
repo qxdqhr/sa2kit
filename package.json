@@ -388,6 +388,61 @@
       "import": "./dist/business/ideaList/ui/web/index.mjs",
       "require": "./dist/business/ideaList/ui/web/index.js"
     },
+    "./business/skillManager/domain": {
+      "types": "./dist/business/skillManager/domain/index.d.ts",
+      "import": "./dist/business/skillManager/domain/index.mjs",
+      "require": "./dist/business/skillManager/domain/index.js"
+    },
+    "./business/skillManager": {
+      "types": "./dist/business/skillManager/index.d.ts",
+      "import": "./dist/business/skillManager/index.mjs",
+      "require": "./dist/business/skillManager/index.js"
+    },
+    "./business/skillManager/routes": {
+      "types": "./dist/business/skillManager/routes/index.d.ts",
+      "import": "./dist/business/skillManager/routes/index.mjs",
+      "require": "./dist/business/skillManager/routes/index.js"
+    },
+    "./business/skillManager/server": {
+      "types": "./dist/business/skillManager/server/index.d.ts",
+      "import": "./dist/business/skillManager/server/index.mjs",
+      "require": "./dist/business/skillManager/server/index.js"
+    },
+    "./business/skillManager/ui/web": {
+      "types": "./dist/business/skillManager/ui/web/index.d.ts",
+      "import": "./dist/business/skillManager/ui/web/index.mjs",
+      "require": "./dist/business/skillManager/ui/web/index.js"
+    },
+    "./business/webTools/qrCode/domain": {
+      "types": "./dist/business/webTools/qrCode/domain/index.d.ts",
+      "import": "./dist/business/webTools/qrCode/domain/index.mjs",
+      "require": "./dist/business/webTools/qrCode/domain/index.js"
+    },
+    "./business/webTools/qrCode": {
+      "types": "./dist/business/webTools/qrCode/index.d.ts",
+      "import": "./dist/business/webTools/qrCode/index.mjs",
+      "require": "./dist/business/webTools/qrCode/index.js"
+    },
+    "./business/webTools/qrCode/ui/web": {
+      "types": "./dist/business/webTools/qrCode/ui/web/index.d.ts",
+      "import": "./dist/business/webTools/qrCode/ui/web/index.mjs",
+      "require": "./dist/business/webTools/qrCode/ui/web/index.js"
+    },
+    "./business/webTools/dateCalculator/domain": {
+      "types": "./dist/business/webTools/dateCalculator/domain/index.d.ts",
+      "import": "./dist/business/webTools/dateCalculator/domain/index.mjs",
+      "require": "./dist/business/webTools/dateCalculator/domain/index.js"
+    },
+    "./business/webTools/dateCalculator": {
+      "types": "./dist/business/webTools/dateCalculator/index.d.ts",
+      "import": "./dist/business/webTools/dateCalculator/index.mjs",
+      "require": "./dist/business/webTools/dateCalculator/index.js"
+    },
+    "./business/webTools/dateCalculator/ui/web": {
+      "types": "./dist/business/webTools/dateCalculator/ui/web/index.d.ts",
+      "import": "./dist/business/webTools/dateCalculator/ui/web/index.mjs",
+      "require": "./dist/business/webTools/dateCalculator/ui/web/index.js"
+    },
     "./business": {
       "types": "./dist/business/index.d.ts",
       "import": "./dist/business/index.mjs",
@@ -895,6 +950,24 @@
       "./src/business/ideaList/ui/web/*/index.ts",
       "./src/business/ideaList/ui/web/*/index.tsx"
     ],
+    "./business/skillManager/ui/web/*": [
+      "./src/business/skillManager/ui/web/*.ts",
+      "./src/business/skillManager/ui/web/*.tsx",
+      "./src/business/skillManager/ui/web/*/index.ts",
+      "./src/business/skillManager/ui/web/*/index.tsx"
+    ],
+    "./business/webTools/qrCode/ui/web/*": [
+      "./src/business/webTools/qrCode/ui/web/*.ts",
+      "./src/business/webTools/qrCode/ui/web/*.tsx",
+      "./src/business/webTools/qrCode/ui/web/*/index.ts",
+      "./src/business/webTools/qrCode/ui/web/*/index.tsx"
+    ],
+    "./business/webTools/dateCalculator/ui/web/*": [
+      "./src/business/webTools/dateCalculator/ui/web/*.ts",
+      "./src/business/webTools/dateCalculator/ui/web/*.tsx",
+      "./src/business/webTools/dateCalculator/ui/web/*/index.ts",
+      "./src/business/webTools/dateCalculator/ui/web/*/index.tsx"
+    ],
     "./business/filetransfer/ui/web/*": [
       "./src/business/filetransfer/ui/web/*.ts",
       "./src/business/filetransfer/ui/web/*.tsx",
@@ -1091,7 +1164,9 @@
     "@xyflow/react": "^12.11.2",
     "adm-zip": "^0.5.16",
     "ali-oss": "^6.23.0",
+    "dayjs": "^1.11.13",
     "gray-matter": "^4.0.3",
+    "qrcode.react": "^4.2.0",
     "html-to-image": "^1.11.13",
     "bcryptjs": "^3.0.3",
     "better-auth": "^1.6.15",

@@ -49,6 +49,7 @@ examples/
 !docs/auth-env.md
 !docs/app-config.md
 !docs/HOST-ONBOARDING.md
+!docs/HOST-ONBOARDING-DRILL-H1-P1.md
 !docs/COMMON-PLATFORMS-EXPORTS.md
 !docs/PACKAGE-SPLIT-ROADMAP.md
 !docs/adr/002-client-ready-multiplatform-sdk.md

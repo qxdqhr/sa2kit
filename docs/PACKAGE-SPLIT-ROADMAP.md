@@ -43,11 +43,19 @@ pnpm --filter sa2kit run measure:dist
 
 ## 中期（2.x 后续）
 
-| 步骤 | 内容 | 验收 |
-|------|------|------|
-| E1 | `exports` 文档 + `measure:dist` CI 阈值告警 | 单 PR 不增 MMD entry >5% |
-| E2 | 可选 npm 包 `@sa2kit/common-auth` 等（workspace 内先拆） | 对外仍 `sa2kit/common/auth` 兼容 |
-| E3 | business 按域分包 `@sa2kit/biz-mmd` | Metro / 小程序只声明所需 peer |
+| 步骤 | 内容 | 验收 | 状态（H1-E · 2026-09-14） |
+|------|------|------|---------------------------|
+| E1 | `exports` 文档 + `measure:dist` CI 阈值告警 | 单 PR 不增 MMD entry >5% | ✅ 保持；`measure:dist` 为回归基线 |
+| E2 | 可选 npm 包 `@sa2kit/common-auth` 等（workspace 内先拆） | 对外仍 `sa2kit/common/auth` 兼容 | ⏸ **延期** — 见下 |
+| E3 | business 按域分包 `@sa2kit/biz-mmd` | Metro / 小程序只声明所需 peer | ⏸ **延期** — 见下 |
+
+### H1-E 延期理由（明确）
+
+1. **E1 已足够挡误用**：子路径 + `measure:dist` + HOST-ONBOARDING「禁止根/聚合 import」可覆盖当前接单；空目录演练（[HOST-ONBOARDING-DRILL-H1-P1.md](./HOST-ONBOARDING-DRILL-H1-P1.md)）已暴露「最小 UI 页仍可能打出数 MB」——优先靠文档与门禁，而非立刻拆发包名。  
+2. **缺第二真实客户宿主**：E2/E3 的分包边界应等非 profile 付费仓出现后再定，避免为假想 Metro/小程序场景提前拆仓。  
+3. **发布面优先**：先保证 npm publish 与本地 HEAD exports 对齐（如 `festivalCard/ui/web`），再谈 `@sa2kit/*` 物理分包。  
+
+**触发重启 E2/E3**：出现第二宿主，或客户仓在遵循子路径纪律后仍无法把首屏包压到可接受阈值。
 
 ## 长期
 

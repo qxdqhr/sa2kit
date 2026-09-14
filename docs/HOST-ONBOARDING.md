@@ -6,9 +6,14 @@
 ## 1. 安装
 
 ```bash
-pnpm add sa2kit @qhr123/sa2kit-ui-react
-# 按能力选装 peer，见 sa2kit README「可选 peer 依赖」
+pnpm add sa2kit
+# UI 设计系统：npm 包名为 @qhr123/sa2kit-ui-react，但门面 CSS/peer 期望作用域名 @sa2kit-ui/react
+pnpm add '@sa2kit-ui/react@npm:@qhr123/sa2kit-ui-react@^0.1.7'
+# 按能力选装其余 peer，见 sa2kit README「可选 peer 依赖」
 ```
+
+> **勿只装 `@qhr123/sa2kit-ui-react`**：`import 'sa2kit/common/ui/style'` 会 `@import '@sa2kit-ui/react/style'`；缺少 `@sa2kit-ui/react` 别名时 Vite/Webpack 会 ENOENT。  
+> 演练记录：[HOST-ONBOARDING-DRILL-H1-P1.md](./HOST-ONBOARDING-DRILL-H1-P1.md)。
 
 | 宿主 | 额外 peer |
 |------|-----------|
@@ -83,11 +88,13 @@ import { FestivalCardManagedPage } from 'sa2kit/business/festivalCard/ui/web';
 
 ## 8. 验收（启明星判定）
 
-- [ ] 新仓 `pnpm build` 通过，无 profile 私有路径 import  
-- [ ] 登录 + 登出 + 受保护页可访问  
-- [ ] 至少一次 OSS 上传（或 stub env）  
-- [ ] 基础 UI 经 `sa2kit/common/ui`，样式随消费边界加载  
-- [ ] 文档：本清单 + [COMMON-PLATFORMS-EXPORTS.md](./COMMON-PLATFORMS-EXPORTS.md)
+- [x] 新仓 `pnpm build` 通过，无 profile 私有路径 import — 见 [HOST-ONBOARDING-DRILL-H1-P1.md](./HOST-ONBOARDING-DRILL-H1-P1.md)（2026-09-14）  
+- [~] 登录 + 登出 + 受保护页可访问 — auth entry resolve OK；E2E 仍以 profile-v1 验证场为准  
+- [~] 至少一次 OSS 上传（或 stub env） — file/platform resolve OK；实传 stub  
+- [x] 基础 UI 经 `sa2kit/common/ui`，样式随消费边界加载  
+- [x] 文档：本清单 + [COMMON-PLATFORMS-EXPORTS.md](./COMMON-PLATFORMS-EXPORTS.md) + H1-P1 演练记录  
+
+（`[~]` = 契约可达、完整宿主 E2E 未在空目录重复建设）
 
 ## 参考宿主
 
