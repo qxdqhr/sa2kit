@@ -131,14 +131,6 @@ export const experiments: ExperimentItem[] = [
   },
   // 休闲娱乐类
   {
-    id: "vocaloider",
-    title: "术力口音乐播放器",
-    description: "术力口音乐播放器",
-    path: "/testField/Vocaloider",
-    tags: ["小游戏", "赛博无料"],
-    category: "leisure"
-  },
-  {
     id: "miku-click",
     title: "米库点击",
     description: "测试 点击奏鸣初音未来功能 功能",
@@ -224,14 +216,6 @@ export const experiments: ExperimentItem[] = [
     title: "黄金矿工",
     description: "金矿工",
     path: "/testField/goldMiner",
-    tags: ["小游戏", "赛博无料","新建文件夹"],
-    category: "leisure"
-  },
-  {
-    id: "playMusic",
-    title: "音乐无料",
-    description: "音乐无料",
-    path: "/testField/playMusic",
     tags: ["小游戏", "赛博无料","新建文件夹"],
     category: "leisure"
   },
