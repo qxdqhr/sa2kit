@@ -939,6 +939,7 @@
     },
     "./common/ui/style": "./src/common/ui/style.css",
     "./business/exam/ui/web/style": "./src/business/exam/ui/web/exam-page.css",
+    "./business/exam/ui/web/config-style": "./src/business/exam/ui/web/config/exam-config.css",
     "./common/ui/admin": {
       "types": "./src/common/ui/admin/index.ts",
       "import": "./src/common/ui/admin/index.ts",
