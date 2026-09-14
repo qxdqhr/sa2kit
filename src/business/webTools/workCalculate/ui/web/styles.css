@@ -1,0 +1,558 @@
+.container {
+  padding: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 32px;
+  color: #1e293b;
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.controls {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.date-input,
+.number-input,
+.text-input,
+.person-name-input {
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.date-input:hover,
+.number-input:hover,
+.text-input:hover {
+  border-color: #94a3b8;
+}
+
+.date-input:focus,
+.number-input:focus,
+.text-input:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.date-input {
+  width: 160px;
+}
+
+.number-input {
+  width: 120px;
+}
+
+.text-input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.person-name-input {
+  width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: all 0.2s;
+}
+
+.person-name-input:hover {
+  border-color: #e2e8f0;
+  background: white;
+}
+
+.person-name-input:focus {
+  border-color: #3b82f6;
+  background: white;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.work-input {
+  margin-bottom: 24px;
+}
+
+.input-group {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.add-button {
+  padding: 8px 20px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.add-button:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.add-button:active {
+  transform: translateY(0);
+}
+
+.work-area {
+  display: flex;
+  gap: 24px;
+}
+
+.work-list {
+  min-width: 240px;
+  max-width: 300px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 2px dashed #e2e8f0;
+  transition: all 0.2s;
+  height: fit-content;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.work-list.drag-over {
+  border-color: #3b82f6;
+  background-color: #f0f9ff;
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
+}
+
+.work-item {
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  cursor: move;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.work-item:hover {
+  background-color: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.work-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.work-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.action-button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.action-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.action-button.edit:hover {
+  background-color: #f0f9ff;
+  border-color: #93c5fd;
+}
+
+.action-button.delete:hover {
+  background-color: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.work-title {
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #1e293b;
+}
+
+.work-days {
+  font-size: 12px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.timeline {
+  flex-grow: 1;
+  overflow-x: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-row {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.timeline-row:last-child {
+  margin-bottom: 0;
+}
+
+.person-name {
+  width: 140px;
+  flex-shrink: 0;
+  padding: 8px 12px;
+}
+
+.day-cells {
+  display: flex;
+  gap: 6px;
+}
+
+.day-cell {
+  width: 100px;
+  height: 84px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  position: relative;
+  background-color: white;
+  transition: all 0.2s;
+}
+
+.day-cell:not(.assigned):hover {
+  background-color: #f8fafc;
+  border-color: #3b82f6;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+}
+
+.day-cell.assigned {
+  background-color: #eff6ff;
+}
+
+.date-label {
+  font-size: 12px;
+  text-align: center;
+  padding: 6px;
+  line-height: 1.4;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.weekday {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.assignment {
+  position: absolute;
+  top: 42px;
+  left: 4px;
+  right: 4px;
+  height: calc(100% - 46px);
+  background-color: #bfdbfe;
+  border-radius: 6px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 1;
+  cursor: move;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.assignment:hover {
+  background-color: #93c5fd;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.assignment-title {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #1e3a8a;
+}
+
+.assignment-days {
+  font-size: 12px;
+  color: #1e40af;
+  margin-top: 2px;
+}
+
+.tool-controls {
+  margin-bottom: 24px;
+}
+
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+}
+
+.checkbox-label:hover {
+  border-color: #94a3b8;
+  background-color: #f8fafc;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 2px solid #94a3b8;
+  transition: all 0.2s;
+}
+
+.checkbox-label input[type="checkbox"]:checked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.day-cell.weekend {
+  background-color: #fff1f0;
+  border-color: #fecaca;
+}
+
+.day-cell.weekend .weekday {
+  color: #ef4444;
+}
+
+.day-cell.weekend.assigned {
+  background-color: #fee2e2;
+  border-color: #fecaca;
+}
+
+.people-list {
+  margin-top: 8px;
+}
+
+.people-list h3 {
+  font-size: 16px;
+  font-weight: 500;
+  color: #475569;
+  margin-bottom: 12px;
+}
+
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.person-card {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  transition: all 0.2s;
+  overflow: hidden;
+}
+
+.person-card:hover {
+  border-color: #94a3b8;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.person-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.person-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.holiday-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  background: #fff;
+
+}
+
+.holiday-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.holiday-date-input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.add-holiday-btn {
+  padding: 6px 12px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.add-holiday-btn:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.add-holiday-btn:active {
+  transform: translateY(0);
+}
+
+.holiday-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
+
+.holiday-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.holiday-type-select {
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 12px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  outline: none;
+}
+
+.holiday-name-input {
+  background: transparent;
+  border: 1px solid transparent;
+  font-size: 13px;
+  padding: 2px 4px;
+  min-width: 60px;
+  max-width: 120px;
+  border-radius: 4px;
+  outline: none;
+}
+
+.holiday-date {
+  font-size: 13px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.remove-holiday {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.holiday-indicator {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: center;
+}
+
+.holiday-indicator-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+}
+
+.tool-controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+} 

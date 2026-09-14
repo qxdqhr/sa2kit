@@ -4,3 +4,5 @@
  */
 export * as qrCode from './qrCode';
 export * as dateCalculator from './dateCalculator';
+export * as workCalculate from './workCalculate';
+export * as imageDownloader from './imageDownloader';

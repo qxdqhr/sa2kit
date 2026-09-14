@@ -443,6 +443,31 @@
       "import": "./dist/business/webTools/dateCalculator/ui/web/index.mjs",
       "require": "./dist/business/webTools/dateCalculator/ui/web/index.js"
     },
+    "./business/webTools/workCalculate/domain": {
+      "types": "./dist/business/webTools/workCalculate/domain/index.d.ts",
+      "import": "./dist/business/webTools/workCalculate/domain/index.mjs",
+      "require": "./dist/business/webTools/workCalculate/domain/index.js"
+    },
+    "./business/webTools/workCalculate": {
+      "types": "./dist/business/webTools/workCalculate/index.d.ts",
+      "import": "./dist/business/webTools/workCalculate/index.mjs",
+      "require": "./dist/business/webTools/workCalculate/index.js"
+    },
+    "./business/webTools/workCalculate/ui/web": {
+      "types": "./dist/business/webTools/workCalculate/ui/web/index.d.ts",
+      "import": "./dist/business/webTools/workCalculate/ui/web/index.mjs",
+      "require": "./dist/business/webTools/workCalculate/ui/web/index.js"
+    },
+    "./business/webTools/imageDownloader": {
+      "types": "./dist/business/webTools/imageDownloader/index.d.ts",
+      "import": "./dist/business/webTools/imageDownloader/index.mjs",
+      "require": "./dist/business/webTools/imageDownloader/index.js"
+    },
+    "./business/webTools/imageDownloader/ui/web": {
+      "types": "./dist/business/webTools/imageDownloader/ui/web/index.d.ts",
+      "import": "./dist/business/webTools/imageDownloader/ui/web/index.mjs",
+      "require": "./dist/business/webTools/imageDownloader/ui/web/index.js"
+    },
     "./business": {
       "types": "./dist/business/index.d.ts",
       "import": "./dist/business/index.mjs",
@@ -967,6 +992,18 @@
       "./src/business/webTools/dateCalculator/ui/web/*.tsx",
       "./src/business/webTools/dateCalculator/ui/web/*/index.ts",
       "./src/business/webTools/dateCalculator/ui/web/*/index.tsx"
+    ],
+    "./business/webTools/workCalculate/ui/web/*": [
+      "./src/business/webTools/workCalculate/ui/web/*.ts",
+      "./src/business/webTools/workCalculate/ui/web/*.tsx",
+      "./src/business/webTools/workCalculate/ui/web/*/index.ts",
+      "./src/business/webTools/workCalculate/ui/web/*/index.tsx"
+    ],
+    "./business/webTools/imageDownloader/ui/web/*": [
+      "./src/business/webTools/imageDownloader/ui/web/*.ts",
+      "./src/business/webTools/imageDownloader/ui/web/*.tsx",
+      "./src/business/webTools/imageDownloader/ui/web/*/index.ts",
+      "./src/business/webTools/imageDownloader/ui/web/*/index.tsx"
     ],
     "./business/filetransfer/ui/web/*": [
       "./src/business/filetransfer/ui/web/*.ts",

@@ -111,7 +111,7 @@ export const experiments: ExperimentItem[] = [
     id: "image-downloader",
     title: "图片下载器",
     description: "通过图片URL快速下载图片到本地，支持预览和自定义文件名",
-    path: "/testField/ImageDownloader",
+    path: "/tools/image-downloader",
     tags: ["下载", "图片", "工具"],
     category: "utility",
     isCompleted: false
@@ -120,7 +120,7 @@ export const experiments: ExperimentItem[] = [
     id: "work-calculate",
     title: "工作计算器",
     description: "工作计算器",
-    path: "/testField/WorkCalculate",
+    path: "/tools/work-calculate",
     tags: ["计算器", "工具"],
     category: "utility",
     isCompleted: false

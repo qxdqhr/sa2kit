@@ -1,0 +1,660 @@
+/* 容器样式 */
+.imgdl-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem 1rem;
+}
+
+.imgdl-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.imgdl-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* 标题样式 */
+.imgdl-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.imgdl-subtitle {
+  font-size: 1.125rem;
+  color: #718096;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: 400;
+}
+
+/* 表单样式 */
+.imgdl-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 图片来源选择 */
+.imgdl-sourceSection {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.imgdl-sourceButtons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.imgdl-uploadButton {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+}
+
+.imgdl-uploadButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.imgdl-sourceDivider {
+  color: #718096;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0 0.5rem;
+}
+
+.imgdl-inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.imgdl-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.imgdl-optional {
+  font-weight: 400;
+  color: #a0aec0;
+  font-size: 0.875rem;
+}
+
+.imgdl-input {
+  padding: 1rem 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+  color: #2d3748;
+}
+
+.imgdl-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: translateY(-1px);
+}
+
+.imgdl-input::placeholder {
+  color: #a0aec0;
+}
+
+/* 按钮样式 */
+.imgdl-buttonGroup {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.imgdl-button {
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.imgdl-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.imgdl-previewButton {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  color: #2d3748;
+}
+
+.imgdl-previewButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(168, 237, 234, 0.4);
+}
+
+.imgdl-downloadButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.imgdl-downloadButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.imgdl-clearButton {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #744210;
+}
+
+.imgdl-clearButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(252, 182, 159, 0.4);
+}
+
+/* 图像处理区域 */
+.imgdl-imageProcessSection {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.imgdl-processSectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 1rem;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.imgdl-processButtonGroup {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.imgdl-processButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.imgdl-processButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.imgdl-advancedProcessButton {
+  background: linear-gradient(135deg, #8360c3 0%, #2ebf91 100%);
+  color: white;
+}
+
+.imgdl-advancedProcessButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(131, 96, 195, 0.4);
+}
+
+.imgdl-downloadProcessedButton {
+  background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+  color: #2d3748;
+}
+
+.imgdl-downloadProcessedButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(86, 171, 47, 0.4);
+}
+
+/* 预览区域 */
+.imgdl-previewSection {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e2e8f0;
+}
+
+.imgdl-previewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.imgdl-previewTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0;
+}
+
+.imgdl-previewTabs {
+  display: flex;
+  gap: 0.5rem;
+  background: #f7fafc;
+  padding: 0.25rem;
+  border-radius: 8px;
+}
+
+.imgdl-previewTab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  color: #718096;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.imgdl-previewTab:hover {
+  color: #4a5568;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.imgdl-activePreviewTab {
+  background: white;
+  color: #667eea;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.imgdl-previewContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  background: #f7fafc;
+  border-radius: 16px;
+  border: 2px dashed #cbd5e0;
+  padding: 1rem;
+}
+
+.imgdl-previewImage {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.imgdl-previewImage:hover {
+  transform: scale(1.02);
+}
+
+.imgdl-processedImageContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.imgdl-transparentBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(45deg, #ccc 25%, transparent 25%),
+    linear-gradient(-45deg, #ccc 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #ccc 75%),
+    linear-gradient(-45deg, transparent 75%, #ccc 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  border-radius: 12px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 帮助说明 */
+.imgdl-helpSection {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.imgdl-helpTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.imgdl-helpList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.imgdl-helpList li {
+  color: #4a5568;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  line-height: 1.5;
+}
+
+.imgdl-helpList li::before {
+  content: "✓";
+  color: #48bb78;
+  font-weight: bold;
+  flex-shrink: 0;
+  margin-top: 0.1em;
+}
+
+/* 功能特性 */
+.imgdl-featureSection {
+  background: linear-gradient(135deg, #fff3e0 0%, #e8f5e8 100%);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.imgdl-featureTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.imgdl-featureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.imgdl-featureItem {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  transition: transform 0.3s ease;
+}
+
+.imgdl-featureItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.imgdl-featureIcon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.imgdl-featureText {
+  flex: 1;
+}
+
+.imgdl-featureText strong {
+  display: block;
+  color: #2d3748;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.imgdl-featureText p {
+  color: #718096;
+  font-size: 0.85rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .imgdl-container {
+    padding: 1rem;
+  }
+  
+  .imgdl-card {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  
+  .imgdl-title {
+    font-size: 2rem;
+  }
+  
+  .imgdl-buttonGroup {
+    grid-template-columns: 1fr;
+  }
+  
+  .imgdl-featureGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .imgdl-featureItem {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .imgdl-featureIcon {
+    align-self: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .imgdl-title {
+    font-size: 1.75rem;
+  }
+  
+  .imgdl-subtitle {
+    font-size: 1rem;
+  }
+  
+  .imgdl-button {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* 跨域警告样式 */
+.imgdl-corsWarning {
+  background: linear-gradient(135deg, #ffe4b5 0%, #ffb347 100%);
+  border-left: 4px solid #ff8c00;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  color: #8b4513;
+  font-weight: 500;
+}
+
+/* 跨域说明区域 */
+.imgdl-corsSection {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(33, 150, 243, 0.2);
+}
+
+.imgdl-corsTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1565c0;
+  margin-bottom: 1rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.imgdl-corsContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.imgdl-corsDescription {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #1e3a8a;
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  border: 1px solid rgba(33, 150, 243, 0.1);
+}
+
+.imgdl-corsExamples {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.imgdl-corsExample {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(33, 150, 243, 0.15);
+}
+
+.imgdl-corsExample h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.imgdl-corsExample ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.imgdl-corsExample li {
+  padding: 0.5rem 0;
+  color: #374151;
+  border-bottom: 1px solid rgba(33, 150, 243, 0.1);
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.imgdl-corsExample li:last-child {
+  border-bottom: none;
+}
+
+.imgdl-corsExample li::before {
+  content: '•';
+  color: #2196f3;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+}
+
+.imgdl-corsWorkaround {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 2px solid rgba(76, 175, 80, 0.2);
+}
+
+.imgdl-corsWorkaround h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2e7d32;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.imgdl-corsWorkaround ol {
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+.imgdl-corsWorkaround li {
+  padding: 0.5rem 0;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.imgdl-corsWorkaround strong {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .imgdl-corsExamples {
+    grid-template-columns: 1fr;
+  }
+  
+  .imgdl-corsSection {
+    padding: 1.5rem;
+  }
+  
+  .imgdl-corsExample {
+    padding: 1rem;
+  }
+  
+  .imgdl-corsWorkaround {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .imgdl-corsTitle {
+    font-size: 1.1rem;
+  }
+  
+  .imgdl-corsDescription {
+    font-size: 0.9rem;
+    padding: 0.75rem;
+  }
+  
+  .imgdl-corsExample h4 {
+    font-size: 0.9rem;
+  }
+  
+  .imgdl-corsWorkaround h4 {
+    font-size: 1rem;
+  }
+} 
