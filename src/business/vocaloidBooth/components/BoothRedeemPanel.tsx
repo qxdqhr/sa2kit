@@ -5,11 +5,16 @@ import type { BoothUploadRecord } from '../types';
 
 export interface BoothRedeemPanelProps {
   loading?: boolean;
+  initialMatchCode?: string;
   onRedeem: (matchCode: string) => Promise<BoothUploadRecord | null>;
 }
 
-export const BoothRedeemPanel: React.FC<BoothRedeemPanelProps> = ({ onRedeem, loading }) => {
-  const [matchCode, setMatchCode] = useState('');
+export const BoothRedeemPanel: React.FC<BoothRedeemPanelProps> = ({
+  onRedeem,
+  loading,
+  initialMatchCode = '',
+}) => {
+  const [matchCode, setMatchCode] = useState(initialMatchCode);
   const [record, setRecord] = useState<BoothUploadRecord | null>(null);
   const [error, setError] = useState<string | null>(null);
 

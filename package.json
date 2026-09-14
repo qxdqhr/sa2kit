@@ -688,6 +688,11 @@
       "import": "./dist/business/vocaloidBooth/web/index.mjs",
       "require": "./dist/business/vocaloidBooth/web/index.js"
     },
+    "./business/vocaloidBooth/routes": {
+      "types": "./dist/business/vocaloidBooth/routes/index.d.ts",
+      "import": "./dist/business/vocaloidBooth/routes/index.mjs",
+      "require": "./dist/business/vocaloidBooth/routes/index.js"
+    },
     "./common/aiApi/client": {
       "types": "./dist/common/aiApi/client/index.d.ts",
       "import": "./dist/common/aiApi/client/index.mjs",

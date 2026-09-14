@@ -99,6 +99,7 @@ export const businessEntries = {
   'business/vocaloidBooth/index': 'src/business/vocaloidBooth/index.ts',
   'business/vocaloidBooth/web/index': 'src/business/vocaloidBooth/web/index.ts',
   'business/vocaloidBooth/server/index': 'src/business/vocaloidBooth/server/index.ts',
+  'business/vocaloidBooth/routes/index': 'src/business/vocaloidBooth/routes/index.ts',
   'business/mikuContest/ui/web/index': 'src/business/mikuContest/ui/web/index.ts',
   'business/exam/index': 'src/business/exam/index.ts',
   'business/exam/domain/index': 'src/business/exam/domain/index.ts',
