@@ -16,6 +16,7 @@ export const businessEntries = {
   'business/mikuFusionGame/index': 'src/business/mikuFusionGame/index.ts',
   'business/mikuFireworks3D/index': 'src/business/mikuFireworks3D/index.ts',
   'business/solarSystem/index': 'src/business/solarSystem/index.ts',
+  'business/iflytek/ui/web/index': 'src/business/iflytek/ui/web/index.ts',
   'business/navigation/index': 'src/business/navigation/index.ts',
   'business/portfolio/index': 'src/business/portfolio/index.ts',
   'business/qqbot/server/index': 'src/business/qqbot/server/index.ts',
