@@ -2,12 +2,17 @@
 
 > 2.0 alpha 起，npm `exports` 与 `tsup.entries.business.ts` 同步，**仅保留 profile-v1 仍直接 import 的 subpath**。
 
+## 已恢复（曾收敛后又加回）
+
+| 模块 | subpath | 说明 |
+|------|---------|------|
+| iflytek | `./business/iflytek/ui/web` | 2026-09-15：xunfeiAsr 实验台薄宿主 |
+
 ## 已从 npm exports 移除（源码仍保留于仓库，可本地 deep import 开发）
 
 | 模块 | 移除的 subpath | 原因 |
 |------|----------------|------|
 | ar | `./ar` | profile-v1 使用 `sa2kit/mmd` AR 能力 |
-| iflytek | `./iflytek*` | profile-v1 无直接引用 |
 | bubbleShooter | `./bubbleShooter*` | 实验田已本地化 `src/modules/bubbleShooter` |
 | calendar | `./calendar/core` 等 | 保留 `./calendar` + `./calendar/routes`（profile-v1 API） |
 | qqbot | `./qqbot` `./qqbot/core` `./qqbot/web` | 保留 `./qqbot/server` `./qqbot/ui/web` |
