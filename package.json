@@ -413,6 +413,11 @@
       "import": "./dist/business/mikuFusionGame/index.mjs",
       "require": "./dist/business/mikuFusionGame/index.js"
     },
+    "./business/mikuGacha": {
+      "types": "./dist/business/mikuGacha/index.d.ts",
+      "import": "./dist/business/mikuGacha/index.mjs",
+      "require": "./dist/business/mikuGacha/index.js"
+    },
     "./business/mmd/admin": {
       "types": "./dist/business/mmd/admin/index.d.ts",
       "import": "./dist/business/mmd/admin/index.mjs",
